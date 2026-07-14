@@ -427,18 +427,19 @@
                     <span class="error-msg" id="cit-sexo-err">Seleccione.</span>
                   </div>
                 </div>
-                <div class="col-md-2">
-                  <div class="form-group">
-                    <label class="form-label">Edad <span class="required">*</span></label>
-                    <input type="number" id="cit-edad" class="form-control" placeholder="Años" min="1" max="120">
-                    <span class="error-msg" id="cit-edad-err">Ingrese una edad válida.</span>
-                  </div>
-                </div>
                 <div class="col-md-3">
                   <div class="form-group">
                     <label class="form-label">Fecha de Nacimiento <span class="required">*</span></label>
-                    <input type="date" id="cit-fecha-nac" class="form-control">
+                    <input type="date" id="cit-fecha-nac" class="form-control" onchange="calcularEdad()">
                     <span class="error-msg" id="cit-fecha-nac-err">Seleccione su fecha de nacimiento.</span>
+                  </div>
+                </div>
+                <div class="col-md-2">
+                  <div class="form-group">
+                    <label class="form-label">Edad <span class="required">*</span></label>
+                    <input type="text" id="cit-edad" class="form-control" placeholder="Años" disabled
+                      style="background:#f3f5f9;color:#667;">
+                    <span class="error-msg" id="cit-edad-err">La edad calculada no es válida.</span>
                   </div>
                 </div>
                 <div class="col-md-3">

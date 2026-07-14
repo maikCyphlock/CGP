@@ -110,6 +110,27 @@ function autorrellenarSiVacio(id, valor) {
 }
 
 /**
+ * Calcula la Edad (campo de solo lectura) a partir de la Fecha de
+ * Nacimiento seleccionada.
+ */
+function calcularEdad() {
+    var fechaInput = document.getElementById('cit-fecha-nac');
+    var edadInput = document.getElementById('cit-edad');
+    var valor = fechaInput.value;
+    if (!valor) { edadInput.value = ''; return; }
+
+    var nacimiento = new Date(valor + 'T00:00:00');
+    var hoy = new Date();
+    var edad = hoy.getFullYear() - nacimiento.getFullYear();
+    var mesDiff = hoy.getMonth() - nacimiento.getMonth();
+    if (mesDiff < 0 || (mesDiff === 0 && hoy.getDate() < nacimiento.getDate())) edad--;
+
+    edadInput.value = (edad >= 0 && edad <= 120) ? edad : '';
+    edadInput.classList.remove('invalid');
+    document.getElementById('cit-edad-err').classList.remove('visible');
+}
+
+/**
  * Busca en el padrón de ciudadanos (tabla relacionada) un registro
  * previo con el mismo Tipo + Número de Documento y, si existe,
  * autocompleta el resto de los campos del Paso 2.
@@ -126,7 +147,6 @@ function autocompletarCiudadano() {
     if (!registro) return;
 
     autorrellenarSiVacio('cit-nombres', registro.nombres);
-    autorrellenarSiVacio('cit-edad', registro.edad);
     autorrellenarSiVacio('cit-profesion', registro.profesion);
     autorrellenarSiVacio('cit-correo', registro.correo);
     autorrellenarSiVacio('cit-correo2', registro.correo);
@@ -140,6 +160,7 @@ function autocompletarCiudadano() {
     if (selSexo && !selSexo.value && registro.sexo) selSexo.value = registro.sexo;
     var inputFecha = document.getElementById('cit-fecha-nac');
     if (inputFecha && !inputFecha.value && registro.fechaNac) inputFecha.value = registro.fechaNac;
+    calcularEdad();
     var selEcivil = document.getElementById('cit-ecivil');
     if (selEcivil && !selEcivil.value && registro.ecivil) selEcivil.value = registro.ecivil;
     var selEdu = document.getElementById('cit-edu');
@@ -518,16 +539,18 @@ function validarPaso(numeroPaso) {
             errores.push('Sexo');
             marcarError('cit-sexo', 'cit-sexo-err');
         }
-        // Edad
-        var edad = parseInt(document.getElementById('cit-edad').value, 10);
-        if (isNaN(edad) || edad < 1 || edad > 120) {
-            errores.push('Edad');
-            marcarError('cit-edad', 'cit-edad-err');
-        }
-        // Fecha de nacimiento
+        // Fecha de nacimiento (la Edad se calcula automáticamente a partir de esta)
         if (!document.getElementById('cit-fecha-nac').value) {
             errores.push('Fecha de Nacimiento');
             marcarError('cit-fecha-nac', 'cit-fecha-nac-err');
+        } else {
+            calcularEdad();
+            var edad = parseInt(document.getElementById('cit-edad').value, 10);
+            if (isNaN(edad) || edad < 1 || edad > 120) {
+                errores.push('Edad (verifique la fecha de nacimiento)');
+                marcarError('cit-fecha-nac', 'cit-fecha-nac-err');
+                document.getElementById('cit-edad-err').classList.add('visible');
+            }
         }
         // Correo
         var correo = document.getElementById('cit-correo').value.trim();
