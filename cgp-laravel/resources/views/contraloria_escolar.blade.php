@@ -1,0 +1,294 @@
+@extends('layouts.app')
+
+@section('title', 'Contraloría va a la Escuela – Contraloría del Municipio Páez')
+
+@push('fonts')
+  <link href="https://fonts.googleapis.com/css2?family=Merriweather:wght@400;700;900&family=Source+Sans+3:wght@400;500;600;700&display=swap" rel="stylesheet">
+@endpush
+
+@push('styles')
+  <link rel="stylesheet" href="{{ asset('assets/css/contraloriaescolar.css') }}">
+@endpush
+
+@section('content')
+<section class="hero-banner" style="margin-top: 78px;">
+  <div class="hero-overlay"></div>
+  <div class="hero-content">
+    <h1 class="hero-title">Contraloría va a la Escuela</h1>
+    <p class="hero-desc">Fortaleciendo los valores constitucionales de participación ciudadana y control fiscal en las instituciones educativas del Municipio Páez.</p>
+  </div>
+</section>
+
+<main id="main">
+
+  <!-- Period Tabs -->
+  <section class="period-tabs-section">
+    <div class="container">
+      <div class="period-tabs" role="tablist" aria-label="Período de informes">
+        <button class="tab-btn active" role="tab" aria-selected="true"  data-period="mensual">Mensual</button>
+        <button class="tab-btn"        role="tab" aria-selected="false" data-period="trimestral">Trimestral</button>
+        <button class="tab-btn"        role="tab" aria-selected="false" data-period="semestral">Semestral</button>
+        <button class="tab-btn"        role="tab" aria-selected="false" data-period="anual">Anual</button>
+      </div>
+    </div>
+  </section>
+
+  <!-- Controls Bar -->
+  <section class="controls-section">
+    <div class="container controls-bar">
+      <div class="show-entries">
+        <label for="entriesCount">Mostrar</label>
+        <select id="entriesCount" class="select-sm">
+          <option value="2">2</option>
+          <option value="5">5</option>
+          <option value="10" selected>10</option>
+          <option value="25">25</option>
+        </select>
+        <span>entradas</span>
+      </div>
+      <div class="search-wrap">
+        <label for="searchInput">Buscar:</label>
+        <div class="search-field">
+          <svg class="search-icon" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="8"/><path d="m21 21-4.35-4.35"/></svg>
+          <input type="search" id="searchInput" placeholder="Año, mes, palabra clave…" autocomplete="off">
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- Reports Table -->
+  <section class="reports-section">
+    <div class="container">
+      <div class="table-wrapper">
+        <table class="reports-table" id="reportsTable">
+          <thead>
+            <tr>
+              <th class="col-year sortable" data-col="year">
+                Año
+                <span class="sort-icon">
+                  <svg width="10" height="10" viewBox="0 0 10 14"><path d="M5 0L9.33 5H.67L5 0Z" fill="currentColor"/><path d="M5 14L.67 9h8.66L5 14Z" fill="currentColor" opacity=".4"/></svg>
+                </span>
+              </th>
+              <th class="col-month sortable" data-col="month">
+                Mes
+                <span class="sort-icon">
+                  <svg width="10" height="10" viewBox="0 0 10 14"><path d="M5 0L9.33 5H.67L5 0Z" fill="currentColor"/><path d="M5 14L.67 9h8.66L5 14Z" fill="currentColor" opacity=".4"/></svg>
+                </span>
+              </th>
+              <th class="col-actions">
+                Acciones
+                <span class="sort-icon ghost">
+                  <svg width="10" height="10" viewBox="0 0 10 14"><path d="M5 0L9.33 5H.67L5 0Z" fill="currentColor" opacity=".3"/><path d="M5 14L.67 9h8.66L5 14Z" fill="currentColor" opacity=".2"/></svg>
+                </span>
+              </th>
+            </tr>
+          </thead>
+          <tbody id="reportsBody">
+            <!-- Rows injected by JS -->
+          </tbody>
+        </table>
+      </div>
+
+      <!-- Pagination -->
+      <div class="pagination-bar" id="paginationBar">
+        <span class="pagination-info" id="paginationInfo"></span>
+        <div class="pagination-controls" id="paginationControls"></div>
+      </div>
+    </div>
+  </section>
+
+  <!-- Back Button -->
+  <div class="back-wrap">
+    <a href="{{ url('/') }}" class="btn-back">
+      <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M19 12H5M12 5l-7 7 7 7"/></svg>
+      Regresar
+    </a>
+  </div>
+
+</main>
+
+<!-- ══════════ MODAL ══════════ -->
+<div class="modal-overlay" id="modalOverlay" role="dialog" aria-modal="true" aria-label="Vista previa del informe">
+  <button class="modal-close" id="modalClose" aria-label="Cerrar">
+    <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M18 6L6 18M6 6l12 12"/></svg>
+  </button>
+  <button class="modal-nav modal-prev" id="modalPrev" aria-label="Anterior">
+    <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M15 18l-6-6 6-6"/></svg>
+  </button>
+  <div class="modal-frame">
+    <img id="modalImg" src="" alt="Vista previa del informe" loading="lazy">
+    <div class="modal-caption" id="modalCaption"></div>
+  </div>
+  <button class="modal-nav modal-next" id="modalNext" aria-label="Siguiente">
+    <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M9 18l6-6-6-6"/></svg>
+  </button>
+</div>
+@endsection
+
+@push('scripts')
+<script>
+/* ══ DATA ══ */
+const DATA = {
+  mensual: [
+    { year: 2024, month: "Enero",      pdf: "{{ asset('pages/informes/mensual-2024-01.pdf') }}", img: "{{ asset('pages/informes/mensual-2024-01.jpg') }}" },
+    { year: 2024, month: "Febrero",    pdf: "{{ asset('pages/informes/mensual-2024-02.pdf') }}", img: "{{ asset('pages/informes/mensual-2024-02.jpg') }}" },
+    { year: 2024, month: "Marzo",      pdf: "{{ asset('pages/informes/mensual-2024-03.pdf') }}", img: "{{ asset('pages/informes/mensual-2024-03.jpg') }}" },
+    { year: 2024, month: "Abril",      pdf: "{{ asset('pages/informes/mensual-2024-04.pdf') }}", img: "{{ asset('pages/informes/mensual-2024-04.jpg') }}" },
+    { year: 2024, month: "Mayo",       pdf: "{{ asset('pages/informes/mensual-2024-05.pdf') }}", img: "{{ asset('pages/informes/mensual-2024-05.jpg') }}" },
+    { year: 2024, month: "Junio",      pdf: "{{ asset('pages/informes/mensual-2024-06.pdf') }}", img: "{{ asset('pages/informes/mensual-2024-06.jpg') }}" },
+  ],
+  trimestral: [
+    { year: 2024, month: "I Trimestre",   pdf: "{{ asset('pages/informes/trim-2024-Q1.pdf') }}", img: "{{ asset('pages/informes/trim-2024-Q1.jpg') }}" },
+    { year: 2024, month: "II Trimestre",  pdf: "{{ asset('pages/informes/trim-2024-Q2.pdf') }}", img: "{{ asset('pages/informes/trim-2024-Q2.jpg') }}" },
+    { year: 2023, month: "I Trimestre",   pdf: "{{ asset('pages/informes/trim-2023-Q1.pdf') }}", img: "{{ asset('pages/informes/trim-2023-Q1.jpg') }}" },
+    { year: 2023, month: "II Trimestre",  pdf: "{{ asset('pages/informes/trim-2023-Q2.pdf') }}", img: "{{ asset('pages/informes/trim-2023-Q2.jpg') }}" },
+  ],
+  semestral: [
+    { year: 2024, month: "I Semestre",  pdf: "{{ asset('pages/informes/sem-2024-S1.pdf') }}", img: "{{ asset('pages/informes/sem-2024-S1.jpg') }}" },
+    { year: 2024, month: "II Semestre", pdf: "{{ asset('pages/informes/sem-2024-S2.pdf') }}", img: "{{ asset('pages/informes/sem-2024-S2.jpg') }}" },
+    { year: 2023, month: "I Semestre",  pdf: "{{ asset('pages/informes/sem-2023-S1.pdf') }}", img: "{{ asset('pages/informes/sem-2023-S1.jpg') }}" },
+  ],
+  anual: [
+    { year: 2024, month: "Año Completo", pdf: "{{ asset('pages/informes/anual-2024.pdf') }}", img: "{{ asset('pages/informes/anual-2024.jpg') }}" },
+    { year: 2023, month: "Año Completo", pdf: "{{ asset('pages/informes/anual-2023.pdf') }}", img: "{{ asset('pages/informes/anual-2023.jpg') }}" },
+  ],
+};
+
+/* ══ STATE ══ */
+let currentPeriod  = "mensual";
+let currentPage    = 1;
+let entriesPerPage = 10;
+let searchTerm     = "";
+let filteredRows   = [];
+let modalIndex     = 0;
+
+/* ══ ELEMENTS ══ */
+const tbody        = document.getElementById("reportsBody");
+const pageInfo     = document.getElementById("paginationInfo");
+const pageCtrl     = document.getElementById("paginationControls");
+const searchInput  = document.getElementById("searchInput");
+const entriesSelect= document.getElementById("entriesCount");
+const modalOverlay = document.getElementById("modalOverlay");
+const modalImg     = document.getElementById("modalImg");
+const modalCaption = document.getElementById("modalCaption");
+
+/* ══ RENDER TABLE ══ */
+function renderTable() {
+  const all = DATA[currentPeriod] || [];
+  filteredRows = all.filter(r => {
+    if (!searchTerm) return true;
+    const q = searchTerm.toLowerCase();
+    return String(r.year).includes(q) || r.month.toLowerCase().includes(q);
+  });
+
+  const total = filteredRows.length;
+  const pages = Math.ceil(total / entriesPerPage) || 1;
+  if (currentPage > pages) currentPage = pages;
+
+  const start = (currentPage - 1) * entriesPerPage;
+  const slice = filteredRows.slice(start, start + entriesPerPage);
+
+  tbody.innerHTML = slice.map((r, i) => `
+    <tr class="report-row" style="animation-delay:${i * 45}ms">
+      <td class="col-year">${r.year}</td>
+      <td class="col-month">${r.month}</td>
+      <td class="col-actions">
+        <button class="btn-action btn-pdf" onclick="downloadPDF(${start + i})" title="Descargar PDF">
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>
+        </button>
+        <button class="btn-action btn-preview" onclick="openModal(${start + i})" title="Ver imagen">
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><rect x="3" y="3" width="18" height="18" rx="2"/><circle cx="8.5" cy="8.5" r="1.5"/><polyline points="21 15 16 10 5 21"/></svg>
+        </button>
+      </td>
+    </tr>
+  `).join("") || `<tr><td colspan="3" class="empty-state">No se encontraron informes para los criterios indicados.</td></tr>`;
+
+  /* info text */
+  const from = total ? start + 1 : 0;
+  const to   = Math.min(start + entriesPerPage, total);
+  pageInfo.textContent = `Mostrando del ítem ${from} al ${to} de un total de ${total} ítem${total !== 1 ? "s" : ""}`;
+
+  renderPagination(pages);
+}
+
+function renderPagination(pages) {
+  const btns = [];
+  btns.push(`<button class="page-btn nav-btn" ${currentPage === 1 ? "disabled" : ""} onclick="goPage(${currentPage - 1})">Anterior</button>`);
+  for (let p = 1; p <= pages; p++) {
+    btns.push(`<button class="page-btn ${p === currentPage ? "active" : ""}" onclick="goPage(${p})">${p}</button>`);
+  }
+  btns.push(`<button class="page-btn nav-btn" ${currentPage === pages ? "disabled" : ""} onclick="goPage(${currentPage + 1})">Siguiente</button>`);
+  pageCtrl.innerHTML = btns.join("");
+}
+
+function goPage(p) { currentPage = p; renderTable(); }
+
+/* ══ TABS ══ */
+document.querySelectorAll(".tab-btn").forEach(btn => {
+  btn.addEventListener("click", () => {
+    document.querySelectorAll(".tab-btn").forEach(b => { b.classList.remove("active"); b.setAttribute("aria-selected","false"); });
+    btn.classList.add("active");
+    btn.setAttribute("aria-selected","true");
+    currentPeriod = btn.dataset.period;
+    currentPage   = 1;
+    searchInput.value = "";
+    searchTerm = "";
+    renderTable();
+  });
+});
+
+/* ══ SEARCH ══ */
+searchInput.addEventListener("input", () => { searchTerm = searchInput.value.trim(); currentPage = 1; renderTable(); });
+
+/* ══ ENTRIES ══ */
+entriesSelect.addEventListener("change", () => { entriesPerPage = parseInt(entriesSelect.value); currentPage = 1; renderTable(); });
+
+/* ══ DOWNLOAD ══ */
+function downloadPDF(idx) {
+  const r = filteredRows[idx];
+  if (!r) return;
+  const a = document.createElement("a");
+  a.href = r.pdf;
+  a.download = `Informe_${r.year}_${r.month}.pdf`;
+  a.click();
+}
+
+/* ══ MODAL ══ */
+function openModal(idx) {
+  modalIndex = idx;
+  showModalSlide();
+  modalOverlay.classList.add("open");
+  document.body.style.overflow = "hidden";
+}
+
+function showModalSlide() {
+  const r = filteredRows[modalIndex];
+  if (!r) return;
+  modalImg.src = r.img;
+  modalImg.alt = `Informe ${r.month} ${r.year}`;
+  modalCaption.textContent = `${r.month} ${r.year}`;
+  document.getElementById("modalPrev").disabled = modalIndex === 0;
+  document.getElementById("modalNext").disabled = modalIndex === filteredRows.length - 1;
+}
+
+function closeModal() {
+  modalOverlay.classList.remove("open");
+  document.body.style.overflow = "";
+  modalImg.src = "";
+}
+
+document.getElementById("modalClose").addEventListener("click", closeModal);
+document.getElementById("modalPrev").addEventListener("click", () => { if (modalIndex > 0) { modalIndex--; showModalSlide(); } });
+document.getElementById("modalNext").addEventListener("click", () => { if (modalIndex < filteredRows.length - 1) { modalIndex++; showModalSlide(); } });
+modalOverlay.addEventListener("click", e => { if (e.target === modalOverlay) closeModal(); });
+document.addEventListener("keydown", e => {
+  if (!modalOverlay.classList.contains("open")) return;
+  if (e.key === "Escape") closeModal();
+  if (e.key === "ArrowLeft")  document.getElementById("modalPrev").click();
+  if (e.key === "ArrowRight") document.getElementById("modalNext").click();
+});
+
+/* ══ INIT ══ */
+renderTable();
+</script>
+@endpush

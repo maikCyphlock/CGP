@@ -1,47 +1,21 @@
-<!DOCTYPE html>
-<html lang="es">
+@extends('layouts.app')
 
-<head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Recepción de Atención al Cliente – Contraloría del Municipio Páez</title>
+@section('title', 'Recepción de Atención al Cliente – Contraloría del Municipio Páez')
 
-  <!-- Fuentes institucionales -->
-  <link rel="preconnect" href="https://fonts.googleapis.com">
-  <link
-    href="https://fonts.googleapis.com/css2?family=Roboto:wght@300;400;500;700;900&family=Open+Sans:wght@400;600;700&display=swap"
-    rel="stylesheet">
+@push('styles')
+  <link rel="stylesheet" href="{{ asset('assets/css/denuncias.css') }}">
+@endpush
 
-  <link href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap/5.3.2/css/bootstrap.min.css" rel="stylesheet">
-  <link rel="stylesheet" href="../assets/css/denuncias.css">
-  <link rel="stylesheet" href="../assets/css/contraloria.css">
-</head>
-
-<body>
-  <header id="header">
-    <div class="header-container">
-      <a href="../index.html" class="logo-link">
-        <div style="width:56px;height:56px;flex-shrink:0;display:flex;align-items:center;justify-content:center;">
-          <img src="../assets/img/logo.jpeg" alt="Logo Contraloría Municipio Páez"
-            style="width:56px;height:56px;border-radius:25px;">
-        </div>
-        <div class="logo-texts">
-          <div class="l1">Contraloría del <br>Municipio Páez</div>
-        </div>
-      </a>
-      <nav id="navbar">
-        <a href="../index.html">Inicio</a>
-      </nav>
-    </div>
-  </header>
-
-
+@section('content')
+  <!-- ════════════════════════════════════════════
+     BANDA SUPERIOR / TÍTULO DE PÁGINA
+     ════════════════════════════════════════════ -->
   <div class="page-header-strip" style="margin-top:78px;">
     <div class="page-header-inner">
       <div class="breadcrumb-row">
-        <a href="../index.html">Inicio</a>
+        <a href="{{ url('/') }}">Inicio</a>
         <span>›</span>
-        <a href="">Participación Ciudadana</a>
+        <a href="{{ url('/#participacion') }}">Participación Ciudadana</a>
         <span>›</span>
         <span style="color:rgba(255,255,255,0.85);">Recepción de Denuncias</span>
       </div>
@@ -51,14 +25,17 @@
     </div>
   </div>
 
+
+  <!-- ════════════════════════════════════════════
+     SECCIÓN PRINCIPAL
+     ════════════════════════════════════════════ -->
   <section id="denuncias">
     <div class="denuncias-inner">
 
       <!-- AVISO DE NO ANONIMATO — siempre visible -->
       <div class="aviso-anonimato">
         <span class="av-icon">
-          <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"
-            stroke-linecap="round" stroke-linejoin="round">
+          <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
             <circle cx="12" cy="12" r="10" />
             <line x1="12" y1="8" x2="12" y2="12" />
             <line x1="12" y1="16" x2="12.01" y2="16" />
@@ -66,9 +43,7 @@
         </span>
         <div>
           <strong>Este sistema no admite denuncias anónimas.</strong>
-          De conformidad con la Ley Orgánica de la Contraloría General de la República y del Sistema Nacional de Control
-          Fiscal, la identificación del denunciante es obligatoria. Sus datos personales serán tratados con estricta
-          confidencialidad y utilizados únicamente para los fines del proceso de investigación.
+          De conformidad con la Ley Orgánica de la Contraloría General de la República y del Sistema Nacional de Control Fiscal, la identificación del denunciante es obligatoria. Sus datos personales serán tratados con estricta confidencialidad y utilizados únicamente para los fines del proceso de investigación.
         </div>
       </div>
 
@@ -117,11 +92,9 @@
         <div class="tipo-cards">
 
           <!-- Tarjeta A — Poder Popular -->
-          <div class="tipo-card poder-popular" onclick="iniciarFlujo('poder-popular')" tabindex="0" role="button"
-            aria-label="Denuncia de Proyectos del Poder Popular">
+          <div class="tipo-card poder-popular" onclick="iniciarFlujo('poder-popular')" tabindex="0" role="button" aria-label="Denuncia de Proyectos del Poder Popular">
             <div class="tc-icon">
-              <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"
-                stroke-linecap="round" stroke-linejoin="round">
+              <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
                 <path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z" />
                 <polyline points="9 22 9 12 15 12 15 22" />
               </svg>
@@ -129,13 +102,11 @@
             <div class="tc-label">Tipo A</div>
             <div class="tc-title">Denuncia de Proyectos del<br>Poder Popular</div>
             <div class="tc-desc">
-              Para denuncias relacionadas con Consejos Comunales, Comunas y Proyectos Financiados a través
-              de la Consulta Popular Nacional. Incluye campos para Código CITUR, monto y denominación del proyecto.
+              Para denuncias relacionadas con Consejos Comunales, Comunas y Proyectos Financiados a través de la Consulta Popular Nacional. Incluye campos para Código CITUR, monto y denominación del proyecto.
             </div>
             <span class="tc-btn">
               Iniciar denuncia
-              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"
-                stroke-linecap="round" stroke-linejoin="round">
+              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
                 <line x1="5" y1="12" x2="19" y2="12" />
                 <polyline points="12 5 19 12 12 19" />
               </svg>
@@ -143,11 +114,9 @@
           </div>
 
           <!-- Tarjeta B — Denuncia General -->
-          <div class="tipo-card general" onclick="iniciarFlujo('general')" tabindex="0" role="button"
-            aria-label="Denuncia General">
+          <div class="tipo-card general" onclick="iniciarFlujo('general')" tabindex="0" role="button" aria-label="Denuncia General">
             <div class="tc-icon">
-              <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"
-                stroke-linecap="round" stroke-linejoin="round">
+              <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
                 <rect x="2" y="3" width="20" height="14" rx="2" ry="2" />
                 <line x1="8" y1="21" x2="16" y2="21" />
                 <line x1="12" y1="17" x2="12" y2="21" />
@@ -156,13 +125,11 @@
             <div class="tc-label" style="color:#c10000;">Tipo B</div>
             <div class="tc-title">Denuncia General<br>(Organismos e Institutos)</div>
             <div class="tc-desc">
-              Para denuncias dirigidas contra órganos públicos, Instituciones, entes Municipales, Funcionarios
-              o Personas Naturales y Jurídicas sujetas al Control Fiscal del Municipio.
+              Para denuncias dirigidas contra órganos públicos, Instituciones, entes Municipales, Funcionarios o Personas Naturales y Jurídicas sujetas al Control Fiscal del Municipio.
             </div>
             <span class="tc-btn" style="color:#c10000;">
               Iniciar denuncia
-              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"
-                stroke-linecap="round" stroke-linejoin="round">
+              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
                 <line x1="5" y1="12" x2="19" y2="12" />
                 <polyline points="12 5 19 12 12 19" />
               </svg>
@@ -181,8 +148,7 @@
 
         <!-- Botón para volver a la selección de tipo -->
         <button class="form-back-btn" onclick="volverSeleccion()">
-          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"
-            stroke-linecap="round" stroke-linejoin="round">
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
             <line x1="19" y1="12" x2="5" y2="12" />
             <polyline points="12 19 5 12 12 5" />
           </svg>
@@ -208,8 +174,7 @@
 
             <!-- Banner de error del paso -->
             <div class="banner-error" id="err-paso1" style="display:none;">
-              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"
-                stroke-linecap="round" stroke-linejoin="round">
+              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
                 <path d="M10.29 3.86L1.82 18a2 2 0 0 0 1.71 3h16.94a2 2 0 0 0 1.71-3L13.71 3.86a2 2 0 0 0-3.42 0z" />
                 <line x1="12" y1="9" x2="12" y2="13" />
                 <line x1="12" y1="17" x2="12.01" y2="17" />
@@ -219,11 +184,10 @@
               </div>
             </div>
 
-            <!-- ── TIPO A: Selección de tipo de trámite (Denuncia / Queja / Reclamo / Petición) ── -->
+            <!-- ── TIPO A: Selección de tipo de trámite ── -->
             <div id="bloque-tipo-tramite">
               <div class="form-section-title">
-                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"
-                  stroke-linecap="round" stroke-linejoin="round">
+                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
                   <circle cx="12" cy="12" r="10" />
                   <line x1="12" y1="8" x2="12" y2="12" />
                   <line x1="12" y1="16" x2="12.01" y2="16" />
@@ -235,10 +199,8 @@
                   <input type="radio" name="tipo_tramite" value="denuncia" onchange="onTipoTramiteChange(this)">
                   <div class="tramite-card-body">
                     <div class="tramite-card-icon">
-                      <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor"
-                        stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
-                        <path
-                          d="M10.29 3.86L1.82 18a2 2 0 0 0 1.71 3h16.94a2 2 0 0 0 1.71-3L13.71 3.86a2 2 0 0 0-3.42 0z" />
+                      <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
+                        <path d="M10.29 3.86L1.82 18a2 2 0 0 0 1.71 3h16.94a2 2 0 0 0 1.71-3L13.71 3.86a2 2 0 0 0-3.42 0z" />
                         <line x1="12" y1="9" x2="12" y2="13" />
                         <line x1="12" y1="17" x2="12.01" y2="17" />
                       </svg>
@@ -251,8 +213,7 @@
                   <input type="radio" name="tipo_tramite" value="queja" onchange="onTipoTramiteChange(this)">
                   <div class="tramite-card-body">
                     <div class="tramite-card-icon">
-                      <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor"
-                        stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
+                      <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
                         <path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z" />
                       </svg>
                     </div>
@@ -264,8 +225,7 @@
                   <input type="radio" name="tipo_tramite" value="reclamo" onchange="onTipoTramiteChange(this)">
                   <div class="tramite-card-body">
                     <div class="tramite-card-icon">
-                      <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor"
-                        stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
+                      <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
                         <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z" />
                         <polyline points="14 2 14 8 20 8" />
                         <line x1="16" y1="13" x2="8" y2="13" />
@@ -280,8 +240,7 @@
                   <input type="radio" name="tipo_tramite" value="peticion" onchange="onTipoTramiteChange(this)">
                   <div class="tramite-card-body">
                     <div class="tramite-card-icon">
-                      <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor"
-                        stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
+                      <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
                         <line x1="22" y1="2" x2="11" y2="13" />
                         <polygon points="22 2 15 22 11 13 2 9 22 2" />
                       </svg>
@@ -293,12 +252,11 @@
               </div>
               <span class="error-msg" id="tipo-tramite-err">Debe seleccionar un tipo de trámite.</span>
 
-              <!-- Pregunta de Consulta Popular (solo cuando tipo = denuncia) -->
+              <!-- Pregunta de Consulta Popular -->
               <div id="bloque-consulta-popular" style="display:none;margin-top:24px;">
                 <div class="form-section" style="padding-top:20px;border-top:1px solid #eef1f7;">
                   <div class="form-section-title" id="consulta-title-color">
-                    <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"
-                      stroke-linecap="round" stroke-linejoin="round">
+                    <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
                       <circle cx="12" cy="12" r="10" />
                       <line x1="12" y1="8" x2="12" y2="12" />
                       <line x1="12" y1="16" x2="12.01" y2="16" />
@@ -311,13 +269,11 @@
                     </label>
                     <div class="check-group" id="radio-consulta-group" style="margin-top:8px;">
                       <label class="check-item">
-                        <input type="radio" name="es_consulta" value="si"
-                          onchange="document.getElementById('es-consulta-err').classList.remove('visible')">
+                        <input type="radio" name="es_consulta" value="si" onchange="document.getElementById('es-consulta-err').classList.remove('visible')">
                         <label>Sí, es sobre un proyecto de consulta popular</label>
                       </label>
                       <label class="check-item">
-                        <input type="radio" name="es_consulta" value="no"
-                          onchange="document.getElementById('es-consulta-err').classList.remove('visible')">
+                        <input type="radio" name="es_consulta" value="no" onchange="document.getElementById('es-consulta-err').classList.remove('visible')">
                         <label>No, es sobre otro organismo o situación</label>
                       </label>
                     </div>
@@ -338,8 +294,7 @@
             </span>
             <button class="btn-submit" id="btn-sig-paso1" onclick="siguientePaso(1)">
               Continuar
-              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"
-                stroke-linecap="round" stroke-linejoin="round">
+              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
                 <line x1="5" y1="12" x2="19" y2="12" />
                 <polyline points="12 5 19 12 12 19" />
               </svg>
@@ -350,7 +305,6 @@
 
         <!-- ─────────────────────────────────────────────────
            PASO 2 — DATOS DEL CIUDADANO (DENUNCIANTE)
-           Campos comunes + ampliados del formulario fuente
            ───────────────────────────────────────────────── -->
         <div class="wizard-paso" id="paso-2" style="display:none;">
 
@@ -364,8 +318,7 @@
 
           <div class="form-body">
             <div class="banner-error" id="err-paso2" style="display:none;">
-              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"
-                stroke-linecap="round" stroke-linejoin="round">
+              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
                 <path d="M10.29 3.86L1.82 18a2 2 0 0 0 1.71 3h16.94a2 2 0 0 0 1.71-3L13.71 3.86a2 2 0 0 0-3.42 0z" />
                 <line x1="12" y1="9" x2="12" y2="13" />
                 <line x1="12" y1="17" x2="12.01" y2="17" />
@@ -378,8 +331,7 @@
             <!-- Sección: Identificación -->
             <div class="form-section">
               <div class="form-section-title" id="ciudadano-title-color">
-                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"
-                  stroke-linecap="round" stroke-linejoin="round">
+                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
                   <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2" />
                   <circle cx="12" cy="7" r="4" />
                 </svg>
@@ -389,7 +341,7 @@
                 <div class="col-md-3">
                   <div class="form-group">
                     <label class="form-label">Tipo de Documento <span class="required">*</span></label>
-                    <select id="cit-tipo-doc" class="form-select" onchange="autocompletarCiudadano()">
+                    <select id="cit-tipo-doc" class="form-select">
                       <option value="">Seleccionar</option>
                       <option value="V">V — Venezolano</option>
                       <option value="E">E — Extranjero</option>
@@ -401,18 +353,14 @@
                 <div class="col-md-3">
                   <div class="form-group">
                     <label class="form-label">Número de Documento <span class="required">*</span></label>
-                    <input type="text" id="cit-nro-doc" class="form-control" placeholder="Ej. 12345678" maxlength="10"
-                      onblur="autocompletarCiudadano()">
-                    <span class="error-msg" id="cit-nro-doc-err">Ingrese un número de documento válido (5–10
-                      dígitos).</span>
-                    <span class="autofill-msg" id="cit-autofill-msg" style="display:none;"></span>
+                    <input type="text" id="cit-nro-doc" class="form-control" placeholder="Ej. 12345678" maxlength="10">
+                    <span class="error-msg" id="cit-nro-doc-err">Ingrese un número de documento válido (5–10 dígitos).</span>
                   </div>
                 </div>
                 <div class="col-md-6">
                   <div class="form-group">
                     <label class="form-label">Apellidos y Nombres <span class="required">*</span></label>
-                    <input type="text" id="cit-nombres" class="form-control"
-                      placeholder="Apellido Apellido, Nombre Nombre">
+                    <input type="text" id="cit-nombres" class="form-control" placeholder="Apellido Apellido, Nombre Nombre">
                     <span class="error-msg" id="cit-nombres-err">Ingrese sus apellidos y nombres completos.</span>
                   </div>
                 </div>
@@ -441,14 +389,6 @@
                     <span class="error-msg" id="cit-fecha-nac-err">Seleccione su fecha de nacimiento.</span>
                   </div>
                 </div>
-                <div class="col-md-2">
-                  <div class="form-group">
-                    <label class="form-label">Edad <span class="required">*</span></label>
-                    <input type="text" id="cit-edad" class="form-control" placeholder="Años" disabled
-                      style="background:#f3f5f9;color:#667;">
-                    <span class="error-msg" id="cit-edad-err">La edad calculada no es válida.</span>
-                  </div>
-                </div>
                 <div class="col-md-3">
                   <div class="form-group">
                     <label class="form-label">Estado Civil</label>
@@ -462,41 +402,24 @@
                     </select>
                   </div>
                 </div>
-              </div>
-
-              <!-- Datos demográficos en tabla: Nivel Educativo / Profesión / Ocupación -->
-              <div class="form-group" style="margin-top:8px;">
-                <label class="form-label"></label>
-                <div style="overflow-x:auto;">
-                  <table class="tabla-demografica">
-                    <thead>
-                      <tr>
-                        <th>Nivel Educativo</th>
-                        <th>Profesión</th>
-                        <th>Ocupación</th>
-                      </tr>
-                    </thead>
-                    <tbody>
-                      <tr>
-                        <td>
-                          <select id="cit-edu" class="form-select">
-                            <option value="">-- Seleccione --</option>
-                            <option>Primaria</option>
-                            <option>Secundaria</option>
-                            <option>Técnico</option>
-                            <option>Universitario</option>
-                            <option>Postgrado</option>
-                          </select>
-                        </td>
-                        <td>
-                          <input type="text" id="cit-profesion" class="form-control" placeholder="Ej. Docente, Ingeniero...">
-                        </td>
-                        <td>
-                          <input type="text" id="cit-ocupacion" class="form-control" placeholder="Ej. Comerciante independiente">
-                        </td>
-                      </tr>
-                    </tbody>
-                  </table>
+                <div class="col-md-2">
+                  <div class="form-group">
+                    <label class="form-label">Nivel Educativo</label>
+                    <select id="cit-edu" class="form-select">
+                      <option value="">-- Seleccione --</option>
+                      <option>Primaria</option>
+                      <option>Secundaria</option>
+                      <option>Técnico</option>
+                      <option>Universitario</option>
+                      <option>Postgrado</option>
+                    </select>
+                  </div>
+                </div>
+                <div class="col-md-4">
+                  <div class="form-group">
+                    <label class="form-label">Profesión u Ocupación</label>
+                    <input type="text" id="cit-profesion" class="form-control" placeholder="Ej. Docente, Comerciante...">
+                  </div>
                 </div>
               </div>
             </div>
@@ -504,8 +427,7 @@
             <!-- Sección: Dirección y Contacto -->
             <div class="form-section">
               <div class="form-section-title" id="contacto-title-color">
-                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"
-                  stroke-linecap="round" stroke-linejoin="round">
+                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
                   <path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z" />
                   <circle cx="12" cy="10" r="3" />
                 </svg>
@@ -515,54 +437,34 @@
                 <div class="col-md-4">
                   <div class="form-group">
                     <label class="form-label">Correo Electrónico <span class="required">*</span></label>
-                    <input type="email" id="cit-correo" class="form-control" placeholder="ejemplo@gmail.com">
+                    <input type="email" id="cit-correo" class="form-control" placeholder="correo@ejemplo.com">
                     <span class="error-msg" id="cit-correo-err">Ingrese un correo válido.</span>
                   </div>
                 </div>
                 <div class="col-md-4">
                   <div class="form-group">
                     <label class="form-label">Confirmar Correo <span class="required">*</span></label>
-                    <input type="email" id="cit-correo2" class="form-control" placeholder="ejemplo@gmail.com">
+                    <input type="email" id="cit-correo2" class="form-control" placeholder="Repita su correo">
                     <span class="error-msg" id="cit-correo2-err">Los correos no coinciden.</span>
                   </div>
                 </div>
-                <div class="col-md-4">
+                <div class="col-md-2">
                   <div class="form-group">
                     <label class="form-label">Teléfono Celular <span class="required">*</span></label>
-                    <div style="display:flex;gap:6px;">
-                      <select id="cit-telf-cel-cod" class="form-select" style="max-width:110px;flex-shrink:0;">
-                        <option value="">Cód.</option>
-                        <option value="0412">0412</option>
-                        <option value="0414">0414</option>
-                        <option value="0416">0416</option>
-                        <option value="0424">0424</option>
-                        <option value="0426">0426</option>
-                      </select>
-                      <input type="tel" id="cit-telf-cel-num" class="form-control" placeholder="1234567" maxlength="7">
-                    </div>
-                    <span class="error-msg" id="cit-telf-cel-err">Seleccione el código y escriba los 7 dígitos
-                      restantes.</span>
+                    <input type="tel" id="cit-telf-cel" class="form-control" placeholder="04XX-XXXXXXX">
+                    <span class="error-msg" id="cit-telf-cel-err">Formato: 04XX-XXXXXXX.</span>
                   </div>
                 </div>
-                <div class="col-md-4">
+                <div class="col-md-2">
                   <div class="form-group">
                     <label class="form-label">Teléfono Habitación</label>
-                    <div style="display:flex;gap:6px;">
-                      <select id="cit-telf-hab-cod" class="form-select" style="max-width:130px;flex-shrink:0;">
-                        <option value="">Cód.</option>
-                        <option value="0255">0255 — Acarigua-Araure</option>
-                      </select>
-                      <input type="tel" id="cit-telf-hab-num" class="form-control" placeholder="1234567" maxlength="7">
-                    </div>
-                    <span class="error-msg" id="cit-telf-hab-err">Seleccione el código y escriba los 7 dígitos
-                      restantes.</span>
+                    <input type="tel" id="cit-telf-hab" class="form-control" placeholder="0255-XXXXXXX">
                   </div>
                 </div>
                 <div class="col-md-3">
                   <div class="form-group">
                     <label class="form-label">Parroquia</label>
-                    <input type="text" id="cit-parroquia" class="form-control" placeholder="Parroquia de residencia"
-                      list="dl-parroquias">
+                    <input type="text" id="cit-parroquia" class="form-control" placeholder="Parroquia de residencia">
                   </div>
                 </div>
                 <div class="col-md-3">
@@ -575,17 +477,14 @@
                 <div class="col-md-3">
                   <div class="form-group">
                     <label class="form-label">Ciudad / Estado</label>
-                    <input type="text" id="cit-ciudad" class="form-control" placeholder="Acarigua, Portuguesa"
-                      list="dl-ciudades">
+                    <input type="text" id="cit-ciudad" class="form-control" placeholder="Acarigua, Portuguesa">
                   </div>
                 </div>
                 <div class="col-12">
                   <div class="form-group">
                     <label class="form-label">Dirección de Habitación <span class="required">*</span></label>
-                    <input type="text" id="cit-direccion" class="form-control"
-                      placeholder="Calle, Avenida, Urbanización, Casa/Apto...">
-                    <span class="error-msg" id="cit-direccion-err">Ingrese su dirección completa (mínimo 10
-                      caracteres).</span>
+                    <input type="text" id="cit-direccion" class="form-control" placeholder="Calle, Avenida, Urbanización, Casa/Apto...">
+                    <span class="error-msg" id="cit-direccion-err">Ingrese su dirección completa (mínimo 10 caracteres).</span>
                   </div>
                 </div>
               </div>
@@ -595,8 +494,7 @@
 
           <div class="wizard-nav">
             <button class="btn-submit btn-outline-inst" onclick="anteriorPaso(2)">
-              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"
-                stroke-linecap="round" stroke-linejoin="round">
+              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
                 <line x1="19" y1="12" x2="5" y2="12" />
                 <polyline points="12 19 5 12 12 5" />
               </svg>
@@ -604,8 +502,7 @@
             </button>
             <button class="btn-submit" id="btn-sig-paso2" onclick="siguientePaso(2)">
               Continuar
-              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"
-                stroke-linecap="round" stroke-linejoin="round">
+              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
                 <line x1="5" y1="12" x2="19" y2="12" />
                 <polyline points="12 5 19 12 12 19" />
               </svg>
@@ -614,9 +511,8 @@
         </div><!-- /paso-2 -->
 
 
-<!-- ─────────────────────────────────────────────────
+        <!-- ─────────────────────────────────────────────────
            PASO 3 — DATOS DEL SEÑALADO
-           Tabla eliminada y datos distribuidos por checkbox
            ───────────────────────────────────────────────── -->
         <div class="wizard-paso" id="paso-3" style="display:none;">
 
@@ -630,8 +526,7 @@
 
           <div class="form-body">
             <div class="banner-error" id="err-paso3" style="display:none;">
-              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"
-                stroke-linecap="round" stroke-linejoin="round">
+              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
                 <path d="M10.29 3.86L1.82 18a2 2 0 0 0 1.71 3h16.94a2 2 0 0 0 1.71-3L13.71 3.86a2 2 0 0 0-3.42 0z" />
                 <line x1="12" y1="9" x2="12" y2="13" />
                 <line x1="12" y1="17" x2="12.01" y2="17" />
@@ -641,11 +536,10 @@
               </div>
             </div>
 
-            <!-- Tipo de señalado (Checkboxes) -->
+            <!-- Tipo de señalado -->
             <div class="form-section">
               <div class="form-section-title" id="senalado-title-color">
-                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"
-                  stroke-linecap="round" stroke-linejoin="round">
+                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
                   <path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2" />
                   <circle cx="9" cy="7" r="4" />
                   <path d="M23 21v-2a4 4 0 0 0-3-3.87" />
@@ -657,7 +551,7 @@
                 <label class="form-label">¿Contra quién o qué instancia va dirigida?</label>
                 <div class="check-group" id="tipo-senalado-grupo">
                   <label class="check-item">
-                    <input type="checkbox" name="tipo_senalado" value="persona_natural" onchange="onTipoSenaladoChange(this)">
+                    <input type="checkbox" name="tipo_senalado" value="persona_natural">
                     <label>Persona Natural</label>
                   </label>
                   <label class="check-item">
@@ -665,51 +559,45 @@
                     <label>Persona Jurídica</label>
                   </label>
                   <label class="check-item">
-                    <input type="checkbox" name="tipo_senalado" value="organo_ente" onchange="onTipoSenaladoChange(this)">
+                    <input type="checkbox" name="tipo_senalado" value="organo_ente">
                     <label>Órgano o Ente</label>
                   </label>
                   <label class="check-item">
-                    <input type="checkbox" name="tipo_senalado" value="comuna" onchange="onTipoSenaladoChange(this)">
+                    <input type="checkbox" name="tipo_senalado" value="comuna">
                     <label>Comuna</label>
                   </label>
                   <label class="check-item">
-                    <input type="checkbox" name="tipo_senalado" value="consejo_comunal" onchange="onTipoSenaladoChange(this)">
+                    <input type="checkbox" name="tipo_senalado" value="consejo_comunal">
                     <label>Consejo Comunal</label>
                   </label>
                   <label class="check-item">
-                    <input type="checkbox" name="tipo_senalado" value="juez_paz" onchange="onTipoSenaladoChange(this)">
+                    <input type="checkbox" name="tipo_senalado" value="juez_paz">
                     <label>Juez de Paz</label>
                   </label>
                 </div>
-                <!-- Campo "Otro" libre -->
                 <div style="display:flex;align-items:center;gap:10px;margin-top:10px;">
                   <label class="check-item" style="flex-shrink:0;">
                     <input type="checkbox" id="senalado-otro-chk" onchange="toggleSenaladoOtro(this)">
                     <label>Otro:</label>
                   </label>
-                  <input type="text" id="senalado-otro-txt" class="form-control" placeholder="Especifique..." disabled
-                    style="opacity:0.5;cursor:not-allowed;">
+                  <input type="text" id="senalado-otro-txt" class="form-control" placeholder="Especifique..." disabled style="opacity:0.5;cursor:not-allowed;">
                 </div>
                 <span class="error-msg" id="tipo-senalado-err">Debe seleccionar al menos un tipo de señalado.</span>
               </div>
 
-              <!-- Ubicación geográfica del señalado -->
               <div class="form-group" style="margin-top:16px;">
                 <label class="form-label">
                   Ubicación Geográfica del Señalado <span class="required">*</span>
                 </label>
-                <input type="text" id="sen-ubicacion" class="form-control"
-                  placeholder="Dirección, Parroquia, Consejo Comunal, Órgano o Ente...">
-                <span class="error-msg" id="sen-ubicacion-err">Ingrese la ubicación del señalado (mínimo 5
-                  caracteres).</span>
+                <input type="text" id="sen-ubicacion" class="form-control" placeholder="Dirección, Parroquia, Consejo Comunal, Órgano o Ente...">
+                <span class="error-msg" id="sen-ubicacion-err">Ingrese la ubicación del señalado (mínimo 5 caracteres).</span>
               </div>
             </div>
 
             <!-- Tabla de señalados -->
             <div class="form-section">
               <div class="form-section-title" id="tabla-sen-title-color">
-                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"
-                  stroke-linecap="round" stroke-linejoin="round">
+                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
                   <rect x="3" y="3" width="18" height="18" rx="2" ry="2" />
                   <line x1="3" y1="9" x2="21" y2="9" />
                   <line x1="3" y1="15" x2="21" y2="15" />
@@ -734,20 +622,14 @@
                   </thead>
                   <tbody id="tbody-senalados">
                     <tr>
-                      <td><input type="text" placeholder="V-00000000" oninput="validarCeldaCedula(this)"
-                          onblur="validarCeldaCedula(this)"></td>
-                      <td><input type="text" placeholder="Apellido, Nombre" oninput="validarCeldaNombre(this)"
-                          onblur="validarCeldaNombre(this)"></td>
+                      <td><input type="text" placeholder="V-00000000" oninput="validarCeldaCedula(this)" onblur="validarCeldaCedula(this)"></td>
+                      <td><input type="text" placeholder="Apellido, Nombre" oninput="validarCeldaNombre(this)" onblur="validarCeldaNombre(this)"></td>
                       <td><input type="text" placeholder="Nombre de la instancia"></td>
-                      <td><input type="text" placeholder="Código SITUR" oninput="validarCeldaSitur(this)"
-                          onblur="validarCeldaSitur(this)"></td>
-                      <td><input type="text" placeholder="J-XXXXXXXX" oninput="validarCeldaRif(this)"
-                          onblur="validarCeldaRif(this)"></td>
+                      <td><input type="text" placeholder="Código SITUR" oninput="validarCeldaSitur(this)" onblur="validarCeldaSitur(this)"></td>
+                      <td><input type="text" placeholder="J-XXXXXXXX" oninput="validarCeldaRif(this)" onblur="validarCeldaRif(this)"></td>
                       <td>
-                        <button type="button" onclick="eliminarFilaSenalado(this)" title="Eliminar fila"
-                          class="btn-tabla-eliminar">
-                          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor"
-                            stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+                        <button type="button" onclick="eliminarFilaSenalado(this)" title="Eliminar fila" class="btn-tabla-eliminar">
+                          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
                             <line x1="18" y1="6" x2="6" y2="18" />
                             <line x1="6" y1="6" x2="18" y2="18" />
                           </svg>
@@ -757,11 +639,9 @@
                   </tbody>
                 </table>
               </div>
-              <span class="error-msg" id="tabla-senalados-err">Al menos el primer señalado debe tener cédula o nombre
-                completo.</span>
+              <span class="error-msg" id="tabla-senalados-err">Al menos el primer señalado debe tener cédula o nombre completo.</span>
               <button type="button" class="btn-agregar-fila" onclick="agregarFilaSenalado()">
-                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"
-                  stroke-linecap="round" stroke-linejoin="round">
+                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
                   <line x1="12" y1="5" x2="12" y2="19" />
                   <line x1="5" y1="12" x2="19" y2="12" />
                 </svg>
@@ -769,12 +649,11 @@
               </button>
             </div>
 
-            <!-- Bloque de Proyecto de Consulta Popular (solo Tipo A / denuncia con consulta = si) -->
+            <!-- Bloque de Proyecto de Consulta Popular -->
             <div id="bloque-proyecto-consulta" style="display:none;">
               <div class="form-section">
                 <div class="form-section-title">
-                  <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"
-                    stroke-linecap="round" stroke-linejoin="round">
+                  <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
                     <path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z" />
                     <polyline points="9 22 9 12 15 12 15 22" />
                   </svg>
@@ -786,8 +665,7 @@
                       <label class="form-label">
                         Denominación del Proyecto <span class="required">*</span>
                       </label>
-                      <input type="text" id="proy-nombre" class="form-control"
-                        placeholder="Nombre oficial del proyecto">
+                      <input type="text" id="proy-nombre" class="form-control" placeholder="Nombre oficial del proyecto">
                       <span class="error-msg" id="proy-nombre-err">Ingrese el nombre del proyecto.</span>
                     </div>
                   </div>
@@ -812,23 +690,20 @@
                   <div class="col-md-6">
                     <div class="form-group">
                       <label class="form-label">Ente Financiador <span class="required">*</span></label>
-                      <input type="text" id="proy-financiador" class="form-control" list="dl-financiadores"
-                        placeholder="Nombre del ente financiador">
+                      <input type="text" id="proy-financiador" class="form-control" placeholder="Nombre del ente financiador">
                       <span class="error-msg" id="proy-financiador-err">Ingrese el ente financiador.</span>
                     </div>
                   </div>
                   <div class="col-md-3">
                     <div class="form-group">
                       <label class="form-label">Código CITUR</label>
-                      <input type="text" id="proy-citur" class="form-control mayusculas" placeholder="CÓDIGO CITUR"
-                        oninput="this.value=this.value.toUpperCase()">
+                      <input type="text" id="proy-citur" class="form-control mayusculas" placeholder="CÓDIGO CITUR" oninput="this.value=this.value.toUpperCase()">
                     </div>
                   </div>
                   <div class="col-md-3">
                     <div class="form-group">
                       <label class="form-label">Código SITUR</label>
-                      <input type="text" id="proy-situr" class="form-control mayusculas" placeholder="CÓDIGO SITUR"
-                        oninput="this.value=this.value.toUpperCase()">
+                      <input type="text" id="proy-situr" class="form-control mayusculas" placeholder="CÓDIGO SITUR" oninput="this.value=this.value.toUpperCase()">
                     </div>
                   </div>
                 </div>
@@ -839,8 +714,7 @@
 
           <div class="wizard-nav">
             <button class="btn-submit btn-outline-inst" onclick="anteriorPaso(3)">
-              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"
-                stroke-linecap="round" stroke-linejoin="round">
+              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
                 <line x1="19" y1="12" x2="5" y2="12" />
                 <polyline points="12 19 5 12 12 5" />
               </svg>
@@ -848,8 +722,7 @@
             </button>
             <button class="btn-submit" id="btn-sig-paso3" onclick="siguientePaso(3)">
               Continuar
-              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"
-                stroke-linecap="round" stroke-linejoin="round">
+              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
                 <line x1="5" y1="12" x2="19" y2="12" />
                 <polyline points="12 5 19 12 12 19" />
               </svg>
@@ -860,7 +733,6 @@
 
         <!-- ─────────────────────────────────────────────────
            PASO 4 — DESCRIPCIÓN Y HECHOS
-           Narración + evidencias + archivos
            ───────────────────────────────────────────────── -->
         <div class="wizard-paso" id="paso-4" style="display:none;">
 
@@ -874,8 +746,7 @@
 
           <div class="form-body">
             <div class="banner-error" id="err-paso4" style="display:none;">
-              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"
-                stroke-linecap="round" stroke-linejoin="round">
+              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
                 <path d="M10.29 3.86L1.82 18a2 2 0 0 0 1.71 3h16.94a2 2 0 0 0 1.71-3L13.71 3.86a2 2 0 0 0-3.42 0z" />
                 <line x1="12" y1="9" x2="12" y2="13" />
                 <line x1="12" y1="17" x2="12.01" y2="17" />
@@ -885,11 +756,9 @@
               </div>
             </div>
 
-            <!-- Narración circunstanciada -->
             <div class="form-section">
               <div class="form-section-title" id="narracion-title-color">
-                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"
-                  stroke-linecap="round" stroke-linejoin="round">
+                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
                   <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z" />
                   <polyline points="14 2 14 8 20 8" />
                 </svg>
@@ -900,17 +769,13 @@
                 <label class="form-label">
                   Narración Circunstanciada de los Hechos <span class="required">*</span>
                 </label>
-                <textarea id="narracion" class="form-textarea"
-                  placeholder="Describa detalladamente qué ocurrió, cuándo, cómo y quiénes están involucrados. Incluya cualquier dato relevante..."
-                  oninput="actualizarContadorNarracion(this)" style="min-height:140px;"></textarea>
+                <textarea id="narracion" class="form-textarea" placeholder="Describa detalladamente qué ocurrió, cuándo, cómo y quiénes están involucrados. Incluya cualquier dato relevante..." oninput="actualizarContadorNarracion(this)" style="min-height:140px;"></textarea>
                 <div style="display:flex;justify-content:space-between;align-items:center;margin-top:4px;">
-                  <span class="error-msg" id="narracion-err" style="display:inline;">La narración debe tener al menos 50
-                    caracteres.</span>
+                  <span class="error-msg" id="narracion-err" style="display:inline;">La narración debe tener al menos 50 caracteres.</span>
                   <span class="contador-chars" id="narracion-contador">0 / 3000 caracteres</span>
                 </div>
               </div>
 
-              <!-- ¿Presentada ante otra instancia? -->
               <div class="form-group" style="margin-top:20px;">
                 <label class="form-label">
                   ¿Esta situación ha sido presentada ante otra instancia anteriormente?
@@ -929,23 +794,18 @@
                 <span class="error-msg" id="otra-inst-err">Debe indicar si fue presentada ante otra instancia.</span>
               </div>
 
-              <!-- Campo condicional: ¿Cuál instancia? -->
               <div class="form-group" id="campo-cual-instancia" style="display:none;">
                 <label class="form-label">
                   ¿Ante cuál instancia? <span class="required">*</span>
                 </label>
-                <input type="text" id="cual-instancia" class="form-control"
-                  placeholder="Nombre de la institución o instancia">
-                <span class="error-msg" id="cual-instancia-err">Especifique la instancia ante la cual fue
-                  presentada.</span>
+                <input type="text" id="cual-instancia" class="form-control" placeholder="Nombre de la institución o instancia">
+                <span class="error-msg" id="cual-instancia-err">Especifique la instancia ante la cual fue presentada.</span>
               </div>
             </div>
 
-            <!-- Documentos y evidencias -->
             <div class="form-section">
               <div class="form-section-title" id="evidencias-title-color">
-                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"
-                  stroke-linecap="round" stroke-linejoin="round">
+                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
                   <polyline points="21 8 21 21 3 21 3 8" />
                   <rect x="1" y="3" width="22" height="5" />
                   <line x1="10" y1="12" x2="14" y2="12" />
@@ -987,15 +847,11 @@
                 </label>
               </div>
 
-              <!-- Zona de carga de archivos -->
               <div style="margin-top:20px;">
                 <label class="form-label">Adjuntar Archivos</label>
-                <div class="file-drop" onclick="document.getElementById('archivo-input').click()"
-                  ondragover="event.preventDefault();this.style.borderColor='#1565c0'"
-                  ondragleave="this.style.borderColor=''" ondrop="manejarDropArchivos(event)">
+                <div class="file-drop" onclick="document.getElementById('archivo-input').click()" ondragover="event.preventDefault();this.style.borderColor='#1565c0'" ondragleave="this.style.borderColor=''" ondrop="manejarDropArchivos(event)">
                   <div class="file-drop-icon">
-                    <svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"
-                      stroke-linecap="round" stroke-linejoin="round">
+                    <svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
                       <polyline points="16 16 12 12 8 16" />
                       <line x1="12" y1="12" x2="12" y2="21" />
                       <path d="M20.39 18.39A5 5 0 0 0 18 9h-1.26A8 8 0 1 0 3 16.3" />
@@ -1005,8 +861,7 @@
                     <strong>Haga clic o arrastre archivos aquí</strong><br>
                     Imágenes, videos, audios, PDF — máx. 10 MB por archivo
                   </p>
-                  <input type="file" id="archivo-input" multiple accept="image/*,video/*,audio/*,.pdf,.doc,.docx"
-                    onchange="agregarArchivos(this.files)" style="display:none;">
+                  <input type="file" id="archivo-input" multiple accept="image/*,video/*,audio/*,.pdf,.doc,.docx" onchange="agregarArchivos(this.files)" style="display:none;">
                 </div>
                 <span class="error-msg" id="archivo-err" style="display:none;margin-top:6px;"></span>
                 <div class="file-list" id="archivos-lista"></div>
@@ -1017,8 +872,7 @@
 
           <div class="wizard-nav">
             <button class="btn-submit btn-outline-inst" onclick="anteriorPaso(4)">
-              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"
-                stroke-linecap="round" stroke-linejoin="round">
+              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
                 <line x1="19" y1="12" x2="5" y2="12" />
                 <polyline points="12 19 5 12 12 5" />
               </svg>
@@ -1026,8 +880,7 @@
             </button>
             <button class="btn-submit" id="btn-sig-paso4" onclick="siguientePaso(4)">
               Revisar solicitud
-              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"
-                stroke-linecap="round" stroke-linejoin="round">
+              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
                 <line x1="5" y1="12" x2="19" y2="12" />
                 <polyline points="12 5 19 12 12 19" />
               </svg>
@@ -1038,7 +891,6 @@
 
         <!-- ─────────────────────────────────────────────────
            PASO 5 — REVISIÓN Y CONFIRMACIÓN
-           Resumen de datos + declaración jurada + envío
            ───────────────────────────────────────────────── -->
         <div class="wizard-paso" id="paso-5" style="display:none;">
 
@@ -1055,8 +907,7 @@
             <!-- Resumen de la solicitud -->
             <div class="form-section">
               <div class="form-section-title" id="revision-title-color">
-                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"
-                  stroke-linecap="round" stroke-linejoin="round">
+                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
                   <path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z" />
                   <circle cx="12" cy="12" r="3" />
                 </svg>
@@ -1121,20 +972,16 @@
               <div style="background:#fffbf2;border:1px solid #f0d080;border-radius:6px;
                         padding:16px 20px;font-size:0.82rem;color:#555;line-height:1.75;margin-bottom:18px;">
                 <strong style="color:#1a2340;">Declaración Jurada del Denunciante:</strong><br>
-                Declaro que los datos suministrados son fidedignos, y estoy en conocimiento de que cualquier
-                falta o falsedad en los mismos involucra sanciones o la no aceptación de la solicitud, conforme
-                a la normativa legal vigente.
+                Declaro que los datos suministrados son fidedignos, y estoy en conocimiento de que cualquier falta o falsedad en los mismos involucra sanciones o la no aceptación de la solicitud, conforme a la normativa legal vigente.
               </div>
               <div class="form-group">
                 <label style="display:flex;align-items:flex-start;gap:10px;cursor:pointer;">
-                  <input type="checkbox" id="acepta-declaracion"
-                    style="margin-top:2px;width:16px;height:16px;accent-color:#1565c0;flex-shrink:0;">
+                  <input type="checkbox" id="acepta-declaracion" style="margin-top:2px;width:16px;height:16px;accent-color:#1565c0;flex-shrink:0;">
                   <span style="font-size:0.82rem;color:#1a2340;">
                     Acepto la declaración anterior y confirmo que la información proporcionada es veraz.
                   </span>
                 </label>
-                <span class="error-msg" id="acepta-decl-err">Debe aceptar la declaración para enviar su
-                  solicitud.</span>
+                <span class="error-msg" id="acepta-decl-err">Debe aceptar la declaración para enviar su solicitud.</span>
               </div>
             </div>
 
@@ -1142,8 +989,7 @@
 
           <div class="wizard-nav" style="justify-content:space-between;">
             <button class="btn-submit btn-outline-inst" onclick="anteriorPaso(5)">
-              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"
-                stroke-linecap="round" stroke-linejoin="round">
+              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
                 <line x1="19" y1="12" x2="5" y2="12" />
                 <polyline points="12 19 5 12 12 5" />
               </svg>
@@ -1151,8 +997,7 @@
             </button>
             <div style="display:flex;gap:12px;flex-wrap:wrap;">
               <button class="btn-submit btn-pdf" id="btn-guardar-pdf" onclick="generarPDF()" style="display:none;">
-                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"
-                  stroke-linecap="round" stroke-linejoin="round">
+                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
                   <polyline points="8 17 12 21 16 17" />
                   <line x1="12" y1="12" x2="12" y2="21" />
                   <path d="M20.88 18.09A5 5 0 0 0 18 9h-1.26A8 8 0 1 0 3 16.29" />
@@ -1160,8 +1005,7 @@
                 Guardar como PDF
               </button>
               <button class="btn-submit" id="btn-enviar-solicitud" onclick="enviarSolicitud()">
-                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"
-                  stroke-linecap="round" stroke-linejoin="round">
+                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
                   <line x1="22" y1="2" x2="11" y2="13" />
                   <polygon points="22 2 15 22 11 13 2 9 22 2" />
                 </svg>
@@ -1174,13 +1018,11 @@
 
         <!-- ─────────────────────────────────────────────────
            PANTALLA DE CONFIRMACIÓN FINAL
-           Se muestra al enviar con éxito; reemplaza los pasos
            ───────────────────────────────────────────────── -->
         <div id="vista-confirmacion" style="display:none;">
           <div class="form-header" style="background:#2e7d32;">
             <div class="form-header-icon">
-              <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
-                stroke-linecap="round" stroke-linejoin="round">
+              <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
                 <polyline points="20 6 9 17 4 12" />
               </svg>
             </div>
@@ -1229,8 +1071,7 @@
             </div>
             <div style="display:flex;gap:12px;justify-content:center;flex-wrap:wrap;">
               <button class="btn-submit btn-outline-inst" onclick="imprimirComprobante()">
-                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"
-                  stroke-linecap="round" stroke-linejoin="round">
+                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
                   <polyline points="6 9 6 2 18 2 18 9" />
                   <path d="M6 18H4a2 2 0 0 1-2-2v-5a2 2 0 0 1 2-2h16a2 2 0 0 1 2 2v5a2 2 0 0 1-2 2h-2" />
                   <rect x="6" y="14" width="12" height="8" />
@@ -1244,78 +1085,12 @@
           </div>
         </div><!-- /vista-confirmacion -->
 
-        <!-- ─────────────────────────────────────────────────
-           TABLAS RELACIONADAS — LISTAS DE AUTORRELLENO
-           Se rellenan dinámicamente desde el "padrón" guardado
-           en el navegador (localStorage). Mientras no exista una
-           base de datos real, esto simula tablas relacionadas
-           para sugerir valores ya usados en denuncias anteriores.
-           ───────────────────────────────────────────────── -->
-        <datalist id="dl-parroquias"></datalist>
-        <datalist id="dl-ciudades"></datalist>
-        <datalist id="dl-instancias"></datalist>
-        <datalist id="dl-financiadores"></datalist>
-
       </div><!-- /vista-wizard -->
 
     </div><!-- /denuncias-inner -->
   </section>
+@endsection
 
-  <!-- parte de pie de pagina o footer -->
-  <footer>
-    <div class="footer-inner">
-
-      <!-- Bootstrap: row + col para el grid del footer responsivo -->
-      <div class="row g-4 pb-4" style="border-bottom: 1px solid rgba(255,255,255,0.1); margin-bottom: 24px;">
-
-        <div class="col-lg-4 col-md-6 footer-brand">
-          <!-- LOGO EN EL FOOTER: mismo SVG que el header, con img para poder cambiarlo, porque el svg no lo entiendo tanto -->
-          <img src="../assets/img/logo.jpeg" alt="Logo" style="width:56px;height:56px; border-radius: 25px;">
-          <p style="margin-top:12px;">Contraloría del Municipio Páez — Estado Portuguesa, República Bolivariana de
-            Venezuela. Órgano de Control Fiscal Municipal.</p>
-
-          <!-- no se si este es el RIF, lo encontre en internet, debemos preguntar para asegurar -->
-          <div class="rif">RIF: G-20002790-4 · Acarigua, Estado Portuguesa</div>
-          <!-- debemos enlazar directamente a las redes, eso es con un link de referencia como lo puse con el instagram-->
-          <div class="social-row">
-            <a href="https://www.instagram.com/contraloria_mpaez/" target="_blank" title="Instagram">
-              <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
-                stroke-linecap="round" stroke-linejoin="round">
-                <rect x="2" y="2" width="20" height="20" rx="5" ry="5" />
-                <circle cx="12" cy="12" r="4" />
-                <circle cx="17.5" cy="6.5" r="0.5" fill="currentColor" />
-              </svg>
-            </a>
-            <a href="https://www.facebook.com/contraloriamunicipiopaez.estadoportuguesa?mibextid=wwXIfr&rdid=epBEXYSwKqdr16bV&share_url=https%3A%2F%2Fwww.facebook.com%2Fshare%2F1AcpjwhTbS%2F%3Fmibextid%3DwwXIfr#"
-              target="_blank" title="Facebook">
-              <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
-                stroke-linecap="round" stroke-linejoin="round">
-                <path d="M18 2h-3a5 5 0 0 0-5 5v3H7v4h3v8h4v-8h3l1-4h-4V7a1 1 0 0 1 1-1h3z" />
-              </svg>
-            </a>
-            <a href="https://x.com/cmeppaez" target="_blank" title="Twitter / X">
-              <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
-                stroke-linecap="round" stroke-linejoin="round">
-                <path d="M4 4l16 16M4 20L20 4" />
-                <path d="M20 4h-5l-11 16h5" />
-              </svg>
-            </a>
-          </div>
-        </div>
-
-      </div>
-
-      <div class="footer-bottom">
-        <span>© 2026 Contraloría del Municipio Páez · Dirección General de Tecnología de Información</span>
-        <a href="https://www.cgr.gob.ve" target="_blank">cgr.gob.ve</a>
-      </div>
-
-    </div>
-  </footer>
-
-
-  <script src="../assets/js/wizard.js"></script>
-
-</body>
-
-</html>
+@push('scripts')
+  <script src="{{ asset('assets/js/wizard.js') }}"></script>
+@endpush
