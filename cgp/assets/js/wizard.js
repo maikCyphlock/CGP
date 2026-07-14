@@ -13,301 +13,6 @@ var TOTAL_PASOS = 5;
 
 
 /* ═══════════════════════════════════════════════════════════
-   TABLAS RELACIONADAS (AUTORRELLENO)
-   Mientras no exista una base de datos real, se usa localStorage
-   como almacén local de "tablas relacionadas": un padrón de
-   ciudadanos y de señalados ya registrados, y catálogos de
-   valores repetidos (parroquias, ciudades, instancias, entes
-   financiadores). Cuando el usuario reingresa un documento o
-   una cédula/RIF ya usados, el resto de los campos relacionados
-   se autocompletan.
-   ═══════════════════════════════════════════════════════════ */
-var CLAVE_PADRON_CIUDADANOS = 'cgp_padron_ciudadanos';
-var CLAVE_PADRON_SENALADOS = 'cgp_padron_senalados';
-var CLAVE_CATALOGO_PARROQUIAS = 'cgp_catalogo_parroquias';
-var CLAVE_CATALOGO_CIUDADES = 'cgp_catalogo_ciudades';
-var CLAVE_CATALOGO_INSTANCIAS = 'cgp_catalogo_instancias';
-var CLAVE_CATALOGO_FINANCIADORES = 'cgp_catalogo_financiadores';
-
-function leerTabla(clave) {
-    try {
-        var datos = JSON.parse(localStorage.getItem(clave));
-        return Array.isArray(datos) ? datos : [];
-    } catch (e) {
-        return [];
-    }
-}
-
-function guardarTabla(clave, valores) {
-    try {
-        localStorage.setItem(clave, JSON.stringify(valores));
-    } catch (e) {
-        // localStorage no disponible (modo privado, cuota excedida, etc.); se ignora silenciosamente.
-    }
-}
-
-/**
- * Agrega un valor único (no vacío) a un catálogo relacionado.
- * @param {string} clave
- * @param {string} valor
- */
-function registrarEnCatalogo(clave, valor) {
-    valor = (valor || '').trim();
-    if (!valor) return;
-    var tabla = leerTabla(clave);
-    if (tabla.indexOf(valor) === -1) {
-        tabla.push(valor);
-        guardarTabla(clave, tabla);
-    }
-}
-
-/**
- * Puebla un <datalist> con los valores de un catálogo relacionado.
- * @param {string} idDatalist
- * @param {string} clave
- */
-function poblarDatalist(idDatalist, clave) {
-    var datalist = document.getElementById(idDatalist);
-    if (!datalist) return;
-    datalist.innerHTML = leerTabla(clave).map(function (valor) {
-        return '<option value="' + valor.replace(/"/g, '&quot;') + '"></option>';
-    }).join('');
-}
-
-/** Refresca todas las listas de autorrelleno con lo guardado en el navegador. */
-function inicializarDatalists() {
-    poblarDatalist('dl-parroquias', CLAVE_CATALOGO_PARROQUIAS);
-    poblarDatalist('dl-ciudades', CLAVE_CATALOGO_CIUDADES);
-    poblarDatalist('dl-instancias', CLAVE_CATALOGO_INSTANCIAS);
-    poblarDatalist('dl-financiadores', CLAVE_CATALOGO_FINANCIADORES);
-}
-
-/**
- * Muestra un mensaje breve indicando que los datos fueron autocompletados.
- * @param {string} texto
- */
-function mostrarMensajeAutorrelleno(texto) {
-    var msg = document.getElementById('cit-autofill-msg');
-    if (!msg) return;
-    msg.textContent = texto;
-    msg.style.display = 'inline';
-    clearTimeout(mostrarMensajeAutorrelleno._t);
-    mostrarMensajeAutorrelleno._t = setTimeout(function () {
-        msg.style.display = 'none';
-    }, 6000);
-}
-
-/**
- * Asigna un valor a un campo solo si está vacío, para no sobrescribir
- * lo que el usuario ya haya escrito manualmente.
- * @param {string} id
- * @param {string} valor
- */
-function autorrellenarSiVacio(id, valor) {
-    var campo = document.getElementById(id);
-    if (campo && !campo.value && valor) campo.value = valor;
-}
-
-/**
- * Calcula la Edad (campo de solo lectura) a partir de la Fecha de
- * Nacimiento seleccionada.
- */
-function calcularEdad() {
-    var fechaInput = document.getElementById('cit-fecha-nac');
-    var edadInput = document.getElementById('cit-edad');
-    var valor = fechaInput.value;
-    if (!valor) { edadInput.value = ''; return; }
-
-    var nacimiento = new Date(valor + 'T00:00:00');
-    var hoy = new Date();
-    var edad = hoy.getFullYear() - nacimiento.getFullYear();
-    var mesDiff = hoy.getMonth() - nacimiento.getMonth();
-    if (mesDiff < 0 || (mesDiff === 0 && hoy.getDate() < nacimiento.getDate())) edad--;
-
-    edadInput.value = (edad >= 0 && edad <= 120) ? edad : '';
-    edadInput.classList.remove('invalid');
-    document.getElementById('cit-edad-err').classList.remove('visible');
-}
-
-/**
- * Busca en el padrón de ciudadanos (tabla relacionada) un registro
- * previo con el mismo Tipo + Número de Documento y, si existe,
- * autocompleta el resto de los campos del Paso 2.
- */
-function autocompletarCiudadano() {
-    var tipoDoc = document.getElementById('cit-tipo-doc').value;
-    var nroDoc = document.getElementById('cit-nro-doc').value.trim();
-    if (!tipoDoc || !nroDoc) return;
-
-    var padron = leerTabla(CLAVE_PADRON_CIUDADANOS);
-    var registro = padron.find(function (r) {
-        return r.tipoDoc === tipoDoc && r.nroDoc === nroDoc;
-    });
-    if (!registro) return;
-
-    autorrellenarSiVacio('cit-nombres', registro.nombres);
-    autorrellenarSiVacio('cit-profesion', registro.profesion);
-    autorrellenarSiVacio('cit-correo', registro.correo);
-    autorrellenarSiVacio('cit-correo2', registro.correo);
-    autorrellenarSiVacio('cit-telf-cel', registro.telfCel);
-    autorrellenarSiVacio('cit-telf-hab', registro.telfHab);
-    autorrellenarSiVacio('cit-parroquia', registro.parroquia);
-    autorrellenarSiVacio('cit-ciudad', registro.ciudad);
-    autorrellenarSiVacio('cit-direccion', registro.direccion);
-
-    var selSexo = document.getElementById('cit-sexo');
-    if (selSexo && !selSexo.value && registro.sexo) selSexo.value = registro.sexo;
-    var inputFecha = document.getElementById('cit-fecha-nac');
-    if (inputFecha && !inputFecha.value && registro.fechaNac) inputFecha.value = registro.fechaNac;
-    calcularEdad();
-    var selEcivil = document.getElementById('cit-ecivil');
-    if (selEcivil && !selEcivil.value && registro.ecivil) selEcivil.value = registro.ecivil;
-    var selEdu = document.getElementById('cit-edu');
-    if (selEdu && !selEdu.value && registro.edu) selEdu.value = registro.edu;
-
-    mostrarMensajeAutorrelleno('Datos encontrados de una solicitud anterior — se autocompletaron los campos vacíos.');
-}
-
-/**
- * Guarda (o actualiza) el ciudadano del Paso 2 en el padrón local,
- * para que futuras denuncias con el mismo documento se autocompleten.
- */
-function guardarCiudadanoEnPadron() {
-    var tipoDoc = document.getElementById('cit-tipo-doc').value;
-    var nroDoc = document.getElementById('cit-nro-doc').value.trim();
-    if (!tipoDoc || !nroDoc) return;
-
-    var registro = {
-        tipoDoc: tipoDoc,
-        nroDoc: nroDoc,
-        nombres: document.getElementById('cit-nombres').value.trim(),
-        sexo: document.getElementById('cit-sexo').value,
-        edad: document.getElementById('cit-edad').value,
-        fechaNac: document.getElementById('cit-fecha-nac').value,
-        ecivil: document.getElementById('cit-ecivil').value,
-        edu: document.getElementById('cit-edu').value,
-        profesion: document.getElementById('cit-profesion').value.trim(),
-        correo: document.getElementById('cit-correo').value.trim(),
-        telfCel: document.getElementById('cit-telf-cel').value.trim(),
-        telfHab: document.getElementById('cit-telf-hab').value.trim(),
-        parroquia: document.getElementById('cit-parroquia').value.trim(),
-        ciudad: document.getElementById('cit-ciudad').value.trim(),
-        direccion: document.getElementById('cit-direccion').value.trim()
-    };
-
-    var padron = leerTabla(CLAVE_PADRON_CIUDADANOS);
-    var indice = padron.findIndex(function (r) {
-        return r.tipoDoc === tipoDoc && r.nroDoc === nroDoc;
-    });
-    if (indice === -1) padron.push(registro);
-    else padron[indice] = registro;
-    guardarTabla(CLAVE_PADRON_CIUDADANOS, padron);
-
-    registrarEnCatalogo(CLAVE_CATALOGO_PARROQUIAS, registro.parroquia);
-    registrarEnCatalogo(CLAVE_CATALOGO_CIUDADES, registro.ciudad);
-}
-
-/**
- * Busca en el padrón de señalados (tabla relacionada) un registro
- * previo por cédula o RIF y, si existe, autocompleta el resto de
- * las celdas de esa fila de la tabla de señalados.
- * @param {HTMLInputElement} input - celda de cédula o de RIF que disparó la búsqueda
- */
-function autocompletarSenalado(input) {
-    var valor = input.value.trim();
-    if (!valor) return;
-    var fila = input.closest('tr');
-    if (!fila) return;
-
-    var padron = leerTabla(CLAVE_PADRON_SENALADOS);
-    var registro = padron.find(function (r) {
-        return r.cedula === valor || r.rif === valor;
-    });
-    if (!registro) return;
-
-    var celdaCedula = fila.cells[0].querySelector('input');
-    var celdaNombre = fila.cells[1].querySelector('input');
-    var celdaInstancia = fila.cells[2].querySelector('input');
-    var celdaSitur = fila.cells[3].querySelector('input');
-    var celdaRif = fila.cells[4].querySelector('input');
-
-    if (celdaCedula && !celdaCedula.value) celdaCedula.value = registro.cedula || '';
-    if (celdaNombre && !celdaNombre.value) celdaNombre.value = registro.nombre || registro.razonSocial || '';
-    if (celdaInstancia && !celdaInstancia.value) celdaInstancia.value = registro.instancia || '';
-    if (celdaSitur && !celdaSitur.value) celdaSitur.value = registro.situr || '';
-    if (celdaRif && !celdaRif.value) celdaRif.value = registro.rif || '';
-
-    if (celdaNombre) validarCeldaNombre(celdaNombre);
-    if (celdaSitur) validarCeldaSitur(celdaSitur);
-    if (celdaCedula) validarCeldaCedula(celdaCedula);
-    if (celdaRif) validarCeldaRif(celdaRif);
-}
-
-/**
- * Guarda cada fila con datos de la tabla de señalados en el padrón
- * local, para autocompletar denuncias futuras contra el mismo señalado.
- */
-function guardarSenaladosEnPadron() {
-    var padron = leerTabla(CLAVE_PADRON_SENALADOS);
-    document.querySelectorAll('#tbody-senalados tr').forEach(function (fila) {
-        var cedula = fila.cells[0].querySelector('input').value.trim();
-        var nombre = fila.cells[1].querySelector('input').value.trim();
-        var instancia = fila.cells[2].querySelector('input').value.trim();
-        var situr = fila.cells[3].querySelector('input').value.trim();
-        var rif = fila.cells[4].querySelector('input').value.trim();
-        if (!cedula && !rif && !nombre) return;
-
-        var registro = { cedula: cedula, nombre: nombre, instancia: instancia, situr: situr, rif: rif };
-        var indice = padron.findIndex(function (r) {
-            return (cedula && r.cedula === cedula) || (rif && r.rif === rif);
-        });
-        if (indice === -1) padron.push(registro);
-        else padron[indice] = Object.assign({}, padron[indice], registro);
-
-        registrarEnCatalogo(CLAVE_CATALOGO_INSTANCIAS, instancia);
-    });
-
-    // Datos de la Persona Jurídica Señalada (si el bloque está activo)
-    var bloquePJ = document.getElementById('bloque-persona-juridica');
-    if (bloquePJ && bloquePJ.style.display !== 'none') {
-        var pjRif = document.getElementById('pj-rif').value.trim();
-        if (pjRif) {
-            var registroPJ = {
-                rif: pjRif,
-                razonSocial: document.getElementById('pj-razon-social').value.trim(),
-                repNombre: document.getElementById('pj-rep-nombre').value.trim(),
-                repCedula: document.getElementById('pj-rep-cedula').value.trim(),
-                direccionFiscal: document.getElementById('pj-direccion-fiscal').value.trim()
-            };
-            var indicePJ = padron.findIndex(function (r) { return r.rif === pjRif; });
-            if (indicePJ === -1) padron.push(registroPJ);
-            else padron[indicePJ] = Object.assign({}, padron[indicePJ], registroPJ);
-        }
-    }
-
-    guardarTabla(CLAVE_PADRON_SENALADOS, padron);
-}
-
-/**
- * Busca en el padrón de señalados un registro previo por R.I.F. y,
- * si existe, autocompleta los datos de la Persona Jurídica Señalada.
- */
-function autocompletarPersonaJuridica() {
-    var rif = document.getElementById('pj-rif').value.trim();
-    if (!rif) return;
-
-    var padron = leerTabla(CLAVE_PADRON_SENALADOS);
-    var registro = padron.find(function (r) { return r.rif === rif; });
-    if (!registro) return;
-
-    autorrellenarSiVacio('pj-razon-social', registro.razonSocial || registro.nombre);
-    autorrellenarSiVacio('pj-rep-nombre', registro.repNombre);
-    autorrellenarSiVacio('pj-rep-cedula', registro.repCedula);
-    autorrellenarSiVacio('pj-direccion-fiscal', registro.direccionFiscal);
-}
-
-
-/* ═══════════════════════════════════════════════════════════
    CONFIGURACIÓN VISUAL POR TIPO
    Define los colores y textos de cabeceras según el tipo
    ═══════════════════════════════════════════════════════════ */
@@ -608,7 +313,7 @@ function aplicarEstiloTipo() {
     var secciones = [
         'ciudadano-title-color', 'contacto-title-color', 'senalado-title-color',
         'tabla-sen-title-color', 'narracion-title-color', 'evidencias-title-color',
-        'revision-title-color', 'consulta-title-color', 'pj-title-color'
+        'revision-title-color', 'consulta-title-color'
     ];
     secciones.forEach(function (id) {
         var el = document.getElementById(id);
@@ -762,16 +467,16 @@ function validarPaso(numeroPaso) {
             errores.push('Sexo');
             marcarError('cit-sexo', 'cit-sexo-err');
         }
-        // Edad
-        var edad = parseInt(document.getElementById('cit-edad').value, 10);
-        if (isNaN(edad) || edad < 1 || edad > 120) {
-            errores.push('Edad');
-            marcarError('cit-edad', 'cit-edad-err');
-        }
-        // Fecha de nacimiento
+        // Fecha de nacimiento (la edad se calcula automáticamente a partir de ella)
         if (!document.getElementById('cit-fecha-nac').value) {
             errores.push('Fecha de Nacimiento');
             marcarError('cit-fecha-nac', 'cit-fecha-nac-err');
+        } else {
+            var edadCalculada = calcularEdad(document.getElementById('cit-fecha-nac').value);
+            if (edadCalculada === null || edadCalculada < 1 || edadCalculada > 120) {
+                errores.push('Fecha de Nacimiento (edad inválida)');
+                marcarError('cit-fecha-nac', 'cit-fecha-nac-err');
+            }
         }
         // Correo
         var correo = document.getElementById('cit-correo').value.trim();
@@ -840,29 +545,13 @@ function validarPaso(numeroPaso) {
         }
 
         // Validar que la primera fila de la tabla tenga al menos cédula o nombre
-        // (no aplica si ya se identificó a la persona jurídica señalada arriba)
-        var bloquePJVisible = document.getElementById('bloque-persona-juridica').style.display !== 'none'
-            && document.getElementById('pj-razon-social').value.trim().length >= 3;
         var primeraFila = document.querySelector('#tbody-senalados tr:first-child');
         if (primeraFila) {
-            var cedula = primeraFila.cells[0].querySelector('input').value.trim();
-            var nombre = primeraFila.cells[1].querySelector('input').value.trim();
+            var cedula = primeraFila.cells[1].querySelector('input').value.trim();
+            var nombre = primeraFila.cells[2].querySelector('input').value.trim();
             if (!cedula && !nombre) {
                 errores.push('Datos del primer señalado (cédula o nombre)');
                 document.getElementById('tabla-senalados-err').classList.add('visible');
-            }
-        }
-
-        // Bloque de persona jurídica señalada (si aplica)
-        if (document.getElementById('bloque-persona-juridica').style.display !== 'none') {
-            var pjRif = document.getElementById('pj-rif').value.trim();
-            if (!/^[JGVECjgvec]-?\d{8,9}-?\d?$/.test(pjRif)) {
-                errores.push('R.I.F. de la persona jurídica señalada');
-                marcarError('pj-rif', 'pj-rif-err');
-            }
-            if (document.getElementById('pj-razon-social').value.trim().length < 3) {
-                errores.push('Razón Social / Denominación de la persona jurídica señalada');
-                marcarError('pj-razon-social', 'pj-razon-social-err');
             }
         }
 
@@ -1065,6 +754,67 @@ function toggleSenaladoOtro(checkbox) {
 
 
 /* ═══════════════════════════════════════════════════════════
+   FORMULARIOS DINÁMICOS SEGÚN TIPO DE SEÑALADO
+   Al marcar/desmarcar un checkbox de "Tipo del Señalado" se
+   agrega o elimina el bloque de campos correspondiente, para
+   poder verificar la identidad de la persona o ente señalado.
+   ═══════════════════════════════════════════════════════════ */
+
+/**
+ * Reacciona al marcar/desmarcar un checkbox de tipo de señalado.
+ * Muestra u oculta el mini-formulario correspondiente a ese tipo.
+ * @param {HTMLInputElement} checkbox
+ */
+function onTipoSenaladoChange(checkbox) {
+    var contenedor = document.getElementById('detalle-senalados-dinamico');
+    var tipo = checkbox.value;
+    var idBloque = 'detalle-' + tipo;
+    document.getElementById('tipo-senalado-err').classList.remove('visible');
+
+    if (checkbox.checked) {
+        // Evitar duplicados
+        if (document.getElementById(idBloque)) return;
+        var plantilla = PLANTILLAS_SENALADO[tipo];
+        if (!plantilla) return;
+
+        var bloque = document.createElement('div');
+        bloque.className = 'form-section bloque-senalado-dinamico';
+        bloque.id = idBloque;
+        bloque.innerHTML =
+            '<div class="form-section-title">' +
+            '<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">' +
+            '<path d="M9 12l2 2 4-4"/><circle cx="12" cy="12" r="10"/></svg>' +
+            plantilla.titulo +
+            '</div>' + plantilla.html;
+
+        contenedor.appendChild(bloque);
+    } else {
+        var existente = document.getElementById(idBloque);
+        if (existente) existente.remove();
+    }
+}
+
+/**
+ * Valida los campos requeridos de los bloques dinámicos de
+ * señalado actualmente visibles (uno por cada tipo marcado).
+ * @returns {string[]} lista de etiquetas de campos con error
+ */
+function validarBloquesSenaladoDinamicos() {
+    var erroresCampos = [];
+    document.querySelectorAll('#detalle-senalados-dinamico .campo-dinamico-req').forEach(function (campo) {
+        var valor = (campo.value || '').trim();
+        if (!valor) {
+            campo.classList.add('invalid');
+            erroresCampos.push(campo.previousElementSibling ? campo.closest('.form-group').querySelector('.form-label').textContent.replace('*', '').trim() : campo.dataset.campo);
+        } else {
+            campo.classList.remove('invalid');
+        }
+    });
+    return erroresCampos;
+}
+
+
+/* ═══════════════════════════════════════════════════════════
    TABLA DE SEÑALADOS
    ═══════════════════════════════════════════════════════════ */
 
@@ -1073,15 +823,16 @@ function agregarFilaSenalado() {
     var tbody = document.getElementById('tbody-senalados');
     var fila = document.createElement('tr');
     fila.innerHTML = [
-        '<td><input type="text" placeholder="V-00000000"',
+        '<td><select class="celda-tipo-doc">' + construirOpcionesTipoDoc(TIPOS_DOCUMENTO_TODOS, true) + '</select></td>',
+        '<td><input type="text" placeholder="00000000"',
         '     oninput="validarCeldaCedula(this)" onblur="validarCeldaCedula(this)"></td>',
         '<td><input type="text" placeholder="Apellido, Nombre"',
         '     oninput="validarCeldaNombre(this)" onblur="validarCeldaNombre(this)"></td>',
-        '<td><input type="text" placeholder="Nombre de la instancia" list="dl-instancias"></td>',
+        '<td><input type="text" placeholder="Nombre de la instancia"></td>',
         '<td><input type="text" placeholder="Código SITUR"',
         '     oninput="validarCeldaSitur(this)" onblur="validarCeldaSitur(this)"></td>',
         '<td><input type="text" placeholder="J-XXXXXXXX"',
-        '     oninput="validarCeldaRif(this)" onblur="validarCeldaRif(this);autocompletarSenalado(this)"></td>',
+        '     oninput="validarCeldaRif(this)" onblur="validarCeldaRif(this)"></td>',
         '<td><button type="button" onclick="eliminarFilaSenalado(this)"',
         '     title="Eliminar fila" class="btn-tabla-eliminar">',
         '<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor"',
@@ -1258,11 +1009,12 @@ function poblarResumen() {
     document.getElementById('res-telf').textContent =
         (telfCod && telfNum) ? (telfCod + '-' + telfNum) : '—';
 
-    // Señalado: Razón Social (si es persona jurídica) o primera fila de la tabla
+    // Señalado: primera fila de la tabla
+    var primeraFila = document.querySelector('#tbody-senalados tr:first-child');
     var resSenalado = '—';
     if (primeraFila) {
-        var nom = primeraFila.cells[1].querySelector('input').value.trim();
-        var ced = primeraFila.cells[0].querySelector('input').value.trim();
+        var nom = primeraFila.cells[2].querySelector('input').value.trim();
+        var ced = primeraFila.cells[1].querySelector('input').value.trim();
         resSenalado = nom || ced || '—';
     }
     document.getElementById('res-senalado').textContent = resSenalado;
@@ -1295,13 +1047,6 @@ function enviarSolicitud() {
         return;
     }
     errDecl.classList.remove('visible');
-
-    // Actualizar las tablas relacionadas (padrón de ciudadanos y señalados)
-    // para que futuras solicitudes con los mismos datos se autocompleten.
-    guardarCiudadanoEnPadron();
-    guardarSenaladosEnPadron();
-    registrarEnCatalogo(CLAVE_CATALOGO_FINANCIADORES, document.getElementById('proy-financiador').value);
-    inicializarDatalists();
 
     // Generar número de expediente único (formato: OAC-AÑO-XXXX)
     var anio = new Date().getFullYear();
@@ -1389,6 +1134,9 @@ function nuevaSolicitud() {
     document.getElementById('senalado-otro-txt').style.cursor = 'not-allowed';
     document.getElementById('bloque-proyecto-consulta').style.display = 'none';
 
+    // Limpiar bloques dinámicos de señalado
+    document.getElementById('detalle-senalados-dinamico').innerHTML = '';
+
     // Limpiar tabla de señalados (dejar solo la primera fila vacía)
     var tbody = document.getElementById('tbody-senalados');
     while (tbody.rows.length > 1) tbody.deleteRow(1);
@@ -1400,9 +1148,6 @@ function nuevaSolicitud() {
     // Limpiar lista de archivos
     document.getElementById('archivos-lista').innerHTML = '';
     document.getElementById('archivo-err').style.display = 'none';
-
-    // Ocultar mensaje de autorrelleno
-    document.getElementById('cit-autofill-msg').style.display = 'none';
 
     // Resetear contador de narración
     document.getElementById('narracion-contador').textContent = '0 / 3000 caracteres';

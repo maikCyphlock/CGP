@@ -43,10 +43,7 @@ CREATE TABLE claim_type (
     name                VARCHAR(80)  NOT NULL,
     validation_level    VARCHAR(20)  NOT NULL,
     active              BOOLEAN      NOT NULL DEFAULT TRUE,
-    sort_order          int          NOT NULL DEFAULT 0,
     created_at          DATETIME     NOT NULL DEFAULT CURRENT_TIMESTAMP,
-    updated_at          DATETIME     NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
-    updated_by          CHAR(36),
     CONSTRAINT ck_claim_type_validation_level
         CHECK (validation_level IN ('STRICT','BASIC','AUTOMATED'))
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci
@@ -60,10 +57,7 @@ CREATE TABLE irregularity_type (
     name        VARCHAR(120) NOT NULL,
     legal_basis TEXT,
     active      BOOLEAN      NOT NULL DEFAULT TRUE,
-    sort_order  int          NOT NULL DEFAULT 0,
-    created_at  DATETIME     NOT NULL DEFAULT CURRENT_TIMESTAMP,
-    updated_at  DATETIME     NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
-    updated_by  CHAR(36)
+    created_at  DATETIME     NOT NULL DEFAULT CURRENT_TIMESTAMP
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci
   COMMENT='RQF-06.1 / RQF-12.2 - Tipificacion segun LOCGRSNCF.';
 
@@ -74,11 +68,7 @@ CREATE TABLE case_status (
     code        VARCHAR(30)  NOT NULL UNIQUE,
     name        VARCHAR(60)  NOT NULL,
     sort_order  int     NOT NULL,
-    is_terminal BOOLEAN      NOT NULL DEFAULT FALSE,
-    active      BOOLEAN      NOT NULL DEFAULT TRUE,
-    created_at  DATETIME     NOT NULL DEFAULT CURRENT_TIMESTAMP,
-    updated_at  DATETIME     NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
-    updated_by  CHAR(36)
+    is_terminal BOOLEAN      NOT NULL DEFAULT FALSE
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci
   COMMENT='RQF-07.2 - Estados visibles al ciudadano. is_terminal bloquea transiciones desde estados finales.';
 
@@ -93,14 +83,9 @@ INSERT INTO case_status (code, name, sort_order, is_terminal) VALUES
 
 -- 1.4 Unidades de derivación
 CREATE TABLE referral_unit (
-    id          int UNSIGNED AUTO_INCREMENT PRIMARY KEY,
-    code        VARCHAR(30)  NOT NULL UNIQUE,
-    name        VARCHAR(100) NOT NULL,
-    active      BOOLEAN      NOT NULL DEFAULT TRUE,
-    sort_order  int          NOT NULL DEFAULT 0,
-    created_at  DATETIME     NOT NULL DEFAULT CURRENT_TIMESTAMP,
-    updated_at  DATETIME     NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
-    updated_by  CHAR(36)
+    id      int UNSIGNED AUTO_INCREMENT PRIMARY KEY,
+    code    VARCHAR(30)  NOT NULL UNIQUE,
+    name    VARCHAR(100) NOT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
 
 INSERT INTO referral_unit (code, name) VALUES
@@ -117,10 +102,8 @@ CREATE TABLE respondent_type (
     name            VARCHAR(80)  NOT NULL,
     field_schema    JSON         NOT NULL DEFAULT ('[]'),
     active          BOOLEAN      NOT NULL DEFAULT TRUE,
-    sort_order      int          NOT NULL DEFAULT 0,
     created_at      DATETIME     NOT NULL DEFAULT CURRENT_TIMESTAMP,
-    updated_at      DATETIME     NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
-    updated_by      CHAR(36)
+    updated_at      DATETIME     NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci
   COMMENT='RQF-03.2 - Catalogo editable por el admin. field_schema define que campos de identificacion lleva cada tipo. La app valida respondent.attributes contra este schema en cada insercion/actualizacion.';
 
@@ -155,14 +138,9 @@ INSERT INTO respondent_type (code, name, field_schema) VALUES
 
 -- 1.6 Tipos de documento de identidad del ciudadano
 CREATE TABLE id_document_type (
-    id          int UNSIGNED AUTO_INCREMENT PRIMARY KEY,
-    code        VARCHAR(10)  NOT NULL UNIQUE,
-    name        VARCHAR(40)  NOT NULL,
-    active      BOOLEAN      NOT NULL DEFAULT TRUE,
-    sort_order  int          NOT NULL DEFAULT 0,
-    created_at  DATETIME     NOT NULL DEFAULT CURRENT_TIMESTAMP,
-    updated_at  DATETIME     NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
-    updated_by  CHAR(36)
+    id      int UNSIGNED AUTO_INCREMENT PRIMARY KEY,
+    code    VARCHAR(10)  NOT NULL UNIQUE,
+    name    VARCHAR(40)  NOT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
 
 INSERT INTO id_document_type (code, name) VALUES
@@ -171,40 +149,18 @@ INSERT INTO id_document_type (code, name) VALUES
     ('PASSPORT', 'Pasaporte');
 
 
--- Catálogo de roles que una persona puede tener en el sistema.
--- Una misma persona (misma cédula) puede acumular varios roles a la vez:
--- p. ej. ser CITIZEN (denuncia algo) y a la vez RESPONDENT (fue señalada
--- en otro expediente), o STAFF (trabaja en la contraloría). El rol NO se
--- guarda como columna única en person — se resuelve con la tabla puente
--- person_role, que es many-to-many.
-CREATE TABLE person_role_type (
+CREATE TABLE person_type (
     id          int UNSIGNED AUTO_INCREMENT PRIMARY KEY,
-    code        VARCHAR(20)  NOT NULL UNIQUE,
-    name        VARCHAR(50)  NOT NULL,
-    active      BOOLEAN      NOT NULL DEFAULT TRUE,
-    sort_order  int          NOT NULL DEFAULT 0,
-    created_at  DATETIME     NOT NULL DEFAULT CURRENT_TIMESTAMP,
-    updated_at  DATETIME     NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
-    updated_by  CHAR(36)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci
-  COMMENT='Roles que puede ejercer una persona: CITIZEN, RESPONDENT, STAFF. El cargo de administrador se resuelve dentro de STAFF via job_position/staff_privilege, no como rol aparte.';
-
-INSERT INTO person_role_type (code, name, sort_order) VALUES
-    ('CITIZEN',    'Ciudadano / Denunciante', 1),
-    ('RESPONDENT', 'Señalado',                2),
-    ('STAFF',      'Personal Interno',        3);
+    code        VARCHAR(20) NOT NULL UNIQUE,
+    name        VARCHAR(50) NOT NULL
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
 
 
--- 1.11 PERSON — identidad genérica única (RQF-03 / RQF-01)
--- Núcleo de identidad compartido por cualquier ser humano que interactúe con
--- el sistema, sin importar el/los rol(es) que juegue. citizen, staff_user y
--- respondent (cuando es persona natural) son extensiones 1:1 de esta tabla:
--- su PK es a la vez FK hacia person(id). Así una misma cédula nunca se
--- duplica aunque la persona sea denunciante, señalada y funcionario a la vez.
 CREATE TABLE person (
     id              CHAR(36)     NOT NULL DEFAULT (UUID()) PRIMARY KEY,
+    person_type_id  int UNSIGNED NOT NULL,
 
-    -- Datos comunes a TODO ser humano — viven aquí una sola vez
+    -- Datos comunes a TODO ser humano
     id_doc_type_id  int UNSIGNED NOT NULL,
     id_doc_number   VARCHAR(12)  NOT NULL,
     first_name      VARCHAR(80)  NOT NULL,
@@ -216,49 +172,23 @@ CREATE TABLE person (
     email           VARCHAR(150) NOT NULL,
     mobile_phone    VARCHAR(15)  NOT NULL,
 
-    -- Atributos dinámicos en JSON para lo que no amerita columna propia
+    -- Atributos dinámicos en JSON
+    -- Aquí iría la dirección del ciudadano O los datos contractuales del staff
     extended_data   JSON         NOT NULL DEFAULT ('{}'),
 
-    created_at      DATETIME     NOT NULL DEFAULT CURRENT_TIMESTAMP,
-    updated_at      DATETIME     NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
-
     UNIQUE (id_doc_type_id, id_doc_number),
-    CONSTRAINT ck_person_sex        CHECK (sex IN ('M','F')),
-    CONSTRAINT ck_person_birth_date CHECK (birth_date IS NULL OR birth_date < CURRENT_DATE),
+    CONSTRAINT ck_person_sex CHECK (sex IN ('M','F')),
+    CONSTRAINT fk_person_type      FOREIGN KEY (person_type_id) REFERENCES person_type(id),
     CONSTRAINT fk_person_doc_type  FOREIGN KEY (id_doc_type_id) REFERENCES id_document_type(id)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci
-  COMMENT='RQF-03 / RQF-01 - Identidad genérica unica por cedula/RIF. citizen, staff_user y respondent (persona natural) son extensiones 1:1 via FK compartida en su PK.';
-
-
--- Tabla puente: qué roles tiene cada persona y desde cuándo.
--- Se inserta una fila aquí cada vez que se crea el registro correspondiente
--- en citizen / staff_user / respondent (persona natural). No se elimina al
--- perder el rol (p. ej. staff dado de baja): se marca active = FALSE para
--- conservar el historial de "quién fue qué" en el sistema.
-CREATE TABLE person_role (
-    person_id       CHAR(36)     NOT NULL,
-    role_type_id    int UNSIGNED NOT NULL,
-    active          BOOLEAN      NOT NULL DEFAULT TRUE,
-    granted_at      DATETIME     NOT NULL DEFAULT CURRENT_TIMESTAMP,
-    revoked_at      DATETIME,
-
-    PRIMARY KEY (person_id, role_type_id),
-    CONSTRAINT fk_person_role_person FOREIGN KEY (person_id) REFERENCES person(id) ON DELETE CASCADE,
-    CONSTRAINT fk_person_role_type   FOREIGN KEY (role_type_id) REFERENCES person_role_type(id)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci
-  COMMENT='Bitacora de que roles ha tenido/tiene cada persona. Permite que una misma persona sea CITIZEN y RESPONDENT y STAFF simultaneamente.';
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
 
 
 -- 1.7 Tipos de checklist de documentos físicos consignados
 CREATE TABLE physical_doc_type (
-    id          int UNSIGNED AUTO_INCREMENT PRIMARY KEY,
-    code        VARCHAR(40)  NOT NULL UNIQUE,
-    name        VARCHAR(80)  NOT NULL,
-    active      BOOLEAN      NOT NULL DEFAULT TRUE,
-    sort_order  int          NOT NULL DEFAULT 0,
-    created_at  DATETIME     NOT NULL DEFAULT CURRENT_TIMESTAMP,
-    updated_at  DATETIME     NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
-    updated_by  CHAR(36)
+    id      int UNSIGNED AUTO_INCREMENT PRIMARY KEY,
+    code    VARCHAR(40)  NOT NULL UNIQUE,
+    name    VARCHAR(80)  NOT NULL,
+    active  BOOLEAN      NOT NULL DEFAULT TRUE
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
 
 INSERT INTO physical_doc_type (code, name) VALUES
@@ -278,24 +208,17 @@ CREATE TABLE job_position (
     title       VARCHAR(100) NOT NULL,
     description TEXT,
     active      BOOLEAN      NOT NULL DEFAULT TRUE,
-    sort_order  int          NOT NULL DEFAULT 0,
     created_at  DATETIME     NOT NULL DEFAULT CURRENT_TIMESTAMP,
-    updated_at  DATETIME     NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
-    updated_by  CHAR(36)
+    updated_at  DATETIME     NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci
   COMMENT='RQF-14 - No eliminable si tiene personal activo asociado (enforced por trigger). Se desactiva logicamente para preservar integridad referencial.';
 
 
 -- 1.9 Módulos del sistema (para RBAC)
 CREATE TABLE app_module (
-    id          int UNSIGNED AUTO_INCREMENT PRIMARY KEY,
-    code        VARCHAR(40)  NOT NULL UNIQUE,
-    name        VARCHAR(80)  NOT NULL,
-    active      BOOLEAN      NOT NULL DEFAULT TRUE,
-    sort_order  int          NOT NULL DEFAULT 0,
-    created_at  DATETIME     NOT NULL DEFAULT CURRENT_TIMESTAMP,
-    updated_at  DATETIME     NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
-    updated_by  CHAR(36)
+    id      int UNSIGNED AUTO_INCREMENT PRIMARY KEY,
+    code    VARCHAR(40)  NOT NULL UNIQUE,
+    name    VARCHAR(80)  NOT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
 
 INSERT INTO app_module (code, name) VALUES
@@ -311,14 +234,9 @@ INSERT INTO app_module (code, name) VALUES
 
 -- 1.10 Tipos de contenido CMS
 CREATE TABLE cms_content_type (
-    id          int UNSIGNED AUTO_INCREMENT PRIMARY KEY,
-    code        VARCHAR(30)  NOT NULL UNIQUE,
-    name        VARCHAR(60)  NOT NULL,
-    active      BOOLEAN      NOT NULL DEFAULT TRUE,
-    sort_order  int          NOT NULL DEFAULT 0,
-    created_at  DATETIME     NOT NULL DEFAULT CURRENT_TIMESTAMP,
-    updated_at  DATETIME     NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
-    updated_by  CHAR(36)
+    id      int UNSIGNED AUTO_INCREMENT PRIMARY KEY,
+    code    VARCHAR(30)  NOT NULL UNIQUE,
+    name    VARCHAR(60)  NOT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
 
 INSERT INTO cms_content_type (code, name) VALUES
@@ -334,13 +252,13 @@ INSERT INTO cms_content_type (code, name) VALUES
 -- BLOQUE 2 — USUARIOS INTERNOS
 -- =============================================================================
 
--- staff_user es una extensión 1:1 de person (rol STAFF). id = person.id;
--- la identidad (cédula, nombre, sexo, etc.) vive solo en person. email aquí
--- es el correo institucional de acceso (distinto del email de contacto
--- personal en person.email), por eso conserva su propio UNIQUE para login.
 CREATE TABLE staff_user (
-    id                  CHAR(36)     NOT NULL PRIMARY KEY,
+    id                  CHAR(36)     NOT NULL DEFAULT (UUID()) PRIMARY KEY,
     job_position_id     INT UNSIGNED NOT NULL,
+    id_doc_type_id      int UNSIGNED NOT NULL,
+    id_doc_number       VARCHAR(12)  NOT NULL,
+    first_name          VARCHAR(80)  NOT NULL,
+    last_name           VARCHAR(80)  NOT NULL,
     email               VARCHAR(150) NOT NULL UNIQUE,
     password_hash       TEXT         NOT NULL,
     active              BOOLEAN      NOT NULL DEFAULT TRUE,
@@ -350,10 +268,11 @@ CREATE TABLE staff_user (
     created_at          DATETIME     NOT NULL DEFAULT CURRENT_TIMESTAMP,
     updated_at          DATETIME     NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
 
-    CONSTRAINT fk_staff_user_person       FOREIGN KEY (id) REFERENCES person(id),
-    CONSTRAINT fk_staff_user_job_position FOREIGN KEY (job_position_id) REFERENCES job_position(id)
+    UNIQUE (id_doc_type_id, id_doc_number),
+    CONSTRAINT fk_staff_user_job_position FOREIGN KEY (job_position_id) REFERENCES job_position(id),
+    CONSTRAINT fk_staff_user_doc_type     FOREIGN KEY (id_doc_type_id) REFERENCES id_document_type(id)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci
-  COMMENT='RQF-01 / RQF-08 - Personal administrativo interno, extension 1:1 de person (rol STAFF). Desactivacion logica (active=FALSE). Nunca se elimina el registro.';
+  COMMENT='RQF-01 / RQF-08 - Personal administrativo interno. Desactivacion logica (active=FALSE). Nunca se elimina el registro.';
 
 
 CREATE TABLE staff_privilege (
@@ -396,12 +315,20 @@ CREATE TABLE session_log (
 -- BLOQUE 3 — CIUDADANOS (denunciantes)
 -- =============================================================================
 
--- citizen es una extensión 1:1 de person (rol CITIZEN). id = person.id;
--- identidad y contacto base (cédula, nombre, sexo, email, teléfono) ya están
--- garantizados NOT NULL en person — aquí solo vive lo específico del rol
--- de denunciante: dirección y datos demográficos opcionales.
 CREATE TABLE citizen (
-    id              CHAR(36)     NOT NULL PRIMARY KEY,
+    id              CHAR(36)     NOT NULL DEFAULT (UUID()) PRIMARY KEY,
+
+    -- Identidad legal — raramente cambia, constraints fuertes
+    id_doc_type_id  int UNSIGNED NOT NULL,
+    id_doc_number   VARCHAR(12)  NOT NULL,
+    first_name      VARCHAR(80)  NOT NULL,
+    last_name       VARCHAR(80)  NOT NULL,
+    sex             CHAR(1)      NOT NULL,
+    birth_date      DATE,
+
+    -- Contacto primario — obligatorio en todos los trámites
+    email           VARCHAR(150) NOT NULL,
+    mobile_phone    VARCHAR(15)  NOT NULL,       -- formato venezolano 04XX-XXXXXXX
 
     -- Dirección — obligatoria, raramente cambia
     address         VARCHAR(250) NOT NULL,
@@ -424,10 +351,13 @@ CREATE TABLE citizen (
     created_at      DATETIME     NOT NULL DEFAULT CURRENT_TIMESTAMP,
     updated_at      DATETIME     NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
 
-    CONSTRAINT fk_citizen_person       FOREIGN KEY (id) REFERENCES person(id),
+    UNIQUE (id_doc_type_id, id_doc_number),
+    CONSTRAINT fk_citizen_doc_type FOREIGN KEY (id_doc_type_id) REFERENCES id_document_type(id),
+    CONSTRAINT ck_citizen_sex          CHECK (sex IN ('M','F')),
+    CONSTRAINT ck_citizen_birth_date   CHECK (birth_date < CURRENT_DATE),
     CONSTRAINT ck_citizen_address_len  CHECK (CHAR_LENGTH(address) >= 10)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci
-  COMMENT='RQF-03.1 - Denunciante identificado, extension 1:1 de person (rol CITIZEN). No se permiten registros anonimos. contact_data almacena campos demograficos y de contacto opcionales que pueden crecer sin migraciones.';
+  COMMENT='RQF-03.1 - Denunciante identificado. No se permiten registros anonimos. contact_data almacena campos demograficos y de contacto opcionales que pueden crecer sin migraciones. La app valida el schema antes de insertar.';
 
 
 -- =============================================================================
@@ -550,13 +480,6 @@ CREATE TABLE respondent (
     case_file_id        CHAR(36)     NOT NULL,
     respondent_type_id  int UNSIGNED NOT NULL,
 
-    -- Enlace opcional a person cuando el tipo de señalado es una persona
-    -- identificable (NATURAL_PERSON, JUSTICE_OF_PEACE). NULL para tipos que
-    -- no son personas (LEGAL_ENTITY, GOV_AGENCY, COMMUNE, COMMUNAL_COUNCIL,
-    -- OTHER), que siguen usando solo attributes. Cuando se enlaza, la app
-    -- debe registrar el rol RESPONDENT en person_role para ese person_id.
-    person_id           CHAR(36),
-
     -- Mínimo normalizado: ubicación (siempre obligatoria y consultable)
     location            VARCHAR(250) NOT NULL,
 
@@ -568,9 +491,8 @@ CREATE TABLE respondent (
 
     created_at          DATETIME     NOT NULL DEFAULT CURRENT_TIMESTAMP,
 
-    CONSTRAINT fk_respondent_case   FOREIGN KEY (case_file_id) REFERENCES case_file(id) ON DELETE CASCADE,
-    CONSTRAINT fk_respondent_type   FOREIGN KEY (respondent_type_id) REFERENCES respondent_type(id),
-    CONSTRAINT fk_respondent_person FOREIGN KEY (person_id) REFERENCES person(id),
+    CONSTRAINT fk_respondent_case FOREIGN KEY (case_file_id) REFERENCES case_file(id) ON DELETE CASCADE,
+    CONSTRAINT fk_respondent_type FOREIGN KEY (respondent_type_id) REFERENCES respondent_type(id),
     CONSTRAINT ck_respondent_location_len CHECK (CHAR_LENGTH(location) >= 5)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci
   COMMENT='RQF-03.2 - Al menos 1 senalado por expediente (enforced en app). attributes contiene los campos definidos por respondent_type.field_schema. La DB no valida el schema interno del JSON; eso es responsabilidad de la app.';
@@ -759,23 +681,3 @@ CREATE TABLE cms_content_version (
     CONSTRAINT fk_cms_version_content FOREIGN KEY (content_id) REFERENCES cms_content(id),
     CONSTRAINT fk_cms_version_author  FOREIGN KEY (modified_by) REFERENCES staff_user(id)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
-
-
--- =============================================================================
--- BLOQUE 9 — CONSTRAINTS DIFERIDOS
--- =============================================================================
--- Los catálogos del Bloque 1 llevan updated_by referenciando a staff_user,
--- pero staff_user se crea despues (Bloque 2) porque a su vez depende de
--- person y job_position. Se agregan aquí en vez de reordenar todo el script.
-
-ALTER TABLE claim_type        ADD CONSTRAINT fk_claim_type_updated_by        FOREIGN KEY (updated_by) REFERENCES staff_user(id);
-ALTER TABLE irregularity_type ADD CONSTRAINT fk_irregularity_type_updated_by FOREIGN KEY (updated_by) REFERENCES staff_user(id);
-ALTER TABLE case_status       ADD CONSTRAINT fk_case_status_updated_by       FOREIGN KEY (updated_by) REFERENCES staff_user(id);
-ALTER TABLE referral_unit     ADD CONSTRAINT fk_referral_unit_updated_by     FOREIGN KEY (updated_by) REFERENCES staff_user(id);
-ALTER TABLE respondent_type   ADD CONSTRAINT fk_respondent_type_updated_by   FOREIGN KEY (updated_by) REFERENCES staff_user(id);
-ALTER TABLE id_document_type  ADD CONSTRAINT fk_id_document_type_updated_by  FOREIGN KEY (updated_by) REFERENCES staff_user(id);
-ALTER TABLE physical_doc_type ADD CONSTRAINT fk_physical_doc_type_updated_by FOREIGN KEY (updated_by) REFERENCES staff_user(id);
-ALTER TABLE job_position      ADD CONSTRAINT fk_job_position_updated_by      FOREIGN KEY (updated_by) REFERENCES staff_user(id);
-ALTER TABLE app_module        ADD CONSTRAINT fk_app_module_updated_by        FOREIGN KEY (updated_by) REFERENCES staff_user(id);
-ALTER TABLE cms_content_type  ADD CONSTRAINT fk_cms_content_type_updated_by  FOREIGN KEY (updated_by) REFERENCES staff_user(id);
-ALTER TABLE person_role_type  ADD CONSTRAINT fk_person_role_type_updated_by  FOREIGN KEY (updated_by) REFERENCES staff_user(id);

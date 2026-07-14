@@ -389,7 +389,7 @@
                 <div class="col-md-3">
                   <div class="form-group">
                     <label class="form-label">Tipo de Documento <span class="required">*</span></label>
-                    <select id="cit-tipo-doc" class="form-select" onchange="autocompletarCiudadano()">
+                    <select id="cit-tipo-doc" class="form-select">
                       <option value="">Seleccionar</option>
                       <option value="V">V — Venezolano</option>
                       <option value="E">E — Extranjero</option>
@@ -401,11 +401,9 @@
                 <div class="col-md-3">
                   <div class="form-group">
                     <label class="form-label">Número de Documento <span class="required">*</span></label>
-                    <input type="text" id="cit-nro-doc" class="form-control" placeholder="Ej. 12345678" maxlength="10"
-                      onblur="autocompletarCiudadano()">
+                    <input type="text" id="cit-nro-doc" class="form-control" placeholder="Ej. 12345678" maxlength="10">
                     <span class="error-msg" id="cit-nro-doc-err">Ingrese un número de documento válido (5–10
                       dígitos).</span>
-                    <span class="autofill-msg" id="cit-autofill-msg" style="display:none;"></span>
                   </div>
                 </div>
                 <div class="col-md-6">
@@ -430,23 +428,19 @@
                 <div class="col-md-2">
                   <div class="form-group">
                     <label class="form-label">Edad <span class="required">*</span></label>
-                    <input type="number" id="cit-edad" class="form-control" placeholder="Años" min="1" max="120">
-                    <span class="error-msg" id="cit-edad-err">Ingrese una edad válida.</span>
+                    <input type="text" id="cit-edad" class="form-control" placeholder="Se calcula automáticamente"
+                      readonly tabindex="-1"
+                      style="background:#f2f4f8;color:#5a6474;cursor:not-allowed;">
+                    <span class="error-msg" id="cit-edad-err">La edad se calcula a partir de la fecha de
+                      nacimiento.</span>
                   </div>
                 </div>
                 <div class="col-md-3">
                   <div class="form-group">
                     <label class="form-label">Fecha de Nacimiento <span class="required">*</span></label>
-                    <input type="date" id="cit-fecha-nac" class="form-control">
+                    <input type="date" id="cit-fecha-nac" class="form-control"
+                      onchange="actualizarEdadComputada(this)">
                     <span class="error-msg" id="cit-fecha-nac-err">Seleccione su fecha de nacimiento.</span>
-                  </div>
-                </div>
-                <div class="col-md-2">
-                  <div class="form-group">
-                    <label class="form-label">Edad <span class="required">*</span></label>
-                    <input type="text" id="cit-edad" class="form-control" placeholder="Años" disabled
-                      style="background:#f3f5f9;color:#667;">
-                    <span class="error-msg" id="cit-edad-err">La edad calculada no es válida.</span>
                   </div>
                 </div>
                 <div class="col-md-3">
@@ -561,8 +555,7 @@
                 <div class="col-md-3">
                   <div class="form-group">
                     <label class="form-label">Parroquia</label>
-                    <input type="text" id="cit-parroquia" class="form-control" placeholder="Parroquia de residencia"
-                      list="dl-parroquias">
+                    <input type="text" id="cit-parroquia" class="form-control" placeholder="Parroquia de residencia">
                   </div>
                 </div>
                 <div class="col-md-3">
@@ -575,8 +568,7 @@
                 <div class="col-md-3">
                   <div class="form-group">
                     <label class="form-label">Ciudad / Estado</label>
-                    <input type="text" id="cit-ciudad" class="form-control" placeholder="Acarigua, Portuguesa"
-                      list="dl-ciudades">
+                    <input type="text" id="cit-ciudad" class="form-control" placeholder="Acarigua, Portuguesa">
                   </div>
                 </div>
                 <div class="col-12">
@@ -661,7 +653,7 @@
                     <label>Persona Natural</label>
                   </label>
                   <label class="check-item">
-                    <input type="checkbox" name="tipo_senalado" value="persona_juridica">
+                    <input type="checkbox" name="tipo_senalado" value="persona_juridica" onchange="onTipoSenaladoChange(this)">
                     <label>Persona Jurídica</label>
                   </label>
                   <label class="check-item">
@@ -693,6 +685,123 @@
                 <span class="error-msg" id="tipo-senalado-err">Debe seleccionar al menos un tipo de señalado.</span>
               </div>
 
+              <!-- Contenedor de mini-formularios dinámicos según el/los tipo(s) marcado(s) -->
+              <div id="detalle-senalados-dinamico">
+                
+                <!-- Datos Persona Natural -->
+                <div class="bloque-senalado-dinamico" id="form-persona-natural" style="display:none;">
+                  <div class="form-section-title">Datos de Persona Natural</div>
+                  <div class="row g-3">
+                    <div class="col-md-3">
+                      <div class="form-group">
+                        <label class="form-label">Tipo de Documento <span class="required">*</span></label>
+                        <select class="form-select">
+                          <option value="">Seleccionar</option>
+                          <option value="V">V — Venezolano</option>
+                          <option value="E">E — Extranjero</option>
+                          <option value="P">P — Pasaporte</option>
+                        </select>
+                      </div>
+                    </div>
+                    <div class="col-md-4">
+                      <div class="form-group">
+                        <label class="form-label">Cédula (V/E) <span class="required">*</span></label>
+                        <input type="text" class="form-control" placeholder="00000000">
+                      </div>
+                    </div>
+                    <div class="col-md-5">
+                      <div class="form-group">
+                        <label class="form-label">Apellidos y Nombres <span class="required">*</span></label>
+                        <input type="text" class="form-control" placeholder="Apellido, Nombre">
+                      </div>
+                    </div>
+                  </div>
+                </div>
+
+                <!-- Datos Persona Jurídica -->
+                <div class="bloque-senalado-dinamico" id="form-persona-juridica" style="display:none;">
+                  <div class="form-section-title">Datos de Persona Jurídica</div>
+                  <div class="row g-3">
+                    <div class="col-md-4">
+                      <div class="form-group">
+                        <label class="form-label">R.I.F. <span class="required">*</span></label>
+                        <input type="text" class="form-control" placeholder="J-XXXXXXXX">
+                      </div>
+                    </div>
+                    <div class="col-md-8">
+                      <div class="form-group">
+                        <label class="form-label">Razón Social <span class="required">*</span></label>
+                        <input type="text" class="form-control" placeholder="Nombre de la empresa">
+                      </div>
+                    </div>
+                  </div>
+                </div>
+
+                <!-- Datos Órgano o Ente -->
+                <div class="bloque-senalado-dinamico" id="form-organo-ente" style="display:none;">
+                  <div class="form-section-title">Datos del Órgano o Ente</div>
+                  <div class="row g-3">
+                    <div class="col-md-4">
+                      <div class="form-group">
+                        <label class="form-label">R.I.F. (G/J) <span class="required">*</span></label>
+                        <input type="text" class="form-control" placeholder="G-XXXXXXXX">
+                      </div>
+                    </div>
+                    <div class="col-md-8">
+                      <div class="form-group">
+                        <label class="form-label">Nombre de la Institución <span class="required">*</span></label>
+                        <input type="text" class="form-control" placeholder="Nombre del órgano o ente">
+                      </div>
+                    </div>
+                  </div>
+                </div>
+
+                <!-- Datos Comuna / Consejo Comunal -->
+                <div class="bloque-senalado-dinamico" id="form-comuna" style="display:none;">
+                  <div class="form-section-title">Datos de Instancia Comunal</div>
+                  <div class="row g-3">
+                    <div class="col-md-4">
+                      <div class="form-group">
+                        <label class="form-label">Código SITUR <span class="required">*</span></label>
+                        <input type="text" class="form-control" placeholder="Código SITUR">
+                      </div>
+                    </div>
+                    <div class="col-md-4">
+                      <div class="form-group">
+                        <label class="form-label">R.I.F. (C) <span class="required">*</span></label>
+                        <input type="text" class="form-control" placeholder="C-XXXXXXXX">
+                      </div>
+                    </div>
+                    <div class="col-md-12">
+                      <div class="form-group">
+                        <label class="form-label">Nombre del Consejo Comunal / Comuna <span class="required">*</span></label>
+                        <input type="text" class="form-control" placeholder="Nombre de la instancia">
+                      </div>
+                    </div>
+                  </div>
+                </div>
+
+                <!-- Datos Juez de Paz -->
+                <div class="bloque-senalado-dinamico" id="form-juez-paz" style="display:none;">
+                  <div class="form-section-title">Datos del Juez de Paz</div>
+                  <div class="row g-3">
+                    <div class="col-md-4">
+                      <div class="form-group">
+                        <label class="form-label">Cédula <span class="required">*</span></label>
+                        <input type="text" class="form-control" placeholder="00000000">
+                      </div>
+                    </div>
+                    <div class="col-md-8">
+                      <div class="form-group">
+                        <label class="form-label">Apellidos y Nombres <span class="required">*</span></label>
+                        <input type="text" class="form-control" placeholder="Apellido, Nombre">
+                      </div>
+                    </div>
+                  </div>
+                </div>
+
+              </div>
+
               <!-- Ubicación geográfica del señalado -->
               <div class="form-group" style="margin-top:16px;">
                 <label class="form-label">
@@ -703,70 +812,6 @@
                 <span class="error-msg" id="sen-ubicacion-err">Ingrese la ubicación del señalado (mínimo 5
                   caracteres).</span>
               </div>
-            </div>
-
-            <!-- Tabla de señalados -->
-            <div class="form-section">
-              <div class="form-section-title" id="tabla-sen-title-color">
-                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"
-                  stroke-linecap="round" stroke-linejoin="round">
-                  <rect x="3" y="3" width="18" height="18" rx="2" ry="2" />
-                  <line x1="3" y1="9" x2="21" y2="9" />
-                  <line x1="3" y1="15" x2="21" y2="15" />
-                  <line x1="9" y1="3" x2="9" y2="21" />
-                </svg>
-                Datos del Señalado(s) <span style="color:#e63946;margin-left:3px;">*</span>
-              </div>
-              <p style="font-size:0.78rem;color:#888;margin-bottom:12px;">
-                Al menos un señalado debe tener Cédula/RIF o Nombre completo.
-              </p>
-              <div style="overflow-x:auto;margin-bottom:12px;">
-                <table class="tabla-senalados" id="tabla-senalados">
-                  <thead>
-                    <tr>
-                      <th>Cédula (V/E)</th>
-                      <th>Apellidos y Nombres</th>
-                      <th>Nombre del Consejo Comunal / Comuna</th>
-                      <th>Código SITUR</th>
-                      <th>R.I.F.</th>
-                      <th></th>
-                    </tr>
-                  </thead>
-                  <tbody id="tbody-senalados">
-                    <tr>
-                      <td><input type="text" placeholder="V-00000000" oninput="validarCeldaCedula(this)"
-                          onblur="validarCeldaCedula(this)"></td>
-                      <td><input type="text" placeholder="Apellido, Nombre" oninput="validarCeldaNombre(this)"
-                          onblur="validarCeldaNombre(this)"></td>
-                      <td><input type="text" placeholder="Nombre de la instancia"></td>
-                      <td><input type="text" placeholder="Código SITUR" oninput="validarCeldaSitur(this)"
-                          onblur="validarCeldaSitur(this)"></td>
-                      <td><input type="text" placeholder="J-XXXXXXXX" oninput="validarCeldaRif(this)"
-                          onblur="validarCeldaRif(this)"></td>
-                      <td>
-                        <button type="button" onclick="eliminarFilaSenalado(this)" title="Eliminar fila"
-                          class="btn-tabla-eliminar">
-                          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor"
-                            stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
-                            <line x1="18" y1="6" x2="6" y2="18" />
-                            <line x1="6" y1="6" x2="18" y2="18" />
-                          </svg>
-                        </button>
-                      </td>
-                    </tr>
-                  </tbody>
-                </table>
-              </div>
-              <span class="error-msg" id="tabla-senalados-err">Al menos el primer señalado debe tener cédula o nombre
-                completo.</span>
-              <button type="button" class="btn-agregar-fila" onclick="agregarFilaSenalado()">
-                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"
-                  stroke-linecap="round" stroke-linejoin="round">
-                  <line x1="12" y1="5" x2="12" y2="19" />
-                  <line x1="5" y1="12" x2="19" y2="12" />
-                </svg>
-                Agregar otro señalado
-              </button>
             </div>
 
             <!-- Bloque de Proyecto de Consulta Popular (solo Tipo A / denuncia con consulta = si) -->
@@ -812,7 +857,7 @@
                   <div class="col-md-6">
                     <div class="form-group">
                       <label class="form-label">Ente Financiador <span class="required">*</span></label>
-                      <input type="text" id="proy-financiador" class="form-control" list="dl-financiadores"
+                      <input type="text" id="proy-financiador" class="form-control"
                         placeholder="Nombre del ente financiador">
                       <span class="error-msg" id="proy-financiador-err">Ingrese el ente financiador.</span>
                     </div>
@@ -1243,18 +1288,6 @@
             </div>
           </div>
         </div><!-- /vista-confirmacion -->
-
-        <!-- ─────────────────────────────────────────────────
-           TABLAS RELACIONADAS — LISTAS DE AUTORRELLENO
-           Se rellenan dinámicamente desde el "padrón" guardado
-           en el navegador (localStorage). Mientras no exista una
-           base de datos real, esto simula tablas relacionadas
-           para sugerir valores ya usados en denuncias anteriores.
-           ───────────────────────────────────────────────── -->
-        <datalist id="dl-parroquias"></datalist>
-        <datalist id="dl-ciudades"></datalist>
-        <datalist id="dl-instancias"></datalist>
-        <datalist id="dl-financiadores"></datalist>
 
       </div><!-- /vista-wizard -->
 

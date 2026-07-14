@@ -571,15 +571,6 @@
 
 .error-msg.visible { display: block; }
 
-/* ─── MENSAJE DE AUTORRELLENO ─── */
-
-.autofill-msg {
-  font-size: 0.75rem;
-  color: #1565c0;
-  margin-top: 5px;
-  display: none;
-}
-
 /* Banner de error en la cabecera del paso */
 .banner-error {
   background: #fff0f0;
