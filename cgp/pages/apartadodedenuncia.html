@@ -389,7 +389,7 @@
                 <div class="col-md-3">
                   <div class="form-group">
                     <label class="form-label">Tipo de Documento <span class="required">*</span></label>
-                    <select id="cit-tipo-doc" class="form-select">
+                    <select id="cit-tipo-doc" class="form-select" onchange="autocompletarCiudadano()">
                       <option value="">Seleccionar</option>
                       <option value="V">V — Venezolano</option>
                       <option value="E">E — Extranjero</option>
@@ -401,9 +401,11 @@
                 <div class="col-md-3">
                   <div class="form-group">
                     <label class="form-label">Número de Documento <span class="required">*</span></label>
-                    <input type="text" id="cit-nro-doc" class="form-control" placeholder="Ej. 12345678" maxlength="10">
+                    <input type="text" id="cit-nro-doc" class="form-control" placeholder="Ej. 12345678" maxlength="10"
+                      onblur="autocompletarCiudadano()">
                     <span class="error-msg" id="cit-nro-doc-err">Ingrese un número de documento válido (5–10
                       dígitos).</span>
+                    <span class="autofill-msg" id="cit-autofill-msg" style="display:none;"></span>
                   </div>
                 </div>
                 <div class="col-md-6">
@@ -516,7 +518,8 @@
                 <div class="col-md-3">
                   <div class="form-group">
                     <label class="form-label">Parroquia</label>
-                    <input type="text" id="cit-parroquia" class="form-control" placeholder="Parroquia de residencia">
+                    <input type="text" id="cit-parroquia" class="form-control" placeholder="Parroquia de residencia"
+                      list="dl-parroquias">
                   </div>
                 </div>
                 <div class="col-md-3">
@@ -529,7 +532,8 @@
                 <div class="col-md-3">
                   <div class="form-group">
                     <label class="form-label">Ciudad / Estado</label>
-                    <input type="text" id="cit-ciudad" class="form-control" placeholder="Acarigua, Portuguesa">
+                    <input type="text" id="cit-ciudad" class="form-control" placeholder="Acarigua, Portuguesa"
+                      list="dl-ciudades">
                   </div>
                 </div>
                 <div class="col-12">
@@ -614,7 +618,8 @@
                     <label>Persona Natural</label>
                   </label>
                   <label class="check-item">
-                    <input type="checkbox" name="tipo_senalado" value="persona_juridica">
+                    <input type="checkbox" name="tipo_senalado" value="persona_juridica"
+                      onchange="actualizarBloquePersonaJuridica()">
                     <label>Persona Jurídica</label>
                   </label>
                   <label class="check-item">
@@ -645,6 +650,70 @@
                 </div>
                 <span class="error-msg" id="tipo-senalado-err">Debe seleccionar al menos un tipo de señalado.</span>
               </div>
+
+              <!-- Datos de la Persona Jurídica Señalada (solo si se marca "Persona Jurídica") -->
+              <div id="bloque-persona-juridica" style="display:none;margin-top:16px;">
+                <div class="form-section" style="padding-top:20px;border-top:1px solid #eef1f7;">
+                  <div class="form-section-title" id="pj-title-color">
+                    <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"
+                      stroke-linecap="round" stroke-linejoin="round">
+                      <path d="M3 21h18" />
+                      <path d="M5 21V7l8-4v18" />
+                      <path d="M19 21V11l-6-4" />
+                      <line x1="9" y1="9" x2="9" y2="9.01" />
+                      <line x1="9" y1="12" x2="9" y2="12.01" />
+                      <line x1="9" y1="15" x2="9" y2="15.01" />
+                      <line x1="9" y1="18" x2="9" y2="18.01" />
+                    </svg>
+                    Datos de la Persona Jurídica Señalada
+                  </div>
+                  <div class="row g-3">
+                    <div class="col-md-3">
+                      <div class="form-group">
+                        <label class="form-label">Tipo de Documento</label>
+                        <input type="text" class="form-control" value="J — Jurídico" disabled
+                          style="background:#f3f5f9;color:#667;">
+                      </div>
+                    </div>
+                    <div class="col-md-4">
+                      <div class="form-group">
+                        <label class="form-label">R.I.F. <span class="required">*</span></label>
+                        <input type="text" id="pj-rif" class="form-control mayusculas" placeholder="J-XXXXXXXX-X"
+                          oninput="this.value=this.value.toUpperCase()"
+                          onblur="validarPjRif();autocompletarPersonaJuridica()">
+                        <span class="error-msg" id="pj-rif-err">Ingrese un R.I.F. válido (Ej. J-12345678-9).</span>
+                      </div>
+                    </div>
+                    <div class="col-md-5">
+                      <div class="form-group">
+                        <label class="form-label">Razón Social / Denominación <span class="required">*</span></label>
+                        <input type="text" id="pj-razon-social" class="form-control" placeholder="Nombre de la empresa">
+                        <span class="error-msg" id="pj-razon-social-err">Ingrese la razón social o denominación.</span>
+                      </div>
+                    </div>
+                    <div class="col-md-4">
+                      <div class="form-group">
+                        <label class="form-label">Nombre del Representante Legal</label>
+                        <input type="text" id="pj-rep-nombre" class="form-control"
+                          placeholder="Nombre y apellido del representante">
+                      </div>
+                    </div>
+                    <div class="col-md-3">
+                      <div class="form-group">
+                        <label class="form-label">Cédula del Representante Legal</label>
+                        <input type="text" id="pj-rep-cedula" class="form-control" placeholder="V-00000000">
+                      </div>
+                    </div>
+                    <div class="col-md-5">
+                      <div class="form-group">
+                        <label class="form-label">Dirección Fiscal</label>
+                        <input type="text" id="pj-direccion-fiscal" class="form-control"
+                          placeholder="Dirección fiscal de la empresa">
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              </div><!-- /bloque-persona-juridica -->
 
               <!-- Ubicación geográfica del señalado -->
               <div class="form-group" style="margin-top:16px;">
@@ -688,14 +757,14 @@
                   <tbody id="tbody-senalados">
                     <tr>
                       <td><input type="text" placeholder="V-00000000" oninput="validarCeldaCedula(this)"
-                          onblur="validarCeldaCedula(this)"></td>
+                          onblur="validarCeldaCedula(this);autocompletarSenalado(this)"></td>
                       <td><input type="text" placeholder="Apellido, Nombre" oninput="validarCeldaNombre(this)"
                           onblur="validarCeldaNombre(this)"></td>
-                      <td><input type="text" placeholder="Nombre de la instancia"></td>
+                      <td><input type="text" placeholder="Nombre de la instancia" list="dl-instancias"></td>
                       <td><input type="text" placeholder="Código SITUR" oninput="validarCeldaSitur(this)"
                           onblur="validarCeldaSitur(this)"></td>
                       <td><input type="text" placeholder="J-XXXXXXXX" oninput="validarCeldaRif(this)"
-                          onblur="validarCeldaRif(this)"></td>
+                          onblur="validarCeldaRif(this);autocompletarSenalado(this)"></td>
                       <td>
                         <button type="button" onclick="eliminarFilaSenalado(this)" title="Eliminar fila"
                           class="btn-tabla-eliminar">
@@ -765,7 +834,7 @@
                   <div class="col-md-6">
                     <div class="form-group">
                       <label class="form-label">Ente Financiador <span class="required">*</span></label>
-                      <input type="text" id="proy-financiador" class="form-control"
+                      <input type="text" id="proy-financiador" class="form-control" list="dl-financiadores"
                         placeholder="Nombre del ente financiador">
                       <span class="error-msg" id="proy-financiador-err">Ingrese el ente financiador.</span>
                     </div>
@@ -1196,6 +1265,18 @@
             </div>
           </div>
         </div><!-- /vista-confirmacion -->
+
+        <!-- ─────────────────────────────────────────────────
+           TABLAS RELACIONADAS — LISTAS DE AUTORRELLENO
+           Se rellenan dinámicamente desde el "padrón" guardado
+           en el navegador (localStorage). Mientras no exista una
+           base de datos real, esto simula tablas relacionadas
+           para sugerir valores ya usados en denuncias anteriores.
+           ───────────────────────────────────────────────── -->
+        <datalist id="dl-parroquias"></datalist>
+        <datalist id="dl-ciudades"></datalist>
+        <datalist id="dl-instancias"></datalist>
+        <datalist id="dl-financiadores"></datalist>
 
       </div><!-- /vista-wizard -->
 
