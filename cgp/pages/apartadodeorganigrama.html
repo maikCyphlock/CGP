@@ -1,0 +1,515 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Estructura Organizativa – Contraloría del Municipio Páez</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Merriweather:wght@400;700;900&family=Source+Sans+3:wght@400;500;600;700&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="../assets/css/contraloriaescolar.css">
+<link rel="stylesheet" href="../assets/css/contraloria.css">
+<style>
+
+  :root{
+    --org-director:  #5b6b85;   /* dirección troncal */
+    --org-control:   #2f7d52;   /* direcciones de control (verde institucional) */
+    --org-staff:     var(--clr-accent, #2563b0);
+    --org-line:      #b9c4d9;
+    --org-vacante-bd:#98a2b8;
+  }
+
+  .org-hero{
+    background:
+      linear-gradient(135deg, rgba(15,35,64,.92), rgba(26,58,107,.90)),
+      var(--clr-header-bg, #0f2340);
+  }
+
+  .org-section{ padding: 36px 0 8px; }
+
+  .org-legend{
+    display:flex; flex-wrap:wrap; gap:18px;
+    padding: 4px 0 22px;
+    font-size:.82rem; color:var(--clr-text-muted,#5a6a85);
+  }
+  .org-legend span{ display:inline-flex; align-items:center; gap:7px; }
+  .org-legend i{ width:13px; height:13px; border-radius:3px; display:inline-block; }
+  .org-legend .lg-top   i{ background: var(--clr-primary,#1a3a6b); }
+  .org-legend .lg-dir   i{ background: var(--org-director); }
+  .org-legend .lg-ctrl  i{ background: var(--org-control); }
+  .org-legend .lg-staff i{ background: var(--org-staff); }
+  .org-legend .lg-vac   i{ background:#fff; border:2px dashed var(--org-vacante-bd); }
+
+  .org-scroll{
+    background: var(--clr-surface,#fff);
+    border: 1.5px solid var(--clr-border,#d8e0ef);
+    border-radius: var(--radius-md,10px);
+    box-shadow: var(--shadow-sm);
+    overflow-x: auto;
+    padding: 40px 24px 48px;
+    margin-bottom: 40px;
+  }
+  .org-tree, .org-tree ul{
+    list-style:none; margin:0; padding:0; position:relative;
+  }
+  .org-tree{ display:flex; justify-content:center; min-width:max-content; }
+  .org-tree ul{
+    display:flex; padding-top:34px; position:relative; justify-content:center;
+  }
+  .org-tree li{
+    display:flex; flex-direction:column; align-items:center;
+    padding: 34px 10px 0 10px; position:relative;
+  }
+  .org-tree li::before, .org-tree li::after{
+    content:''; position:absolute; top:0; right:50%;
+    border-top: 2px solid var(--org-line); width:50%; height:34px;
+  }
+  .org-tree li::after{ right:auto; left:50%; border-left:2px solid var(--org-line); }
+  .org-tree li:only-child::after, .org-tree li:only-child::before{ display:none; }
+  .org-tree li:only-child{ padding-top:0; }
+  .org-tree li:first-child::before{ border:0 none; }
+  .org-tree li:last-child::after{ border:0 none; }
+  .org-tree li:first-child::after{ border-radius:6px 0 0 0; }
+  .org-tree li:last-child::before{ border-right:2px solid var(--org-line); border-radius:0 6px 0 0; }
+  .org-tree ul::before{
+    content:''; position:absolute; top:0; left:50%;
+    border-left:2px solid var(--org-line); width:0; height:34px;
+  }
+  .org-tree > li{ padding-top:0; }
+  .org-tree > li::before, .org-tree > li::after{ display:none; }
+
+  .org-box{
+    display:inline-flex; flex-direction:column; gap:2px;
+    width:150px; padding:10px 12px;
+    border-radius: var(--radius-sm,6px);
+    color:#fff; text-align:left;
+    box-shadow: var(--shadow-sm);
+  }
+  .org-box .nombre{ font-family: var(--font-display,serif); font-size:.82rem; font-weight:700; line-height:1.25; }
+  .org-box .cargo{ font-size:.72rem; font-style:italic; opacity:.9; line-height:1.25; }
+
+  .org-box.top     { background: var(--clr-primary,#1a3a6b); width:190px; }
+  .org-box.top .nombre{ font-size:.95rem; }
+  .org-box.dir     { background: var(--org-director); }
+  .org-box.dir.ctrl{ background: var(--org-control); }
+  .org-box.staff   { background: var(--org-staff); width:140px; }
+  .org-box.vacante {
+    background:#fff; color:var(--clr-text,#1c2940);
+    border:2px dashed var(--org-vacante-bd); width:140px;
+  }
+  .org-box.vacante .cargo{ opacity:.7; }
+
+  @media (max-width:768px){
+    .org-scroll{ padding: 30px 14px 40px; }
+    .org-box{ width:128px; padding:8px 10px; }
+    .org-box .nombre{ font-size:.74rem; }
+    .org-box .cargo{ font-size:.66rem; }
+    .org-box.staff, .org-box.vacante{ width:118px; }
+  }
+
+  .stats-bar {
+  background: #0f2340; /* Mismo azul oscuro del header */
+  color: #fff;
+  padding: 30px 0;
+  margin-top: -20px; /* Opcional: para que se superponga un poco al hero si quieres */
+}
+.stats-container {
+  display: flex;
+  justify-content: space-around;
+  text-align: center;
+}
+.stat-item h3 {
+  margin: 0;
+  font-size: 1.8rem;
+  color: #fff;
+}
+.stat-item p {
+  margin: 0;
+  font-size: 0.9rem;
+  opacity: 0.8;
+}
+
+.section-divider {
+  text-align: center;
+  padding: 40px 0;
+}
+
+.divider-title {
+  font-family: var(--font-display, serif);
+  color: var(--clr-primary, #1a3a6b);
+  margin-bottom: 10px;
+}
+
+.divider-line {
+  height: 3px;
+  background: var(--clr-primary, #1a3a6b);
+  width: 0; /* Empieza en 0 */
+  margin: 0 auto;
+  border-radius: 2px;
+  /* La animación se llama 'expandir' */
+  animation: expandir 1.5s ease-out forwards;
+}
+
+/* Definición de la animación */
+@keyframes expandir {
+  to {
+    width: 100px; /* Crece hasta 100px de ancho */
+  }
+
+  .stats-bar {
+  animation: fadeIn 1.5s ease-in;
+}
+
+@keyframes fadeIn {
+  from { opacity: 0; transform: translateY(20px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+}
+</style>
+</head>
+<body>
+
+<header id="header">
+  <div class="header-container">
+    <a href="#" class="logo-link">
+      <div style="width:56px;height:56px;flex-shrink:0;display:flex;align-items:center;justify-content:center;">
+        <img src="../assets/img/logo.jpeg" alt="Logo" style="width:56px;height:56px; border-radius: 25px;">
+      </div>
+      <div class="logo-texts">
+        <div class="l1">Contraloría del <br>Municipio Páez</div>
+      </div>
+    </a>
+    <nav id="navbar">
+      <a href="../index.html" target="_blank">Inicio</a>
+    </nav>
+  </div>
+</header>
+
+<section class="hero-banner org-hero" 
+         style="background: linear-gradient(135deg, rgba(26, 58, 107, 0.85) 0%), url('../assets/img/portadahero.jpg') center/cover no-repeat;">
+  
+  <div class="hero-content">
+    <h1 class="hero-title">Estructura Organizativa</h1>
+    <p class="hero-desc">Organización al servicio del pueblo, conoce el esquema de trabajo y las direcciones troncales que conforman la Contraloría del Municipio Páez.</p>
+  </div>
+  
+</section>
+
+<!-- Barra de estadísticas -->
+<section class="stats-bar">
+  <div class="container stats-container">
+    <div class="stat-item">
+      <h3 class="counter" data-target="15">+15</h3>
+      <p>Direcciones Activas</p>
+    </div>
+    <div class="stat-item">
+      <h3 class="counter" data-target="2026">2026</h3>
+      <p>Estructura Vigente</p>
+    </div>
+    <div class="stat-item">
+      <h3 class="counter" data-target="100">100%</h3>
+      <p>Ética como Pilar</p>
+    </div>
+  </div>
+</section>
+
+<section class="section-divider">
+  <div class="container">
+    <h2 class="divider-title">Jerarquía Institucional</h2>
+    <div class="divider-line"></div>
+  </div>
+</section>
+
+<main id="main">
+  <section class="org-section">
+    <div class="container">
+
+      <div class="org-scroll">
+        <ul class="org-tree">
+          <li>
+            <div class="org-box top">
+              <span class="nombre">Leonel Lucena</span>
+              <span class="cargo">Contralor del Municipio Páez</span>
+            </div>
+
+            <ul>
+              <!-- 1. Dir. Auditoría Interna -->
+              <li>
+                <div class="org-box dir">
+                  <span class="nombre">Merys Tovar</span>
+                  <span class="cargo">Dir. Auditoría Interna</span>
+                </div>
+              </li>
+
+              <!-- 2. Dir. Servicios Jurídicos -->
+              <li>
+                <div class="org-box dir">
+                  <span class="nombre">Esther Jiménez</span>
+                  <span class="cargo">Dir. Servicios Jurídicos</span>
+                </div>
+              </li>
+
+              <!-- 3. Dir. Atención al Ciudadano -->
+              <li>
+                <div class="org-box dir">
+                  <span class="nombre">Yessenia Figueredo</span>
+                  <span class="cargo">Dir. Atención al Ciudadano</span>
+                </div>
+                <ul>
+                  <li>
+                    <div class="org-box staff">
+                      <span class="nombre">Maribel Chirinos</span>
+                      <span class="cargo">Promotor Atención Ciud.</span>
+                    </div>
+                  </li>
+                  <li>
+                    <div class="org-box staff">
+                      <span class="nombre">Juan Aranguren</span>
+                      <span class="cargo">Promotor Atención Ciud.</span>
+                    </div>
+                  </li>
+                </ul>
+              </li>
+
+              <!-- 4. Dir. Planif, Sec. y Archivo -->
+              <li>
+                <div class="org-box dir">
+                  <span class="nombre">Yolanda Rivero</span>
+                  <span class="cargo">Dir. Planif, Sec. y Archivo</span>
+                </div>
+                <ul>
+                  <li>
+                    <div class="org-box staff">
+                      <span class="nombre">Juan Romero</span>
+                      <span class="cargo">Planificador</span>
+                    </div>
+                  </li>
+                  <li>
+                    <div class="org-box staff">
+                      <span class="nombre">Jesus Unda</span>
+                      <span class="cargo">Archivista</span>
+                    </div>
+                  </li>
+                  <li>
+                    <div class="org-box staff">
+                      <span class="nombre">José Salas</span>
+                      <span class="cargo">Mensajero</span>
+                    </div>
+                  </li>
+                  <li>
+                    <div class="org-box staff">
+                      <span class="nombre">Alejandro Soto</span>
+                      <span class="cargo">Oficial de Seguridad</span>
+                    </div>
+                    <ul>
+                      <li>
+                        <div class="org-box staff">
+                          <span class="nombre">Jesús Grumeite</span>
+                          <span class="cargo">Operador Logística</span>
+                        </div>
+                      </li>
+                      <li>
+                        <div class="org-box staff">
+                          <span class="nombre">José Parra</span>
+                          <span class="cargo">Operador Logístico</span>
+                        </div>
+                      </li>
+                      <li>
+                        <div class="org-box staff">
+                          <span class="nombre">Martiza Palacios</span>
+                          <span class="cargo">Operador Logístico</span>
+                        </div>
+                      </li>
+                    </ul>
+                  </li>
+                </ul>
+              </li>
+
+              <!-- 5. Dir. Administrativo -->
+              <li>
+                <div class="org-box dir">
+                  <span class="nombre">Mary Urriola</span>
+                  <span class="cargo">Dir. Administrativo</span>
+                </div>
+                <ul>
+                  <li>
+                    <div class="org-box staff">
+                      <span class="nombre">Jenifer Peña</span>
+                      <span class="cargo">Jefe de Presupuesto</span>
+                    </div>
+                  </li>
+                  <li>
+                    <div class="org-box staff">
+                      <span class="nombre">Betzaida Suarez</span>
+                      <span class="cargo">Jefe de Bienes e Informática</span>
+                    </div>
+                  </li>
+                </ul>
+              </li>
+
+              <!-- 6. Dir. Talento Humano -->
+              <li>
+                <div class="org-box dir">
+                  <span class="nombre">Luis Jimenez</span>
+                  <span class="cargo">Dir. Talento Humano</span>
+                </div>
+              </li>
+
+              <!-- 7. Dir. Control Posterior -->
+              <li>
+                <div class="org-box dir ctrl">
+                  <span class="nombre">Yanni Leal</span>
+                  <span class="cargo">Dir. Control Posterior</span>
+                </div>
+                <ul>
+                  <li>
+                    <div class="org-box staff">
+                      <span class="nombre">Lusbely Verde</span>
+                      <span class="cargo">Jefe de Actuaciones</span>
+                    </div>
+                    <ul>
+                      <li>
+                        <div class="org-box staff">
+                          <span class="nombre">Diana Gutiérrez</span>
+                          <span class="cargo">Auditor de Ctrol. Posterior</span>
+                        </div>
+                      </li>
+                      <li>
+                        <div class="org-box staff">
+                          <span class="nombre">Dierésis Aldana</span>
+                          <span class="cargo">Auditor de Ctrol. Posterior</span>
+                        </div>
+                      </li>
+                      <li>
+                        <div class="org-box staff">
+                          <span class="nombre">José Ramirez</span>
+                          <span class="cargo">Auditor de Ctrol. Posterior</span>
+                        </div>
+                      </li>
+                      <li>
+                        <div class="org-box staff">
+                          <span class="nombre">José López</span>
+                          <span class="cargo">Auditor de Ctrol. Posterior</span>
+                        </div>
+                      </li>
+                      <li>
+                        <div class="org-box staff">
+                          <span class="nombre">Darlin Alvarado</span>
+                          <span class="cargo">Auditor de Ctrol. Posterior</span>
+                        </div>
+                      </li>
+                      <li>
+                        <div class="org-box vacante">
+                          <span class="nombre">VACANTE</span>
+                          <span class="cargo">Auditor de Ctrol. Posterior</span>
+                        </div>
+                      </li>
+                      <li>
+                        <div class="org-box vacante">
+                          <span class="nombre">VACANTE</span>
+                          <span class="cargo">Auditor de Ctrol. Posterior</span>
+                        </div>
+                      </li>
+                      <li>
+                        <div class="org-box vacante">
+                          <span class="nombre">VACANTE</span>
+                          <span class="cargo">Auditor de Ctrol. Posterior</span>
+                        </div>
+                      </li>
+                    </ul>
+                  </li>
+                </ul>
+              </li>
+
+              <!-- 8. Dir. Potestad Investigativa -->
+              <li>
+                <div class="org-box dir ctrl">
+                  <span class="nombre">Juan Tejea</span>
+                  <span class="cargo">Dir. Potestad Investigativa</span>
+                </div>
+                <ul>
+                  <li>
+                    <div class="org-box vacante">
+                      <span class="nombre">VACANTE</span>
+                      <span class="cargo">Abogado Adscrito</span>
+                    </div>
+                  </li>
+                </ul>
+              </li>
+
+              <!-- 9. Dir. Determ. de Responsabilidades -->
+              <li>
+                <div class="org-box dir ctrl">
+                  <span class="nombre">Gustavo Montes</span>
+                  <span class="cargo">Dir. Determ. de Responsabilidades</span>
+                </div>
+              </li>
+            </ul>
+          </li>
+        </ul>
+      </div>
+
+    </div>
+  </section>
+
+  <div class="back-wrap">
+    <a href="../index.html" class="btn-back">
+      <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M19 12H5M12 5l-7 7 7 7"/></svg>
+      Regresar
+    </a>
+  </div>
+</main>
+
+<script>
+  const counters = document.querySelectorAll('.counter');
+  
+  counters.forEach(counter => {
+    const updateCount = () => {
+      const target = +counter.getAttribute('data-target');
+      const count = +counter.innerText.replace(/[^0-9]/g, '');
+      const speed = 200; // Ajusta la velocidad aquí
+      const inc = target / speed;
+
+      if (count < target) {
+        counter.innerText = Math.ceil(count + inc);
+        setTimeout(updateCount, 10);
+      } else {
+        counter.innerText = target === 15 ? '+15' : target === 100 ? '100%' : target;
+      }
+    };
+    updateCount();
+  });
+</script> 
+<footer>
+  <div class="footer-inner">
+    <div class="row g-4 pb-4" style="border-bottom: 1px solid rgba(255,255,255,0.1); margin-bottom: 24px;">
+      <div class="col-lg-4 col-md-6 footer-brand">
+        <img src="../assets/img/logo.jpeg" alt="Logo" style="width:56px;height:56px; border-radius: 25px;">
+        <p style="margin-top:12px;">Contraloría del Municipio Páez — Estado Portuguesa, República Bolivariana de Venezuela. Órgano de Control Fiscal Municipal.</p>
+        <div class="rif">RIF: G-20002790-4 · Acarigua, Estado Portuguesa</div>
+        <div class="social-row">
+          <a href="https://www.instagram.com/contraloria_mpaez/" target="_blank" title="Instagram">
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+              <rect x="2" y="2" width="20" height="20" rx="5" ry="5"/><circle cx="12" cy="12" r="4"/><circle cx="17.5" cy="6.5" r="0.5" fill="currentColor"/>
+            </svg>
+          </a>
+          <a href="https://www.facebook.com/contraloriamunicipiopaez.estadoportuguesa?mibextid=wwXIfr" target="_blank" title="Facebook">
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+              <path d="M18 2h-3a5 5 0 0 0-5 5v3H7v4h3v8h4v-8h3l1-4h-4V7a1 1 0 0 1 1-1h3z"/>
+            </svg>
+          </a>
+          <a href="https://x.com/cmeppaez" target="_blank" title="Twitter / X">
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+              <path d="M4 4l16 16M4 20L20 4"/><path d="M20 4h-5l-11 16h5"/>
+            </svg>
+          </a>
+        </div>
+      </div>
+    </div>
+    <p style="text-align:center; font-size:0.75rem; color:rgba(255,255,255,0.35); margin:0;">
+      © 2026 Contraloría del Municipio Páez · Estado Portuguesa
+    </p>
+  </div>
+</footer>
+
+</body>
+</html>

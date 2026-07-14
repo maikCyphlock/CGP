@@ -23,7 +23,7 @@
     </a>
 
     <nav id="navbar">
-      <a href="contraloria.html" target="_blank" class="Inicio de Pagina">Inicio</a>
+      <a href="../index.html" target="_blank" class="Inicio de Pagina">Inicio</a>
     </nav>
   </div>
 </header>
@@ -117,7 +117,7 @@
 
   <!-- Back Button -->
   <div class="back-wrap">
-    <a href="contraloria.html" class="btn-back">
+    <a href="../index.html" class="btn-back">
       <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M19 12H5M12 5l-7 7 7 7"/></svg>
       Regresar
     </a>
@@ -261,7 +261,7 @@ function renderTable() {
   /* info text */
   const from = total ? start + 1 : 0;
   const to   = Math.min(start + entriesPerPage, total);
-  pageInfo.textContent = `Mostrando del ítem ${from} al ${to} de un total de ${total} ítem${total !== 1 ? "s" : ""}`;
+  pageInfo.textContent = `Mostrando el contenido del ${from} al ${to}, da un total de ${total} contenido${total !== 1 ? "s" : ""}`;
 
   renderPagination(pages);
 }

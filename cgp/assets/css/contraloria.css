@@ -17,6 +17,11 @@ body {
   overflow-x: hidden;
 }
 
+p {
+    text-align: justify;
+    line-height: 1.7; 
+}
+
 
 /* ─── HEADER ─── */
 
@@ -1104,4 +1109,3 @@ footer {
   border-radius: 6px;
   padding: 28px 32px;
 }
-
