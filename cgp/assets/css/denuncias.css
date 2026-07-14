@@ -537,7 +537,8 @@
 }
 
 /* Inline de celda de tabla (señalados) */
-.tabla-senalados td input {
+.tabla-senalados td input,
+.tabla-senalados td select {
   border: 1px solid #cdd5e0;
   border-radius: 4px;
   padding: 6px 8px;
@@ -549,7 +550,8 @@
   box-sizing: border-box;
 }
 
-.tabla-senalados td input:focus {
+.tabla-senalados td input:focus,
+.tabla-senalados td select:focus {
   outline: none;
   border-color: #1565c0;
 }
@@ -699,6 +701,61 @@
   border-color: #1565c0;
   color: #1565c0;
   background: #eef4ff;
+}
+
+
+/* ─── TABLA DE DATOS DEMOGRÁFICOS (Nivel Educativo / Profesión / Ocupación) ─── */
+
+.tabla-demografica {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 0.82rem;
+  background: #ffffff;
+  border: 1px solid #dde3ee;
+  border-radius: 6px;
+  overflow: hidden;
+}
+
+.tabla-demografica thead tr {
+  background: #f2f5fb;
+}
+
+.tabla-demografica th {
+  color: #4d5b78;
+  padding: 9px 12px;
+  text-align: left;
+  font-size: 0.68rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+  border-bottom: 1px solid #dde3ee;
+}
+
+.tabla-demografica td {
+  padding: 10px 12px;
+  vertical-align: top;
+}
+
+.tabla-demografica td .form-control,
+.tabla-demografica td .form-select {
+  margin-bottom: 0;
+}
+
+
+/* ─── BLOQUES DINÁMICOS DE SEÑALADO ─── */
+
+.bloque-senalado-dinamico {
+  background: #f7f9fd;
+  border: 1px solid #dde3ee;
+  border-radius: 6px;
+  padding: 18px 20px 4px;
+  margin-top: 16px;
+  animation: deslizarEntrada 0.2s ease;
+}
+
+.bloque-senalado-dinamico .form-section-title {
+  margin-bottom: 14px;
+  font-size: 0.68rem;
 }
 
 

@@ -428,14 +428,18 @@
                 <div class="col-md-2">
                   <div class="form-group">
                     <label class="form-label">Edad <span class="required">*</span></label>
-                    <input type="number" id="cit-edad" class="form-control" placeholder="Años" min="1" max="120">
-                    <span class="error-msg" id="cit-edad-err">Ingrese una edad válida.</span>
+                    <input type="text" id="cit-edad" class="form-control" placeholder="Se calcula automáticamente"
+                      readonly tabindex="-1"
+                      style="background:#f2f4f8;color:#5a6474;cursor:not-allowed;">
+                    <span class="error-msg" id="cit-edad-err">La edad se calcula a partir de la fecha de
+                      nacimiento.</span>
                   </div>
                 </div>
                 <div class="col-md-3">
                   <div class="form-group">
                     <label class="form-label">Fecha de Nacimiento <span class="required">*</span></label>
-                    <input type="date" id="cit-fecha-nac" class="form-control">
+                    <input type="date" id="cit-fecha-nac" class="form-control"
+                      onchange="actualizarEdadComputada(this)">
                     <span class="error-msg" id="cit-fecha-nac-err">Seleccione su fecha de nacimiento.</span>
                   </div>
                 </div>
@@ -452,25 +456,41 @@
                     </select>
                   </div>
                 </div>
-                <div class="col-md-2">
-                  <div class="form-group">
-                    <label class="form-label">Nivel Educativo</label>
-                    <select id="cit-edu" class="form-select">
-                      <option value="">-- Seleccione --</option>
-                      <option>Primaria</option>
-                      <option>Secundaria</option>
-                      <option>Técnico</option>
-                      <option>Universitario</option>
-                      <option>Postgrado</option>
-                    </select>
-                  </div>
-                </div>
-                <div class="col-md-4">
-                  <div class="form-group">
-                    <label class="form-label">Profesión u Ocupación</label>
-                    <input type="text" id="cit-profesion" class="form-control"
-                      placeholder="Ej. Docente, Comerciante...">
-                  </div>
+              </div>
+
+              <!-- Datos demográficos en tabla: Nivel Educativo / Profesión / Ocupación -->
+              <div class="form-group" style="margin-top:8px;">
+                <label class="form-label"></label>
+                <div style="overflow-x:auto;">
+                  <table class="tabla-demografica">
+                    <thead>
+                      <tr>
+                        <th>Nivel Educativo</th>
+                        <th>Profesión</th>
+                        <th>Ocupación</th>
+                      </tr>
+                    </thead>
+                    <tbody>
+                      <tr>
+                        <td>
+                          <select id="cit-edu" class="form-select">
+                            <option value="">-- Seleccione --</option>
+                            <option>Primaria</option>
+                            <option>Secundaria</option>
+                            <option>Técnico</option>
+                            <option>Universitario</option>
+                            <option>Postgrado</option>
+                          </select>
+                        </td>
+                        <td>
+                          <input type="text" id="cit-profesion" class="form-control" placeholder="Ej. Docente, Ingeniero...">
+                        </td>
+                        <td>
+                          <input type="text" id="cit-ocupacion" class="form-control" placeholder="Ej. Comerciante independiente">
+                        </td>
+                      </tr>
+                    </tbody>
+                  </table>
                 </div>
               </div>
             </div>
@@ -489,28 +509,47 @@
                 <div class="col-md-4">
                   <div class="form-group">
                     <label class="form-label">Correo Electrónico <span class="required">*</span></label>
-                    <input type="email" id="cit-correo" class="form-control" placeholder="correo@ejemplo.com">
+                    <input type="email" id="cit-correo" class="form-control" placeholder="ejemplo@gmail.com">
                     <span class="error-msg" id="cit-correo-err">Ingrese un correo válido.</span>
                   </div>
                 </div>
                 <div class="col-md-4">
                   <div class="form-group">
                     <label class="form-label">Confirmar Correo <span class="required">*</span></label>
-                    <input type="email" id="cit-correo2" class="form-control" placeholder="Repita su correo">
+                    <input type="email" id="cit-correo2" class="form-control" placeholder="ejemplo@gmail.com">
                     <span class="error-msg" id="cit-correo2-err">Los correos no coinciden.</span>
                   </div>
                 </div>
-                <div class="col-md-2">
+                <div class="col-md-4">
                   <div class="form-group">
                     <label class="form-label">Teléfono Celular <span class="required">*</span></label>
-                    <input type="tel" id="cit-telf-cel" class="form-control" placeholder="04XX-XXXXXXX">
-                    <span class="error-msg" id="cit-telf-cel-err">Formato: 04XX-XXXXXXX.</span>
+                    <div style="display:flex;gap:6px;">
+                      <select id="cit-telf-cel-cod" class="form-select" style="max-width:110px;flex-shrink:0;">
+                        <option value="">Cód.</option>
+                        <option value="0412">0412</option>
+                        <option value="0414">0414</option>
+                        <option value="0416">0416</option>
+                        <option value="0424">0424</option>
+                        <option value="0426">0426</option>
+                      </select>
+                      <input type="tel" id="cit-telf-cel-num" class="form-control" placeholder="1234567" maxlength="7">
+                    </div>
+                    <span class="error-msg" id="cit-telf-cel-err">Seleccione el código y escriba los 7 dígitos
+                      restantes.</span>
                   </div>
                 </div>
-                <div class="col-md-2">
+                <div class="col-md-4">
                   <div class="form-group">
                     <label class="form-label">Teléfono Habitación</label>
-                    <input type="tel" id="cit-telf-hab" class="form-control" placeholder="0255-XXXXXXX">
+                    <div style="display:flex;gap:6px;">
+                      <select id="cit-telf-hab-cod" class="form-select" style="max-width:130px;flex-shrink:0;">
+                        <option value="">Cód.</option>
+                        <option value="0255">0255 — Acarigua-Araure</option>
+                      </select>
+                      <input type="tel" id="cit-telf-hab-num" class="form-control" placeholder="1234567" maxlength="7">
+                    </div>
+                    <span class="error-msg" id="cit-telf-hab-err">Seleccione el código y escriba los 7 dígitos
+                      restantes.</span>
                   </div>
                 </div>
                 <div class="col-md-3">
@@ -567,9 +606,9 @@
         </div><!-- /paso-2 -->
 
 
-        <!-- ─────────────────────────────────────────────────
+<!-- ─────────────────────────────────────────────────
            PASO 3 — DATOS DEL SEÑALADO
-           Tabla de señalados + bloque de proyecto (solo Tipo A)
+           Tabla eliminada y datos distribuidos por checkbox
            ───────────────────────────────────────────────── -->
         <div class="wizard-paso" id="paso-3" style="display:none;">
 
@@ -610,27 +649,27 @@
                 <label class="form-label">¿Contra quién o qué instancia va dirigida?</label>
                 <div class="check-group" id="tipo-senalado-grupo">
                   <label class="check-item">
-                    <input type="checkbox" name="tipo_senalado" value="persona_natural">
+                    <input type="checkbox" name="tipo_senalado" value="persona_natural" onchange="onTipoSenaladoChange(this)">
                     <label>Persona Natural</label>
                   </label>
                   <label class="check-item">
-                    <input type="checkbox" name="tipo_senalado" value="persona_juridica">
+                    <input type="checkbox" name="tipo_senalado" value="persona_juridica" onchange="onTipoSenaladoChange(this)">
                     <label>Persona Jurídica</label>
                   </label>
                   <label class="check-item">
-                    <input type="checkbox" name="tipo_senalado" value="organo_ente">
+                    <input type="checkbox" name="tipo_senalado" value="organo_ente" onchange="onTipoSenaladoChange(this)">
                     <label>Órgano o Ente</label>
                   </label>
                   <label class="check-item">
-                    <input type="checkbox" name="tipo_senalado" value="comuna">
+                    <input type="checkbox" name="tipo_senalado" value="comuna" onchange="onTipoSenaladoChange(this)">
                     <label>Comuna</label>
                   </label>
                   <label class="check-item">
-                    <input type="checkbox" name="tipo_senalado" value="consejo_comunal">
+                    <input type="checkbox" name="tipo_senalado" value="consejo_comunal" onchange="onTipoSenaladoChange(this)">
                     <label>Consejo Comunal</label>
                   </label>
                   <label class="check-item">
-                    <input type="checkbox" name="tipo_senalado" value="juez_paz">
+                    <input type="checkbox" name="tipo_senalado" value="juez_paz" onchange="onTipoSenaladoChange(this)">
                     <label>Juez de Paz</label>
                   </label>
                 </div>
@@ -646,6 +685,123 @@
                 <span class="error-msg" id="tipo-senalado-err">Debe seleccionar al menos un tipo de señalado.</span>
               </div>
 
+              <!-- Contenedor de mini-formularios dinámicos según el/los tipo(s) marcado(s) -->
+              <div id="detalle-senalados-dinamico">
+                
+                <!-- Datos Persona Natural -->
+                <div class="bloque-senalado-dinamico" id="form-persona-natural" style="display:none;">
+                  <div class="form-section-title">Datos de Persona Natural</div>
+                  <div class="row g-3">
+                    <div class="col-md-3">
+                      <div class="form-group">
+                        <label class="form-label">Tipo de Documento <span class="required">*</span></label>
+                        <select class="form-select">
+                          <option value="">Seleccionar</option>
+                          <option value="V">V — Venezolano</option>
+                          <option value="E">E — Extranjero</option>
+                          <option value="P">P — Pasaporte</option>
+                        </select>
+                      </div>
+                    </div>
+                    <div class="col-md-4">
+                      <div class="form-group">
+                        <label class="form-label">Cédula (V/E) <span class="required">*</span></label>
+                        <input type="text" class="form-control" placeholder="00000000">
+                      </div>
+                    </div>
+                    <div class="col-md-5">
+                      <div class="form-group">
+                        <label class="form-label">Apellidos y Nombres <span class="required">*</span></label>
+                        <input type="text" class="form-control" placeholder="Apellido, Nombre">
+                      </div>
+                    </div>
+                  </div>
+                </div>
+
+                <!-- Datos Persona Jurídica -->
+                <div class="bloque-senalado-dinamico" id="form-persona-juridica" style="display:none;">
+                  <div class="form-section-title">Datos de Persona Jurídica</div>
+                  <div class="row g-3">
+                    <div class="col-md-4">
+                      <div class="form-group">
+                        <label class="form-label">R.I.F. <span class="required">*</span></label>
+                        <input type="text" class="form-control" placeholder="J-XXXXXXXX">
+                      </div>
+                    </div>
+                    <div class="col-md-8">
+                      <div class="form-group">
+                        <label class="form-label">Razón Social <span class="required">*</span></label>
+                        <input type="text" class="form-control" placeholder="Nombre de la empresa">
+                      </div>
+                    </div>
+                  </div>
+                </div>
+
+                <!-- Datos Órgano o Ente -->
+                <div class="bloque-senalado-dinamico" id="form-organo-ente" style="display:none;">
+                  <div class="form-section-title">Datos del Órgano o Ente</div>
+                  <div class="row g-3">
+                    <div class="col-md-4">
+                      <div class="form-group">
+                        <label class="form-label">R.I.F. (G/J) <span class="required">*</span></label>
+                        <input type="text" class="form-control" placeholder="G-XXXXXXXX">
+                      </div>
+                    </div>
+                    <div class="col-md-8">
+                      <div class="form-group">
+                        <label class="form-label">Nombre de la Institución <span class="required">*</span></label>
+                        <input type="text" class="form-control" placeholder="Nombre del órgano o ente">
+                      </div>
+                    </div>
+                  </div>
+                </div>
+
+                <!-- Datos Comuna / Consejo Comunal -->
+                <div class="bloque-senalado-dinamico" id="form-comuna" style="display:none;">
+                  <div class="form-section-title">Datos de Instancia Comunal</div>
+                  <div class="row g-3">
+                    <div class="col-md-4">
+                      <div class="form-group">
+                        <label class="form-label">Código SITUR <span class="required">*</span></label>
+                        <input type="text" class="form-control" placeholder="Código SITUR">
+                      </div>
+                    </div>
+                    <div class="col-md-4">
+                      <div class="form-group">
+                        <label class="form-label">R.I.F. (C) <span class="required">*</span></label>
+                        <input type="text" class="form-control" placeholder="C-XXXXXXXX">
+                      </div>
+                    </div>
+                    <div class="col-md-12">
+                      <div class="form-group">
+                        <label class="form-label">Nombre del Consejo Comunal / Comuna <span class="required">*</span></label>
+                        <input type="text" class="form-control" placeholder="Nombre de la instancia">
+                      </div>
+                    </div>
+                  </div>
+                </div>
+
+                <!-- Datos Juez de Paz -->
+                <div class="bloque-senalado-dinamico" id="form-juez-paz" style="display:none;">
+                  <div class="form-section-title">Datos del Juez de Paz</div>
+                  <div class="row g-3">
+                    <div class="col-md-4">
+                      <div class="form-group">
+                        <label class="form-label">Cédula <span class="required">*</span></label>
+                        <input type="text" class="form-control" placeholder="00000000">
+                      </div>
+                    </div>
+                    <div class="col-md-8">
+                      <div class="form-group">
+                        <label class="form-label">Apellidos y Nombres <span class="required">*</span></label>
+                        <input type="text" class="form-control" placeholder="Apellido, Nombre">
+                      </div>
+                    </div>
+                  </div>
+                </div>
+
+              </div>
+
               <!-- Ubicación geográfica del señalado -->
               <div class="form-group" style="margin-top:16px;">
                 <label class="form-label">
@@ -656,70 +812,6 @@
                 <span class="error-msg" id="sen-ubicacion-err">Ingrese la ubicación del señalado (mínimo 5
                   caracteres).</span>
               </div>
-            </div>
-
-            <!-- Tabla de señalados -->
-            <div class="form-section">
-              <div class="form-section-title" id="tabla-sen-title-color">
-                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"
-                  stroke-linecap="round" stroke-linejoin="round">
-                  <rect x="3" y="3" width="18" height="18" rx="2" ry="2" />
-                  <line x1="3" y1="9" x2="21" y2="9" />
-                  <line x1="3" y1="15" x2="21" y2="15" />
-                  <line x1="9" y1="3" x2="9" y2="21" />
-                </svg>
-                Datos del Señalado(s) <span style="color:#e63946;margin-left:3px;">*</span>
-              </div>
-              <p style="font-size:0.78rem;color:#888;margin-bottom:12px;">
-                Al menos un señalado debe tener Cédula/RIF o Nombre completo.
-              </p>
-              <div style="overflow-x:auto;margin-bottom:12px;">
-                <table class="tabla-senalados" id="tabla-senalados">
-                  <thead>
-                    <tr>
-                      <th>Cédula (V/E)</th>
-                      <th>Apellidos y Nombres</th>
-                      <th>Nombre del Consejo Comunal / Comuna</th>
-                      <th>Código SITUR</th>
-                      <th>R.I.F.</th>
-                      <th></th>
-                    </tr>
-                  </thead>
-                  <tbody id="tbody-senalados">
-                    <tr>
-                      <td><input type="text" placeholder="V-00000000" oninput="validarCeldaCedula(this)"
-                          onblur="validarCeldaCedula(this)"></td>
-                      <td><input type="text" placeholder="Apellido, Nombre" oninput="validarCeldaNombre(this)"
-                          onblur="validarCeldaNombre(this)"></td>
-                      <td><input type="text" placeholder="Nombre de la instancia"></td>
-                      <td><input type="text" placeholder="Código SITUR" oninput="validarCeldaSitur(this)"
-                          onblur="validarCeldaSitur(this)"></td>
-                      <td><input type="text" placeholder="J-XXXXXXXX" oninput="validarCeldaRif(this)"
-                          onblur="validarCeldaRif(this)"></td>
-                      <td>
-                        <button type="button" onclick="eliminarFilaSenalado(this)" title="Eliminar fila"
-                          class="btn-tabla-eliminar">
-                          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor"
-                            stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
-                            <line x1="18" y1="6" x2="6" y2="18" />
-                            <line x1="6" y1="6" x2="18" y2="18" />
-                          </svg>
-                        </button>
-                      </td>
-                    </tr>
-                  </tbody>
-                </table>
-              </div>
-              <span class="error-msg" id="tabla-senalados-err">Al menos el primer señalado debe tener cédula o nombre
-                completo.</span>
-              <button type="button" class="btn-agregar-fila" onclick="agregarFilaSenalado()">
-                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"
-                  stroke-linecap="round" stroke-linejoin="round">
-                  <line x1="12" y1="5" x2="12" y2="19" />
-                  <line x1="5" y1="12" x2="19" y2="12" />
-                </svg>
-                Agregar otro señalado
-              </button>
             </div>
 
             <!-- Bloque de Proyecto de Consulta Popular (solo Tipo A / denuncia con consulta = si) -->
