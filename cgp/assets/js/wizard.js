@@ -280,6 +280,7 @@ function guardarSenaladosEnPadron() {
 }
 
 
+
 /* ═══════════════════════════════════════════════════════════
    CONFIGURACIÓN VISUAL POR TIPO
    Define los colores y textos de cabeceras según el tipo
@@ -465,7 +466,7 @@ var PLANTILLAS_SENALADO = {
             construirOpcionesTipoDoc(TIPOS_DOCUMENTO_ENTIDAD, false) +
             '    </select></div></div>' +
             '  <div class="col-md-3"><div class="form-group">' +
-            '    <label class="form-label">Código SITUR</label>' +
+            '    <label class="form-label">Código SITUR / CITUR</label>' +
             '    <input type="text" class="form-control mayusculas" data-campo="cm-situr" placeholder="CÓDIGO SITUR" oninput="this.value=this.value.toUpperCase()"></div></div>' +
             '  <div class="col-md-6"><div class="form-group">' +
             '    <label class="form-label">Nombre de la Comuna <span class="required">*</span></label>' +
@@ -754,26 +755,32 @@ function validarPaso(numeroPaso) {
             errores.push('Número de documento');
             marcarError('cit-nro-doc', 'cit-nro-doc-err');
         }
-        // Nombres
-        if (document.getElementById('cit-nombres').value.trim().length < 5) {
-            errores.push('Apellidos y Nombres');
-            marcarError('cit-nombres', 'cit-nombres-err');
+        // Primer Nombre
+        if (document.getElementById('cit-primer-nombre').value.trim().length < 2) {
+            errores.push('Primer Nombre');
+            marcarError('cit-primer-nombre', 'cit-primer-nombre-err');
         }
+        // Primer Apellido
+        if (document.getElementById('cit-primer-apellido').value.trim().length < 2) {
+            errores.push('Primer Apellido');
+            marcarError('cit-primer-apellido', 'cit-primer-apellido-err');
+        }
+        // Segundo Nombre y Segundo Apellido son opcionales (sin validación)
         // Sexo
         if (!document.getElementById('cit-sexo').value) {
             errores.push('Sexo');
             marcarError('cit-sexo', 'cit-sexo-err');
         }
-        // Edad
-        var edad = parseInt(document.getElementById('cit-edad').value, 10);
-        if (isNaN(edad) || edad < 1 || edad > 120) {
-            errores.push('Edad');
-            marcarError('cit-edad', 'cit-edad-err');
-        }
-        // Fecha de nacimiento
+        // Fecha de nacimiento (la edad se calcula automáticamente a partir de ella)
         if (!document.getElementById('cit-fecha-nac').value) {
             errores.push('Fecha de Nacimiento');
             marcarError('cit-fecha-nac', 'cit-fecha-nac-err');
+        } else {
+            var edadCalculada = calcularEdad(document.getElementById('cit-fecha-nac').value);
+            if (edadCalculada === null || edadCalculada < 1 || edadCalculada > 120) {
+                errores.push('Fecha de Nacimiento (edad inválida)');
+                marcarError('cit-fecha-nac', 'cit-fecha-nac-err');
+            }
         }
         // Correo
         var correo = document.getElementById('cit-correo').value.trim();
@@ -958,6 +965,22 @@ function limpiarTodosLosErrores() {
 }
 
 
+/**
+ * Compone el nombre completo del denunciante a partir de los
+ * cuatro campos separados (primer/segundo nombre y apellido).
+ * @returns {string}
+ */
+function obtenerNombreCompletoCiudadano() {
+    var partes = [
+        document.getElementById('cit-primer-nombre').value.trim(),
+        document.getElementById('cit-segundo-nombre').value.trim(),
+        document.getElementById('cit-primer-apellido').value.trim(),
+        document.getElementById('cit-segundo-apellido').value.trim()
+    ].filter(function (p) { return p.length > 0; });
+    return partes.join(' ');
+}
+
+
 /* ═══════════════════════════════════════════════════════════
    EDAD COMPUTADA A PARTIR DE LA FECHA DE NACIMIENTO
    ═══════════════════════════════════════════════════════════ */
@@ -1048,6 +1071,8 @@ function construirOpcionesTipoSenalado() {
 
 /** Agrega una nueva tarjeta de señalado vacía a la lista. */
 function agregarSenalado() {
+    poblarDatalist('dl-instancias', CLAVE_CATALOGO_INSTANCIAS);
+
     contadorSenalados++;
     var idTarjeta = contadorSenalados;
     var lista = document.getElementById('lista-senalados');
@@ -1265,7 +1290,7 @@ function poblarResumen() {
         new Date().toLocaleDateString('es-VE', { day: '2-digit', month: 'long', year: 'numeric' });
 
     document.getElementById('res-nombres').textContent =
-        document.getElementById('cit-nombres').value || '—';
+        obtenerNombreCompletoCiudadano() || '—';
 
     document.getElementById('res-cedula').textContent =
         (document.getElementById('cit-tipo-doc').value || '') + ' ' +
@@ -1311,12 +1336,9 @@ function enviarSolicitud() {
     }
     errDecl.classList.remove('visible');
 
-    // Actualizar las tablas relacionadas (padrón de ciudadanos y señalados)
-    // para que futuras solicitudes con los mismos datos se autocompleten.
-    guardarCiudadanoEnPadron();
+    // Guardar los señalados en el padrón local, para autocompletar
+    // denuncias futuras contra el mismo señalado (por R.I.F.).
     guardarSenaladosEnPadron();
-    registrarEnCatalogo(CLAVE_CATALOGO_FINANCIADORES, document.getElementById('proy-financiador').value);
-    inicializarDatalists();
 
     // Generar número de expediente único (formato: OAC-AÑO-XXXX)
     var anio = new Date().getFullYear();
@@ -1409,9 +1431,6 @@ function nuevaSolicitud() {
     // Limpiar lista de archivos
     document.getElementById('archivos-lista').innerHTML = '';
     document.getElementById('archivo-err').style.display = 'none';
-
-    // Ocultar mensaje de autorrelleno
-    document.getElementById('cit-autofill-msg').style.display = 'none';
 
     // Resetear contador de narración
     document.getElementById('narracion-contador').textContent = '0 / 3000 caracteres';
