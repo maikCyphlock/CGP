@@ -5,8 +5,6 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Recepción de Atención al Cliente – Contraloría del Municipio Páez</title>
-
-  <!-- Fuentes institucionales -->
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link
     href="https://fonts.googleapis.com/css2?family=Roboto:wght@300;400;500;700;900&family=Open+Sans:wght@400;600;700&display=swap"
@@ -72,11 +70,6 @@
         </div>
       </div>
 
-
-      <!-- ══════════════════════════════════════
-         BARRA DE PROGRESO (Pasos 1–5)
-         Oculta en la vista de selección; se activa al elegir tipo
-         ══════════════════════════════════════ -->
       <div id="barra-progreso" style="display:none;" class="barra-pasos-wrap">
         <div class="barra-pasos">
           <div class="paso-item activo" data-paso="0">
@@ -102,11 +95,6 @@
         </div>
       </div>
 
-
-      <!-- ══════════════════════════════════════
-         VISTA DE SELECCIÓN (Paso 0)
-         Se oculta al elegir un tipo de formulario
-         ══════════════════════════════════════ -->
       <div id="vista-seleccion">
         <h2 class="section-title-center">Seleccione el Tipo de Denuncia</h2>
         <p class="section-subtitle-center">
@@ -172,11 +160,6 @@
         </div>
       </div><!-- /vista-seleccion -->
 
-
-      <!-- ══════════════════════════════════════
-         CONTENEDOR DEL FORMULARIO WIZARD
-         Gestiona los pasos 1–5 para ambos tipos
-         ══════════════════════════════════════ -->
       <div id="vista-wizard" style="display:none;">
 
         <!-- Botón para volver a la selección de tipo -->
@@ -189,10 +172,6 @@
           Volver a la selección
         </button>
 
-        <!-- ─────────────────────────────────────────────────
-           PASO 1 — TIPO DE TRÁMITE / CONTEXTO
-           Diferente contenido según el tipo seleccionado
-           ───────────────────────────────────────────────── -->
         <div class="wizard-paso" id="paso-1">
 
           <!-- Cabecera dinámica del paso (se rellena con JS) -->

@@ -32,12 +32,10 @@
       height: 100vh;
     }
 
-    /* Panel Izquierdo */
-   /* Panel Izquierdo */
     .login-info {
       /* Usamos el azul oscuro (rgb: 13, 27, 62) con 93% de opacidad en ambos extremos */
       background: linear-gradient(135deg, rgba(13, 27, 62, 0.93) 0%, rgba(13, 27, 62, 0.93) 100%), 
-                  url('portadahero.jpg'); /* Mantén el nombre de tu archivo aquí */
+                  url('../cgp/assets/img/portadahero.jpg'); 
       background-size: cover;
       background-position: center;
       width: 50%;
@@ -97,13 +95,13 @@
     }
 
     .form-box {
-      background: rgba(255, 255, 255, 0.1); /* Blanco con mucha transparencia */
-      backdrop-filter: blur(15px);           /* Efecto de desenfoque */
+      background: rgba(255, 255, 255, 0.1); 
+      backdrop-filter: blur(15px);          
       border: 1px solid rgba(255, 255, 255, 0.2);
       padding: 50px 40px;
       border-radius: 20px;
       box-shadow: 0 20px 50px rgba(0, 0, 0, 0.1);
-      color: white;                         /* Texto blanco */
+      color: white;                       
       width: 100%;
       max-width: 450px;
     }
@@ -136,10 +134,10 @@
       color: #1a2340 !important;
       text-align: left !important;
       font-weight: 600;
-      padding: 8px 15px !important; /* Ajustamos: menos espacio arriba/abajo */
-      font-size: 0.85rem !important; /* Ajustamos: fuente un poco más pequeña */
+      padding: 8px 15px !important; 
+      font-size: 0.85rem !important; 
       transition: all 0.3s ease;
-      border-radius: 8px !important; /* Esquinas ligeramente más compactas */
+      border-radius: 8px !important; 
     }
 
     .btn-outline-primary i {
@@ -162,7 +160,7 @@
     }
 
     .btn-login {
-      background-color: #0d1b3e; /* Cambiamos el azul aquí */
+      background-color: #0d1b3e; 
       color: white;
       font-weight: 700;
       padding: 12px;
@@ -173,7 +171,7 @@
     }
 
     .btn-login:hover {
-      background-color: #1a2340; /* Un tono un poco más claro al pasar el mouse */
+      background-color: #1a2340; 
       color: white;
       transform: translateY(-2px);
     }
@@ -232,19 +230,17 @@
       <div class="text-center d-md-none mb-4">
   
       </div>
-      <!-- Reemplaza tu línea h3 actual por este bloque -->
-<div class="d-flex align-items-center justify-content-center mb-4 p-3 rounded" style="background-color: #0d1b3e;">
-  <img src="logo.jpeg" alt="Logo" style="width: 40px; height: 40px; margin-right: 12px; border-radius: 8px; object-fit: cover;">
-  <h3 class="mb-0 text-white" style="font-family: 'Roboto', sans-serif; font-weight: 700;">INICIAR SESIÓN</h3>
-</div>      
-      <form action="admin_cms.html" method="GET">
-        <!-- Selector de Rol -->
+    <div class="d-flex align-items-center justify-content-center mb-4 p-3 rounded" style="background-color: #0d1b3e;">
+    <img src="../cgp/assets/img/logo.jpeg" alt="Logo" style="width: 40px; height: 40px; margin-right: 12px; border-radius: 8px; object-fit: cover;">
+    <h3 class="mb-0 text-white" style="font-family: 'Roboto', sans-serif; font-weight: 700;">INICIAR SESIÓN</h3>
+      </div>      
+      <form action="admin_cms.html" method="GET"> <!-- ese admin_cms.html se refiere al deshboard o al gestor pues, solo que no lo subo aun porque no lo tengo listo-->
         <div class="row g-2">
-  <div class="col-12">
-    <input type="radio" class="btn-check" name="rol" id="rol1" value="editor" checked>
-    <label class="btn btn-outline-primary w-100 py-3 rounded-3 shadow-sm" for="rol1">
-      <i class="bi bi-pencil-square me-2"></i> Gestor de Contenido Web
-    </label>
+     <div class="col-12">
+      <input type="radio" class="btn-check" name="rol" id="rol1" value="editor" checked>
+      <label class="btn btn-outline-primary w-100 py-3 rounded-3 shadow-sm" for="rol1">
+        <i class="bi bi-pencil-square me-2"></i> Gestor de Contenido Web
+       </label>
   </div>
   <div class="col-12">
     <input type="radio" class="btn-check" name="rol" id="rol2" value="denuncias">
@@ -253,8 +249,6 @@
     </label>
   </div>
 </div>
-
-        <!-- Credenciales -->
         <div class="mb-3">
           <hr> 
           <label for="email" class="form-label">Correo electrónico / Usuario</label>
