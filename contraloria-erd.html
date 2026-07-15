@@ -1,0 +1,812 @@
+<!doctype html>
+<html lang="es">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>OAC Contraloría — Canvas relacional</title>
+
+<style>
+  :root {
+    --bg: #0b0d12;
+    --dot: rgba(255,255,255,0.055);
+    --card: #12151c;
+    --card-border: #242a38;
+    --card-border-hover: #3a4258;
+    --ink: #e7e9ee;
+    --ink-dim: #808a9c;
+    --ink-faint: #4c5566;
+    --panel: #14171f;
+    --panel-border: #262c3a;
+    --mono: ui-monospace, "SFMono-Regular", "Menlo", "Consolas", monospace;
+    --sans: -apple-system, "Segoe UI", "Inter", "Helvetica Neue", Arial, sans-serif;
+
+    --g-catalog: #7b8494;
+    --g-identity: #9b7fe8;
+    --g-staff: #5b9bf0;
+    --g-citizen: #4fbf88;
+    --g-case: #35b0a6;
+    --g-respondent: #e0a84e;
+    --g-evidence: #e0824e;
+    --g-audit: #e0637a;
+    --g-cms: #d072cf;
+  }
+
+  * { box-sizing: border-box; }
+  html, body { height: 100%; }
+
+  body {
+    margin: 0;
+    background: var(--bg);
+    color: var(--ink);
+    font-family: var(--sans);
+    overflow: hidden;
+    -webkit-font-smoothing: antialiased;
+  }
+
+  #viewport {
+    position: fixed;
+    inset: 0;
+    overflow: hidden;
+    cursor: grab;
+    background-image: radial-gradient(var(--dot) 1.4px, transparent 1.4px);
+    background-size: 26px 26px;
+  }
+  #viewport.panning { cursor: grabbing; }
+
+  #world {
+    position: absolute;
+    top: 0;
+    left: 0;
+    transform-origin: 0 0;
+    will-change: transform;
+  }
+
+  svg#edges {
+    position: absolute;
+    top: 0;
+    left: 0;
+    overflow: visible;
+    width: 1px;
+    height: 1px;
+    pointer-events: none;
+  }
+
+  svg#edges path {
+    fill: none;
+    stroke-width: 1.6;
+    opacity: 0.38;
+    transition: opacity .15s ease, stroke-width .15s ease;
+  }
+  svg#edges path.hi { opacity: 0.95; stroke-width: 2.2; }
+  svg#edges path.dim { opacity: 0.07; }
+
+  .table-card {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 268px;
+    background: var(--card);
+    border: 1px solid var(--card-border);
+    border-radius: 9px;
+    overflow: hidden;
+    box-shadow: 0 1px 0 rgba(0,0,0,0.4);
+    transition: border-color .15s ease, box-shadow .15s ease, opacity .15s ease;
+  }
+  .table-card.dim { opacity: 0.25; }
+  .table-card.hi { border-color: var(--card-border-hover); box-shadow: 0 8px 28px rgba(0,0,0,0.45); }
+  .table-card.dragging { cursor: grabbing; box-shadow: 0 14px 34px rgba(0,0,0,0.55); z-index: 50; }
+
+  .t-head {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 8px;
+    padding: 8px 10px;
+    font-family: var(--mono);
+    font-size: 12.5px;
+    font-weight: 600;
+    color: #fff;
+    cursor: grab;
+    user-select: none;
+    border-bottom: 1px solid rgba(255,255,255,0.08);
+  }
+  .t-head .count {
+    font-size: 10px;
+    font-weight: 500;
+    opacity: 0.75;
+    font-variant-numeric: tabular-nums;
+  }
+
+  .t-row {
+    display: flex;
+    align-items: center;
+    height: 24px;
+    padding: 0 10px;
+    font-family: var(--mono);
+    font-size: 11.5px;
+    border-bottom: 1px solid rgba(255,255,255,0.035);
+    white-space: nowrap;
+  }
+  .t-row:last-child { border-bottom: none; }
+  .t-row .badge {
+    flex: none;
+    width: 15px;
+    font-size: 9.5px;
+    font-weight: 700;
+    letter-spacing: -0.02em;
+  }
+  .t-row .badge.pk { color: #f0c94e; }
+  .t-row .badge.fk { color: #5b9bf0; }
+  .t-row .name { flex: 1; color: var(--ink); overflow: hidden; text-overflow: ellipsis; }
+  .t-row.is-pk .name { color: #fff; font-weight: 600; }
+  .t-row .type { color: var(--ink-faint); font-size: 10px; margin-left: 8px; text-transform: lowercase; }
+  .t-row .nn { color: var(--g-audit); font-size: 9px; margin-left: 5px; opacity: 0.85; }
+
+  /* toolbar */
+  #toolbar {
+    position: fixed;
+    top: 16px;
+    left: 16px;
+    right: 16px;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    z-index: 100;
+    pointer-events: none;
+  }
+  #toolbar > * { pointer-events: auto; }
+
+  .brand {
+    font-family: var(--mono);
+    font-size: 13px;
+    font-weight: 600;
+    color: #fff;
+    background: var(--panel);
+    border: 1px solid var(--panel-border);
+    border-radius: 8px;
+    padding: 9px 14px;
+    white-space: nowrap;
+  }
+  .brand span { color: var(--ink-dim); font-weight: 500; }
+
+  #search {
+    background: var(--panel);
+    border: 1px solid var(--panel-border);
+    border-radius: 8px;
+    color: var(--ink);
+    font-family: var(--sans);
+    font-size: 13px;
+    padding: 9px 12px;
+    width: 220px;
+    outline: none;
+  }
+  #search::placeholder { color: var(--ink-faint); }
+  #search:focus { border-color: var(--g-staff); }
+
+  .btn-group {
+    display: flex;
+    background: var(--panel);
+    border: 1px solid var(--panel-border);
+    border-radius: 8px;
+    overflow: hidden;
+  }
+  .btn-group button {
+    background: transparent;
+    border: none;
+    border-right: 1px solid var(--panel-border);
+    color: var(--ink);
+    font-family: var(--sans);
+    font-size: 13px;
+    padding: 9px 13px;
+    cursor: pointer;
+  }
+  .btn-group button:last-child { border-right: none; }
+  .btn-group button:hover { background: rgba(255,255,255,0.06); }
+  #zoomLabel {
+    font-family: var(--mono);
+    font-size: 11.5px;
+    color: var(--ink-dim);
+    min-width: 44px;
+    text-align: center;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+  }
+
+  .spacer { flex: 1; }
+
+  #legend {
+    position: fixed;
+    bottom: 16px;
+    left: 16px;
+    z-index: 100;
+    display: flex;
+    flex-wrap: wrap;
+    gap: 6px;
+    max-width: 640px;
+  }
+  .chip {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    background: var(--panel);
+    border: 1px solid var(--panel-border);
+    border-radius: 999px;
+    padding: 5px 11px 5px 8px;
+    font-size: 11px;
+    color: var(--ink-dim);
+    cursor: pointer;
+    user-select: none;
+    transition: border-color .15s ease, color .15s ease;
+  }
+  .chip:hover { color: var(--ink); border-color: var(--card-border-hover); }
+  .chip.off { opacity: 0.35; }
+  .chip .dot { width: 8px; height: 8px; border-radius: 50%; flex: none; }
+
+  #hint {
+    position: fixed;
+    bottom: 16px;
+    right: 16px;
+    z-index: 100;
+    font-family: var(--mono);
+    font-size: 10.5px;
+    color: var(--ink-faint);
+    background: var(--panel);
+    border: 1px solid var(--panel-border);
+    border-radius: 8px;
+    padding: 7px 11px;
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    * { transition: none !important; }
+  }
+</style>
+</head>
+<body>
+
+<div id="toolbar">
+  <div class="brand">oac_contraloria<span>.sql</span></div>
+  <input id="search" type="text" placeholder="Buscar tabla…" autocomplete="off" />
+  <div class="btn-group">
+    <button id="zoomOut" title="Alejar">−</button>
+    <span id="zoomLabel">100%</span>
+    <button id="zoomIn" title="Acercar">+</button>
+    <button id="fit" title="Ajustar a pantalla">Ajustar</button>
+    <button id="reset" title="Reiniciar disposición">Reiniciar</button>
+  </div>
+  <div class="spacer"></div>
+</div>
+
+<div id="viewport">
+  <div id="world">
+    <svg id="edges"></svg>
+  </div>
+</div>
+
+<div id="legend"></div>
+<div id="hint">arrastra el fondo para mover · rueda para zoom · arrastra un encabezado para reordenar</div>
+
+<script>
+(function () {
+  "use strict";
+
+  var GROUPS = {
+    catalog:    { label: "Catálogos",           color: "#7b8494" },
+    identity:   { label: "Identidad y roles",   color: "#9b7fe8" },
+    staff:      { label: "Usuarios internos",   color: "#5b9bf0" },
+    citizen:    { label: "Ciudadanos",          color: "#4fbf88" },
+    case:       { label: "Expedientes",         color: "#35b0a6" },
+    respondent: { label: "Señalados",           color: "#e0a84e" },
+    evidence:   { label: "Evidencias",          color: "#e0824e" },
+    audit:      { label: "Auditoría",           color: "#e0637a" },
+    cms:        { label: "CMS",                 color: "#d072cf" }
+  };
+
+  function c(n, t, opts) {
+    opts = opts || {};
+    return { n: n, t: t, pk: !!opts.pk, fk: !!opts.fk, ref: opts.ref || null, nn: opts.nn !== false };
+  }
+
+  var TABLES = [
+    { id: "id_document_type", group: "catalog", lane: 0, cols: [
+      c("id","int",{pk:true}), c("code","varchar"), c("name","varchar"),
+      c("active","bool"), c("sort_order","int"), c("created_at","datetime"),
+      c("updated_at","datetime"), c("updated_by","char(36)",{fk:true,ref:"staff_user",nn:false})
+    ]},
+    { id: "job_position", group: "catalog", lane: 0, cols: [
+      c("id","int",{pk:true}), c("title","varchar"), c("description","text",{nn:false}),
+      c("active","bool"), c("sort_order","int"), c("created_at","datetime"),
+      c("updated_at","datetime"), c("updated_by","char(36)",{fk:true,ref:"staff_user",nn:false})
+    ]},
+    { id: "app_module", group: "catalog", lane: 0, cols: [
+      c("id","int",{pk:true}), c("code","varchar"), c("name","varchar"),
+      c("active","bool"), c("sort_order","int"), c("created_at","datetime"),
+      c("updated_at","datetime"), c("updated_by","char(36)",{fk:true,ref:"staff_user",nn:false})
+    ]},
+
+    { id: "claim_type", group: "catalog", lane: 1, cols: [
+      c("id","int",{pk:true}), c("code","varchar"), c("name","varchar"), c("validation_level","varchar"),
+      c("active","bool"), c("sort_order","int"), c("created_at","datetime"),
+      c("updated_at","datetime"), c("updated_by","char(36)",{fk:true,ref:"staff_user",nn:false})
+    ]},
+    { id: "irregularity_type", group: "catalog", lane: 1, cols: [
+      c("id","int",{pk:true}), c("code","varchar"), c("name","varchar"), c("legal_basis","text",{nn:false}),
+      c("active","bool"), c("sort_order","int"), c("created_at","datetime"),
+      c("updated_at","datetime"), c("updated_by","char(36)",{fk:true,ref:"staff_user",nn:false})
+    ]},
+    { id: "case_status", group: "catalog", lane: 1, cols: [
+      c("id","int",{pk:true}), c("code","varchar"), c("name","varchar"), c("sort_order","int"),
+      c("is_terminal","bool"), c("active","bool"), c("created_at","datetime"),
+      c("updated_at","datetime"), c("updated_by","char(36)",{fk:true,ref:"staff_user",nn:false})
+    ]},
+    { id: "referral_unit", group: "catalog", lane: 1, cols: [
+      c("id","int",{pk:true}), c("code","varchar"), c("name","varchar"),
+      c("active","bool"), c("sort_order","int"), c("created_at","datetime"),
+      c("updated_at","datetime"), c("updated_by","char(36)",{fk:true,ref:"staff_user",nn:false})
+    ]},
+
+    { id: "respondent_type", group: "catalog", lane: 2, cols: [
+      c("id","int",{pk:true}), c("code","varchar"), c("name","varchar"), c("field_schema","json"),
+      c("active","bool"), c("sort_order","int"), c("created_at","datetime"),
+      c("updated_at","datetime"), c("updated_by","char(36)",{fk:true,ref:"staff_user",nn:false})
+    ]},
+    { id: "physical_doc_type", group: "catalog", lane: 2, cols: [
+      c("id","int",{pk:true}), c("code","varchar"), c("name","varchar"),
+      c("active","bool"), c("sort_order","int"), c("created_at","datetime"),
+      c("updated_at","datetime"), c("updated_by","char(36)",{fk:true,ref:"staff_user",nn:false})
+    ]},
+    { id: "cms_content_type", group: "catalog", lane: 2, cols: [
+      c("id","int",{pk:true}), c("code","varchar"), c("name","varchar"),
+      c("active","bool"), c("sort_order","int"), c("created_at","datetime"),
+      c("updated_at","datetime"), c("updated_by","char(36)",{fk:true,ref:"staff_user",nn:false})
+    ]},
+    { id: "person_role_type", group: "catalog", lane: 2, cols: [
+      c("id","int",{pk:true}), c("code","varchar"), c("name","varchar"),
+      c("active","bool"), c("sort_order","int"), c("created_at","datetime"),
+      c("updated_at","datetime"), c("updated_by","char(36)",{fk:true,ref:"staff_user",nn:false})
+    ]},
+
+    { id: "person", group: "identity", lane: 3, cols: [
+      c("id","char(36)",{pk:true}), c("id_doc_type_id","int",{fk:true,ref:"id_document_type"}),
+      c("id_doc_number","varchar"), c("first_name","varchar"), c("last_name","varchar"),
+      c("sex","char(1)"), c("birth_date","date",{nn:false}), c("email","varchar"),
+      c("mobile_phone","varchar"), c("extended_data","json"),
+      c("created_at","datetime"), c("updated_at","datetime")
+    ]},
+    { id: "person_role", group: "identity", lane: 3, cols: [
+      c("person_id","char(36)",{pk:true,fk:true,ref:"person"}),
+      c("role_type_id","int",{pk:true,fk:true,ref:"person_role_type"}),
+      c("active","bool"), c("granted_at","datetime"), c("revoked_at","datetime",{nn:false})
+    ]},
+
+    { id: "staff_user", group: "staff", lane: 4, cols: [
+      c("id","char(36)",{pk:true,fk:true,ref:"person"}),
+      c("job_position_id","int",{fk:true,ref:"job_position"}),
+      c("email","varchar"), c("password_hash","text"), c("active","bool"),
+      c("failed_attempts","int"), c("locked_until","datetime",{nn:false}),
+      c("last_login","datetime",{nn:false}), c("created_at","datetime"), c("updated_at","datetime")
+    ]},
+    { id: "staff_privilege", group: "staff", lane: 4, cols: [
+      c("id","int",{pk:true}), c("user_id","char(36)",{fk:true,ref:"staff_user"}),
+      c("module_id","int",{fk:true,ref:"app_module"}), c("can_read","bool"),
+      c("can_write","bool"), c("can_delete","bool"),
+      c("granted_by","char(36)",{fk:true,ref:"staff_user",nn:false}), c("granted_at","datetime")
+    ]},
+    { id: "session_log", group: "staff", lane: 4, cols: [
+      c("id","char(36)",{pk:true}), c("user_id","char(36)",{fk:true,ref:"staff_user"}),
+      c("token_hash","varchar"), c("expires_at","datetime"), c("closed_at","datetime",{nn:false}),
+      c("client_meta","json"), c("created_at","datetime")
+    ]},
+
+    { id: "citizen", group: "citizen", lane: 5, cols: [
+      c("id","char(36)",{pk:true,fk:true,ref:"person"}),
+      c("address","varchar"), c("parish","varchar",{nn:false}), c("municipality","varchar"),
+      c("city","varchar",{nn:false}), c("contact_data","json"),
+      c("created_at","datetime"), c("updated_at","datetime")
+    ]},
+
+    { id: "case_file", group: "case", lane: 6, cols: [
+      c("id","char(36)",{pk:true}), c("case_number","varchar"), c("tracking_code","varchar"),
+      c("claim_type_id","int",{fk:true,ref:"claim_type"}), c("status_id","int",{fk:true,ref:"case_status"}),
+      c("citizen_id","char(36)",{fk:true,ref:"citizen"}), c("narrative","text"),
+      c("incident_date","date"), c("incident_location","varchar",{nn:false}),
+      c("other_instance","bool"), c("other_instance_name","varchar",{nn:false}),
+      c("is_popular_consultation","bool"), c("sworn_declaration","bool"),
+      c("declaration_date","datetime",{nn:false}), c("protocolized_at","datetime",{nn:false}),
+      c("qr_payload","text",{nn:false}), c("receipt_pdf_url","text",{nn:false}),
+      c("physical_docs_deadline","date",{nn:false}), c("physical_docs_submitted","bool"),
+      c("physical_docs_date","date",{nn:false}), c("physical_file_number","varchar",{nn:false}),
+      c("analyst_notes","text",{nn:false}),
+      c("irregularity_type_id","int",{fk:true,ref:"irregularity_type",nn:false}),
+      c("referral_unit_id","int",{fk:true,ref:"referral_unit",nn:false}),
+      c("referred_at","datetime",{nn:false}),
+      c("referred_by","char(36)",{fk:true,ref:"staff_user",nn:false}),
+      c("referral_letter_url","text",{nn:false}), c("sigece_reference","varchar",{nn:false}),
+      c("received_by","char(36)",{fk:true,ref:"staff_user",nn:false}),
+      c("created_at","datetime"), c("updated_at","datetime")
+    ]},
+    { id: "annual_sequence", group: "case", lane: 6, cols: [
+      c("year","int",{pk:true}), c("last_number","int")
+    ]},
+    { id: "popular_consultation", group: "case", lane: 6, cols: [
+      c("case_file_id","char(36)",{pk:true,fk:true,ref:"case_file"}),
+      c("project_name","varchar"), c("approval_date","date"), c("project_amount","decimal"),
+      c("funding_entity","varchar"), c("created_at","datetime")
+    ]},
+
+    { id: "respondent", group: "respondent", lane: 7, cols: [
+      c("id","int",{pk:true}), c("case_file_id","char(36)",{fk:true,ref:"case_file"}),
+      c("respondent_type_id","int",{fk:true,ref:"respondent_type"}),
+      c("person_id","char(36)",{fk:true,ref:"person",nn:false}),
+      c("location","varchar"), c("attributes","json"), c("created_at","datetime")
+    ]},
+
+    { id: "evidence_file", group: "evidence", lane: 8, cols: [
+      c("id","char(36)",{pk:true}), c("case_file_id","char(36)",{fk:true,ref:"case_file"}),
+      c("original_name","varchar"), c("mime_type","varchar"), c("size_bytes","int"),
+      c("storage_url","text"), c("uploaded_by","char(36)",{fk:true,ref:"staff_user",nn:false}),
+      c("created_at","datetime")
+    ]},
+    { id: "case_physical_doc", group: "evidence", lane: 8, cols: [
+      c("case_file_id","char(36)",{pk:true,fk:true,ref:"case_file"}),
+      c("physical_doc_type_id","int",{pk:true,fk:true,ref:"physical_doc_type"}),
+      c("other_description","varchar",{nn:false}), c("checked_at","datetime")
+    ]},
+    { id: "scanned_minute", group: "evidence", lane: 8, cols: [
+      c("id","char(36)",{pk:true}), c("case_file_id","char(36)",{fk:true,ref:"case_file"}),
+      c("file_name","varchar"), c("storage_url","text"),
+      c("uploaded_by","char(36)",{fk:true,ref:"staff_user"}), c("created_at","datetime")
+    ]},
+
+    { id: "case_status_log", group: "audit", lane: 9, cols: [
+      c("id","bigint",{pk:true}), c("case_file_id","char(36)",{fk:true,ref:"case_file"}),
+      c("previous_status","int",{fk:true,ref:"case_status",nn:false}),
+      c("new_status","int",{fk:true,ref:"case_status"}),
+      c("changed_by","char(36)",{fk:true,ref:"staff_user",nn:false}), c("changed_at","datetime")
+    ]},
+    { id: "case_action", group: "audit", lane: 9, cols: [
+      c("id","bigint",{pk:true}), c("case_file_id","char(36)",{fk:true,ref:"case_file"}),
+      c("user_id","char(36)",{fk:true,ref:"staff_user"}), c("action_type","varchar"),
+      c("payload","json"), c("performed_at","datetime")
+    ]},
+    { id: "access_audit_log", group: "audit", lane: 9, cols: [
+      c("id","bigint",{pk:true}), c("affected_user_id","char(36)",{fk:true,ref:"staff_user"}),
+      c("module_id","int",{fk:true,ref:"app_module"}),
+      c("admin_id","char(36)",{fk:true,ref:"staff_user"}), c("action","varchar"),
+      c("before_state","json",{nn:false}), c("after_state","json",{nn:false}), c("logged_at","datetime")
+    ]},
+    { id: "unauthorized_access_log", group: "audit", lane: 9, cols: [
+      c("id","bigint",{pk:true}), c("user_id","char(36)",{fk:true,ref:"staff_user",nn:false}),
+      c("module_id","int",{fk:true,ref:"app_module",nn:false}), c("endpoint","varchar",{nn:false}),
+      c("client_meta","json"), c("logged_at","datetime")
+    ]},
+
+    { id: "cms_content", group: "cms", lane: 10, cols: [
+      c("id","char(36)",{pk:true}), c("content_type_id","int",{fk:true,ref:"cms_content_type"}),
+      c("title","varchar"), c("body","text"), c("published","bool"),
+      c("author_id","char(36)",{fk:true,ref:"staff_user"}),
+      c("published_at","datetime",{nn:false}), c("unpublished_at","datetime",{nn:false}),
+      c("created_at","datetime"), c("updated_at","datetime")
+    ]},
+    { id: "cms_content_version", group: "cms", lane: 10, cols: [
+      c("id","bigint",{pk:true}), c("content_id","char(36)",{fk:true,ref:"cms_content"}),
+      c("title","varchar"), c("body","text"),
+      c("modified_by","char(36)",{fk:true,ref:"staff_user"}), c("modified_at","datetime")
+    ]}
+  ];
+
+  var CARD_W = 268, ROW_H = 24, HEAD_H = 33, LANE_GAP = 96, CARD_GAP_V = 44;
+
+  function autoLayout() {
+    var laneY = {};
+    TABLES.forEach(function (t) {
+      var y = laneY[t.lane] || 0;
+      t.x = t.lane * (CARD_W + LANE_GAP);
+      t.y = y;
+      laneY[t.lane] = y + HEAD_H + t.cols.length * ROW_H + CARD_GAP_V;
+    });
+  }
+  autoLayout();
+
+  var byId = {};
+  TABLES.forEach(function (t) { byId[t.id] = t; });
+
+  // ---- build DOM ----
+  var world = document.getElementById("world");
+  var svg = document.getElementById("edges");
+  var viewport = document.getElementById("viewport");
+
+  var cardEls = {};
+  TABLES.forEach(function (t) {
+    var card = document.createElement("div");
+    card.className = "table-card";
+    card.dataset.id = t.id;
+
+    var head = document.createElement("div");
+    head.className = "t-head";
+    head.style.background = GROUPS[t.group].color;
+    var nameSpan = document.createElement("span");
+    nameSpan.textContent = t.id;
+    var countSpan = document.createElement("span");
+    countSpan.className = "count";
+    countSpan.textContent = t.cols.length + " col";
+    head.appendChild(nameSpan);
+    head.appendChild(countSpan);
+    card.appendChild(head);
+
+    t.cols.forEach(function (col) {
+      var row = document.createElement("div");
+      row.className = "t-row" + (col.pk ? " is-pk" : "");
+      var badge = document.createElement("span");
+      badge.className = "badge " + (col.pk ? "pk" : col.fk ? "fk" : "");
+      badge.textContent = col.pk ? "PK" : col.fk ? "FK" : "";
+      var name = document.createElement("span");
+      name.className = "name";
+      name.textContent = col.n;
+      var type = document.createElement("span");
+      type.className = "type";
+      type.textContent = col.t;
+      row.appendChild(badge);
+      row.appendChild(name);
+      if (!col.nn) {
+        var nn = document.createElement("span");
+        nn.className = "nn";
+        nn.textContent = "?";
+        row.appendChild(nn);
+      }
+      row.appendChild(type);
+      card.appendChild(row);
+    });
+
+    world.appendChild(card);
+    cardEls[t.id] = card;
+  });
+
+  function positionCard(t) {
+    var el = cardEls[t.id];
+    el.style.transform = "translate(" + t.x + "px," + t.y + "px)";
+  }
+  TABLES.forEach(positionCard);
+
+  // ---- build edges ----
+  var NS = "http://www.w3.org/2000/svg";
+  var edges = []; // {from:{table,col,row}, to:{table,row}, group, path}
+
+  TABLES.forEach(function (t) {
+    t.cols.forEach(function (col, idx) {
+      if (col.fk && col.ref && byId[col.ref]) {
+        var path = document.createElementNS(NS, "path");
+        path.setAttribute("stroke", GROUPS[t.group].color);
+        path.dataset.from = t.id;
+        path.dataset.to = col.ref;
+        svg.appendChild(path);
+        edges.push({ fromTable: t.id, fromRow: idx, toTable: col.ref, path: path, dashed: !col.nn });
+        if (!col.nn) path.setAttribute("stroke-dasharray", "3 3");
+      }
+    });
+  });
+
+  function anchor(tableId, rowIndex, side) {
+    var t = byId[tableId];
+    var y = t.y + HEAD_H + rowIndex * ROW_H + ROW_H / 2;
+    var x = side === "right" ? t.x + CARD_W : t.x;
+    return { x: x, y: y };
+  }
+
+  function updateEdge(e) {
+    var src = byId[e.fromTable], dst = byId[e.toTable];
+    var goRight = dst.x >= src.x;
+    var from = anchor(e.fromTable, e.fromRow, goRight ? "right" : "left");
+    var to = anchor(e.toTable, 0, goRight ? "left" : "right");
+    var dx = Math.max(50, Math.abs(to.x - from.x) * 0.5);
+    var c1x = from.x + (goRight ? dx : -dx);
+    var c2x = to.x + (goRight ? -dx : dx);
+    e.path.setAttribute(
+      "d",
+      "M " + from.x + " " + from.y + " C " + c1x + " " + from.y + ", " + c2x + " " + to.y + ", " + to.x + " " + to.y
+    );
+  }
+
+  function updateAllEdges() { edges.forEach(updateEdge); }
+  updateAllEdges();
+
+  // ---- pan / zoom ----
+  var state = { pan: { x: 0, y: 0 }, scale: 0.62 };
+
+  function applyTransform() {
+    world.style.transform = "translate(" + state.pan.x + "px," + state.pan.y + "px) scale(" + state.scale + ")";
+    document.getElementById("zoomLabel").textContent = Math.round(state.scale * 100) + "%";
+  }
+
+  function fitToScreen() {
+    var minX = Infinity, minY = Infinity, maxX = -Infinity, maxY = -Infinity;
+    TABLES.forEach(function (t) {
+      var h = HEAD_H + t.cols.length * ROW_H;
+      minX = Math.min(minX, t.x);
+      minY = Math.min(minY, t.y);
+      maxX = Math.max(maxX, t.x + CARD_W);
+      maxY = Math.max(maxY, t.y + h);
+    });
+    var vw = viewport.clientWidth, vh = viewport.clientHeight;
+    var pad = 60;
+    var sx = (vw - pad * 2) / (maxX - minX);
+    var sy = (vh - pad * 2) / (maxY - minY);
+    state.scale = Math.max(0.12, Math.min(sx, sy, 1.4));
+    state.pan.x = pad - minX * state.scale + Math.max(0, (vw - pad * 2 - (maxX - minX) * state.scale) / 2);
+    state.pan.y = pad - minY * state.scale + Math.max(0, (vh - pad * 2 - (maxY - minY) * state.scale) / 2);
+    applyTransform();
+  }
+
+  // initial view
+  requestAnimationFrame(function () { fitToScreen(); });
+  window.addEventListener("resize", function () { /* keep user's pan/zoom on resize */ });
+
+  viewport.addEventListener("wheel", function (e) {
+    e.preventDefault();
+    var rect = viewport.getBoundingClientRect();
+    var mx = e.clientX - rect.left, my = e.clientY - rect.top;
+    var prev = state.scale;
+    var next = Math.max(0.12, Math.min(2.5, prev * Math.pow(1.0016, -e.deltaY)));
+    var wx = (mx - state.pan.x) / prev, wy = (my - state.pan.y) / prev;
+    state.pan.x = mx - wx * next;
+    state.pan.y = my - wy * next;
+    state.scale = next;
+    applyTransform();
+  }, { passive: false });
+
+  // panning
+  var panDrag = null;
+  viewport.addEventListener("pointerdown", function (e) {
+    if (e.target.closest(".table-card")) return;
+    panDrag = { x: e.clientX, y: e.clientY, px: state.pan.x, py: state.pan.y };
+    viewport.classList.add("panning");
+    viewport.setPointerCapture(e.pointerId);
+  });
+  viewport.addEventListener("pointermove", function (e) {
+    if (!panDrag) return;
+    state.pan.x = panDrag.px + (e.clientX - panDrag.x);
+    state.pan.y = panDrag.py + (e.clientY - panDrag.y);
+    applyTransform();
+  });
+  viewport.addEventListener("pointerup", function () { panDrag = null; viewport.classList.remove("panning"); });
+  viewport.addEventListener("pointercancel", function () { panDrag = null; viewport.classList.remove("panning"); });
+
+  // table dragging
+  var cardDrag = null;
+  Object.keys(cardEls).forEach(function (id) {
+    var head = cardEls[id].querySelector(".t-head");
+    head.addEventListener("pointerdown", function (e) {
+      e.stopPropagation();
+      var t = byId[id];
+      cardDrag = { id: id, x: e.clientX, y: e.clientY, tx: t.x, ty: t.y };
+      cardEls[id].classList.add("dragging");
+      head.setPointerCapture(e.pointerId);
+    });
+    head.addEventListener("pointermove", function (e) {
+      if (!cardDrag || cardDrag.id !== id) return;
+      var t = byId[id];
+      t.x = cardDrag.tx + (e.clientX - cardDrag.x) / state.scale;
+      t.y = cardDrag.ty + (e.clientY - cardDrag.y) / state.scale;
+      positionCard(t);
+      edges.forEach(function (edge) {
+        if (edge.fromTable === id || edge.toTable === id) updateEdge(edge);
+      });
+    });
+    head.addEventListener("pointerup", function () {
+      if (cardDrag && cardDrag.id === id) { cardEls[id].classList.remove("dragging"); cardDrag = null; }
+    });
+  });
+
+  // hover highlight
+  function connectedTables(id) {
+    var set = { };
+    set[id] = true;
+    edges.forEach(function (e) {
+      if (e.fromTable === id) set[e.toTable] = true;
+      if (e.toTable === id) set[e.fromTable] = true;
+    });
+    return set;
+  }
+
+  Object.keys(cardEls).forEach(function (id) {
+    cardEls[id].addEventListener("pointerenter", function () { highlight(id); });
+    cardEls[id].addEventListener("pointerleave", function () { if (!cardDrag) clearHighlight(); });
+  });
+
+  function highlight(id) {
+    var conn = connectedTables(id);
+    Object.keys(cardEls).forEach(function (k) {
+      cardEls[k].classList.toggle("hi", k === id);
+      cardEls[k].classList.toggle("dim", !conn[k]);
+    });
+    edges.forEach(function (e) {
+      var involved = e.fromTable === id || e.toTable === id;
+      e.path.classList.toggle("hi", involved);
+      e.path.classList.toggle("dim", !involved);
+    });
+  }
+  function clearHighlight() {
+    Object.keys(cardEls).forEach(function (k) { cardEls[k].classList.remove("hi", "dim"); });
+    edges.forEach(function (e) { e.path.classList.remove("hi", "dim"); });
+  }
+
+  // legend (also acts as group filter)
+  var legend = document.getElementById("legend");
+  var activeGroups = null; // null = all active
+  Object.keys(GROUPS).forEach(function (g) {
+    var chip = document.createElement("span");
+    chip.className = "chip";
+    var dot = document.createElement("span");
+    dot.className = "dot";
+    dot.style.background = GROUPS[g].color;
+    chip.appendChild(dot);
+    chip.appendChild(document.createTextNode(GROUPS[g].label));
+    chip.addEventListener("click", function () {
+      if (activeGroups && activeGroups[g] && Object.keys(activeGroups).length === 1) {
+        activeGroups = null;
+      } else {
+        activeGroups = {}; activeGroups[g] = true;
+      }
+      applyGroupFilter();
+    });
+    legend.appendChild(chip);
+    chip._group = g;
+  });
+
+  function applyGroupFilter() {
+    var chips = legend.querySelectorAll(".chip");
+    chips.forEach(function (chip) {
+      chip.classList.toggle("off", !!(activeGroups && !activeGroups[chip._group]));
+    });
+    TABLES.forEach(function (t) {
+      var show = !activeGroups || activeGroups[t.group];
+      cardEls[t.id].classList.toggle("dim", !show);
+    });
+    edges.forEach(function (e) {
+      var show = !activeGroups || (activeGroups[byId[e.fromTable].group] || activeGroups[byId[e.toTable].group]);
+      e.path.classList.toggle("dim", !show);
+    });
+  }
+
+  // search
+  var search = document.getElementById("search");
+  search.addEventListener("input", function () {
+    var q = search.value.trim().toLowerCase();
+    if (!q) { TABLES.forEach(function (t) { cardEls[t.id].classList.remove("dim"); }); return; }
+    TABLES.forEach(function (t) {
+      var match = t.id.indexOf(q) !== -1;
+      cardEls[t.id].classList.toggle("dim", !match);
+    });
+  });
+  search.addEventListener("keydown", function (e) {
+    if (e.key !== "Enter") return;
+    var q = search.value.trim().toLowerCase();
+    var found = TABLES.find(function (t) { return t.id.indexOf(q) !== -1; });
+    if (!found) return;
+    var vw = viewport.clientWidth, vh = viewport.clientHeight;
+    var cx = found.x + CARD_W / 2, cy = found.y + (HEAD_H + found.cols.length * ROW_H) / 2;
+    state.scale = 1;
+    state.pan.x = vw / 2 - cx * state.scale;
+    state.pan.y = vh / 2 - cy * state.scale;
+    applyTransform();
+    highlight(found.id);
+  });
+
+  // toolbar buttons
+  document.getElementById("zoomIn").addEventListener("click", function () {
+    state.scale = Math.min(2.5, state.scale * 1.2); applyTransform();
+  });
+  document.getElementById("zoomOut").addEventListener("click", function () {
+    state.scale = Math.max(0.12, state.scale / 1.2); applyTransform();
+  });
+  document.getElementById("fit").addEventListener("click", function () { fitToScreen(); });
+  document.getElementById("reset").addEventListener("click", function () {
+    autoLayout();
+    TABLES.forEach(positionCard);
+    updateAllEdges();
+    fitToScreen();
+  });
+})();
+</script>
+</body>
+</html>
