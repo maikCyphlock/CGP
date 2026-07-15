@@ -226,18 +226,21 @@ function autocompletarSenalado(input) {
     if (!registro) return;
 
     var celdaCedula = fila.cells[0].querySelector('input');
-    var celdaNombre = fila.cells[1].querySelector('input');
-    var celdaInstancia = fila.cells[2].querySelector('input');
-    var celdaSitur = fila.cells[3].querySelector('input');
-    var celdaRif = fila.cells[4].querySelector('input');
+    var celdaApellidos = fila.cells[1].querySelector('input');
+    var celdaNombres = fila.cells[2].querySelector('input');
+    var celdaInstancia = fila.cells[3].querySelector('input');
+    var celdaSitur = fila.cells[4].querySelector('input');
+    var celdaRif = fila.cells[5].querySelector('input');
 
     if (celdaCedula && !celdaCedula.value) celdaCedula.value = registro.cedula || '';
-    if (celdaNombre && !celdaNombre.value) celdaNombre.value = registro.nombre || registro.razonSocial || '';
+    if (celdaApellidos && !celdaApellidos.value) celdaApellidos.value = registro.apellidos || registro.razonSocial || '';
+    if (celdaNombres && !celdaNombres.value) celdaNombres.value = registro.nombres || '';
     if (celdaInstancia && !celdaInstancia.value) celdaInstancia.value = registro.instancia || '';
     if (celdaSitur && !celdaSitur.value) celdaSitur.value = registro.situr || '';
     if (celdaRif && !celdaRif.value) celdaRif.value = registro.rif || '';
 
-    if (celdaNombre) validarCeldaNombre(celdaNombre);
+    if (celdaApellidos) validarCeldaNombre(celdaApellidos);
+    if (celdaNombres) validarCeldaNombre(celdaNombres);
     if (celdaSitur) validarCeldaSitur(celdaSitur);
     if (celdaCedula) validarCeldaCedula(celdaCedula);
     if (celdaRif) validarCeldaRif(celdaRif);
@@ -251,13 +254,14 @@ function guardarSenaladosEnPadron() {
     var padron = leerTabla(CLAVE_PADRON_SENALADOS);
     document.querySelectorAll('#tbody-senalados tr').forEach(function (fila) {
         var cedula = fila.cells[0].querySelector('input').value.trim();
-        var nombre = fila.cells[1].querySelector('input').value.trim();
-        var instancia = fila.cells[2].querySelector('input').value.trim();
-        var situr = fila.cells[3].querySelector('input').value.trim();
-        var rif = fila.cells[4].querySelector('input').value.trim();
-        if (!cedula && !rif && !nombre) return;
+        var apellidos = fila.cells[1].querySelector('input').value.trim();
+        var nombres = fila.cells[2].querySelector('input').value.trim();
+        var instancia = fila.cells[3].querySelector('input').value.trim();
+        var situr = fila.cells[4].querySelector('input').value.trim();
+        var rif = fila.cells[5].querySelector('input').value.trim();
+        if (!cedula && !rif && !apellidos && !nombres) return;
 
-        var registro = { cedula: cedula, nombre: nombre, instancia: instancia, situr: situr, rif: rif };
+        var registro = { cedula: cedula, apellidos: apellidos, nombres: nombres, instancia: instancia, situr: situr, rif: rif };
         var indice = padron.findIndex(function (r) {
             return (cedula && r.cedula === cedula) || (rif && r.rif === rif);
         });
@@ -267,17 +271,16 @@ function guardarSenaladosEnPadron() {
         registrarEnCatalogo(CLAVE_CATALOGO_INSTANCIAS, instancia);
     });
 
-    // Datos de la Persona Jurídica Señalada (si el bloque está activo)
-    var bloquePJ = document.getElementById('bloque-persona-juridica');
-    if (bloquePJ && bloquePJ.style.display !== 'none') {
-        var pjRif = document.getElementById('pj-rif').value.trim();
+    // Datos de la Persona Jurídica Señalada (si el bloque dinámico está renderizado)
+    var campoPjRif = document.getElementById('pj-rif');
+    if (campoPjRif) {
+        var pjRif = campoPjRif.value.trim();
         if (pjRif) {
             var registroPJ = {
                 rif: pjRif,
-                razonSocial: document.getElementById('pj-razon-social').value.trim(),
-                repNombre: document.getElementById('pj-rep-nombre').value.trim(),
-                repCedula: document.getElementById('pj-rep-cedula').value.trim(),
-                direccionFiscal: document.getElementById('pj-direccion-fiscal').value.trim()
+                razonSocial: document.getElementById('pj-razon').value.trim(),
+                representante: document.getElementById('pj-representante').value.trim(),
+                direccionFiscal: document.getElementById('pj-direccion').value.trim()
             };
             var indicePJ = padron.findIndex(function (r) { return r.rif === pjRif; });
             if (indicePJ === -1) padron.push(registroPJ);
@@ -293,17 +296,18 @@ function guardarSenaladosEnPadron() {
  * si existe, autocompleta los datos de la Persona Jurídica Señalada.
  */
 function autocompletarPersonaJuridica() {
-    var rif = document.getElementById('pj-rif').value.trim();
+    var campoRif = document.getElementById('pj-rif');
+    if (!campoRif) return;
+    var rif = campoRif.value.trim();
     if (!rif) return;
 
     var padron = leerTabla(CLAVE_PADRON_SENALADOS);
     var registro = padron.find(function (r) { return r.rif === rif; });
     if (!registro) return;
 
-    autorrellenarSiVacio('pj-razon-social', registro.razonSocial || registro.nombre);
-    autorrellenarSiVacio('pj-rep-nombre', registro.repNombre);
-    autorrellenarSiVacio('pj-rep-cedula', registro.repCedula);
-    autorrellenarSiVacio('pj-direccion-fiscal', registro.direccionFiscal);
+    autorrellenarSiVacio('pj-razon', registro.razonSocial || registro.nombre);
+    autorrellenarSiVacio('pj-representante', registro.representante);
+    autorrellenarSiVacio('pj-direccion', registro.direccionFiscal);
 }
 
 
@@ -449,16 +453,17 @@ var PLANTILLAS_SENALADO = {
             '    </select></div></div>' +
             '  <div class="col-md-3"><div class="form-group">' +
             '    <label class="form-label">R.I.F. <span class="required">*</span></label>' +
-            '    <input type="text" class="form-control campo-dinamico-req" data-campo="pj-rif" placeholder="J-XXXXXXXX-X"></div></div>' +
+            '    <input type="text" class="form-control campo-dinamico-req" id="pj-rif" data-campo="pj-rif" placeholder="J-XXXXXXXX-X"' +
+            '     onblur="autocompletarPersonaJuridica()"></div></div>' +
             '  <div class="col-md-6"><div class="form-group">' +
             '    <label class="form-label">Razón Social / Denominación <span class="required">*</span></label>' +
-            '    <input type="text" class="form-control campo-dinamico-req" data-campo="pj-razon" placeholder="Nombre de la empresa"></div></div>' +
+            '    <input type="text" class="form-control campo-dinamico-req" id="pj-razon" data-campo="pj-razon" placeholder="Nombre de la empresa"></div></div>' +
             '  <div class="col-md-6"><div class="form-group">' +
             '    <label class="form-label">Representante Legal</label>' +
-            '    <input type="text" class="form-control" data-campo="pj-representante" placeholder="Nombre y cédula del representante"></div></div>' +
+            '    <input type="text" class="form-control" id="pj-representante" data-campo="pj-representante" placeholder="Nombre y cédula del representante"></div></div>' +
             '  <div class="col-md-6"><div class="form-group">' +
             '    <label class="form-label">Dirección Fiscal</label>' +
-            '    <input type="text" class="form-control" data-campo="pj-direccion" placeholder="Dirección fiscal de la empresa"></div></div>' +
+            '    <input type="text" class="form-control" id="pj-direccion" data-campo="pj-direccion" placeholder="Dirección fiscal de la empresa"></div></div>' +
             '</div>'
     },
     organo_ente: {
@@ -840,29 +845,14 @@ function validarPaso(numeroPaso) {
         }
 
         // Validar que la primera fila de la tabla tenga al menos cédula o nombre
-        // (no aplica si ya se identificó a la persona jurídica señalada arriba)
-        var bloquePJVisible = document.getElementById('bloque-persona-juridica').style.display !== 'none'
-            && document.getElementById('pj-razon-social').value.trim().length >= 3;
         var primeraFila = document.querySelector('#tbody-senalados tr:first-child');
         if (primeraFila) {
             var cedula = primeraFila.cells[0].querySelector('input').value.trim();
-            var nombre = primeraFila.cells[1].querySelector('input').value.trim();
-            if (!cedula && !nombre) {
+            var apellidos = primeraFila.cells[1].querySelector('input').value.trim();
+            var nombres = primeraFila.cells[2].querySelector('input').value.trim();
+            if (!cedula && !apellidos && !nombres) {
                 errores.push('Datos del primer señalado (cédula o nombre)');
                 document.getElementById('tabla-senalados-err').classList.add('visible');
-            }
-        }
-
-        // Bloque de persona jurídica señalada (si aplica)
-        if (document.getElementById('bloque-persona-juridica').style.display !== 'none') {
-            var pjRif = document.getElementById('pj-rif').value.trim();
-            if (!/^[JGVECjgvec]-?\d{8,9}-?\d?$/.test(pjRif)) {
-                errores.push('R.I.F. de la persona jurídica señalada');
-                marcarError('pj-rif', 'pj-rif-err');
-            }
-            if (document.getElementById('pj-razon-social').value.trim().length < 3) {
-                errores.push('Razón Social / Denominación de la persona jurídica señalada');
-                marcarError('pj-razon-social', 'pj-razon-social-err');
             }
         }
 
@@ -1065,6 +1055,72 @@ function toggleSenaladoOtro(checkbox) {
 
 
 /* ═══════════════════════════════════════════════════════════
+   MINI-FORMULARIOS DINÁMICOS SEGÚN TIPO DE SEÑALADO
+   Muestra u oculta, dentro de #bloques-dinamicos-senalado, el
+   mini-formulario definido en PLANTILLAS_SENALADO para cada
+   checkbox de "Tipo del Señalado" que se marque o desmarque.
+   ═══════════════════════════════════════════════════════════ */
+
+/**
+ * Renderiza o retira el bloque dinámico correspondiente al tipo de
+ * señalado marcado/desmarcado.
+ * @param {HTMLInputElement} checkbox - checkbox de name="tipo_senalado"
+ */
+function onTipoSenaladoChange(checkbox) {
+    var plantilla = PLANTILLAS_SENALADO[checkbox.value];
+    var contenedor = document.getElementById('bloques-dinamicos-senalado');
+    if (!plantilla || !contenedor) return;
+
+    var idBloque = 'bloque-dinamico-' + checkbox.value;
+    var existente = document.getElementById(idBloque);
+
+    if (checkbox.checked) {
+        if (existente) return;
+        var bloque = document.createElement('div');
+        bloque.id = idBloque;
+        bloque.className = 'form-section';
+        bloque.innerHTML = '<div class="form-section-title">' + plantilla.titulo + '</div>' + plantilla.html;
+        contenedor.appendChild(bloque);
+    } else if (existente) {
+        existente.remove();
+    }
+}
+
+/**
+ * Valida los campos requeridos (.campo-dinamico-req) de los bloques
+ * dinámicos actualmente renderizados en #bloques-dinamicos-senalado.
+ * @returns {string[]} nombres de los campos inválidos o vacíos
+ */
+function validarBloquesSenaladoDinamicos() {
+    var errores = [];
+    document.querySelectorAll('#bloques-dinamicos-senalado .campo-dinamico-req').forEach(function (campo) {
+        var valor = (campo.value || '').trim();
+        var nombreCampo = campo.dataset.campo || '';
+        var valido;
+        if (nombreCampo.slice(-4) === '-rif') {
+            valido = /^[JGVECjgvec]-?\d{8,9}-?\d?$/.test(valor);
+        } else if (nombreCampo.slice(-8) === '-nro-doc') {
+            valido = /^\d{5,10}$/.test(valor);
+        } else if (campo.tagName === 'SELECT') {
+            valido = valor !== '';
+        } else {
+            valido = valor.length >= 3;
+        }
+
+        if (campo.tagName !== 'SELECT') campo.classList.toggle('valid', valido);
+        campo.classList.toggle('invalid', !valido);
+
+        if (!valido) {
+            var grupo = campo.closest('.form-group');
+            var etiqueta = grupo ? grupo.querySelector('.form-label') : null;
+            errores.push(etiqueta ? etiqueta.textContent.replace('*', '').trim() : nombreCampo);
+        }
+    });
+    return errores;
+}
+
+
+/* ═══════════════════════════════════════════════════════════
    TABLA DE SEÑALADOS
    ═══════════════════════════════════════════════════════════ */
 
@@ -1075,7 +1131,9 @@ function agregarFilaSenalado() {
     fila.innerHTML = [
         '<td><input type="text" placeholder="V-00000000"',
         '     oninput="validarCeldaCedula(this)" onblur="validarCeldaCedula(this)"></td>',
-        '<td><input type="text" placeholder="Apellido, Nombre"',
+        '<td><input type="text" placeholder="Apellidos"',
+        '     oninput="validarCeldaNombre(this)" onblur="validarCeldaNombre(this)"></td>',
+        '<td><input type="text" placeholder="Nombres"',
         '     oninput="validarCeldaNombre(this)" onblur="validarCeldaNombre(this)"></td>',
         '<td><input type="text" placeholder="Nombre de la instancia" list="dl-instancias"></td>',
         '<td><input type="text" placeholder="Código SITUR"',
@@ -1261,8 +1319,10 @@ function poblarResumen() {
     // Señalado: Razón Social (si es persona jurídica) o primera fila de la tabla
     var resSenalado = '—';
     if (primeraFila) {
-        var nom = primeraFila.cells[1].querySelector('input').value.trim();
+        var apellidos = primeraFila.cells[1].querySelector('input').value.trim();
+        var nombres = primeraFila.cells[2].querySelector('input').value.trim();
         var ced = primeraFila.cells[0].querySelector('input').value.trim();
+        var nom = [apellidos, nombres].filter(Boolean).join(', ');
         resSenalado = nom || ced || '—';
     }
     document.getElementById('res-senalado').textContent = resSenalado;
@@ -1388,6 +1448,9 @@ function nuevaSolicitud() {
     document.getElementById('senalado-otro-txt').style.opacity = '0.5';
     document.getElementById('senalado-otro-txt').style.cursor = 'not-allowed';
     document.getElementById('bloque-proyecto-consulta').style.display = 'none';
+
+    // Limpiar mini-formularios dinámicos renderizados por tipo de señalado
+    document.getElementById('bloques-dinamicos-senalado').innerHTML = '';
 
     // Limpiar tabla de señalados (dejar solo la primera fila vacía)
     var tbody = document.getElementById('tbody-senalados');

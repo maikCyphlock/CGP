@@ -640,7 +640,7 @@
                     <label>Persona Natural</label>
                   </label>
                   <label class="check-item">
-                    <input type="checkbox" name="tipo_senalado" value="persona_juridica">
+                    <input type="checkbox" name="tipo_senalado" value="persona_juridica" onchange="onTipoSenaladoChange(this)">
                     <label>Persona Jurídica</label>
                   </label>
                   <label class="check-item">
@@ -671,6 +671,9 @@
                 </div>
                 <span class="error-msg" id="tipo-senalado-err">Debe seleccionar al menos un tipo de señalado.</span>
               </div>
+
+              <!-- Mini-formularios dinámicos según el/los tipo(s) de señalado marcados -->
+              <div id="bloques-dinamicos-senalado"></div>
 
               <!-- Ubicación geográfica del señalado -->
               <div class="form-group" style="margin-top:16px;">
@@ -704,7 +707,8 @@
                   <thead>
                     <tr>
                       <th>Cédula (V/E)</th>
-                      <th>Apellidos y Nombres</th>
+                      <th>Apellidos</th>
+                      <th>Nombres</th>
                       <th>Nombre del Consejo Comunal / Comuna</th>
                       <th>Código SITUR</th>
                       <th>R.I.F.</th>
@@ -715,7 +719,9 @@
                     <tr>
                       <td><input type="text" placeholder="V-00000000" oninput="validarCeldaCedula(this)"
                           onblur="validarCeldaCedula(this)"></td>
-                      <td><input type="text" placeholder="Apellido, Nombre" oninput="validarCeldaNombre(this)"
+                      <td><input type="text" placeholder="Apellidos" oninput="validarCeldaNombre(this)"
+                          onblur="validarCeldaNombre(this)"></td>
+                      <td><input type="text" placeholder="Nombres" oninput="validarCeldaNombre(this)"
                           onblur="validarCeldaNombre(this)"></td>
                       <td><input type="text" placeholder="Nombre de la instancia"></td>
                       <td><input type="text" placeholder="Código SITUR" oninput="validarCeldaSitur(this)"
