@@ -767,6 +767,40 @@
   font-size: 0.68rem;
 }
 
+.senalado-card {
+  background: #f7f9fd;
+  border: 1px solid #dde3ee;
+  border-radius: 6px;
+  padding: 16px 18px;
+  margin-top: 12px;
+  animation: deslizarEntrada 0.2s ease;
+}
+
+.senalado-card:first-child { margin-top: 0; }
+
+.senalado-card-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 12px;
+}
+
+.senalado-card-numero {
+  font-size: 0.7rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+  color: #4d5b78;
+}
+
+.senalado-card-campos {
+  margin-top: 14px;
+}
+
+.senalado-card-campos:empty {
+  margin-top: 0;
+}
+
 
 /* ─── ZONA DE CARGA DE ARCHIVOS ─── */
 
