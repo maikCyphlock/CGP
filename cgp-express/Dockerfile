@@ -11,8 +11,10 @@ RUN npm ci --omit=dev
 
 COPY . .
 
+RUN mkdir -p /app/data
+
 ENV NODE_ENV=production
 
 EXPOSE 3000
 
-CMD ["node", "src/server.js"]
+CMD ["sh", "-c", "npx knex --knexfile src/db/knexfile.js migrate:latest && node src/server.js"]

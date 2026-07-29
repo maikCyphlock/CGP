@@ -13,6 +13,3 @@ services:
       PORT: 3000
     volumes:
       - ./cgp-express/data:/app/data
-    command: >
-      sh -c "npx knex --knexfile src/db/knexfile.js migrate:latest &&
-             node src/server.js"
