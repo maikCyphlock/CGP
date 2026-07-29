@@ -1,0 +1,18 @@
+services:
+  cgp-express:
+    build:
+      context: ./cgp-express
+    container_name: cgp-express
+    restart: unless-stopped
+    ports:
+      - "${CGP_PORT:-3011}:3000"
+    environment:
+      DB_CLIENT: sqlite3
+      SQLITE_FILE: /app/data/contraloria.sqlite3
+      SESSION_SECRET: ${SESSION_SECRET:-change-me-in-production}
+      PORT: 3000
+    volumes:
+      - ./cgp-express/data:/app/data
+    command: >
+      sh -c "npx knex --knexfile src/db/knexfile.js migrate:latest &&
+             node src/server.js"
