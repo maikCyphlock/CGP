@@ -1,0 +1,9 @@
+<%- include('../partials/admin_head', { title, active: 'cases' }) %>
+<div class="admin-topbar">
+  <h1><%= caseFile.case_number %></h1>
+  <a class="btn btn-outline" href="/admin/cases">&larr; Volver</a>
+</div>
+<div id="case-panel">
+  <%- include('./partials/case_panel', { caseFile, statuses, irregularityTypes, referralUnits }) %>
+</div>
+<%- include('../partials/admin_foot') %>

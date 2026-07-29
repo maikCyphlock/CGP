@@ -1,0 +1,44 @@
+<%- include('../partials/admin_head', { title, active: 'cms' }) %>
+<div class="admin-topbar"><h1><%= item ? 'Editar' : 'Nuevo' %> contenido</h1></div>
+<div class="card" style="max-width:720px;">
+  <form method="POST" action="<%= item ? '/admin/cms/' + item.id : '/admin/cms' %>">
+    <div class="form-row">
+      <div class="form-group">
+        <label>Tipo *</label>
+        <select name="content_type_id" required>
+          <% types.forEach(function(t) { %>
+            <option value="<%= t.id %>" <%= item && item.content_type_id === t.id ? 'selected' : '' %>><%= t.name %></option>
+          <% }) %>
+        </select>
+      </div>
+      <div class="checkbox-row" style="align-self:center;">
+        <input type="checkbox" name="published" <%= item && item.published ? 'checked' : '' %>>
+        <label style="margin:0;">Publicado</label>
+      </div>
+    </div>
+    <div class="form-group">
+      <label>Título *</label>
+      <input type="text" name="title" value="<%= item ? item.title : '' %>" required>
+    </div>
+    <div class="form-group">
+      <label>Contenido *</label>
+      <textarea name="body" style="min-height:220px;" required><%= item ? item.body : '' %></textarea>
+    </div>
+    <div class="form-actions">
+      <a class="btn btn-outline" href="/admin/cms">Cancelar</a>
+      <button class="btn" type="submit">Guardar</button>
+    </div>
+  </form>
+</div>
+
+<% if (typeof versions !== 'undefined' && versions.length > 0) { %>
+  <div class="card">
+    <h2 style="margin-top:0;">Historial de versiones</h2>
+    <% versions.forEach(function(v) { %>
+      <div style="border-top:1px solid #eee;padding:8px 0;font-size:0.85rem;">
+        <%= v.title %> — <%= new Date(v.modified_at).toLocaleString('es-VE') %>
+      </div>
+    <% }) %>
+  </div>
+<% } %>
+<%- include('../partials/admin_foot') %>

@@ -1,0 +1,46 @@
+<% var chatterIcons = {
+  status: '<path d="M21 12a9 9 0 1 1-2.6-6.4"/><path d="M21 4v5h-5"/>',
+  tag: '<path d="M12.5 3H6a1 1 0 0 0-1 1v6.5a1 1 0 0 0 .3.7l8.5 8.5a1 1 0 0 0 1.4 0l6.5-6.5a1 1 0 0 0 0-1.4L13.2 3.3a1 1 0 0 0-.7-.3Z"/><circle cx="9" cy="8" r="1"/>',
+  send: '<path d="m3 11 18-8-8 18-2-8-8-2Z"/>',
+  note: '<path d="M4 4h16v13l-4 3H4V4Z"/><path d="M8 9h8M8 13h5"/>',
+  clip: '<path d="M9 4h6a1 1 0 0 1 1 1v14a1 1 0 0 1-1 1H9a1 1 0 0 1-1-1V5a1 1 0 0 1 1-1Z"/><path d="M9 8h6"/>',
+  info: '<circle cx="12" cy="12" r="9"/><path d="M12 11v5M12 8v.01"/>',
+}; %>
+<div class="chatter">
+  <div class="chatter-composer">
+    <div class="chatter-avatar" style="background:<%= avatarColor(staffUser ? staffUser.name : 'Sistema') %>">
+      <%= initials(staffUser ? staffUser.name : '?') %>
+    </div>
+    <form
+      hx-post="/admin/cases/<%= caseFile.id %>/notes"
+      hx-target="#chatter-panel"
+      hx-swap="innerHTML"
+      hx-on::after-request="if(event.detail.successful) this.reset()">
+      <textarea name="text" placeholder="Registrar una nota..." required></textarea>
+      <div class="chatter-composer-actions">
+        <button class="btn btn-sm" type="submit">Registrar nota</button>
+      </div>
+    </form>
+  </div>
+
+  <div class="chatter-feed">
+    <% caseFile.actions.forEach(function(a) { %>
+      <div class="chatter-item">
+        <div class="chatter-avatar" style="background:<%= avatarColor(a.authorName) %>"><%= initials(a.authorName) %></div>
+        <div class="chatter-item-body">
+          <div class="chatter-item-head">
+            <span class="chatter-icon">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><%- chatterIcons[a.icon] || chatterIcons.info %></svg>
+            </span>
+            <strong><%= a.authorName %></strong>
+            <span class="chatter-time" title="<%= new Date(a.performed_at).toLocaleString('es-VE') %>"><%= timeAgo(a.performed_at) %></span>
+          </div>
+          <div class="chatter-item-summary"><%- a.summary %></div>
+        </div>
+      </div>
+    <% }) %>
+    <% if (caseFile.actions.length === 0) { %>
+      <p style="color:var(--ink-faint);font-size:0.85rem;">Aún no hay actividad registrada.</p>
+    <% } %>
+  </div>
+</div>

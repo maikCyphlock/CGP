@@ -1,0 +1,23 @@
+<%- include('../partials/admin_head', { title, active: 'users' }) %>
+<div class="admin-topbar">
+  <h1><%= user.first_name %> <%= user.last_name %></h1>
+  <a class="btn btn-outline" href="/admin/users">&larr; Volver</a>
+</div>
+
+<div class="card">
+  <p><strong>Correo:</strong> <%= user.email %> &nbsp; <strong>Cargo:</strong> <%= user.job_title %></p>
+  <p><strong>Estado:</strong> <span class="badge <%= user.active ? 'active' : 'inactive' %>"><%= user.active ? 'Activo' : 'Inactivo' %></span></p>
+  <form method="POST" action="/admin/users/<%= user.id %>/toggle">
+    <input type="hidden" name="active" value="<%= user.active ? 'false' : 'true' %>">
+    <button class="btn btn-sm <%= user.active ? 'btn-danger' : '' %>" type="submit"><%= user.active ? 'Desactivar' : 'Activar' %></button>
+  </form>
+</div>
+
+<div class="card">
+  <h2 style="margin-top:0;">Privilegios por módulo (RBAC)</h2>
+  <div id="privileges-table">
+    <%- include('./partials/privileges_table', { user, modules, privByModule }) %>
+  </div>
+</div>
+
+<%- include('../partials/admin_foot') %>

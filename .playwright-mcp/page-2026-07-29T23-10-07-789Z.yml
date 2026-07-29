@@ -1,0 +1,121 @@
+- generic [ref=f2e2]:
+  - complementary [ref=f2e3]:
+    - generic [ref=f2e4]:
+      - img "Logo" [ref=f2e5]
+      - generic [ref=f2e6]: Contraloría Páez
+    - navigation [ref=f2e7]:
+      - link "Inicio" [ref=f2e8] [cursor=pointer]:
+        - /url: /admin
+      - link "Expedientes" [ref=f2e9] [cursor=pointer]:
+        - /url: /admin/cases
+      - link "Catálogos" [ref=f2e10] [cursor=pointer]:
+        - /url: /admin/catalogs
+      - link "Usuarios y Accesos" [ref=f2e11] [cursor=pointer]:
+        - /url: /admin/users
+      - link "Página Web (CMS)" [ref=f2e12] [cursor=pointer]:
+        - /url: /admin/cms
+    - generic [ref=f2e13]:
+      - generic [ref=f2e14]: Administrador Sistema
+      - button "Salir" [ref=f2e15] [cursor=pointer]
+  - main [ref=f2e16]:
+    - generic [ref=f2e17]:
+      - heading "OAC-2026-00001" [level=1] [ref=f2e18]
+      - link "← Volver" [ref=f2e19] [cursor=pointer]:
+        - /url: /admin/cases
+    - generic [ref=f2e21]:
+      - generic [ref=f2e22]:
+        - generic [ref=f2e23]:
+          - heading "Denunciante" [level=2] [ref=f2e24]
+          - paragraph [ref=f2e25]:
+            - strong [ref=f2e26]: Juan Perez
+            - text: — juan@example.com — 04121234567
+          - paragraph [ref=f2e27]: Calle Falsa 123, Sector Centro, Páez
+        - generic [ref=f2e28]:
+          - heading "Narración de los hechos" [level=2] [ref=f2e29]
+          - paragraph [ref=f2e30]: Esto es una narracion de prueba con mas de cincuenta caracteres de longitud para pasar validacion.
+          - paragraph [ref=f2e31]: "Fecha del incidente: 2026-01-01"
+        - heading "Señalados (0)" [level=2] [ref=f2e33]
+        - generic [ref=f2e34]:
+          - heading "Clasificación y Derivación" [level=2] [ref=f2e35]
+          - generic [ref=f2e36]:
+            - generic [ref=f2e38]:
+              - generic [ref=f2e39]: Tipo de irregularidad
+              - combobox [ref=f2e40]:
+                - option "Sin clasificar"
+                - option "Uso indebido de fondos públicos" [selected]
+                - option "Abuso de autoridad"
+                - option "Irregularidad en contrataciones"
+                - option "Negligencia administrativa"
+                - option "Otro"
+            - generic [ref=f2e41]:
+              - generic [ref=f2e42]: Notas del analista
+              - textbox [ref=f2e43]
+            - button "Guardar clasificación" [ref=f2e44] [cursor=pointer]
+          - separator [ref=f2e45]
+          - generic [ref=f2e46]:
+            - generic [ref=f2e48]:
+              - generic [ref=f2e49]: Unidad de derivación
+              - combobox [ref=f2e50]:
+                - option "Seleccionar" [selected]
+                - option "Control Posterior"
+                - option "Potestad Investigativa"
+                - option "Unidad de Prueba"
+            - generic [ref=f2e51]:
+              - generic [ref=f2e52]: URL del oficio de derivación
+              - textbox [ref=f2e53]
+            - button "Derivar expediente" [ref=f2e54] [cursor=pointer]
+        - generic [ref=f2e55]:
+          - heading "Bitácora" [level=2] [ref=f2e56]
+          - generic [ref=f2e58]:
+            - generic [ref=f2e59]:
+              - generic [ref=f2e60]: AS
+              - generic [ref=f2e61]:
+                - textbox "Registrar una nota..." [ref=f2e62]
+                - button "Registrar nota" [ref=f2e64] [cursor=pointer]
+            - generic [ref=f2e65]:
+              - generic [ref=f2e66]:
+                - generic [ref=f2e67]: AS
+                - generic [ref=f2e68]:
+                  - generic [ref=f2e69]:
+                    - generic [ref=f2e70]: 🏷️
+                    - strong [ref=f2e71]: Administrador Sistema
+                    - generic "29/7/2026, 10:51:50 p. m." [ref=f2e72]: justo ahora
+                  - generic [ref=f2e73]:
+                    - text: clasificó el expediente como
+                    - strong [ref=f2e74]: Uso indebido de fondos públicos
+              - generic [ref=f2e75]:
+                - generic [ref=f2e76]: AS
+                - generic [ref=f2e77]:
+                  - generic [ref=f2e78]:
+                    - generic [ref=f2e79]: 🔄
+                    - strong [ref=f2e80]: Administrador Sistema
+                    - generic "29/7/2026, 10:26:09 p. m." [ref=f2e81]: justo ahora
+                  - generic [ref=f2e82]:
+                    - text: cambió el estado a
+                    - strong [ref=f2e83]: IN_REVIEW
+                    - text: — Revision inicial
+      - generic [ref=f2e84]:
+        - generic [ref=f2e85]:
+          - heading "Estado actual" [level=2] [ref=f2e86]
+          - paragraph [ref=f2e87]:
+            - generic [ref=f2e88]: En Revisión
+          - generic [ref=f2e89]:
+            - generic [ref=f2e90]:
+              - generic [ref=f2e91]: Cambiar a
+              - combobox [ref=f2e92]:
+                - option "Recibido" [selected]
+                - option "En Revisión"
+                - option "Procesado"
+                - option "Derivado"
+                - option "Archivado"
+                - option "Invalidado"
+            - generic [ref=f2e93]:
+              - generic [ref=f2e94]: Motivo (opcional)
+              - textbox [ref=f2e95]
+            - button "Actualizar estado" [ref=f2e96] [cursor=pointer]
+        - generic [ref=f2e97]:
+          - heading "Historial de estados" [level=2] [ref=f2e98]
+          - list
+        - generic [ref=f2e99]:
+          - heading "Evidencias (0)" [level=2] [ref=f2e100]
+          - paragraph [ref=f2e101]: Sin archivos adjuntos.

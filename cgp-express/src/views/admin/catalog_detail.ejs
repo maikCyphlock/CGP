@@ -1,0 +1,31 @@
+<%- include('../partials/admin_head', { title, active: 'catalogs' }) %>
+<div x-data="{ q: '' }">
+  <div class="admin-topbar">
+    <h1><%= catalog.label %></h1>
+    <div style="display:flex; gap:10px;">
+      <input type="text" x-model="q" placeholder="Filtrar..." style="padding:8px 10px;border:1px solid #d0d5dd;border-radius:6px;">
+      <button class="btn" hx-get="/admin/catalogs/<%= slug %>/new" hx-target="#modal-container" hx-swap="innerHTML">+ Nuevo</button>
+    </div>
+  </div>
+
+  <div class="card">
+    <div id="catalog-table" x-ref="tableWrap">
+      <%- include('./partials/catalog_table', { slug, catalog, rows }) %>
+    </div>
+  </div>
+</div>
+
+<div id="modal-container"></div>
+
+<script>
+  // Simple client-side filter across visible table rows, driven by Alpine's q above.
+  document.body.addEventListener('input', function (e) {
+    if (!e.target.matches('[x-model="q"]')) return;
+    var term = e.target.value.toLowerCase();
+    document.querySelectorAll('#catalog-table tbody tr').forEach(function (row) {
+      row.style.display = row.textContent.toLowerCase().includes(term) ? '' : 'none';
+    });
+  });
+</script>
+
+<%- include('../partials/admin_foot') %>

@@ -1,0 +1,23 @@
+<%- include('../partials/admin_head', { title, active: 'cms' }) %>
+<div class="admin-topbar">
+  <h1>Página Web (CMS)</h1>
+  <a class="btn" href="/admin/cms/new">+ Nuevo contenido</a>
+</div>
+<div class="card">
+  <table>
+    <thead><tr><th>Título</th><th>Tipo</th><th>Estado</th><th>Actualizado</th><th></th></tr></thead>
+    <tbody>
+      <% items.forEach(function(it) { %>
+        <tr>
+          <td><%= it.title %></td>
+          <td><%= it.type_name %></td>
+          <td><span class="badge <%= it.published ? 'active' : 'inactive' %>"><%= it.published ? 'Publicado' : 'Borrador' %></span></td>
+          <td><%= new Date(it.updated_at).toLocaleString('es-VE') %></td>
+          <td><a class="btn btn-sm btn-outline" href="/admin/cms/<%= it.id %>/edit">Editar</a></td>
+        </tr>
+      <% }) %>
+      <% if (items.length === 0) { %><tr><td colspan="5" style="text-align:center;color:#888;">Sin contenido.</td></tr><% } %>
+    </tbody>
+  </table>
+</div>
+<%- include('../partials/admin_foot') %>

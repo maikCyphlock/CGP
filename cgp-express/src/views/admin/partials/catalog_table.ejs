@@ -1,0 +1,33 @@
+<table>
+  <thead>
+    <tr>
+      <% catalog.fields.forEach(function(f) { %>
+        <% if (f.type !== 'json' && f.type !== 'textarea') { %><th><%= f.label %></th><% } %>
+      <% }) %>
+      <th></th>
+    </tr>
+  </thead>
+  <tbody>
+    <% rows.forEach(function(row) { %>
+      <tr id="row-<%= row.id %>">
+        <% catalog.fields.forEach(function(f) { %>
+          <% if (f.type === 'json' || f.type === 'textarea') return; %>
+          <td>
+            <% if (f.type === 'checkbox') { %>
+              <span class="badge <%= row[f.name] ? 'active' : 'inactive' %>"><%= row[f.name] ? 'Sí' : 'No' %></span>
+            <% } else { %>
+              <%= row[f.name] %>
+            <% } %>
+          </td>
+        <% }) %>
+        <td style="white-space:nowrap;">
+          <button class="btn btn-outline btn-sm" hx-get="/admin/catalogs/<%= slug %>/<%= row.id %>/edit" hx-target="#modal-container" hx-swap="innerHTML">Editar</button>
+          <button class="btn btn-danger btn-sm" hx-delete="/admin/catalogs/<%= slug %>/<%= row.id %>" hx-target="#catalog-table" hx-swap="innerHTML" hx-confirm="¿Eliminar este registro?">Eliminar</button>
+        </td>
+      </tr>
+    <% }) %>
+    <% if (rows.length === 0) { %>
+      <tr><td colspan="<%= catalog.fields.length + 1 %>" style="text-align:center;color:#888;">Sin registros.</td></tr>
+    <% } %>
+  </tbody>
+</table>

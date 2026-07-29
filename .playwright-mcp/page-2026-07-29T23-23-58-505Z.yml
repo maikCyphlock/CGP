@@ -1,0 +1,131 @@
+- generic [ref=f2e2]:
+  - complementary [ref=f2e3]:
+    - generic [ref=f2e5]:
+      - strong [ref=f2e6]: Contraloría
+      - generic [ref=f2e7]: Municipio Páez
+    - navigation [ref=f2e8]:
+      - link "Inicio" [ref=f2e9] [cursor=pointer]:
+        - /url: /admin
+      - link "Expedientes" [ref=f2e14] [cursor=pointer]:
+        - /url: /admin/cases
+      - link "Catálogos" [ref=f2e18] [cursor=pointer]:
+        - /url: /admin/catalogs
+      - link "Usuarios y Accesos" [ref=f2e24] [cursor=pointer]:
+        - /url: /admin/users
+      - link "Página Web (CMS)" [ref=f2e29] [cursor=pointer]:
+        - /url: /admin/cms
+    - generic [ref=f2e35]:
+      - generic [ref=f2e36]:
+        - generic [ref=f2e37]: AS
+        - generic [ref=f2e38]: Administrador Sistema
+      - button "Cerrar sesión" [ref=f2e39] [cursor=pointer]
+  - main [ref=f2e43]:
+    - generic [ref=f2e44]:
+      - heading "OAC-2026-00001" [level=1] [ref=f2e45]
+      - link "← Volver" [ref=f2e46] [cursor=pointer]:
+        - /url: /admin/cases
+    - generic [ref=f2e48]:
+      - generic [ref=f2e49]:
+        - generic [ref=f2e50]:
+          - heading "Denunciante" [level=2] [ref=f2e51]
+          - paragraph [ref=f2e52]:
+            - strong [ref=f2e53]: Juan Perez
+            - text: — juan@example.com — 04121234567
+          - paragraph [ref=f2e54]: Calle Falsa 123, Sector Centro, Páez
+        - generic [ref=f2e55]:
+          - heading "Narración de los hechos" [level=2] [ref=f2e56]
+          - paragraph [ref=f2e57]: Esto es una narracion de prueba con mas de cincuenta caracteres de longitud para pasar validacion.
+          - paragraph [ref=f2e58]: "Fecha del incidente: 2026-01-01"
+        - heading "Señalados (0)" [level=2] [ref=f2e60]
+        - generic [ref=f2e61]:
+          - heading "Clasificación y Derivación" [level=2] [ref=f2e62]
+          - generic [ref=f2e63]:
+            - generic [ref=f2e65]:
+              - generic [ref=f2e66]: Tipo de irregularidad
+              - combobox [ref=f2e67]:
+                - option "Sin clasificar"
+                - option "Uso indebido de fondos públicos" [selected]
+                - option "Abuso de autoridad"
+                - option "Irregularidad en contrataciones"
+                - option "Negligencia administrativa"
+                - option "Otro"
+            - generic [ref=f2e68]:
+              - generic [ref=f2e69]: Notas del analista
+              - textbox [ref=f2e70]
+            - button "Guardar clasificación" [ref=f2e71] [cursor=pointer]
+          - separator [ref=f2e72]
+          - generic [ref=f2e73]:
+            - generic [ref=f2e75]:
+              - generic [ref=f2e76]: Unidad de derivación
+              - combobox [ref=f2e77]:
+                - option "Seleccionar" [selected]
+                - option "Control Posterior"
+                - option "Potestad Investigativa"
+                - option "Unidad de Prueba"
+            - generic [ref=f2e78]:
+              - generic [ref=f2e79]: URL del oficio de derivación
+              - textbox [ref=f2e80]
+            - button "Derivar expediente" [ref=f2e81] [cursor=pointer]
+        - generic [ref=f2e82]:
+          - heading "Bitácora" [level=2] [ref=f2e83]
+          - generic [ref=f2e85]:
+            - generic [ref=f2e86]:
+              - generic [ref=f2e87]: AS
+              - generic [ref=f2e88]:
+                - textbox "Registrar una nota..." [ref=f2e89]
+                - button "Registrar nota" [ref=f2e91] [cursor=pointer]
+            - generic [ref=f2e92]:
+              - generic [ref=f2e93]:
+                - generic [ref=f2e94]: AS
+                - generic [ref=f2e95]:
+                  - generic [ref=f2e96]:
+                    - strong [ref=f2e101]: Administrador Sistema
+                    - generic "29/7/2026, 11:18:39 p. m." [ref=f2e102]: justo ahora
+                  - generic [ref=f2e103]:
+                    - text: cambió el estado a
+                    - strong [ref=f2e104]: PROCESSED
+              - generic [ref=f2e105]:
+                - generic [ref=f2e106]: AS
+                - generic [ref=f2e107]:
+                  - generic [ref=f2e108]:
+                    - strong [ref=f2e113]: Administrador Sistema
+                    - generic "29/7/2026, 10:51:50 p. m." [ref=f2e114]: justo ahora
+                  - generic [ref=f2e115]:
+                    - text: clasificó el expediente como
+                    - strong [ref=f2e116]: Uso indebido de fondos públicos
+              - generic [ref=f2e117]:
+                - generic [ref=f2e118]: AS
+                - generic [ref=f2e119]:
+                  - generic [ref=f2e120]:
+                    - strong [ref=f2e125]: Administrador Sistema
+                    - generic "29/7/2026, 10:26:09 p. m." [ref=f2e126]: justo ahora
+                  - generic [ref=f2e127]:
+                    - text: cambió el estado a
+                    - strong [ref=f2e128]: IN_REVIEW
+                    - text: — Revision inicial
+      - generic [ref=f2e129]:
+        - generic [ref=f2e130]:
+          - heading "Estado actual" [level=2] [ref=f2e131]
+          - paragraph [ref=f2e132]:
+            - generic [ref=f2e133]: Procesado
+          - generic [ref=f2e134]:
+            - generic [ref=f2e135]:
+              - generic [ref=f2e136]: Cambiar a
+              - combobox [ref=f2e137]:
+                - option "Recibido" [selected]
+                - option "En Revisión"
+                - option "Procesado"
+                - option "Derivado"
+                - option "Archivado"
+                - option "Invalidado"
+            - generic [ref=f2e138]:
+              - generic [ref=f2e139]: Motivo (opcional)
+              - textbox [ref=f2e140]
+            - button "Actualizar estado" [ref=f2e141] [cursor=pointer]
+        - generic [ref=f2e142]:
+          - heading "Historial de estados" [level=2] [ref=f2e143]
+          - list [ref=f2e144]:
+            - listitem [ref=f2e145]: Procesado — 29/7/2026, 11:18:39 p. m.
+        - generic [ref=f2e146]:
+          - heading "Evidencias (0)" [level=2] [ref=f2e147]
+          - paragraph [ref=f2e148]: Sin archivos adjuntos.

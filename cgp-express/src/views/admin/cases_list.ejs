@@ -1,0 +1,38 @@
+<%- include('../partials/admin_head', { title, active: 'cases' }) %>
+<div class="admin-topbar">
+  <h1>Expedientes</h1>
+  <form method="GET" style="display:flex; gap:10px;">
+    <input type="text" name="q" placeholder="Buscar por N° expediente" value="<%= filters.q || '' %>" style="padding:8px 10px;border:1px solid #d0d5dd;border-radius:6px;">
+    <select name="status" onchange="this.form.submit()">
+      <option value="">Todos los estados</option>
+      <% statuses.forEach(function(s) { %>
+        <option value="<%= s.code %>" <%= filters.status === s.code ? 'selected' : '' %>><%= s.name %></option>
+      <% }) %>
+    </select>
+    <button class="btn btn-sm" type="submit">Filtrar</button>
+  </form>
+</div>
+
+<div class="card">
+  <table>
+    <thead>
+      <tr><th>N° Expediente</th><th>Ciudadano</th><th>Tipo</th><th>Estado</th><th>Fecha</th><th></th></tr>
+    </thead>
+    <tbody>
+      <% cases.forEach(function(c) { %>
+        <tr>
+          <td><%= c.case_number %></td>
+          <td><%= c.citizen_name %></td>
+          <td><%= c.claim_type_name %></td>
+          <td><span class="badge active"><%= c.status_name %></span></td>
+          <td><%= new Date(c.created_at).toLocaleDateString('es-VE') %></td>
+          <td><a class="btn btn-sm btn-outline" href="/admin/cases/<%= c.id %>">Ver</a></td>
+        </tr>
+      <% }) %>
+      <% if (cases.length === 0) { %>
+        <tr><td colspan="6" style="text-align:center;color:#888;">Sin expedientes.</td></tr>
+      <% } %>
+    </tbody>
+  </table>
+</div>
+<%- include('../partials/admin_foot') %>

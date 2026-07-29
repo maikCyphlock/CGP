@@ -1,0 +1,7 @@
+<%- include('../partials/admin_head', { title, active: '' }) %>
+<div class="card admin-403-card">
+  <h1>Acceso denegado</h1>
+  <p>No tiene privilegios sobre el módulo <strong><%= moduleCode %></strong>. Este intento ha sido registrado.</p>
+  <a class="btn" href="/admin">Volver al panel</a>
+</div>
+<%- include('../partials/admin_foot') %>

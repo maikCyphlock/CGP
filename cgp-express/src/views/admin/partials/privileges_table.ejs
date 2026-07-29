@@ -1,0 +1,20 @@
+<table>
+  <thead><tr><th>Módulo</th><th>Leer</th><th>Escribir</th><th>Eliminar</th><th></th></tr></thead>
+  <tbody>
+    <% modules.forEach(function(m) { %>
+      <% var p = privByModule[m.id] || {}; %>
+      <tr
+        hx-post="/admin/users/<%= user.id %>/privileges/<%= m.id %>"
+        hx-trigger="change"
+        hx-include="closest tr"
+        hx-target="#privileges-table"
+        hx-swap="innerHTML">
+        <td><%= m.name %></td>
+        <td><input type="checkbox" name="can_read" <%= p.can_read ? 'checked' : '' %>></td>
+        <td><input type="checkbox" name="can_write" <%= p.can_write ? 'checked' : '' %>></td>
+        <td><input type="checkbox" name="can_delete" <%= p.can_delete ? 'checked' : '' %>></td>
+        <td></td>
+      </tr>
+    <% }) %>
+  </tbody>
+</table>

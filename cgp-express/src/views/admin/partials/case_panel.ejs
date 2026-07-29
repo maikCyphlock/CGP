@@ -1,0 +1,118 @@
+<div class="case-layout">
+  <div>
+    <div class="card">
+      <h2 style="margin-top:0;">Denunciante</h2>
+      <p><strong><%= caseFile.first_name %> <%= caseFile.last_name %></strong> — <%= caseFile.email %> — <%= caseFile.mobile_phone %></p>
+      <p><%= caseFile.address %><% if (caseFile.parish) { %>, <%= caseFile.parish %><% } %>, <%= caseFile.municipality %></p>
+    </div>
+
+    <div class="card">
+      <h2 style="margin-top:0;">Narración de los hechos</h2>
+      <p style="white-space:pre-wrap;"><%= caseFile.narrative %></p>
+      <p style="color:#667;font-size:0.85rem;">Fecha del incidente: <%= caseFile.incident_date %> <% if (caseFile.incident_location) { %> · Lugar: <%= caseFile.incident_location %><% } %></p>
+    </div>
+
+    <div class="card">
+      <h2 style="margin-top:0;">Señalados (<%= caseFile.respondents.length %>)</h2>
+      <% caseFile.respondents.forEach(function(r) { %>
+        <div style="border-top:1px solid #eee; padding:10px 0;">
+          <strong><%= Object.values(r.attributes)[0] || 'Sin nombre' %></strong>
+          <div style="font-size:0.82rem;color:#667;">
+            <% Object.keys(r.attributes).forEach(function(k) { %>
+              <%= k %>: <%= r.attributes[k] %> &nbsp;
+            <% }) %>
+            <br>Ubicación: <%= r.location %>
+          </div>
+        </div>
+      <% }) %>
+    </div>
+
+    <div class="card">
+      <h2 style="margin-top:0;">Clasificación y Derivación</h2>
+      <form hx-post="/admin/cases/<%= caseFile.id %>/classify" hx-target="#case-panel" hx-swap="innerHTML">
+        <div class="form-row">
+          <div class="form-group">
+            <label>Tipo de irregularidad</label>
+            <select name="irregularity_type_id">
+              <option value="">Sin clasificar</option>
+              <% irregularityTypes.forEach(function(it) { %>
+                <option value="<%= it.id %>" <%= caseFile.irregularity_type_id === it.id ? 'selected' : '' %>><%= it.name %></option>
+              <% }) %>
+            </select>
+          </div>
+        </div>
+        <div class="form-group">
+          <label>Notas del analista</label>
+          <textarea name="analyst_notes"><%= caseFile.analyst_notes || '' %></textarea>
+        </div>
+        <button class="btn btn-sm" type="submit">Guardar clasificación</button>
+      </form>
+
+      <hr>
+      <form hx-post="/admin/cases/<%= caseFile.id %>/refer" hx-target="#case-panel" hx-swap="innerHTML">
+        <div class="form-row">
+          <div class="form-group">
+            <label>Unidad de derivación</label>
+            <select name="referral_unit_id" required>
+              <option value="">Seleccionar</option>
+              <% referralUnits.forEach(function(ru) { %>
+                <option value="<%= ru.id %>" <%= caseFile.referral_unit_id === ru.id ? 'selected' : '' %>><%= ru.name %></option>
+              <% }) %>
+            </select>
+          </div>
+        </div>
+        <div class="form-group">
+          <label>URL del oficio de derivación</label>
+          <input type="text" name="referral_letter_url" value="<%= caseFile.referral_letter_url || '' %>">
+        </div>
+        <button class="btn btn-sm" type="submit">Derivar expediente</button>
+      </form>
+    </div>
+
+    <div class="card">
+      <h2 style="margin-top:0;">Bitácora</h2>
+      <div id="chatter-panel">
+        <%- include('./chatter', { caseFile }) %>
+      </div>
+    </div>
+  </div>
+
+  <div>
+    <div class="card">
+      <h2 style="margin-top:0;">Estado actual</h2>
+      <p><span class="badge active"><%= caseFile.status_name %></span></p>
+      <form hx-post="/admin/cases/<%= caseFile.id %>/status" hx-target="#case-panel" hx-swap="innerHTML">
+        <div class="form-group">
+          <label>Cambiar a</label>
+          <select name="status_id" required>
+            <% statuses.forEach(function(s) { %>
+              <option value="<%= s.id %>"><%= s.name %></option>
+            <% }) %>
+          </select>
+        </div>
+        <div class="form-group">
+          <label>Motivo (opcional)</label>
+          <input type="text" name="reason">
+        </div>
+        <button class="btn btn-sm" type="submit">Actualizar estado</button>
+      </form>
+    </div>
+
+    <div class="card">
+      <h2 style="margin-top:0;">Historial de estados</h2>
+      <ul class="status-timeline">
+        <% caseFile.history.forEach(function(h) { %>
+          <li><%= h.status_name %> — <%= new Date(h.changed_at).toLocaleString('es-VE') %></li>
+        <% }) %>
+      </ul>
+    </div>
+
+    <div class="card">
+      <h2 style="margin-top:0;">Evidencias (<%= caseFile.evidence.length %>)</h2>
+      <% caseFile.evidence.forEach(function(e) { %>
+        <div style="font-size:0.85rem;border-top:1px solid #eee;padding:6px 0;"><%= e.original_name %> (<%= e.mime_type %>)</div>
+      <% }) %>
+      <% if (caseFile.evidence.length === 0) { %><p style="color:#888;font-size:0.85rem;">Sin archivos adjuntos.</p><% } %>
+    </div>
+  </div>
+</div>

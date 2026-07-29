@@ -1,0 +1,6 @@
+[  557349ms] [ERROR] htmx:afterRequest @ https://unpkg.com/htmx.org@1.9.12:0
+[  557350ms] [ERROR] htmx:sendError @ https://unpkg.com/htmx.org@1.9.12:0
+[  557350ms] [ERROR] Failed to load resource: net::ERR_CONNECTION_REFUSED @ http://localhost:3010/admin/cases/65cc279b-0fde-421e-862e-ac35b1d5d3d3/classify:0
+[  560662ms] [ERROR] htmx:afterRequest @ https://unpkg.com/htmx.org@1.9.12:0
+[  560663ms] [ERROR] htmx:sendError @ https://unpkg.com/htmx.org@1.9.12:0
+[  560663ms] [ERROR] Failed to load resource: net::ERR_CONNECTION_REFUSED @ http://localhost:3010/admin/cases/65cc279b-0fde-421e-862e-ac35b1d5d3d3/classify:0

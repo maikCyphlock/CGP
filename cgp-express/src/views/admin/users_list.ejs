@@ -1,0 +1,22 @@
+<%- include('../partials/admin_head', { title, active: 'users' }) %>
+<div class="admin-topbar">
+  <h1>Usuarios de Personal</h1>
+  <a class="btn" href="/admin/users/new">+ Nuevo usuario</a>
+</div>
+<div class="card">
+  <table>
+    <thead><tr><th>Nombre</th><th>Correo</th><th>Cargo</th><th>Estado</th><th></th></tr></thead>
+    <tbody>
+      <% users.forEach(function(u) { %>
+        <tr>
+          <td><%= u.first_name %> <%= u.last_name %></td>
+          <td><%= u.email %></td>
+          <td><%= u.job_title %></td>
+          <td><span class="badge <%= u.active ? 'active' : 'inactive' %>"><%= u.active ? 'Activo' : 'Inactivo' %></span></td>
+          <td><a class="btn btn-sm btn-outline" href="/admin/users/<%= u.id %>">Gestionar</a></td>
+        </tr>
+      <% }) %>
+    </tbody>
+  </table>
+</div>
+<%- include('../partials/admin_foot') %>
