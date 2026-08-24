@@ -11,7 +11,7 @@
   
   <style>
     h1, h2, h3 { 
-      ont-family: 'Inter', sans-serif;  /* Montserrat para títulos */
+      font-family: 'Inter', sans-serif;  /* Montserrat para títulos */
       text-transform: uppercase; /* Esto le da mucha más fuerza y formalidad */
       letter-spacing: -0.5px; /* Un toque moderno */
     }
@@ -212,6 +212,8 @@
       background-clip: text;
     }
   </style>
+  <!-- Aquí agregué el CDN de Bootstrap Icons para que funcionen tus iconos (bi bi-pencil y bi bi-megaphone) -->
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.1/font/bootstrap-icons.css">
 </head> 
 <body>
 
@@ -230,26 +232,30 @@
       <div class="text-center d-md-none mb-4">
   
       </div>
-    <div class="d-flex align-items-center justify-content-center mb-4 p-3 rounded" style="background-color: #0d1b3e;">
-    <img src="../cgp/assets/img/logo.jpeg" alt="Logo" style="width: 40px; height: 40px; margin-right: 12px; border-radius: 8px; object-fit: cover;">
-    <h3 class="mb-0 text-white" style="font-family: 'Roboto', sans-serif; font-weight: 700;">INICIAR SESIÓN</h3>
+      <div class="d-flex align-items-center justify-content-center mb-4 p-3 rounded" style="background-color: #0d1b3e;">
+        <img src="../cgp/assets/img/logo.jpeg" alt="Logo" style="width: 40px; height: 40px; margin-right: 12px; border-radius: 8px; object-fit: cover;">
+        <h3 class="mb-0 text-white" style="font-family: 'Roboto', sans-serif; font-weight: 700;">INICIAR SESIÓN</h3>
       </div>      
-      <form action="admin_cms.html" method="GET"> <!-- ese admin_cms.html se refiere al deshboard o al gestor pues, solo que no lo subo aun porque no lo tengo listo-->
+      
+      <!-- INICIO DEL FORMULARIO CORREGIDO -->
+      <form id="formularioLogin">
         <div class="row g-2">
-     <div class="col-12">
-      <input type="radio" class="btn-check" name="rol" id="rol1" value="editor" checked>
-      <label class="btn btn-outline-primary w-100 py-3 rounded-3 shadow-sm" for="rol1">
-        <i class="bi bi-pencil-square me-2"></i> Gestor de Contenido Web
-       </label>
-  </div>
-  <div class="col-12">
-    <input type="radio" class="btn-check" name="rol" id="rol2" value="denuncias">
-    <label class="btn btn-outline-primary w-100 py-3 rounded-3 shadow-sm" for="rol2">
-      <i class="bi bi-megaphone-fill me-2"></i> Gestor de Módulo de Denuncias
-    </label>
-  </div>
-</div>
-        <div class="mb-3">
+          <div class="col-12">
+            <input type="radio" class="btn-check" name="rol" id="rol1" value="editor" checked>
+            <label class="btn btn-outline-primary w-100 py-3 rounded-3 shadow-sm" for="rol1">
+               Gestor de Contenido Web
+            </label>
+          </div>
+          
+          <div class="col-12">
+            <input type="radio" class="btn-check" name="rol" id="rol2" value="denuncias">
+            <label class="btn btn-outline-primary w-100 py-3 rounded-3 shadow-sm" for="rol2">
+               Gestor de Módulo de Denuncias
+            </label>
+          </div>
+        </div>
+
+        <div class="mb-3 mt-3">
           <hr> 
           <label for="email" class="form-label">Correo electrónico / Usuario</label>
           <input type="email" class="form-control" id="email" placeholder="usuario@cgr.gob.ve" required>
@@ -265,10 +271,30 @@
 
         <button type="submit" class="btn btn-login w-100">ACCEDER</button>
       </form>
+      <!-- FIN DEL FORMULARIO CORREGIDO -->
+
     </div>
   </div>
 </div>
 
 <script src="https://cdnjs.cloudflare.com/ajax/libs/bootstrap/5.3.2/js/bootstrap.bundle.min.js"></script>
+
+<!-- SCRIPT PARA EL REDIRECCIONAMIENTO -->
+<script>
+    document.getElementById("formularioLogin").addEventListener("submit", function(event) {
+        // Evita que la página intente procesar datos reales al instante
+        event.preventDefault();
+
+        // Busca cuál de los dos botones está marcado
+        const rolSeleccionado = document.querySelector('input[name="rol"]:checked').value;
+
+        // Redirige usando las rutas exactas
+        if (rolSeleccionado === "editor") {
+            window.location.href = "pages/PDC CONTENIDO WEB/admin_cms.html";
+        } else if (rolSeleccionado === "denuncias") {
+            window.location.href = "pages/PDC-OAC-DENUNCIAS/PDC_denunciasinicio.html";
+        }
+    });
+</script>
 </body>
 </html>

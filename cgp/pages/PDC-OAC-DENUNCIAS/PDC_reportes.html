@@ -1,0 +1,224 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Reportes Gerenciales - OAC Contraloría del Municipio Páez</title>
+  <link href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap/5.3.2/css/bootstrap.min.css" rel="stylesheet">
+  <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
+  
+  <!-- CDN de Chart.js -->
+  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+  
+  <style>
+    body { font-family: 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif; background-color: #f0f4f8; margin: 0; color: #333; }
+    .admin-wrapper { display: flex; min-height: 100vh; }
+    
+    /* Sidebar institucional */
+    .sidebar { width: 260px; background: linear-gradient(180deg, #0d1b3e 0%, #060d20 100%); color: white; box-shadow: 4px 0 15px rgba(0,0,0,0.1); z-index: 10; }
+    .sidebar a { transition: all 0.3s ease; }
+    .sidebar a:hover:not(.active-link) { background-color: rgba(255,255,255,0.1) !important; transform: translateX(5px); }
+    .active-link { background-color: rgba(255,255,255,0.15); border-left: 4px solid #e63946; }
+
+    .main-content { flex-grow: 1; display: flex; flex-direction: column; width: calc(100% - 260px); }
+    
+    /* Estilos para tarjetas de reportes */
+    .card-kpi { border-left: 4px solid #0d1b3e; border-radius: 8px; transition: transform 0.3s ease, box-shadow 0.3s ease; }
+    .card-kpi:hover { transform: translateY(-3px); box-shadow: 0 8px 15px rgba(0,0,0,0.06) !important; }
+    
+    .btn-report {
+      background-color: #0d1b3e;
+      color: white;
+      transition: all 0.3s ease;
+      border: none;
+    }
+    .btn-report:hover {
+      background-color: #162c63;
+      color: white;
+    }
+  </style>
+</head>
+<body>
+
+<div class="admin-wrapper">
+  <!-- Menú Lateral -->
+  <aside class="sidebar">
+    <div class="p-4 border-bottom border-secondary d-flex align-items-center gap-3">
+      <img src="../../assets/img/logo.jpeg" alt="Logo Institucional" style="width: 45px; border-radius: 4px; box-shadow: 0 2px 5px rgba(0,0,0,0.2);">
+      <span class="fw-bold" style="font-size: 1.05rem; letter-spacing: 0.5px;">OAC - Páez</span>
+    </div>
+   <ul class="list-unstyled p-3 m-0">
+      <li class="text-uppercase text-secondary fw-bold mb-3 mt-2" style="font-size: 0.7rem; letter-spacing: 1px;">Gestión de Casos</li>
+      <li class="mb-1"><a href="PDC_denunciasinicio.html" class="text-white-50 text-decoration-none d-block p-2 rounded">Panel Principal</a></li>
+      <li class="mb-1"><a href="PDC_protocolizacion.html" class="text-white-50 text-decoration-none d-block p-2 rounded">Revisión y Protocolización</a></li>
+      <li class="mb-1"><a href="PDC_seguimiento.html" class="text-white-50 text-decoration-none d-block p-2 rounded">Seguimiento de Expedientes</a></li>
+      
+      <li class="text-uppercase text-secondary fw-bold mt-4 mb-3" style="font-size: 0.7rem; letter-spacing: 1px;">Control y Estadísticas</li>
+      <li class="mb-1"><a href="PDC_reportes.html" class="text-white text-decoration-none d-block p-2 rounded active-link">Reportes Gerenciales</a></li>
+   </ul>
+  </aside>
+
+  <!-- Contenido Principal -->
+  <main class="main-content w-100">
+    <header class="d-flex justify-content-between align-items-center bg-white p-3 border-bottom shadow-sm" style="z-index: 5;">
+      <h5 class="mb-0 fw-bold" style="color: #0d1b3e; letter-spacing: 0.5px;">
+        Reportes y Estadísticas Gerenciales
+      </h5>
+      <div class="dropdown">
+        <div class="d-flex align-items-center dropdown-toggle" role="button" data-bs-toggle="dropdown" aria-expanded="false">
+          <div class="text-end me-3 d-none d-md-block">
+            <p class="mb-0 fw-bold text-dark" style="font-size: 0.85rem;">María Laura Pérez</p>
+            <small class="text-muted" style="font-size: 0.75rem;">Oficina de Atención al Ciudadano</small>
+          </div>
+          <div class="rounded-circle d-flex align-items-center justify-content-center fw-bold text-white shadow-sm" style="width: 38px; height: 38px; background: linear-gradient(135deg, #0d1b3e, #1a3375);">M</div>
+        </div>
+        <!-- Menú desplegable que faltaba -->
+        <ul class="dropdown-menu dropdown-menu-end shadow border-0 mt-2 rounded-2">
+          <li><a class="dropdown-item text-muted" href="PDC_configuracion.html"><i class="fa-solid fa-gear me-2"></i>Configuración</a></li>
+          <li><hr class="dropdown-divider"></li>
+          <li><a class="dropdown-item text-danger fw-bold" href="../../logincontraloria.html"><i class="fa-solid fa-right-from-bracket me-2"></i>Cerrar Sesión</a></li>
+        </ul>
+      </div>
+    </header>
+
+    <div class="container-fluid p-4">
+      
+      <!-- Filtro de Fechas para Reportes -->
+      <div class="card border-0 shadow-sm rounded-3 mb-4">
+        <div class="card-body">
+          <div class="row align-items-end g-3">
+            <div class="col-md-4">
+              <label class="form-label fw-bold text-muted" style="font-size: 0.85rem;">Desde (Mes / Año)</label>
+              <input type="month" class="form-control form-control-sm" value="2026-01">
+            </div>
+            <div class="col-md-4">
+              <label class="form-label fw-bold text-muted" style="font-size: 0.85rem;">Hasta (Mes / Año)</label>
+              <input type="month" class="form-control form-control-sm" value="2026-08">
+            </div>
+            <div class="col-md-4">
+              <button class="btn btn-sm btn-report w-100 fw-bold py-2">
+                Generar Reporte PDF
+              </button>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Tarjetas Resumen Estadístico -->
+      <div class="row g-4 mb-4">
+        <div class="col-md-4">
+          <div class="card card-kpi border-0 shadow-sm h-100 bg-white p-3">
+            <div class="card-body">
+              <h6 class="text-muted text-uppercase fw-bold mb-2" style="font-size: 0.75rem;">Eficiencia de Resolución</h6>
+              <h2 class="fw-bold mb-1" style="color: #0d1b3e;">75%</h2>
+              <small class="text-secondary fw-semibold">Casos cerrados vs. recibidos</small>
+            </div>
+          </div>
+        </div>
+        <div class="col-md-4">
+          <div class="card card-kpi border-0 shadow-sm h-100 bg-white p-3" style="border-left-color: #4a6fa5;">
+            <div class="card-body">
+              <h6 class="text-muted text-uppercase fw-bold mb-2" style="font-size: 0.75rem;">Tiempo Promedio de Respuesta</h6>
+              <h2 class="fw-bold mb-1" style="color: #333;">4.5 Días</h2>
+              <small class="text-secondary fw-semibold">Desde la recepción hasta la protocolización</small>
+            </div>
+          </div>
+        </div>
+        <div class="col-md-4">
+          <div class="card card-kpi border-0 shadow-sm h-100 bg-white p-3" style="border-left-color: #495057;">
+            <div class="card-body">
+              <h6 class="text-muted text-uppercase fw-bold mb-2" style="font-size: 0.75goedrem;">Total Acumulado (Anual)</h6>
+              <h2 class="fw-bold mb-1" style="color: #333;">142</h2>
+              <small class="text-secondary fw-semibold">Expedientes procesados en el año</small>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Sección de Gráficos con Chart.js -->
+      <div class="row g-4">
+        <div class="col-lg-8">
+          <div class="card border-0 shadow-sm rounded-3 h-100">
+            <div class="card-header bg-white py-3 border-bottom">
+              <h6 class="mb-0 fw-bold text-uppercase" style="font-size: 0.85rem; color: #0d1b3e;">
+                Comportamiento Mensual de Denuncias
+              </h6>
+            </div>
+            <div class="card-body bg-white p-3" style="position: relative; height: 300px;">
+              <!-- Canvas donde Chart.js dibuja el gráfico de barras -->
+              <canvas id="graficoDenuncias"></canvas>
+            </div>
+          </div>
+        </div>
+
+        <div class="col-lg-4">
+          <div class="card border-0 shadow-sm rounded-3 h-100">
+            <div class="card-header bg-white py-3 border-bottom">
+              <h6 class="mb-0 fw-bold text-uppercase" style="font-size: 0.85rem; color: #0d1b3e;">
+                Tipos de Solicitud
+              </h6>
+            </div>
+            <div class="card-body p-0">
+              <ul class="list-group list-group-flush" style="font-size: 0.9rem;">
+                <li class="list-group-item d-flex justify-content-between align-items-center py-3">
+                  Denuncias Administrativas <span class="badge rounded-pill text-white" style="background-color: #0d1b3e;">65%</span>
+                </li>
+                <li class="list-group-item d-flex justify-content-between align-items-center py-3">
+                  Quejas y Sugerencias <span class="badge rounded-pill text-white" style="background-color: #4a6fa5;">20%</span>
+                </li>
+                <li class="list-group-item d-flex justify-content-between align-items-center py-3">
+                  Solicitudes de Información <span class="badge rounded-pill text-white" style="background-color: #495057;">15%</span>
+                </li>
+              </ul>
+            </div>
+          </div>
+        </div>
+      </div>
+
+    </div>
+  </main>
+</div>
+
+<!-- Script para Inicializar el Gráfico con Chart.js -->
+<script>
+  const ctx = document.getElementById('graficoDenuncias').getContext('2d');
+  const graficoDenuncias = new Chart(ctx, {
+    type: 'bar', // Tipo de gráfico: barras
+    data: {
+      labels: ['Enero', 'Febrero', 'Marzo', 'Abril', 'Mayo', 'Junio', 'Julio', 'Agosto'],
+      datasets: [{
+        label: 'Casos Registrados',
+        data: [12, 19, 15, 22, 18, 25, 20, 24],
+        backgroundColor: '#0d1b3e', // Color azul institucional principal
+        borderRadius: 4
+      }]
+    },
+    options: {
+      responsive: true,
+      maintainAspectRatio: false,
+      plugins: {
+        legend: {
+          display: false // Ocultamos la leyenda para mantenerlo limpio
+        }
+      },
+      scales: {
+        y: {
+          beginAtZero: true,
+          grid: {
+            color: '#f0f0f0'
+          }
+        },
+        x: {
+          grid: {
+            display: false
+          }
+        }
+      }
+    }
+  });
+</script>
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/bootstrap/5.3.2/js/bootstrap.bundle.min.js"></script>
+
+</body>
+</html>

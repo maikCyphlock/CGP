@@ -1,0 +1,252 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Sistema de Gestión OAC - Contraloría del Municipio Páez</title>
+  <link href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap/5.3.2/css/bootstrap.min.css" rel="stylesheet">
+  <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
+  
+  <style>
+    body {
+      font-family: 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
+      background-color: #f0f4f8; /* Un fondo ligeramente más claro y limpio */
+      margin: 0;
+      color: #333;
+    }
+    
+    .admin-wrapper { display: flex; min-height: 100vh; }
+    
+    /* Degradado sutil para el sidebar en la paleta azul institucional */
+    .sidebar { 
+      width: 260px; 
+      background: linear-gradient(180deg, #0d1b3e 0%, #060d20 100%); 
+      color: white; 
+      box-shadow: 4px 0 15px rgba(0,0,0,0.1);
+      z-index: 10;
+    }
+    
+    /* Efectos de transición en los enlaces del menú */
+    .sidebar a { transition: all 0.3s ease; }
+    .sidebar a:hover:not(.active-link) {
+      background-color: rgba(255,255,255,0.1) !important;
+      transform: translateX(5px);
+    }
+    .active-link {
+      background-color: rgba(255,255,255,0.15);
+      border-left: 4px solid #e63946;
+    }
+
+    .main-content { flex-grow: 1; display: flex; flex-direction: column; width: calc(100% - 260px); }
+    
+    /* Estilos mejorados para las tarjetas (Hover effect) */
+    .card-kpi { 
+      border-left: 4px solid #0d1b3e; 
+      border-radius: 8px; 
+      transition: transform 0.3s ease, box-shadow 0.3s ease;
+      overflow: hidden;
+      position: relative;
+    }
+    .card-kpi:hover {
+      transform: translateY(-5px);
+      box-shadow: 0 10px 20px rgba(0,0,0,0.08) !important;
+    }
+    .card-icon {
+      position: absolute;
+      right: 20px;
+      top: 50%;
+      transform: translateY(-50%);
+      font-size: 3.5rem;
+      opacity: 0.08;
+      color: inherit;
+    }
+
+    /* Botón más llamativo */
+    .btn-update {
+      background-color: #0d1b3e;
+      color: white;
+      transition: all 0.3s ease;
+      border: none;
+    }
+    .btn-update:hover {
+      background-color: #162c63;
+      transform: scale(1.03);
+      color: white;
+    }
+
+    /* Hover en las filas de la tabla */
+    .table-hover tbody tr { transition: background-color 0.2s ease; }
+    .table-hover tbody tr:hover { background-color: #f8faff; }
+  </style>
+</head>
+<body>
+
+<div class="admin-wrapper">
+  <!-- Menú Lateral Institucional -->
+  <aside class="sidebar">
+    <div class="p-4 border-bottom border-secondary d-flex align-items-center gap-3">
+      <img src="../../assets/img/logo.jpeg" alt="Logo Institucional" style="width: 45px; border-radius: 4px; box-shadow: 0 2px 5px rgba(0,0,0,0.2);">
+      <span class="fw-bold" style="font-size: 1.05rem; letter-spacing: 0.5px;">OAC - Páez</span>
+    </div>
+   <ul class="list-unstyled p-3 m-0">
+      <li class="text-uppercase text-secondary fw-bold mb-3 mt-2" style="font-size: 0.7rem; letter-spacing: 1px;">Gestión de Casos</li>
+      <li class="mb-1"><a href="PDC_denunciasinicio.html" class="text-white text-decoration-none d-block p-2 rounded active-link">Panel Principal</a></li>
+      <li class="mb-1"><a href="PDC_protocolizacion.html" class="text-white-50 text-decoration-none d-block p-2 rounded">Revisión y Protocolización</a></li>
+      <li class="mb-1"><a href="PDC_seguimiento.html" class="text-white-50 text-decoration-none d-block p-2 rounded">Seguimiento de Expedientes</a></li>
+
+      <li class="text-uppercase text-secondary fw-bold mt-4 mb-3" style="font-size: 0.7rem; letter-spacing: 1px;">Control y Estadísticas</li>
+      <li class="mb-1"><a href="PDC_reportes.html" class="text-white-50 text-decoration-none d-block p-2 rounded">Reportes Gerenciales</a></li>
+   </ul>
+  </aside>
+
+  <!-- Contenido Principal -->
+  <main class="main-content w-100">
+    <!-- Barra Superior -->
+    <header class="d-flex justify-content-between align-items-center bg-white p-3 border-bottom shadow-sm" style="z-index: 5;">
+      <h5 class="mb-0 fw-bold" style="color: #0d1b3e; letter-spacing: 0.5px;">
+        Sistema de Control y Verificación
+      </h5>
+      <div class="dropdown">
+        <div class="d-flex align-items-center dropdown-toggle" role="button" data-bs-toggle="dropdown">
+          <div class="text-end me-3 d-none d-md-block">
+            <p class="mb-0 fw-bold text-dark" style="font-size: 0.85rem;">María Laura Pérez</p>
+            <small class="text-muted" style="font-size: 0.75rem;">Oficina de Atención al Ciudadano</small>
+          </div>
+          <div class="rounded-circle d-flex align-items-center justify-content-center fw-bold text-white shadow-sm" style="width: 38px; height: 38px; background: linear-gradient(135deg, #0d1b3e, #1a3375);">M</div>
+        </div>
+        <ul class="dropdown-menu dropdown-menu-end shadow border-0 mt-2 rounded-2">
+          <li><a class="dropdown-item text-muted" href="PDC_configuracion.html"><i class="fa-solid fa-gear me-2"></i>Configuración</a></li>
+          <li><hr class="dropdown-divider"></li>
+          <li><a class="dropdown-item text-danger fw-bold" href="../../logincontraloria.html"><i class="fa-solid fa-right-from-bracket me-2"></i>Cerrar Sesión</a></li>
+        </ul>
+      </div>
+    </header>
+
+    <div class="container-fluid p-4">
+      
+      <!-- Encabezado del Dashboard -->
+      <div class="d-flex justify-content-between align-items-end mb-4 border-bottom pb-3">
+        <div>
+          <h3 class="fw-bold text-dark mb-1" id="saludoDinamico">Bienvenido(a)</h3>
+          <p class="text-secondary mb-0" style="font-size: 0.95rem;">Resumen de actividad y estado actual de la bandeja de recepción.</p>
+        </div>
+        <div>
+          <!-- Botón de actualización de bandeja -->
+          <button class="btn btn-sm btn-update px-4 py-2 fw-bold rounded-2 shadow-sm" onclick="location.reload();">
+            Actualizar Bandeja
+          </button>
+        </div>
+      </div>
+
+  
+      <div class="row g-4 mb-4">
+        <div class="col-md-4">
+          <div class="card card-kpi border-0 shadow-sm h-100 bg-white" style="border-left-color: #0d1b3e;">
+            <div class="card-body p-4">
+              <h6 class="text-muted text-uppercase fw-bold mb-2" style="font-size: 0.75rem;">Denuncias Recibidas (Mes)</h6>
+              <h2 class="fw-bold mb-1" style="color: #0d1b3e;">24</h2>
+              <small class="text-secondary fw-semibold">Registradas en el portal público</small>
+            </div>
+          </div>
+        </div>
+        
+        <div class="col-md-4">
+          <div class="card card-kpi border-0 shadow-sm h-100 bg-white" style="border-left-color: #f6c23e;">
+            <div class="card-body p-4">
+              <h6 class="text-muted text-uppercase fw-bold mb-2" style="font-size: 0.75rem;">En Proceso de Verificación</h6>
+              <h2 class="fw-bold mb-1" style="color: #333;">18</h2>
+              <small class="text-secondary fw-semibold">Pendientes de revisión</small>
+            </div>
+          </div>
+        </div>
+
+        <div class="col-md-4">
+          <div class="card card-kpi border-0 shadow-sm h-100 bg-white" style="border-left-color: #1cc88a;">
+            <div class="card-body p-4">
+              <h6 class="text-muted text-uppercase fw-bold mb-2" style="font-size: 0.75rem;">Expedientes Procesados</h6>
+              <h2 class="fw-bold mb-1" style="color: #333;">6</h2>
+              <small class="text-secondary fw-semibold">Casos con estatus definitivo</small>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Registro de Actividad y Bandeja de Entrada -->
+      <div class="row">
+        <div class="col-12">
+          <div class="card border-0 shadow-sm rounded-3 overflow-hidden">
+            <div class="card-header bg-white border-bottom py-3 d-flex justify-content-between align-items-center">
+              <h6 class="mb-0 fw-bold text-uppercase" style="font-size: 0.85rem; color: #0d1b3e;">
+                Últimos Movimientos
+              </h6>
+              <a href="admin_seguimiento.html" class="text-decoration-none fw-bold" style="font-size: 0.85rem; color: #0d1b3e;">
+                Consultar Histórico <i class="fa-solid fa-arrow-right ms-1"></i>
+              </a>
+            </div>
+            <div class="card-body p-0">
+              <div class="table-responsive">
+                <table class="table table-hover align-middle mb-0" style="font-size: 0.9rem;">
+                  <thead style="background-color: #f8f9fa;">
+                    <tr>
+                      <th class="ps-4 py-3 fw-bold text-muted border-0">Fecha / Hora</th>
+                      <th class="fw-bold text-muted border-0">Acción Registrada</th>
+                      <th class="fw-bold text-muted border-0">Referencia</th>
+                      <th class="fw-bold text-muted border-0">Usuario / Origen</th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    <tr>
+                      <td class="ps-4 text-secondary fw-semibold">23/08/2026 - 08:30 AM</td>
+                      <td class="fw-bold" style="color: #0d1b3e;">Recepción de denuncia ciudadana</td>
+                      <td><span class="badge bg-light text-dark border">Folio-Web-2026-089</span></td>
+                      <td>Portal Público</td>
+                    </tr>
+                    <tr>
+                      <td class="ps-4 text-secondary fw-semibold">22/08/2026 - 02:15 PM</td>
+                      <td class="fw-bold text-dark">Protocolización de expediente</td>
+                      <td><span class="badge bg-light text-dark border">EXP-OAC-2026-045</span></td>
+                      <td>María L. Pérez</td>
+                    </tr>
+                    <tr>
+                      <td class="ps-4 text-secondary fw-semibold">21/08/2026 - 11:45 AM</td>
+                      <td class="fw-bold text-dark">Actualización de estatus (Remitido)</td>
+                      <td><span class="badge bg-light text-dark border">EXP-OAC-2026-042</span></td>
+                      <td>Dirección General</td>
+                    </tr>
+                    <tr>
+                      <td class="ps-4 text-secondary fw-semibold">20/08/2026 - 09:10 AM</td>
+                      <td class="fw-bold text-dark">Cierre de expediente verificado</td>
+                      <td><span class="badge bg-light text-dark border">EXP-OAC-2026-039</span></td>
+                      <td>María L. Pérez</td>
+                    </tr>
+                  </tbody>
+                </table>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+    </div>
+  </main>
+</div>
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/bootstrap/5.3.2/js/bootstrap.bundle.min.js"></script>
+
+<!-- Script para el Saludo Formal -->
+<script>
+  document.addEventListener("DOMContentLoaded", function() {
+    const horaActual = new Date().getHours();
+    let saludo = "Buen día";
+    
+    if (horaActual >= 12 && horaActual < 19) {
+      saludo = "Buenas tardes";
+    } else if (horaActual >= 19) {
+      saludo = "Buenas noches";
+    }
+    
+    document.getElementById("saludoDinamico").innerText = saludo + ", María Laura Pérez";
+  });
+</script>
+</body>
+</html>

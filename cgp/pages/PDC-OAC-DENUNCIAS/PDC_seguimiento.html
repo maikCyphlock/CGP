@@ -1,0 +1,144 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Seguimiento - OAC Contraloría del Municipio Páez</title>
+  <link href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap/5.3.2/css/bootstrap.min.css" rel="stylesheet">
+  <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
+  
+  <style>
+    body { font-family: 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif; background-color: #f0f4f8; margin: 0; color: #333; }
+    .admin-wrapper { display: flex; min-height: 100vh; }
+    
+    .sidebar { width: 260px; background: linear-gradient(180deg, #0d1b3e 0%, #060d20 100%); color: white; box-shadow: 4px 0 15px rgba(0,0,0,0.1); z-index: 10; }
+    .sidebar a { transition: all 0.3s ease; }
+    .sidebar a:hover:not(.active-link) { background-color: rgba(255,255,255,0.1) !important; transform: translateX(5px); }
+    .active-link { background-color: rgba(255,255,255,0.15); border-left: 4px solid #e63946; }
+
+    .main-content { flex-grow: 1; display: flex; flex-direction: column; width: calc(100% - 260px); }
+    .table-hover tbody tr { transition: background-color 0.2s ease; }
+    .table-hover tbody tr:hover { background-color: #f8faff; }
+  </style>
+</head>
+<body>
+
+<div class="admin-wrapper">
+  <!-- Menú Lateral -->
+  <aside class="sidebar">
+    <div class="p-4 border-bottom border-secondary d-flex align-items-center gap-3">
+      <img src="../../assets/img/logo.jpeg" alt="Logo Institucional" style="width: 45px; border-radius: 4px; box-shadow: 0 2px 5px rgba(0,0,0,0.2);">
+      <span class="fw-bold" style="font-size: 1.05rem; letter-spacing: 0.5px;">OAC - Páez</span>
+    </div>
+   <ul class="list-unstyled p-3 m-0">
+      <li class="text-uppercase text-secondary fw-bold mb-3 mt-2" style="font-size: 0.7rem; letter-spacing: 1px;">Gestión de Casos</li>
+      <li class="mb-1"><a href="PDC_denunciasinicio.html" class="text-white-50 text-decoration-none d-block p-2 rounded">Panel Principal</a></li>
+      <li class="mb-1"><a href="PDC_protocolizacion.html" class="text-white-50 text-decoration-none d-block p-2 rounded">Revisión y Protocolización</a></li>
+      <li class="mb-1"><a href="PDC_seguimiento.html" class="text-white text-decoration-none d-block p-2 rounded active-link">Seguimiento de Expedientes</a></li>
+      
+      <li class="text-uppercase text-secondary fw-bold mt-4 mb-3" style="font-size: 0.7rem; letter-spacing: 1px;">Control y Estadísticas</li>
+      <li class="mb-1"><a href="PDC_reportes.html" class="text-white-50 text-decoration-none d-block p-2 rounded">Reportes Gerenciales</a></li>
+   </ul>
+  </aside>
+
+  <!-- Contenido Principal -->
+  <main class="main-content w-100">
+    <header class="d-flex justify-content-between align-items-center bg-white p-3 border-bottom shadow-sm" style="z-index: 5;">
+      <h5 class="mb-0 fw-bold" style="color: #0d1b3e; letter-spacing: 0.5px;">
+        Seguimiento y Control
+      </h5>
+      <div class="dropdown">
+        <div class="d-flex align-items-center dropdown-toggle" role="button" data-bs-toggle="dropdown" aria-expanded="false">
+          <div class="text-end me-3 d-none d-md-block">
+            <p class="mb-0 fw-bold text-dark" style="font-size: 0.85rem;">María Laura Pérez</p>
+            <small class="text-muted" style="font-size: 0.75rem;">Oficina de Atención al Ciudadano</small>
+          </div>
+          <div class="rounded-circle d-flex align-items-center justify-content-center fw-bold text-white shadow-sm" style="width: 38px; height: 38px; background: linear-gradient(135deg, #0d1b3e, #1a3375);">M</div>
+        </div>
+        <!-- Menú desplegable que faltaba -->
+        <ul class="dropdown-menu dropdown-menu-end shadow border-0 mt-2 rounded-2">
+          <li><a class="dropdown-item text-muted" href="PDC_configuracion.html"><i class="fa-solid fa-gear me-2"></i>Configuración</a></li>
+          <li><hr class="dropdown-divider"></li>
+          <li><a class="dropdown-item text-danger fw-bold" href= "../../logincontraloria.html"> <i class="fa-solid fa-right-from-bracket me-2"></i>Cerrar Sesión</a></li>
+        </ul>
+      </div>
+    </header>
+
+    <div class="container-fluid p-4">
+      
+      <!-- Buscador y Filtros -->
+      <div class="card border-0 shadow-sm rounded-3 mb-4">
+        <div class="card-body">
+          <form class="row g-3 align-items-end">
+            <div class="col-md-4">
+              <label class="form-label fw-bold text-muted" style="font-size: 0.85rem;">N° de Expediente</label>
+              <input type="text" class="form-control form-control-sm" placeholder="Ej: EXP-OAC-2026-001">
+            </div>
+            <div class="col-md-4">
+              <label class="form-label fw-bold text-muted" style="font-size: 0.85rem;">Estatus Actual</label>
+              <select class="form-select form-select-sm">
+                <option selected>Todos los estatus</option>
+                <option value="1">En Proceso</option>
+                <option value="2">Remitido a Dirección</option>
+                <option value="3">Cerrado / Concluido</option>
+              </select>
+            </div>
+            <div class="col-md-4">
+              <button type="submit" class="btn btn-sm btn-secondary w-100 fw-bold" style="background-color: #0d1b3e; border: none;">
+                Buscar Expediente
+              </button>
+            </div>
+          </form>
+        </div>
+      </div>
+
+      <!-- Tabla de Seguimiento -->
+      <div class="card border-0 shadow-sm rounded-3 overflow-hidden">
+        <div class="card-body p-0">
+          <div class="table-responsive">
+            <table class="table table-hover align-middle mb-0" style="font-size: 0.9rem;">
+              <thead style="background-color: #f8f9fa;">
+                <tr>
+                  <th class="ps-4 py-3 fw-bold text-muted border-0">Expediente</th>
+                  <th class="fw-bold text-muted border-0">Fecha Protocolización</th>
+                  <th class="fw-bold text-muted border-0">Estatus</th>
+                  <th class="fw-bold text-muted border-0 text-center">Gestión</th>
+                </tr>
+              </thead>
+              <tbody>
+                <tr>
+                  <td class="ps-4 fw-bold" style="color: #0d1b3e;">EXP-OAC-2026-045</td>
+                  <td class="text-secondary fw-semibold">22/08/2026</td>
+                  <td><span class="badge border" style="background-color: #cce5ff; color: #004085;">En Proceso</span></td>
+                  <td class="text-center">
+                    <button class="btn btn-sm btn-outline-dark"> Actualizar</button>
+                  </td>
+                </tr>
+                <tr>
+                  <td class="ps-4 fw-bold" style="color: #0d1b3e;">EXP-OAC-2026-042</td>
+                  <td class="text-secondary fw-semibold">15/08/2026</td>
+                  <td><span class="badge text-white" style="background-color: #0d1b3e;">Remitido</span></td>
+                  <td class="text-center">
+                    <button class="btn btn-sm btn-outline-dark"> Actualizar</button>
+                  </td>
+                </tr>
+                <tr>
+                  <td class="ps-4 fw-bold" style="color: #0d1b3e;">EXP-OAC-2026-039</td>
+                  <td class="text-secondary fw-semibold">10/08/2026</td>
+                  <td><span class="badge text-white" style="background-color: #495057;">Cerrado</span></td>
+                  <td class="text-center">
+                    <button class="btn btn-sm btn-outline-dark" disabled><i class="fa-solid fa-lock"></i></button>
+                  </td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+        </div>
+      </div>
+    </div>
+  </main>
+</div>
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/bootstrap/5.3.2/js/bootstrap.bundle.min.js"></script>
+</body>
+</html>
