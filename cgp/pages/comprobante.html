@@ -1,0 +1,138 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <title>Diseño de Plantilla - OAC</title>
+    <style>
+        body {
+            background-color: #e0e0e0;
+            margin: 0;
+            padding: 20px;
+            font-family: Arial, sans-serif;
+        }
+        .hoja-carta {
+            width: 210mm;
+            min-height: 297mm;
+            background: #ffffff;
+            margin: 0 auto;
+            padding: 20mm;
+            box-shadow: 0 0 10px rgba(0,0,0,0.15);
+            box-sizing: border-box;
+            position: relative; /* Necesario para fijar el footer abajo si se desea */
+            display: flex;
+            flex-direction: column;
+        }
+
+        /* Contenido principal que empuja el footer hacia abajo */
+        .contenido-principal {
+            flex: 1;
+        }
+
+        /* Estilos del Membrete Institucional */
+        .header-table {
+            width: 100%;
+            border-collapse: collapse;
+            border-bottom: 2px solid #0b2545;
+            padding-bottom: 10px;
+            margin-bottom: 20px;
+        }
+        .header-table td {
+            vertical-align: middle;
+        }
+        .logo-izq { width: 40%; text-align: left; }
+        .logo-der { width: 40%; text-align: right; }
+
+        /* Estilos del Footer Institucional */
+        .footer-institucional {
+            width: 100%;
+            border-top: 1.5px solid #0b2545; /* Línea superior del footer */
+            padding-top: 8px;
+            margin-top: 30px;
+        }
+        .footer-table {
+            width: 100%;
+            border-collapse: collapse;
+        }
+        .footer-table td {
+            vertical-align: top;
+            font-size: 8pt;
+            color: #222222;
+            line-height: 1.3;
+        }
+        .footer-izquierda {
+            width: 60%;
+            text-align: left;
+            font-style: italic;
+        }
+        .footer-derecha {
+            width: 40%;
+            text-align: right;
+        }
+        .footer-derecha div {
+            display: flex;
+            align-items: center;
+            justify-content: flex-end;
+            gap: 5px;
+            margin-bottom: 2px;
+            font-style: normal;
+        }
+        .footer-derecha img {
+            width: 12px;
+            height: 12px;
+        }
+        .autor-linea {
+            font-size: 8.5pt;
+            font-style: italic;
+            margin-bottom: 4px;
+            color: #111;
+        }
+    </style>
+</head>
+<body>
+
+    <div class="hoja-carta">
+        
+        <div class="contenido-principal">
+            <!-- Tabla de Membrete con los Logos a los lados -->
+            <table class="header-table">
+                <tr>
+                    <td class="logo-izq">
+                        <img src="../assets/img/LOGO OFICO CMP.png" alt="Logo CMP" style="max-width: 180px; height: auto;">
+                    </td>
+                    <td class="logo-der">
+                        <img src="../assets/img/IMG-20241209-WA0052-removebg-preview.png" alt="Logo SNCF" style="max-width: 90px; height: auto;">
+                    </td>
+                </tr>
+            </table>
+
+            <!-- Contenido de tu documento o comprobante aquí -->
+            <h2 style="text-align: center; color: #0b2545; font-size: 14pt;">COMPROBANTE DE RECEPCIÓN</h2>
+
+            <!-- aqui deberia ir el resultado del comprobante, el codigo y eso, pero no se que mas hacer para conectarlo al sistema y que los datos que ingresen se vean, como el codigo generado y eso --> 
+            
+        </div>
+
+        <!-- PIE DE PÁGINA INSTITUCIONAL -->
+        <div class="footer-institucional">
+            <div class="autor-linea">Lucena L. / Yolanda R.</div>
+            <table class="footer-table">
+                <tr>
+                    <td class="footer-izquierda">
+                        <strong>R.I.F.:</strong> G-20001628-0<br>
+                        Av. 33 con calle 35. Edif. Doña Cecilia. Frente a la Plaza Andrés Eloy Blanco.<br>
+                        Acarigua, municipio Páez, Estado Portuguesa<br>
+                        <strong>Correo electrónico:</strong> <span style="color: #0b2545; text-decoration: underline;">municipiopaezcontraloria@gmail.com</span>
+                    </td>
+                    <td class="footer-derecha">
+                        <div><span>@cmeppaez</span></div>
+                        <div><span>Contraloría Municipio Páez Estado Portuguesa</span></div>
+                        <div><span>@contraloria_mpaez</span></div>
+                    </td>
+                </tr>
+            </table>
+        </div>
+
+    </div>
+
+</body>
+</html>
