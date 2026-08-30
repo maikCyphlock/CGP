@@ -97,6 +97,10 @@
           </div>
           <div class="paso-item" data-paso="4">
             <div class="paso-num">5</div>
+            <span class="paso-etiqueta">EVIDENCIAS</span>
+          </div>
+          <div class="paso-item" data-paso="5">
+            <div class="paso-num">6</div>
             <span class="paso-etiqueta">REVISIÓN</span>
           </div>
         </div>
@@ -130,7 +134,7 @@
             <div class="tc-title">Denuncia de Proyectos del<br>Poder Popular</div>
             <div class="tc-desc">
               Para denuncias relacionadas con Consejos Comunales, Comunas y Proyectos Financiados a través
-              de la Consulta Popular Nacional. Incluye campos para Código CITUR, monto y denominación del proyecto.
+              de la Consulta Popular Nacional. Incluye campos para Código SITUR, monto y denominación del proyecto.
             </div>
             <span class="tc-btn">
               Iniciar denuncia
@@ -463,7 +467,7 @@
                 </div>
                 <div class="col-md-3">
                   <div class="form-group">
-                    <label class="form-label">Estado Civil</label>
+                    <label class="form-label">Estado Civil <span class="required">*</span></label>
                     <select id="cit-ecivil" class="form-select">
                       <option value="">-- Seleccione --</option>
                       <option>Soltero(a)</option>
@@ -472,6 +476,7 @@
                       <option>Viudo(a)</option>
                       <option>Unión estable</option>
                     </select>
+                    <span class="error-msg" id="cit-ecivil-err">Seleccione su estado civil.</span>
                   </div>
                 </div>
               </div>
@@ -583,21 +588,30 @@
                 </div>
                 <div class="col-md-3">
                   <div class="form-group">
-                    <label class="form-label">Parroquia</label>
-                    <input type="text" id="cit-parroquia" class="form-control" placeholder="Parroquia de residencia">
+                    <label class="form-label">Parroquia <span class="required">*</span></label>
+                    <select id="cit-parroquia" class="form-select">
+                      <option value="">-- Seleccione --</option>
+                      <option>Acarigua</option>
+                      <option>Payara</option>
+                      <option>Pimpinela</option>
+                      <option>Ramón Peraza</option>
+                    </select>
+                    <span class="error-msg" id="cit-parroquia-err">Seleccione una parroquia.</span>
                   </div>
                 </div>
                 <div class="col-md-3">
                   <div class="form-group">
                     <label class="form-label">Municipio <span class="required">*</span></label>
-                    <input type="text" id="cit-municipio" class="form-control" placeholder="Municipio" value="Páez">
+                    <input type="text" id="cit-municipio" class="form-control" value="Páez" readonly tabindex="-1"
+                      style="background:#f2f4f8;color:#5a6474;cursor:not-allowed;">
                     <span class="error-msg" id="cit-municipio-err">Este campo es obligatorio.</span>
                   </div>
                 </div>
                 <div class="col-md-3">
                   <div class="form-group">
                     <label class="form-label">Ciudad / Estado</label>
-                    <input type="text" id="cit-ciudad" class="form-control" placeholder="Acarigua, Portuguesa">
+                    <input type="text" id="cit-ciudad" class="form-control" value="Acarigua/Portuguesa" readonly tabindex="-1"
+                      style="background:#f2f4f8;color:#5a6474;cursor:not-allowed;">
                   </div>
                 </div>
                 <div class="col-12">
@@ -801,7 +815,7 @@
             <div class="form-header-icon" id="paso4-icono"></div>
             <div>
               <h2 id="paso4-titulo"></h2>
-              <p>Paso 4 de 5 · Descripción de los Hechos</p>
+              <p>Paso 4 de 6 · Descripción de los Hechos</p>
             </div>
           </div>
 
@@ -874,7 +888,57 @@
               </div>
             </div>
 
-            <!-- Documentos y evidencias -->
+          </div><!-- /form-body -->
+
+          <div class="wizard-nav">
+            <button class="btn-submit btn-outline-inst" onclick="anteriorPaso(4)">
+              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"
+                stroke-linecap="round" stroke-linejoin="round">
+                <line x1="19" y1="12" x2="5" y2="12" />
+                <polyline points="12 19 5 12 12 5" />
+              </svg>
+              Anterior
+            </button>
+            <button class="btn-submit" id="btn-sig-paso4" onclick="siguientePaso(4)">
+              Continuar
+              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"
+                stroke-linecap="round" stroke-linejoin="round">
+                <line x1="5" y1="12" x2="19" y2="12" />
+                <polyline points="12 5 19 12 12 19" />
+              </svg>
+            </button>
+          </div>
+        </div><!-- /paso-4 -->
+
+
+        <!-- ─────────────────────────────────────────────────
+           PASO 5 — EVIDENCIAS
+           Documentos y archivos (fotos, videos, etc.) — opcional
+           ───────────────────────────────────────────────── -->
+        <div class="wizard-paso" id="paso-5" style="display:none;">
+
+          <div class="form-header" id="paso5-cabecera">
+            <div class="form-header-icon" id="paso5-icono"></div>
+            <div>
+              <h2 id="paso5-titulo"></h2>
+              <p>Paso 5 de 6 · Evidencias (opcional)</p>
+            </div>
+          </div>
+
+          <div class="form-body">
+            <div class="banner-error" id="err-paso5" style="display:none;">
+              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"
+                stroke-linecap="round" stroke-linejoin="round">
+                <path d="M10.29 3.86L1.82 18a2 2 0 0 0 1.71 3h16.94a2 2 0 0 0 1.71-3L13.71 3.86a2 2 0 0 0-3.42 0z" />
+                <line x1="12" y1="9" x2="12" y2="13" />
+                <line x1="12" y1="17" x2="12.01" y2="17" />
+              </svg>
+              <div><strong>Por favor corrija los siguientes campos:</strong>
+                <ul id="err-paso5-lista"></ul>
+              </div>
+            </div>
+
+            <!-- Documentos y evidencias (checklist de lo que se anexa) -->
             <div class="form-section">
               <div class="form-section-title" id="evidencias-title-color">
                 <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"
@@ -883,8 +947,12 @@
                   <rect x="1" y="3" width="22" height="5" />
                   <line x1="10" y1="12" x2="14" y2="12" />
                 </svg>
-                Documentos y Evidencias que Anexa
+                Documentos y Evidencias que Anexa <span style="font-weight:400;color:#888;font-size:0.75rem;">(opcional)</span>
               </div>
+              <p style="font-size:0.78rem;color:#888;margin-bottom:12px;">
+                Marque los documentos que anexará y cárguelos a continuación, en el orden que prefiera. Este paso no es
+                obligatorio.
+              </p>
               <div class="check-group" style="flex-wrap:wrap;gap:10px;">
                 <label class="check-item">
                   <input type="checkbox" name="evidencia" value="ci_testigo">
@@ -922,7 +990,7 @@
 
               <!-- Zona de carga de archivos -->
               <div style="margin-top:20px;">
-                <label class="form-label">Adjuntar Archivos</label>
+                <label class="form-label">Adjuntar Archivos (fotos, videos, audios, documentos)</label>
                 <div class="file-drop" onclick="document.getElementById('archivo-input').click()"
                   ondragover="event.preventDefault();this.style.borderColor='#1565c0'"
                   ondragleave="this.style.borderColor=''" ondrop="manejarDropArchivos(event)">
@@ -936,7 +1004,7 @@
                   </div>
                   <p>
                     <strong>Haga clic o arrastre archivos aquí</strong><br>
-                    Imágenes, videos, audios, PDF — máx. 10 MB por archivo
+                    Fotos, videos, audios, PDF — máx. 10 MB por archivo
                   </p>
                   <input type="file" id="archivo-input" multiple accept="image/*,video/*,audio/*,.pdf,.doc,.docx"
                     onchange="agregarArchivos(this.files)" style="display:none;">
@@ -949,7 +1017,7 @@
           </div><!-- /form-body -->
 
           <div class="wizard-nav">
-            <button class="btn-submit btn-outline-inst" onclick="anteriorPaso(4)">
+            <button class="btn-submit btn-outline-inst" onclick="anteriorPaso(5)">
               <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"
                 stroke-linecap="round" stroke-linejoin="round">
                 <line x1="19" y1="12" x2="5" y2="12" />
@@ -957,7 +1025,7 @@
               </svg>
               Anterior
             </button>
-            <button class="btn-submit" id="btn-sig-paso4" onclick="siguientePaso(4)">
+            <button class="btn-submit" id="btn-sig-paso5" onclick="siguientePaso(5)">
               Revisar solicitud
               <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"
                 stroke-linecap="round" stroke-linejoin="round">
@@ -966,20 +1034,20 @@
               </svg>
             </button>
           </div>
-        </div><!-- /paso-4 -->
+        </div><!-- /paso-5 -->
 
 
         <!-- ─────────────────────────────────────────────────
-           PASO 5 — REVISIÓN Y CONFIRMACIÓN
+           PASO 6 — REVISIÓN Y CONFIRMACIÓN
            Resumen de datos + declaración jurada + envío
            ───────────────────────────────────────────────── -->
-        <div class="wizard-paso" id="paso-5" style="display:none;">
+        <div class="wizard-paso" id="paso-6" style="display:none;">
 
-          <div class="form-header" id="paso5-cabecera">
-            <div class="form-header-icon" id="paso5-icono"></div>
+          <div class="form-header" id="paso6-cabecera">
+            <div class="form-header-icon" id="paso6-icono"></div>
             <div>
-              <h2 id="paso5-titulo"></h2>
-              <p>Paso 5 de 5 · Revisión y Confirmación</p>
+              <h2 id="paso6-titulo"></h2>
+              <p>Paso 6 de 6 · Revisión y Confirmación</p>
             </div>
           </div>
 
@@ -1074,7 +1142,7 @@
           </div><!-- /form-body -->
 
           <div class="wizard-nav" style="justify-content:space-between;">
-            <button class="btn-submit btn-outline-inst" onclick="anteriorPaso(5)">
+            <button class="btn-submit btn-outline-inst" onclick="anteriorPaso(6)">
               <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"
                 stroke-linecap="round" stroke-linejoin="round">
                 <line x1="19" y1="12" x2="5" y2="12" />
@@ -1102,7 +1170,7 @@
               </button>
             </div>
           </div>
-        </div><!-- /paso-5 -->
+        </div><!-- /paso-6 -->
 
 
         <!-- ─────────────────────────────────────────────────
