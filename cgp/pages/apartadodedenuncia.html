@@ -447,7 +447,15 @@
                     <span class="error-msg" id="cit-sexo-err">Seleccione.</span>
                   </div>
                 </div>
-                <div class="col-md-2">
+                <div class="col-md-3">
+                  <div class="form-group">
+                    <label class="form-label">Fecha de Nacimiento <span class="required">*</span></label>
+                    <input type="date" id="cit-fecha-nac" class="form-control"
+                      onchange="actualizarEdadComputada(this)">
+                    <span class="error-msg" id="cit-fecha-nac-err">Seleccione su fecha de nacimiento.</span>
+                  </div>
+                </div>
+                 <div class="col-md-2">
                   <div class="form-group">
                     <label class="form-label">Edad <span class="required">*</span></label>
                     <input type="text" id="cit-edad" class="form-control" placeholder="Se calcula automáticamente"
@@ -455,14 +463,6 @@
                       style="background:#f2f4f8;color:#5a6474;cursor:not-allowed;">
                     <span class="error-msg" id="cit-edad-err">La edad se calcula a partir de la fecha de
                       nacimiento.</span>
-                  </div>
-                </div>
-                <div class="col-md-3">
-                  <div class="form-group">
-                    <label class="form-label">Fecha de Nacimiento <span class="required">*</span></label>
-                    <input type="date" id="cit-fecha-nac" class="form-control"
-                      onchange="actualizarEdadComputada(this)">
-                    <span class="error-msg" id="cit-fecha-nac-err">Seleccione su fecha de nacimiento.</span>
                   </div>
                 </div>
                 <div class="col-md-3">
@@ -611,8 +611,7 @@
                         <line x1="12" y1="16" x2="12" y2="12" />
                         <line x1="12" y1="8" x2="12.01" y2="8" />
                       </svg>
-                      <span>Si la denuncia no se tramita en el Municipio Páez, se debe a que el asunto compete a
-                        otra contraloría municipal.</span>
+                      <span style="text-align: justify; display: block;">Si la denuncia no se tramita en el Municipio Páez, se debe a que el asunto compete a otra contraloría municipal.</span>
                     </div>
                   </div>
                 </div>
