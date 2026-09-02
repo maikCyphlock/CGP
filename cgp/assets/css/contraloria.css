@@ -1161,8 +1161,6 @@ footer {
   #navbar a:hover {
     background: rgba(255, 255, 255, 0.08) !important;
   }
-
-  /* Contenedores de dropdowns para que no rompan el flujo */
   #navbar .dropdown {
     width: 100% !important;
   }
