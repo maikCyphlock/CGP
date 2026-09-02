@@ -1109,3 +1109,71 @@ footer {
   border-radius: 6px;
   padding: 28px 32px;
 }
+/* Ocultar el botón hamburguesa por defecto en computadoras */
+.menu-btn {
+  display: none;
+  background: transparent;
+  border: none;
+  color: #ffffff;
+  font-size: 32px;
+  cursor: pointer;
+  padding: 0;
+}
+
+@media (max-width: 992px) {
+  .menu-btn {
+    display: block;
+  }
+
+  /* Contenedor principal del menú móvil */
+  #navbar {
+    display: none !important;
+    flex-direction: column !important;
+    align-items: flex-start !important; /* Fuerza a alinear todo a la izquierda */
+    justify-content: flex-start !important;
+    position: absolute;
+    top: 75px; /* Ajusta según la altura real de tu header */
+    left: 0;
+    width: 100%;
+    background-color: #0f213b;
+    padding: 15px 0;
+    box-shadow: 0 10px 25px rgba(0, 0, 0, 0.4);
+    z-index: 1000;
+  }
+
+  #navbar.show-menu {
+    display: flex !important;
+  }
+
+  /* Estilo uniforme para cada enlace del menú */
+  #navbar a, 
+  #navbar .webmail-btn,
+  #navbar .nav-link {
+    display: block !important;
+    width: 100% !important;
+    text-align: left !important;
+    padding: 12px 20px !important;
+    margin: 0 !important;
+    box-sizing: border-box;
+    background: transparent !important;
+  }
+
+  #navbar a:hover {
+    background: rgba(255, 255, 255, 0.08) !important;
+  }
+
+  /* Contenedores de dropdowns para que no rompan el flujo */
+  #navbar .dropdown {
+    width: 100% !important;
+  }
+
+  #navbar .dropdown-menu {
+    position: relative !important;
+    float: none !important;
+    width: 100% !important;
+    background-color: #14284b !important;
+    border: none !important;
+    box-shadow: none !important;
+    padding-left: 15px !important;
+  }
+}
