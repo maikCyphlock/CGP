@@ -4,8 +4,14 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Gestión Comunitaria y Control Fiscal – Contraloría del Municipio Páez</title>
+  
+  <!-- Tipografías -->
   <link rel="preconnect" href="https://fonts.googleapis.com">
-  <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;500;600;700;800&family=Source+Sans+3:wght@400;500;600;700&display=swap" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=Merriweather:wght@400;700;900&family=Montserrat:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+  
+  <!-- CSS externos del apartado Escolar -->
+  <link rel="stylesheet" href="../assets/css/contraloriaescolar.css">
+  <link rel="stylesheet" href="../assets/css/contraloria.css">
   
   <style>
     :root {
@@ -22,7 +28,7 @@
     body {
       margin: 0;
       padding: 0;
-      font-family: 'Source Sans 3', sans-serif;
+      font-family: 'Montserrat', sans-serif;
       background-color: var(--clr-bg-light);
       display: flex;
       flex-direction: column;
@@ -32,9 +38,13 @@
       overflow-x: hidden;
     }
 
+    input, button, select, textarea {
+      font-family: 'Montserrat', sans-serif;
+    }
+
     header { 
       background: #0f2340; 
-      padding: 12px 15px; 
+      padding: 10px 15px; 
       color: white; 
       position: sticky;
       top: 0;
@@ -49,37 +59,37 @@
       width: 100%; 
       max-width: 1200px;
       margin: 0 auto;
-      gap: 10px;
+      gap: 8px;
     }
 
     .logo-link { 
       display: flex; 
       align-items: center; 
-      gap: 10px; 
+      gap: 8px; 
       text-decoration: none; 
       color: white;
       min-width: 0;
+      flex: 1;
     }
 
     .logo-link img {
-      width: 42px;
-      height: 42px;
-      border-radius: 12px;
+      width: 38px;
+      height: 38px;
+      border-radius: 10px;
       flex-shrink: 0;
     }
 
     .logo-texts div {
-      font-family: 'Montserrat', sans-serif; 
       font-weight: 700; 
-      font-size: 0.8rem; 
+      font-size: clamp(0.65rem, 2.5vw, 0.8rem); 
       line-height: 1.15; 
       text-align: left;
-      white-space: nowrap;
+      white-space: normal;
     }
 
     nav {
       display: flex;
-      gap: 10px;
+      gap: 8px;
       align-items: center;
       flex-shrink: 0;
     }
@@ -88,20 +98,30 @@
       color: white; 
       text-decoration: none; 
       font-size: 0.85rem; 
-      font-weight: 500; 
-      font-family: 'Montserrat', sans-serif;
+      font-weight: 500;
+      background: rgba(255, 255, 255, 0.1);
+      padding: 5px 12px;
+      border-radius: 6px;
+      transition: background 0.3s ease;
+    }
+
+    nav a:hover {
+      background: var(--clr-accent);
     }
 
     .comm-hero {
       background: linear-gradient(135deg, rgba(15,35,64,.94), rgba(26,58,107,.92)), url('../assets/img/portadahero.jpg') center/cover no-repeat;
-      padding: 40px 15px;
+      padding: 150px 20px 40px 20px;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
       color: white;
       text-align: center;
       position: relative;
       overflow: hidden;
       width: 100%;
     }
-
     .comm-hero::after {
       content: '';
       position: absolute;
@@ -110,17 +130,17 @@
     }
 
     .hero-content {
-      max-width: 800px;
+      max-width: 900px;
       margin: 0 auto;
       width: 100%;
     }
 
     .hero-title {
-      font-family: 'Montserrat', sans-serif;
-      font-weight: 800;
-      font-size: clamp(1.3rem, 5vw, 2.2rem);
-      margin-bottom: 10px;
-      animation: fadeInUp 0.8s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+      font-family: 'Merriweather', serif; 
+      font-weight: 900;
+      font-size: clamp(1.3rem, 3.2vw, 2.1rem);
+      margin-bottom: 12px;
+      line-height: 1.25;
       text-align: center;
       word-break: break-word;
     }
@@ -203,7 +223,6 @@
     }
 
     .feature-card h4 {
-      font-family: 'Montserrat', sans-serif;
       font-weight: 700;
       font-size: 1rem;
       color: var(--clr-secondary);
@@ -222,6 +241,7 @@
       color: #555;
       line-height: 1.45;
       text-align: justify;
+      font-weight: 500;
     }
 
     .faq-section-title {
@@ -231,7 +251,6 @@
     }
 
     .faq-section-title h2 {
-      font-family: 'Montserrat', sans-serif;
       font-weight: 700;
       color: var(--clr-primary);
       font-size: clamp(1.2rem, 4vw, 1.7rem);
@@ -243,6 +262,40 @@
       color: #64748b;
       font-size: 0.9rem;
       text-align: center;
+      font-weight: 500;
+    }
+
+    .search-wrap {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
+
+    .search-field {
+      position: relative;
+      display: flex;
+      align-items: center;
+    }
+
+    .search-field .search-icon {
+      position: absolute;
+      left: 10px;
+      color: #64748b;
+      pointer-events: none;
+    }
+
+    .search-field input {
+      padding: 6px 12px 6px 32px !important;
+      border: 1px solid #cbd5e1;
+      border-radius: 6px;
+      outline: none;
+      font-size: 0.9rem;
+      width: 100%;
+    }
+    
+    .search-field input:focus {
+      border-color: var(--clr-accent);
+      box-shadow: 0 0 0 3px rgba(37, 99, 235, 0.1);
     }
 
     .search-box-container {
@@ -269,9 +322,8 @@
       background: transparent;
       outline: none;
       width: 100%;
-      padding: 6px;
+      padding: 6px 10px;
       font-size: 0.9rem;
-      font-family: 'Source Sans 3', sans-serif;
       color: var(--clr-secondary);
       text-align: left;
     }
@@ -281,6 +333,7 @@
       flex-direction: column;
       gap: 14px;
       width: 100%;
+      margin-bottom: 40px;
     }
 
     .faq-item {
@@ -313,7 +366,6 @@
       border: none;
       padding: 16px 18px;
       text-align: justify;
-      font-family: 'Montserrat', sans-serif;
       font-size: clamp(0.85rem, 2.5vw, 0.95rem);
       font-weight: 700;
       color: var(--clr-secondary);
@@ -360,6 +412,7 @@
       padding: 18px;
       font-size: 0.9rem;
       line-height: 1.6;
+      font-weight: 500;
       color: #4a5568;
       text-align: justify;
       opacity: 0;
@@ -423,7 +476,6 @@
       flex-wrap: wrap;
       margin-right: -12px;
       margin-left: -12px;
-      /* Se añade un margen inferior generoso y separación para que las redes no queden pegadas a la línea */
       margin-bottom: 25px;
       padding-bottom: 25px;
       border-bottom: 1px solid rgba(255, 255, 255, 0.1);
@@ -461,16 +513,15 @@
       opacity: 0.7;
       margin-top: 8px;
       margin-bottom: 15px;
-      font-family: 'Source Sans 3', sans-serif; /* Se quita Montserrat y negritas, pasa a fuente normal */
-      font-weight: 400; 
+      font-weight: 500; 
     }
 
     .social-row {
       display: flex;
       gap: 12px;
       align-items: center;
-      margin-top: 15px; /* Margen superior incrementado para separar de la línea del RIF */
-      margin-bottom: 5px; /* Margen inferior para dar respiro antes de la línea divisoria */
+      margin-top: 15px;
+      margin-bottom: 5px; 
     }
 
     .social-row a {
@@ -562,6 +613,83 @@
     </div>
   </div>
 
+  <div class="faq-section-title" style="margin-top: 40px;">
+    <h2>Informes de Gestión Comunitaria</h2>
+    <p>Consulte los reportes financieros y de control preventivo</p>
+  </div>
+
+  <section class="period-tabs-section" style="margin-bottom: 20px;">
+    <div class="container">
+      <div class="period-tabs" role="tablist" aria-label="Período de informes">
+        <button class="tab-btn active" role="tab" aria-selected="true"  data-period="mensual">Mensual</button>
+        <button class="tab-btn"        role="tab" aria-selected="false" data-period="trimestral">Trimestral</button>
+        <button class="tab-btn"        role="tab" aria-selected="false" data-period="semestral">Semestral</button>
+        <button class="tab-btn"        role="tab" aria-selected="false" data-period="anual">Anual</button>
+      </div>
+    </div>
+  </section>
+
+  <section class="controls-section">
+    <div class="container controls-bar">
+      <div class="show-entries">
+        <label for="entriesCount">Mostrar</label>
+        <select id="entriesCount" class="select-sm">
+          <option value="2">2</option>
+          <option value="5">5</option>
+          <option value="10" selected>10</option>
+          <option value="25">25</option>
+        </select>
+        <span>entradas</span>
+      </div>
+      <div class="search-wrap">
+        <label for="tableSearchInput">Buscar informe:</label>
+        <div class="search-field">
+          <svg class="search-icon" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="8"/><path d="m21 21-4.35-4.35"/></svg>
+          <input type="search" id="tableSearchInput" placeholder="Año, mes, palabra clave…" autocomplete="off">
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <section class="reports-section" style="margin-bottom: 40px;">
+    <div class="container">
+      <div class="table-wrapper">
+        <table class="reports-table" id="reportsTable">
+          <thead>
+            <tr>
+              <th class="col-year sortable" data-col="year">
+                Año
+                <span class="sort-icon">
+                  <svg width="10" height="10" viewBox="0 0 10 14"><path d="M5 0L9.33 5H.67L5 0Z" fill="currentColor"/><path d="M5 14L.67 9h8.66L5 14Z" fill="currentColor" opacity=".4"/></svg>
+                </span>
+              </th>
+              <th class="col-month sortable" data-col="month">
+                Período
+                <span class="sort-icon">
+                  <svg width="10" height="10" viewBox="0 0 10 14"><path d="M5 0L9.33 5H.67L5 0Z" fill="currentColor"/><path d="M5 14L.67 9h8.66L5 14Z" fill="currentColor" opacity=".4"/></svg>
+                </span>
+              </th>
+              <th class="col-actions">
+                Acciones
+                <span class="sort-icon ghost">
+                  <svg width="10" height="10" viewBox="0 0 10 14"><path d="M5 0L9.33 5H.67L5 0Z" fill="currentColor" opacity=".3"/><path d="M5 14L.67 9h8.66L5 14Z" fill="currentColor" opacity=".2"/></svg>
+                </span>
+              </th>
+            </tr>
+          </thead>
+          <tbody id="reportsBody">
+            <!-- Rows injected by JS -->
+          </tbody>
+        </table>
+      </div>
+
+      <div class="pagination-bar" id="paginationBar">
+        <span class="pagination-info" id="paginationInfo"></span>
+        <div class="pagination-controls" id="paginationControls"></div>
+      </div>
+    </div>
+  </section>
+
   <div class="faq-section-title">
     <h2>Directrices y Preguntas Frecuentes</h2>
     <p>Utilice el buscador en tiempo real para consultar normativas y deberes financieros</p>
@@ -569,7 +697,7 @@
 
   <div class="search-box-container">
     <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#1a3a6b" stroke-width="2.5" style="margin-left: 3px; flex-shrink: 0;"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>
-    <input type="text" id="searchInput" class="search-input" placeholder="Buscar por palabra clave..." autocomplete="off">
+    <input type="text" id="faqSearchInput" class="search-input" placeholder="Buscar en preguntas frecuentes..." autocomplete="off">
   </div>
 
   <div class="faq-accordion" id="faqAccordion">
@@ -642,41 +770,49 @@
   </div>
 
   <div id="noResults" class="no-results">
-    No se encontraron registros que coincidan con su búsqueda en gestión comunitaria.
+    No se encontraron registros que coincidan con su búsqueda en preguntas frecuentes.
   </div>
 
 </main>
 
+<div class="modal-overlay" id="modalOverlay" role="dialog" aria-modal="true" aria-label="Vista previa del informe">
+  <button class="modal-close" id="modalClose" aria-label="Cerrar">
+    <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M18 6L6 18M6 6l12 12"/></svg>
+  </button>
+  <button class="modal-nav modal-prev" id="modalPrev" aria-label="Anterior">
+    <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M15 18l-6-6 6-6"/></svg>
+  </button>
+  <div class="modal-frame">
+    <img id="modalImg" src="" alt="Vista previa del informe" loading="lazy">
+    <div class="modal-caption" id="modalCaption"></div>
+  </div>
+  <button class="modal-nav modal-next" id="modalNext" aria-label="Siguiente">
+    <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M9 18l6-6-6-6"/></svg>
+  </button>
+</div>
+
 <footer>
   <div class="footer-inner">
-
     <div class="row">
       <div class="col-lg-4 col-md-6 footer-brand">
         <img src="../assets/img/logo.jpeg" alt="Logo" style="width:56px;height:56px; border-radius: 25px;">
         <p>Contraloría del Municipio Páez — Estado Portuguesa, República Bolivariana de Venezuela. Órgano de Control Fiscal Municipal.</p>
-
-        <!-- RIF normal sin negritas y fuente estándar aplicada -->
         <div class="rif">RIF: G-20001628-0 · Acarigua, Estado Portuguesa</div>
-        
         <div class="social-row">
           <a href="https://www.instagram.com/contraloria_mpaez/" target="_blank" title="Instagram">
-            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
-              stroke-linecap="round" stroke-linejoin="round">
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
               <rect x="2" y="2" width="20" height="20" rx="5" ry="5" />
               <circle cx="12" cy="12" r="4" />
               <circle cx="17.5" cy="6.5" r="0.5" fill="currentColor" />
             </svg>
           </a>
-          <a href="https://www.facebook.com/contraloriamunicipiopaez.estadoportuguesa?mibextid=wwXIfr&rdid=epBEXYSwKqdr16bV&share_url=https%3A%2F%2Fwww.facebook.com%2Fshare%2F1AcpjwhTbS%2F%3Fmibextid%3DwwXIfr#"
-            target="_blank" title="Facebook">
-            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
-              stroke-linecap="round" stroke-linejoin="round">
+          <a href="https://www.facebook.com/contraloriamunicipiopaez.estadoportuguesa?mibextid=wwXIfr&rdid=epBEXYSwKqdr16bV&share_url=https%3A%2F%2Fwww.facebook.com%2Fshare%2F1AcpjwhTbS%2F%3Fmibextid%3DwwXIfr#" target="_blank" title="Facebook">
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
               <path d="M18 2h-3a5 5 0 0 0-5 5v3H7v4h3v8h4v-8h3l1-4h-4V7a1 1 0 0 1 1-1h3z" />
             </svg>
           </a>
           <a href="https://x.com/cmeppaez" target="_blank" title="Twitter / X">
-            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
-              stroke-linecap="round" stroke-linejoin="round">
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
               <path d="M4 4l16 16M4 20L20 4" />
               <path d="M20 4h-5l-11 16h5" />
             </svg>
@@ -684,16 +820,15 @@
         </div>
       </div>
     </div>
-
     <div class="footer-bottom">
       <span>© 2026 Contraloría del Municipio Páez · Dirección General de Tecnología de Información</span>
       <a href="https://www.cgr.gob.ve" target="_blank">cgr.gob.ve</a>
     </div>
-
   </div>
 </footer>
 
 <script>
+  /* LÓGICA DE TARJETAS Y FAQ */
   document.addEventListener('DOMContentLoaded', () => {
     const featureCards = document.querySelectorAll('.feature-card');
     featureCards.forEach((card, index) => {
@@ -703,50 +838,199 @@
     });
 
     const faqItems = document.querySelectorAll('.faq-item');
-
     faqItems.forEach(item => {
       const questionBtn = item.querySelector('.faq-question');
       questionBtn.addEventListener('click', () => {
         const isActive = item.classList.contains('active');
-        
         faqItems.forEach(otherItem => {
           otherItem.classList.remove('active');
         });
-
         if (!isActive) {
           item.classList.add('active');
         }
       });
     });
 
-    const searchInput = document.getElementById('searchInput');
+    const faqSearchInput = document.getElementById('faqSearchInput');
     const noResultsDiv = document.getElementById('noResults');
+    if (faqSearchInput) {
+      faqSearchInput.addEventListener('input', (e) => {
+        const term = e.target.value.toLowerCase().trim();
+        let visibleCount = 0;
+        faqItems.forEach(item => {
+          const keywords = item.getAttribute('data-keywords') || '';
+          const title = item.querySelector('.faq-question').textContent.toLowerCase();
+          const answer = item.querySelector('.faq-answer').textContent.toLowerCase();
 
-    searchInput.addEventListener('input', (e) => {
-      const term = e.target.value.toLowerCase().trim();
-      let visibleCount = 0;
-
-      faqItems.forEach(item => {
-        const keywords = item.getAttribute('data-keywords') || '';
-        const title = item.querySelector('.faq-question').textContent.toLowerCase();
-        const answer = item.querySelector('.faq-answer').textContent.toLowerCase();
-
-        if (keywords.includes(term) || title.includes(term) || answer.includes(term)) {
-          item.style.display = 'block';
-          visibleCount++;
+          if (keywords.includes(term) || title.includes(term) || answer.includes(term)) {
+            item.style.display = 'block';
+            visibleCount++;
+          } else {
+            item.style.display = 'none';
+            item.classList.remove('active');
+          }
+        });
+        if (visibleCount === 0) {
+          noResultsDiv.style.display = 'block';
         } else {
-          item.style.display = 'none';
-          item.classList.remove('active');
+          noResultsDiv.style.display = 'none';
         }
       });
+    }
+  });
 
-      if (visibleCount === 0) {
-        noResultsDiv.style.display = 'block';
-      } else {
-        noResultsDiv.style.display = 'none';
-      }
+  /* LÓGICA DE TABLAS, PESTAÑAS Y MODAL */
+  const DATA = {
+    mensual: [
+      { year: 2024, month: "Enero",      pdf: "informes/com-mensual-2024-01.pdf", img: "informes/com-mensual-2024-01.jpg" },
+      { year: 2024, month: "Febrero",    pdf: "informes/com-mensual-2024-02.pdf", img: "informes/com-mensual-2024-02.jpg" },
+      { year: 2024, month: "Marzo",      pdf: "informes/com-mensual-2024-03.pdf", img: "informes/com-mensual-2024-03.jpg" },
+      { year: 2024, month: "Abril",      pdf: "informes/com-mensual-2024-04.pdf", img: "informes/com-mensual-2024-04.jpg" },
+      { year: 2024, month: "Mayo",       pdf: "informes/com-mensual-2024-05.pdf", img: "informes/com-mensual-2024-05.jpg" },
+      { year: 2024, month: "Junio",      pdf: "informes/com-mensual-2024-06.pdf", img: "informes/com-mensual-2024-06.jpg" },
+    ],
+    trimestral: [
+      { year: 2024, month: "I Trimestre",   pdf: "informes/com-trim-2024-Q1.pdf", img: "informes/com-trim-2024-Q1.jpg" },
+      { year: 2024, month: "II Trimestre",  pdf: "informes/com-trim-2024-Q2.pdf", img: "informes/com-trim-2024-Q2.jpg" },
+      { year: 2023, month: "I Trimestre",   pdf: "informes/com-trim-2023-Q1.pdf", img: "informes/com-trim-2023-Q1.jpg" },
+      { year: 2023, month: "II Trimestre",  pdf: "informes/com-trim-2023-Q2.pdf", img: "informes/com-trim-2023-Q2.jpg" },
+    ],
+    semestral: [
+      { year: 2024, month: "I Semestre",  pdf: "informes/com-sem-2024-S1.pdf", img: "informes/com-sem-2024-S1.jpg" },
+      { year: 2024, month: "II Semestre", pdf: "informes/com-sem-2024-S2.pdf", img: "informes/com-sem-2024-S2.jpg" },
+      { year: 2023, month: "I Semestre",  pdf: "informes/com-sem-2023-S1.pdf", img: "informes/com-sem-2023-S1.jpg" },
+    ],
+    anual: [
+      { year: 2024, month: "Año Completo", pdf: "informes/com-anual-2024.pdf", img: "informes/com-anual-2024.jpg" },
+      { year: 2023, month: "Año Completo", pdf: "informes/com-anual-2023.pdf", img: "informes/com-anual-2023.jpg" },
+    ],
+  };
+
+  let currentPeriod  = "mensual";
+  let currentPage    = 1;
+  let entriesPerPage = 10;
+  let tableSearchTerm = "";
+  let filteredRows   = [];
+  let modalIndex     = 0;
+
+  const tbody        = document.getElementById("reportsBody");
+  const pageInfo     = document.getElementById("paginationInfo");
+  const pageCtrl     = document.getElementById("paginationControls");
+  const tableSearchInput = document.getElementById("tableSearchInput");
+  const entriesSelect= document.getElementById("entriesCount");
+  const modalOverlay = document.getElementById("modalOverlay");
+  const modalImg     = document.getElementById("modalImg");
+  const modalCaption = document.getElementById("modalCaption");
+
+  function renderTable() {
+    const all = DATA[currentPeriod] || [];
+    filteredRows = all.filter(r => {
+      if (!tableSearchTerm) return true;
+      const q = tableSearchTerm.toLowerCase();
+      return String(r.year).includes(q) || r.month.toLowerCase().includes(q);
+    });
+
+    const total = filteredRows.length;
+    const pages = Math.ceil(total / entriesPerPage) || 1;
+    if (currentPage > pages) currentPage = pages;
+
+    const start = (currentPage - 1) * entriesPerPage;
+    const slice = filteredRows.slice(start, start + entriesPerPage);
+
+    tbody.innerHTML = slice.map((r, i) => `
+      <tr class="report-row" style="animation-delay:${i * 45}ms">
+        <td class="col-year">${r.year}</td>
+        <td class="col-month">${r.month}</td>
+        <td class="col-actions">
+          <button class="btn-action btn-pdf" onclick="downloadPDF(${start + i})" title="Descargar PDF">
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>
+          </button>
+          <button class="btn-action btn-preview" onclick="openModal(${start + i})" title="Ver imagen">
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><rect x="3" y="3" width="18" height="18" rx="2"/><circle cx="8.5" cy="8.5" r="1.5"/><polyline points="21 15 16 10 5 21"/></svg>
+          </button>
+        </td>
+      </tr>
+    `).join("") || `<tr><td colspan="3" class="empty-state">No se encontraron informes para los criterios indicados.</td></tr>`;
+
+    const from = total ? start + 1 : 0;
+    const to   = Math.min(start + entriesPerPage, total);
+    pageInfo.textContent = `Mostrando el contenido del ${from} al ${to}, da un total de ${total} contenido${total !== 1 ? "s" : ""}`;
+
+    renderPagination(pages);
+  }
+
+  function renderPagination(pages) {
+    const btns = [];
+    btns.push(`<button class="page-btn nav-btn" ${currentPage === 1 ? "disabled" : ""} onclick="goPage(${currentPage - 1})">Anterior</button>`);
+    for (let p = 1; p <= pages; p++) {
+      btns.push(`<button class="page-btn ${p === currentPage ? "active" : ""}" onclick="goPage(${p})">${p}</button>`);
+    }
+    btns.push(`<button class="page-btn nav-btn" ${currentPage === pages ? "disabled" : ""} onclick="goPage(${currentPage + 1})">Siguiente</button>`);
+    pageCtrl.innerHTML = btns.join("");
+  }
+
+  function goPage(p) { currentPage = p; renderTable(); }
+
+  document.querySelectorAll(".tab-btn").forEach(btn => {
+    btn.addEventListener("click", () => {
+      document.querySelectorAll(".tab-btn").forEach(b => { b.classList.remove("active"); b.setAttribute("aria-selected","false"); });
+      btn.classList.add("active");
+      btn.setAttribute("aria-selected","true");
+      currentPeriod = btn.dataset.period;
+      currentPage   = 1;
+      tableSearchInput.value = "";
+      tableSearchTerm = "";
+      renderTable();
     });
   });
+
+  tableSearchInput.addEventListener("input", () => { tableSearchTerm = tableSearchInput.value.trim(); currentPage = 1; renderTable(); });
+  entriesSelect.addEventListener("change", () => { entriesPerPage = parseInt(entriesSelect.value); currentPage = 1; renderTable(); });
+
+  function downloadPDF(idx) {
+    const r = filteredRows[idx];
+    if (!r) return;
+    const a = document.createElement("a");
+    a.href = r.pdf;
+    a.download = `Informe_${r.year}_${r.month}.pdf`;
+    a.click();
+  }
+
+  function openModal(idx) {
+    modalIndex = idx;
+    showModalSlide();
+    modalOverlay.classList.add("open");
+    document.body.style.overflow = "hidden";
+  }
+
+  function showModalSlide() {
+    const r = filteredRows[modalIndex];
+    if (!r) return;
+    modalImg.src = r.img;
+    modalImg.alt = `Informe ${r.month} ${r.year}`;
+    modalCaption.textContent = `${r.month} ${r.year}`;
+    document.getElementById("modalPrev").disabled = modalIndex === 0;
+    document.getElementById("modalNext").disabled = modalIndex === filteredRows.length - 1;
+  }
+
+  function closeModal() {
+    modalOverlay.classList.remove("open");
+    document.body.style.overflow = "";
+    modalImg.src = "";
+  }
+
+  document.getElementById("modalClose").addEventListener("click", closeModal);
+  document.getElementById("modalPrev").addEventListener("click", () => { if (modalIndex > 0) { modalIndex--; showModalSlide(); } });
+  document.getElementById("modalNext").addEventListener("click", () => { if (modalIndex < filteredRows.length - 1) { modalIndex++; showModalSlide(); } });
+  modalOverlay.addEventListener("click", e => { if (e.target === modalOverlay) closeModal(); });
+  document.addEventListener("keydown", e => {
+    if (!modalOverlay.classList.contains("open")) return;
+    if (e.key === "Escape") closeModal();
+    if (e.key === "ArrowLeft")  document.getElementById("modalPrev").click();
+    if (e.key === "ArrowRight") document.getElementById("modalNext").click();
+  });
+
+  renderTable();
 </script>
 
 </body>
