@@ -204,7 +204,7 @@
             <div class="form-header-icon" id="paso1-icono"></div>
             <div>
               <h2 id="paso1-titulo"></h2>
-              <p id="paso1-subtitulo">Paso 1 de 5 · Tipo de Trámite</p>
+              <p id="paso1-subtitulo">Paso 1 de 6 · Tipo de Trámite</p>
             </div>
           </div>
 
@@ -362,7 +362,7 @@
             <div class="form-header-icon" id="paso2-icono"></div>
             <div>
               <h2 id="paso2-titulo"></h2>
-              <p>Paso 2 de 5 · Datos del Ciudadano Solicitante</p>
+              <p>Paso 2 de 6 · Datos del Ciudadano Solicitante</p>
             </div>
           </div>
 
@@ -455,7 +455,7 @@
                     <span class="error-msg" id="cit-fecha-nac-err">Seleccione su fecha de nacimiento.</span>
                   </div>
                 </div>
-                 <div class="col-md-2">
+                <div class="col-md-2">
                   <div class="form-group">
                     <label class="form-label">Edad <span class="required">*</span></label>
                     <input type="text" id="cit-edad" class="form-control" placeholder="Se calcula automáticamente"
@@ -477,6 +477,24 @@
                       <option>Unión estable</option>
                     </select>
                     <span class="error-msg" id="cit-ecivil-err">Seleccione su estado civil.</span>
+                  </div>
+                </div>
+                <div class="col-12">
+                  <div class="aviso-menor-edad" id="aviso-menor-edad" style="display:none;">
+                    <span class="av-icon">
+                      <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"
+                        stroke-linecap="round" stroke-linejoin="round">
+                        <circle cx="12" cy="12" r="10" />
+                        <line x1="12" y1="8" x2="12" y2="12" />
+                        <line x1="12" y1="16" x2="12.01" y2="16" />
+                      </svg>
+                    </span>
+                    <div>
+                      <strong>No puede continuar: es menor de edad.</strong>
+                      De acuerdo con la normativa vigente, únicamente las personas mayores de 18 años pueden
+                      interponer denuncias, quejas, peticiones o reclamos ante la Contraloría Municipal. Si usted
+                      es menor de edad, un representante legal o un adulto responsable deberá presentar el trámite.
+                    </div>
                   </div>
                 </div>
               </div>
@@ -611,7 +629,8 @@
                         <line x1="12" y1="16" x2="12" y2="12" />
                         <line x1="12" y1="8" x2="12.01" y2="8" />
                       </svg>
-                      <span style="text-align: justify; display: block;">Si la denuncia no se tramita en el Municipio Páez, se debe a que el asunto compete a otra contraloría municipal.</span>
+                      <span>Si la denuncia no se tramita en el Municipio Páez, se debe a que el asunto compete a
+                        otra contraloría municipal.</span>
                     </div>
                   </div>
                 </div>
@@ -675,7 +694,7 @@
             <div class="form-header-icon" id="paso3-icono"></div>
             <div>
               <h2 id="paso3-titulo"></h2>
-              <p>Paso 3 de 5 · Identificación del Señalado</p>
+              <p>Paso 3 de 6 · Identificación del Señalado</p>
             </div>
           </div>
 
@@ -778,13 +797,6 @@
                       <input type="text" id="proy-financiador" class="form-control"
                         placeholder="Nombre del ente financiador">
                       <span class="error-msg" id="proy-financiador-err">Ingrese el ente financiador.</span>
-                    </div>
-                  </div>
-                  <div class="col-md-3">
-                    <div class="form-group">
-                      <label class="form-label">Código CITUR</label>
-                      <input type="text" id="proy-citur" class="form-control mayusculas" placeholder="CÓDIGO CITUR"
-                        oninput="this.value=this.value.toUpperCase()">
                     </div>
                   </div>
                   <div class="col-md-3">
@@ -954,7 +966,7 @@
               </div>
             </div>
 
-            <!-- Documentos y evidencias (checklist de lo que se anexa) -->
+            <!-- Documentos y evidencias (subida por partes, en el orden indicado) -->
             <div class="form-section">
               <div class="form-section-title" id="evidencias-title-color">
                 <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"
@@ -965,69 +977,12 @@
                 </svg>
                 Documentos y Evidencias que Anexa <span style="font-weight:400;color:#888;font-size:0.75rem;">(opcional)</span>
               </div>
-              <p style="font-size:0.78rem;color:#888;margin-bottom:12px;">
-                Marque los documentos que anexará y cárguelos a continuación, en el orden que prefiera. Este paso no es
-                obligatorio.
+              <p style="font-size:0.78rem;color:#888;margin-bottom:16px;">
+                Cargue los documentos uno por uno, en el orden que se muestra a continuación. Puede omitir
+                cualquiera de ellos: este paso no es obligatorio.
               </p>
-              <div class="check-group" style="flex-wrap:wrap;gap:10px;">
-                <label class="check-item">
-                  <input type="checkbox" name="evidencia" value="ci_testigo">
-                  <label>Copia C.I. del testigo</label>
-                </label>
-                <label class="check-item">
-                  <input type="checkbox" name="evidencia" value="ci_denunciante">
-                  <label>Copia C.I. del denunciante</label>
-                </label>
-                <label class="check-item">
-                  <input type="checkbox" name="evidencia" value="carta_exposicion">
-                  <label>Carta de exposición de motivo</label>
-                </label>
-                <label class="check-item">
-                  <input type="checkbox" name="evidencia" value="fotografias">
-                  <label>Fotografías</label>
-                </label>
-                <label class="check-item">
-                  <input type="checkbox" name="evidencia" value="video">
-                  <label>Video</label>
-                </label>
-                <label class="check-item">
-                  <input type="checkbox" name="evidencia" value="grabacion_voz">
-                  <label>Grabación de voz</label>
-                </label>
-                <label class="check-item">
-                  <input type="checkbox" name="evidencia" value="testimonio_escrito">
-                  <label>Testimonio escrito con firma y huella</label>
-                </label>
-                <label class="check-item">
-                  <input type="checkbox" name="evidencia" value="otros_docs">
-                  <label>Otros documentos</label>
-                </label>
-              </div>
 
-              <!-- Zona de carga de archivos -->
-              <div style="margin-top:20px;">
-                <label class="form-label">Adjuntar Archivos (fotos, videos, audios, documentos)</label>
-                <div class="file-drop" onclick="document.getElementById('archivo-input').click()"
-                  ondragover="event.preventDefault();this.style.borderColor='#1565c0'"
-                  ondragleave="this.style.borderColor=''" ondrop="manejarDropArchivos(event)">
-                  <div class="file-drop-icon">
-                    <svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"
-                      stroke-linecap="round" stroke-linejoin="round">
-                      <polyline points="16 16 12 12 8 16" />
-                      <line x1="12" y1="12" x2="12" y2="21" />
-                      <path d="M20.39 18.39A5 5 0 0 0 18 9h-1.26A8 8 0 1 0 3 16.3" />
-                    </svg>
-                  </div>
-                  <p>
-                    <strong>Haga clic o arrastre archivos aquí</strong><br>
-                    Fotos, videos, audios, PDF — máx. 10 MB por archivo
-                  </p>
-                  <input type="file" id="archivo-input" multiple accept="image/*,video/*,audio/*,.pdf,.doc,.docx"
-                    onchange="agregarArchivos(this.files)" style="display:none;">
-                </div>
-                <span class="error-msg" id="archivo-err" style="display:none;margin-top:6px;"></span>
-                <div class="file-list" id="archivos-lista"></div>
-              </div>
+              <div id="evidencias-secuencia"></div>
             </div>
 
           </div><!-- /form-body -->
