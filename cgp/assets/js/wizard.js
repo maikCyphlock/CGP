@@ -220,17 +220,39 @@ function valorCampoSenalado(tarjeta, nombreCampo) {
 }
 
 /**
- * Registra en el catálogo local el tipo de cada señalado marcado,
- * para fines estadísticos internos. Ya no se guardan datos de
- * identificación, pues el paso de señalado solo captura el tipo
- * mediante checkbox.
+ * Guarda los datos de cada tarjeta de señalado en el padrón local,
+ * para autocompletar denuncias futuras contra el mismo señalado.
+ * Se indexa por R.I.F. cuando el denunciante lo proporcionó (es un
+ * dato opcional); los nombres/denominaciones se registran siempre
+ * en el catálogo de instancias para autocompletado.
  */
 function guardarSenaladosEnPadron() {
     var padron = leerTabla(CLAVE_PADRON_SENALADOS);
 
     document.querySelectorAll('#lista-senalados .senalado-card').forEach(function (tarjeta) {
         var marcado = tarjeta.querySelector('[data-campo="tipo-senalado"]:checked');
-        if (marcado) padron.push({ tipo: marcado.value, fecha: new Date().toISOString() });
+        var tipo = marcado ? marcado.value : '';
+
+        var rif = valorCampoSenalado(tarjeta, 'pj-rif') ||
+            valorCampoSenalado(tarjeta, 'oe-rif') ||
+            valorCampoSenalado(tarjeta, 'cc-rif');
+
+        var nombre = valorCampoSenalado(tarjeta, 'pn-nombres') ||
+            valorCampoSenalado(tarjeta, 'pj-razon') ||
+            valorCampoSenalado(tarjeta, 'oe-nombre') ||
+            valorCampoSenalado(tarjeta, 'cm-nombre') ||
+            valorCampoSenalado(tarjeta, 'cc-nombre') ||
+            valorCampoSenalado(tarjeta, 'jp-nombres') ||
+            valorCampoSenalado(tarjeta, 'ot-nombre');
+
+        if (rif) {
+            var registro = { rif: rif, tipo: tipo, nombre: nombre };
+            var indice = padron.findIndex(function (r) { return r.rif === rif; });
+            if (indice === -1) padron.push(registro);
+            else padron[indice] = Object.assign({}, padron[indice], registro);
+        }
+
+        if (nombre) registrarEnCatalogo(CLAVE_CATALOGO_INSTANCIAS, nombre);
     });
 
     guardarTabla(CLAVE_PADRON_SENALADOS, padron);
@@ -321,6 +343,29 @@ function construirOpcionesTipoDoc(lista, conPlaceholder) {
 
 
 /* ═══════════════════════════════════════════════════════════
+   PARROQUIAS DEL MUNICIPIO PÁEZ
+   Lista única de parroquias, usada en TODOS los selectores de
+   "Parroquia" del formulario (datos del ciudadano y cada uno de
+   los formularios personalizados de señalado), para mantener el
+   mismo criterio y evitar texto libre.
+   ═══════════════════════════════════════════════════════════ */
+var PARROQUIAS_MUNICIPIO_PAEZ = ['Acarigua', 'Payara', 'Pimpinela', 'Ramón Peraza'];
+
+/**
+ * Construye las <option> de un <select> de Parroquia, idénticas a
+ * las del selector de Parroquia del ciudadano (Paso 2).
+ * @param {boolean} [conPlaceholder=true] - si incluye "-- Seleccione --"
+ */
+function construirOpcionesParroquia(conPlaceholder) {
+    var html = (conPlaceholder === false) ? '' : '<option value="">-- Seleccione --</option>';
+    PARROQUIAS_MUNICIPIO_PAEZ.forEach(function (p) {
+        html += '<option>' + p + '</option>';
+    });
+    return html;
+}
+
+
+/* ═══════════════════════════════════════════════════════════
    CÓDIGOS TELEFÓNICOS DE VENEZUELA
    ═══════════════════════════════════════════════════════════ */
 var CODIGOS_MOVILES = ['0412', '0414', '0416', '0424', '0426'];
@@ -343,11 +388,257 @@ var CODIGOS_FIJOS = [
 
 
 /* ═══════════════════════════════════════════════════════════
+   PLANTILLAS DE CAMPOS SEGÚN TIPO DE SEÑALADO
+   Cada tipo de señalado tiene su propio mini-formulario, dividido
+   en dos partes:
+     - camposObligatorios: siempre visibles. Datos que el
+       denunciante conoce o puede observar con facilidad (nombre,
+       cargo, dirección o lugar donde el señalado ejerce función,
+       parroquia, etc.), indispensables para identificar a quién
+       se denuncia.
+     - camposOpcionales: ocultos por defecto, detrás de un enlace
+       "+ Agregar...". Números de documento de identidad, R.I.F. o
+       el código SITUR. Exigirlos de entrada
+       sería, para el denunciante, difícil de obtener, riesgoso o
+       contrario a la normativa venezolana de protección de datos
+       personales; la propia Contraloría Municipal los verifica
+       con sus facultades de investigación (Ley Orgánica de la
+       Contraloría General de la República y del Sistema Nacional
+       de Control Fiscal). Mostrarlos solo si el denunciante
+       decide agregarlos mantiene el formulario corto por defecto.
+   ═══════════════════════════════════════════════════════════ */
+var PLANTILLAS_SENALADO = {
+    persona_natural: {
+        titulo: 'Datos de la Persona Natural Señalada',
+        etiquetaOpcional: '+ Agregar cédula o documento (opcional)',
+        camposObligatorios:
+            '<div class="row g-3">' +
+            '  <div class="col-md-6"><div class="form-group">' +
+            '    <label class="form-label">Apellidos y Nombres <span class="required">*</span></label>' +
+            '    <input type="text" class="form-control campo-dinamico-req" data-campo="pn-nombres" placeholder="Apellido Apellido, Nombre Nombre"></div></div>' +
+            '  <div class="col-md-6"><div class="form-group">' +
+            '    <label class="form-label">Dirección o Lugar donde Ejerce la Función <span class="required">*</span></label>' +
+            '    <input type="text" class="form-control campo-dinamico-req" data-campo="pn-direccion" placeholder="Dirección, cargo u oficina que ocupa"></div></div>' +
+            '</div>',
+        camposOpcionales:
+            '<div class="row g-3">' +
+            '  <div class="col-md-3"><div class="form-group">' +
+            '    <label class="form-label">Tipo de Documento</label>' +
+            '    <select class="form-select" data-campo="pn-tipo-doc">' +
+            '      <option value="">Seleccionar</option>' +
+            construirOpcionesTipoDoc(TIPOS_DOCUMENTO_PERSONA, false) +
+            '    </select></div></div>' +
+            '  <div class="col-md-4"><div class="form-group">' +
+            '    <label class="form-label">Número de Documento</label>' +
+            '    <input type="text" class="form-control" data-campo="pn-nro-doc" placeholder="Ej. 12345678"></div></div>' +
+            '</div>'
+    },
+    persona_juridica: {
+        titulo: 'Datos de la Persona Jurídica Señalada',
+        etiquetaOpcional: '+ Agregar R.I.F. y otros datos (opcional)',
+        camposObligatorios:
+            '<div class="row g-3">' +
+            '  <div class="col-12"><div class="form-group">' +
+            '    <label class="form-label">Razón Social / Denominación <span class="required">*</span></label>' +
+            '    <input type="text" class="form-control campo-dinamico-req" data-campo="pj-razon" list="dl-instancias" placeholder="Nombre de la empresa"></div></div>' +
+            '</div>',
+        camposOpcionales:
+            '<div class="row g-3">' +
+            '  <div class="col-md-3"><div class="form-group">' +
+            '    <label class="form-label">Tipo de Documento</label>' +
+            '    <select class="form-select" data-campo="pj-tipo-doc" disabled>' +
+            construirOpcionesTipoDoc(TIPOS_DOCUMENTO_ENTIDAD, false) +
+            '    </select></div></div>' +
+            '  <div class="col-md-3"><div class="form-group">' +
+            '    <label class="form-label">R.I.F.</label>' +
+            '    <input type="text" class="form-control" data-campo="pj-rif" placeholder="J-XXXXXXXX-X"></div></div>' +
+            '  <div class="col-md-3"><div class="form-group">' +
+            '    <label class="form-label">Representante Legal</label>' +
+            '    <input type="text" class="form-control" data-campo="pj-representante" placeholder="Nombre del representante"></div></div>' +
+            '  <div class="col-md-3"><div class="form-group">' +
+            '    <label class="form-label">Dirección Fiscal</label>' +
+            '    <input type="text" class="form-control" data-campo="pj-direccion" placeholder="Dirección fiscal"></div></div>' +
+            '</div>'
+    },
+    organo_ente: {
+        titulo: 'Datos del Órgano o Ente Público Señalado',
+        etiquetaOpcional: '+ Agregar R.I.F. (opcional)',
+        camposObligatorios:
+            '<div class="row g-3">' +
+            '  <div class="col-md-8"><div class="form-group">' +
+            '    <label class="form-label">Nombre del Órgano o Ente <span class="required">*</span></label>' +
+            '    <input type="text" class="form-control campo-dinamico-req" data-campo="oe-nombre" list="dl-instancias" placeholder="Ej. Alcaldía del Municipio Páez"></div></div>' +
+            '  <div class="col-md-4"><div class="form-group">' +
+            '    <label class="form-label">Dirección o Sede <span class="required">*</span></label>' +
+            '    <input type="text" class="form-control campo-dinamico-req" data-campo="oe-direccion" placeholder="Dirección de la sede"></div></div>' +
+            '</div>',
+        camposOpcionales:
+            '<div class="row g-3">' +
+            '  <div class="col-md-3"><div class="form-group">' +
+            '    <label class="form-label">Tipo de Documento</label>' +
+            '    <select class="form-select" data-campo="oe-tipo-doc" disabled>' +
+            construirOpcionesTipoDoc(TIPOS_DOCUMENTO_ENTIDAD, false) +
+            '    </select></div></div>' +
+            '  <div class="col-md-4"><div class="form-group">' +
+            '    <label class="form-label">R.I.F. del Ente</label>' +
+            '    <input type="text" class="form-control" data-campo="oe-rif" placeholder="G-XXXXXXXX-X"></div></div>' +
+            '</div>'
+    },
+    comuna: {
+        titulo: 'Datos de la Comuna Señalada',
+        etiquetaOpcional: '+ Agregar código SITUR (opcional)',
+        camposObligatorios:
+            '<div class="row g-3">' +
+            '  <div class="col-md-6"><div class="form-group">' +
+            '    <label class="form-label">Nombre de la Comuna <span class="required">*</span></label>' +
+            '    <input type="text" class="form-control campo-dinamico-req" data-campo="cm-nombre" list="dl-instancias" placeholder="Nombre oficial de la comuna"></div></div>' +
+            '  <div class="col-md-3"><div class="form-group">' +
+            '    <label class="form-label">Parroquia <span class="required">*</span></label>' +
+            '    <select class="form-select campo-dinamico-req" data-campo="cm-parroquia">' +
+            construirOpcionesParroquia() +
+            '    </select></div></div>' +
+            '  <div class="col-md-3"><div class="form-group">' +
+            '    <label class="form-label">Municipio <span class="required">*</span></label>' +
+            '    <input type="text" class="form-control campo-dinamico-req" data-campo="cm-municipio" value="Páez"></div></div>' +
+            '</div>',
+        camposOpcionales:
+            '<div class="row g-3">' +
+            '  <div class="col-md-3"><div class="form-group">' +
+            '    <label class="form-label">Tipo de Documento</label>' +
+            '    <select class="form-select" data-campo="cm-tipo-doc" disabled>' +
+            construirOpcionesTipoDoc(TIPOS_DOCUMENTO_ENTIDAD, false) +
+            '    </select></div></div>' +
+            '  <div class="col-md-4"><div class="form-group">' +
+            '    <label class="form-label">Código SITUR</label>' +
+            '    <input type="text" class="form-control mayusculas" data-campo="cm-situr" placeholder="CÓDIGO SITUR" oninput="this.value=this.value.toUpperCase()"></div></div>' +
+            '</div>'
+    },
+    consejo_comunal: {
+        titulo: 'Datos del Consejo Comunal Señalado',
+        etiquetaOpcional: '+ Agregar código SITUR y R.I.F. (opcional)',
+        camposObligatorios:
+            '<div class="row g-3">' +
+            '  <div class="col-md-8"><div class="form-group">' +
+            '    <label class="form-label">Nombre del Consejo Comunal <span class="required">*</span></label>' +
+            '    <input type="text" class="form-control campo-dinamico-req" data-campo="cc-nombre" list="dl-instancias" placeholder="Nombre oficial del consejo comunal"></div></div>' +
+            '  <div class="col-md-4"><div class="form-group">' +
+            '    <label class="form-label">Parroquia <span class="required">*</span></label>' +
+            '    <select class="form-select campo-dinamico-req" data-campo="cc-parroquia">' +
+            construirOpcionesParroquia() +
+            '    </select></div></div>' +
+            '</div>',
+        camposOpcionales:
+            '<div class="row g-3">' +
+            '  <div class="col-md-3"><div class="form-group">' +
+            '    <label class="form-label">Tipo de Documento</label>' +
+            '    <select class="form-select" data-campo="cc-tipo-doc" disabled>' +
+            construirOpcionesTipoDoc(TIPOS_DOCUMENTO_ENTIDAD, false) +
+            '    </select></div></div>' +
+            '  <div class="col-md-4"><div class="form-group">' +
+            '    <label class="form-label">Código SITUR</label>' +
+            '    <input type="text" class="form-control mayusculas" data-campo="cc-situr" placeholder="CÓDIGO SITUR" oninput="this.value=this.value.toUpperCase()"></div></div>' +
+            '  <div class="col-md-4"><div class="form-group">' +
+            '    <label class="form-label">R.I.F. (si lo posee)</label>' +
+            '    <input type="text" class="form-control" data-campo="cc-rif" placeholder="J-XXXXXXXX-X"></div></div>' +
+            '</div>'
+    },
+    juez_paz: {
+        titulo: 'Datos del Juez o Jueza de Paz Señalado(a)',
+        etiquetaOpcional: '+ Agregar cédula o documento (opcional)',
+        camposObligatorios:
+            '<div class="row g-3">' +
+            '  <div class="col-md-4"><div class="form-group">' +
+            '    <label class="form-label">Nombres y Apellidos <span class="required">*</span></label>' +
+            '    <input type="text" class="form-control campo-dinamico-req" data-campo="jp-nombres" placeholder="Nombre completo"></div></div>' +
+            '  <div class="col-md-4"><div class="form-group">' +
+            '    <label class="form-label">Circuito Judicial de Paz <span class="required">*</span></label>' +
+            '    <input type="text" class="form-control campo-dinamico-req" data-campo="jp-circuito" placeholder="Circuito al que pertenece"></div></div>' +
+            '  <div class="col-md-4"><div class="form-group">' +
+            '    <label class="form-label">Parroquia de Actuación <span class="required">*</span></label>' +
+            '    <select class="form-select campo-dinamico-req" data-campo="jp-parroquia">' +
+            construirOpcionesParroquia() +
+            '    </select></div></div>' +
+            '</div>',
+        camposOpcionales:
+            '<div class="row g-3">' +
+            '  <div class="col-md-3"><div class="form-group">' +
+            '    <label class="form-label">Tipo de Documento</label>' +
+            '    <select class="form-select" data-campo="jp-tipo-doc">' +
+            '      <option value="">Seleccionar</option>' +
+            construirOpcionesTipoDoc(TIPOS_DOCUMENTO_PERSONA, false) +
+            '    </select></div></div>' +
+            '  <div class="col-md-4"><div class="form-group">' +
+            '    <label class="form-label">Número de Documento</label>' +
+            '    <input type="text" class="form-control" data-campo="jp-nro-doc" placeholder="Ej. 12345678"></div></div>' +
+            '</div>'
+    },
+    otro: {
+        titulo: 'Datos del Señalado (Otro)',
+        etiquetaOpcional: '+ Agregar cédula o R.I.F. (opcional)',
+        camposObligatorios:
+            '<div class="row g-3">' +
+            '  <div class="col-md-4"><div class="form-group">' +
+            '    <label class="form-label">Especifique el Tipo <span class="required">*</span></label>' +
+            '    <input type="text" class="form-control campo-dinamico-req" data-campo="ot-tipo" placeholder="Ej. Cooperativa, Sindicato, Fundación..."></div></div>' +
+            '  <div class="col-md-8"><div class="form-group">' +
+            '    <label class="form-label">Nombre o Denominación <span class="required">*</span></label>' +
+            '    <input type="text" class="form-control campo-dinamico-req" data-campo="ot-nombre" list="dl-instancias" placeholder="Nombre completo o razón social"></div></div>' +
+            '</div>',
+        camposOpcionales:
+            '<div class="row g-3">' +
+            '  <div class="col-md-4"><div class="form-group">' +
+            '    <label class="form-label">Cédula o R.I.F.</label>' +
+            '    <input type="text" class="form-control" data-campo="ot-documento" placeholder="Si lo conoce"></div></div>' +
+            '</div>'
+    }
+};
+
+/**
+ * Construye el HTML completo de un tipo de señalado: sus campos
+ * obligatorios (siempre visibles) más un enlace "+ Agregar..." que
+ * despliega los campos opcionales (ocultos por defecto).
+ * @param {string} tipoValor - clave de PLANTILLAS_SENALADO
+ * @returns {string}
+ */
+function construirHtmlPlantillaSenalado(tipoValor) {
+    var plantilla = PLANTILLAS_SENALADO[tipoValor];
+    if (!plantilla) return '';
+
+    return plantilla.camposObligatorios +
+        '<button type="button" class="btn-campos-opcionales" onclick="toggleCamposOpcionalesSenalado(this)" ' +
+        'data-label-mostrar="' + plantilla.etiquetaOpcional + '" data-label-ocultar="− Ocultar datos opcionales">' +
+        '  <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round">' +
+        '    <line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/>' +
+        '  </svg>' +
+        '  <span>' + plantilla.etiquetaOpcional + '</span>' +
+        '</button>' +
+        '<div class="senalado-campos-opcionales" style="display:none;">' + plantilla.camposOpcionales + '</div>';
+}
+
+/**
+ * Muestra u oculta el bloque de campos opcionales de un tipo de
+ * señalado y actualiza el texto/ícono del botón que lo controla.
+ * @param {HTMLButtonElement} boton
+ */
+function toggleCamposOpcionalesSenalado(boton) {
+    var contenedor = boton.nextElementSibling;
+    if (!contenedor || !contenedor.classList.contains('senalado-campos-opcionales')) return;
+
+    var visible = contenedor.style.display !== 'none';
+    contenedor.style.display = visible ? 'none' : 'block';
+    boton.classList.toggle('expandido', !visible);
+    boton.querySelector('span').textContent = visible
+        ? boton.dataset.labelMostrar
+        : boton.dataset.labelOcultar;
+}
+
+
+/* ═══════════════════════════════════════════════════════════
    TIPO DE SEÑALADO
-   El tipo se indica mediante una selección de checkbox (ya no
-   mediante un formulario personalizado distinto por cada tipo).
-   Los datos de identificación se capturan con un único bloque
-   de campos genérico, válido para cualquier tipo seleccionado.
+   El tipo se indica mediante una selección de checkbox; al
+   marcar un tipo se muestra su formulario personalizado
+   (PLANTILLAS_SENALADO), con los campos obligatorios/opcionales
+   descritos arriba.
    ═══════════════════════════════════════════════════════════ */
 
 /** Opciones del selector de tipo de señalado, en el orden en que se muestran. */
@@ -391,6 +682,11 @@ function iniciarFlujo(tipo) {
     if (!document.getElementById('lista-senalados').children.length) {
         agregarSenalado();
     }
+
+    // Iniciar la secuencia de evidencias (subida de documentos por partes)
+    evidenciaIndiceActual = 0;
+    archivosPorDocumento = {};
+    renderSecuenciaEvidencias();
 
     // Mostrar el primer paso
     mostrarPaso(1);
@@ -582,14 +878,23 @@ function validarPaso(numeroPaso) {
             errores.push('Sexo');
             marcarError('cit-sexo', 'cit-sexo-err');
         }        // Fecha de nacimiento (la edad se calcula automáticamente a partir de ella)
+        var avisoMenorEdad = document.getElementById('aviso-menor-edad');
         if (!document.getElementById('cit-fecha-nac').value) {
             errores.push('Fecha de Nacimiento');
             marcarError('cit-fecha-nac', 'cit-fecha-nac-err');
+            if (avisoMenorEdad) avisoMenorEdad.style.display = 'none';
         } else {
             var edadCalculada = calcularEdad(document.getElementById('cit-fecha-nac').value);
             if (edadCalculada === null || edadCalculada < 1 || edadCalculada > 120) {
                 errores.push('Fecha de Nacimiento (edad inválida)');
                 marcarError('cit-fecha-nac', 'cit-fecha-nac-err');
+                if (avisoMenorEdad) avisoMenorEdad.style.display = 'none';
+            } else if (edadCalculada < 18) {
+                errores.push('Debe ser mayor de edad para presentar una denuncia, queja, petición o reclamo');
+                marcarError('cit-fecha-nac', 'cit-fecha-nac-err');
+                if (avisoMenorEdad) avisoMenorEdad.style.display = 'flex';
+            } else if (avisoMenorEdad) {
+                avisoMenorEdad.style.display = 'none';
             }
         }
         // Estado Civil
@@ -830,14 +1135,20 @@ function calcularEdad(fechaStr) {
  */
 function actualizarEdadComputada(inputFecha) {
     var campoEdad = document.getElementById('cit-edad');
+    var avisoMenorEdad = document.getElementById('aviso-menor-edad');
     var edad = calcularEdad(inputFecha.value);
+
     if (edad === null || edad < 0) {
         campoEdad.value = '';
+        if (avisoMenorEdad) avisoMenorEdad.style.display = 'none';
         return;
     }
+
     campoEdad.value = edad + ' años';
     inputFecha.classList.remove('invalid');
     document.getElementById('cit-fecha-nac-err').classList.remove('visible');
+
+    if (avisoMenorEdad) avisoMenorEdad.style.display = (edad < 18) ? 'flex' : 'none';
 }
 
 
@@ -875,9 +1186,9 @@ function toggleOtraInstancia(valor) {
    LISTA DE SEÑALADOS
    Cada señalado es una tarjeta independiente con una selección
    de checkbox para el tipo (Persona Natural, Jurídica, Consejo
-   Comunal, etc.) y un único bloque de campos de identificación,
-   válido para cualquier tipo. Permite agregar tantos señalados
-   como sea necesario.
+   Comunal, etc.); al marcar un tipo se muestra su formulario
+   personalizado correspondiente. Permite agregar tantos
+   señalados como sea necesario.
    ═══════════════════════════════════════════════════════════ */
 
 /** Contador incremental para generar ids únicos de tarjeta de señalado. */
@@ -914,13 +1225,16 @@ function agregarSenalado() {
         '    </svg>' +
         '  </button>' +
         '</div>' +
-        '<div class="form-group" style="margin-bottom:0;">' +
+        '<div class="form-group">' +
         '  <label class="form-label">Tipo de Señalado <span class="required">*</span></label>' +
         '  <div class="check-group" style="flex-wrap:wrap;gap:10px 20px;margin-top:6px;">' +
         construirCheckboxesTipoSenalado(idTarjeta) +
         '  </div>' +
         '  <span class="error-msg" data-campo-err="tipo-senalado">Seleccione el tipo de señalado.</span>' +
-        '</div>';
+        '  <p style="font-size:0.72rem;color:#888;margin:10px 0 0;">' +
+        '  </p>' +
+        '</div>' +
+        '<div class="senalado-card-campos"></div>';
 
     lista.appendChild(tarjeta);
 }
@@ -938,7 +1252,8 @@ function eliminarSenalado(idTarjeta) {
 
 /**
  * Mantiene la selección de tipo de señalado como excluyente (solo un
- * checkbox marcado por tarjeta) y limpia el error al marcar alguno.
+ * checkbox marcado por tarjeta), limpia el error al marcar alguno, y
+ * renderiza el formulario personalizado del tipo elegido.
  * @param {HTMLInputElement} checkbox - input data-campo="tipo-senalado"
  */
 function onTipoSenaladoCheckboxChange(checkbox) {
@@ -953,11 +1268,17 @@ function onTipoSenaladoCheckboxChange(checkbox) {
 
     var err = tarjeta.querySelector('.error-msg[data-campo-err="tipo-senalado"]');
     if (err) err.classList.remove('visible');
+
+    var contenedorCampos = tarjeta.querySelector('.senalado-card-campos');
+    var marcado = tarjeta.querySelector('[data-campo="tipo-senalado"]:checked');
+    contenedorCampos.innerHTML = marcado ? construirHtmlPlantillaSenalado(marcado.value) : '';
 }
 
 /**
- * Valida, para cada tarjeta de señalado en #lista-senalados, que se
- * haya marcado un tipo de señalado (grupo de checkboxes).
+ * Valida, para cada tarjeta de señalado en #lista-senalados:
+ * - que se haya marcado un tipo de señalado (grupo de checkboxes), y
+ * - los campos requeridos (.campo-dinamico-req) de su formulario
+ *   personalizado ya renderizado.
  * @returns {string[]} nombres de los campos inválidos o vacíos
  */
 function validarBloquesSenaladoDinamicos() {
@@ -974,6 +1295,21 @@ function validarBloquesSenaladoDinamicos() {
         }
     });
 
+    document.querySelectorAll('#lista-senalados .campo-dinamico-req').forEach(function (campo) {
+        var valor = (campo.value || '').trim();
+        var nombreCampo = campo.dataset.campo || '';
+        var valido = valor.length >= 3;
+
+        campo.classList.toggle('valid', valido);
+        campo.classList.toggle('invalid', !valido);
+
+        if (!valido) {
+            var grupo = campo.closest('.form-group');
+            var etiqueta = grupo ? grupo.querySelector('.form-label') : null;
+            errores.push(etiqueta ? etiqueta.textContent.replace('*', '').trim() : nombreCampo);
+        }
+    });
+
     return errores;
 }
 
@@ -986,67 +1322,199 @@ function obtenerEtiquetaPrimerSenalado() {
     var tarjeta = document.querySelector('#lista-senalados .senalado-card');
     if (!tarjeta) return '—';
 
-    var marcado = tarjeta.querySelector('[data-campo="tipo-senalado"]:checked');
-    if (!marcado) return '—';
+    var camposNombre = tarjeta.querySelectorAll(
+        '[data-campo$="-nombres"], [data-campo$="-nombre"], [data-campo="pj-razon"], [data-campo="ot-nombre"]'
+    );
+    for (var i = 0; i < camposNombre.length; i++) {
+        var valor = camposNombre[i].value.trim();
+        if (valor) return valor;
+    }
 
-    var opcion = TIPOS_SENALADO_OPCIONES.find(function (t) { return t.valor === marcado.value; });
-    return opcion ? opcion.etiqueta : marcado.value;
+    var marcado = tarjeta.querySelector('[data-campo="tipo-senalado"]:checked');
+    if (marcado) {
+        var opcion = TIPOS_SENALADO_OPCIONES.find(function (t) { return t.valor === marcado.value; });
+        if (opcion) return opcion.etiqueta;
+    }
+
+    return '—';
 }
 
 
 /* ═══════════════════════════════════════════════════════════
-   GESTIÓN DE ARCHIVOS
+   GESTIÓN DE ARCHIVOS — SECUENCIA DE EVIDENCIAS POR PARTES
+   Los documentos se cargan uno por uno, en el mismo orden en que
+   antes aparecían como checkbox. Al completar (o al omitir) un
+   documento se habilita el siguiente. Todo el paso es opcional.
    ═══════════════════════════════════════════════════════════ */
 
+/** Documentos de evidencia, en el orden en que se solicitan. */
+var EVIDENCIAS_ITEMS = [
+    { valor: 'ci_testigo', etiqueta: 'Copia C.I. del testigo' },
+    { valor: 'ci_denunciante', etiqueta: 'Copia C.I. del denunciante' },
+    { valor: 'carta_exposicion', etiqueta: 'Carta de exposición de motivo' },
+    { valor: 'fotografias', etiqueta: 'Fotografías' },
+    { valor: 'video', etiqueta: 'Video' },
+    { valor: 'grabacion_voz', etiqueta: 'Grabación de voz' },
+    { valor: 'testimonio_escrito', etiqueta: 'Testimonio escrito con firma y huella' },
+    { valor: 'otros_docs', etiqueta: 'Otros documentos' }
+];
+
+/** Índice (0-based) del documento actualmente activo en la secuencia. */
+var evidenciaIndiceActual = 0;
+
+/** Archivos adjuntados por cada tipo de documento: { valor: File[] } */
+var archivosPorDocumento = {};
+
+/** Construye el chip visual de un archivo adjunto a un documento. */
+function construirChipArchivoDocumento(valorDoc, indice, archivo) {
+    return '<div class="file-chip">' +
+        '<svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">' +
+        '<path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/></svg>' +
+        archivo.name +
+        ' <span style="color:#8da4c2">(' + (archivo.size / 1024).toFixed(0) + ' KB)</span>' +
+        '<button type="button" onclick="eliminarArchivoDocumento(\'' + valorDoc + '\',' + indice + ')" title="Quitar">' +
+        '<svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">' +
+        '<line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg></button>' +
+        '</div>';
+}
+
 /**
- * Valida y agrega chips de archivo a la lista de adjuntos.
+ * Dibuja la secuencia completa de documentos de evidencia dentro de
+ * #evidencias-secuencia, según el índice del documento activo:
+ * anteriores → completados/omitidos; actual → con zona de carga;
+ * siguientes → bloqueados, a la espera de su turno.
+ */
+function renderSecuenciaEvidencias() {
+    var contenedor = document.getElementById('evidencias-secuencia');
+    if (!contenedor) return;
+
+    var html = EVIDENCIAS_ITEMS.map(function (item, i) {
+        var archivos = archivosPorDocumento[item.valor] || [];
+        var estado = i < evidenciaIndiceActual ? 'completado' : (i === evidenciaIndiceActual ? 'activo' : 'pendiente');
+
+        var numContenido = estado === 'completado'
+            ? '<svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg>'
+            : String(i + 1);
+
+        var etiquetaEstado = estado === 'completado'
+            ? (archivos.length ? archivos.length + ' archivo(s) adjunto(s)' : 'Omitido')
+            : (estado === 'activo' ? 'Documento actual' : 'Pendiente');
+
+        var enlaceEditar = estado === 'completado'
+            ? ' &nbsp;·&nbsp; <button type="button" class="btn-evidencia-link" onclick="editarDocumentoEvidencia(' + i + ')">Editar</button>'
+            : '';
+
+        var cabecera =
+            '<div class="evidencia-item-header">' +
+            '<div class="evidencia-num">' + numContenido + '</div>' +
+            '<div class="evidencia-item-titulo">' + item.etiqueta + '</div>' +
+            '<div class="evidencia-item-estado">' + etiquetaEstado + enlaceEditar + '</div>' +
+            '</div>';
+
+        var cuerpo = '';
+        if (estado === 'activo') {
+            cuerpo =
+                '<div class="evidencia-item-cuerpo">' +
+                '<div class="file-drop" onclick="document.getElementById(\'archivo-input-' + item.valor + '\').click()" ' +
+                'ondragover="event.preventDefault();this.style.borderColor=\'#1565c0\'" ' +
+                'ondragleave="this.style.borderColor=\'\'" ' +
+                'ondrop="manejarDropArchivosDocumento(event,\'' + item.valor + '\')">' +
+                '<div class="file-drop-icon">' +
+                '<svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">' +
+                '<polyline points="16 16 12 12 8 16"/><line x1="12" y1="12" x2="12" y2="21"/>' +
+                '<path d="M20.39 18.39A5 5 0 0 0 18 9h-1.26A8 8 0 1 0 3 16.3"/></svg>' +
+                '</div>' +
+                '<p><strong>Haga clic o arrastre el archivo aquí</strong><br>Máx. 10 MB por archivo</p>' +
+                '<input type="file" id="archivo-input-' + item.valor + '" multiple accept="image/*,video/*,audio/*,.pdf,.doc,.docx" ' +
+                'onchange="agregarArchivosDocumento(\'' + item.valor + '\', this.files)" style="display:none;">' +
+                '</div>' +
+                '<span class="error-msg" id="archivo-err-' + item.valor + '" style="display:none;margin-top:6px;"></span>' +
+                '<div class="file-list" id="archivos-lista-' + item.valor + '">' +
+                archivos.map(function (archivo, idx) { return construirChipArchivoDocumento(item.valor, idx, archivo); }).join('') +
+                '</div>' +
+                '<div class="evidencia-item-acciones">' +
+                (evidenciaIndiceActual > 0
+                    ? '<button type="button" class="btn-evidencia btn-evidencia-outline" onclick="retrocederDocumentoEvidencia()">Atrás</button>'
+                    : '') +
+                '<button type="button" class="btn-evidencia ' + (archivos.length ? 'btn-evidencia-primary' : 'btn-evidencia-outline') + '" ' +
+                'onclick="avanzarDocumentoEvidencia(\'' + item.valor + '\')">' +
+                (archivos.length ? 'Siguiente documento' : 'Omitir este documento') +
+                '</button>' +
+                '</div>' +
+                '</div>';
+        }
+
+        return '<div class="evidencia-item ' + estado + '">' + cabecera + cuerpo + '</div>';
+    }).join('');
+
+    if (evidenciaIndiceActual >= EVIDENCIAS_ITEMS.length) {
+        html += '<p style="font-size:0.8rem;color:#2e9e56;font-weight:600;margin-top:14px;">' +
+            '✓ Revisó todos los documentos. Puede continuar, o pulsar "Editar" en cualquiera para modificarlo.</p>';
+    }
+
+    contenedor.innerHTML = html;
+}
+
+/**
+ * Valida (máx. 10 MB) y agrega archivos al documento indicado.
+ * @param {string} valorDoc
  * @param {FileList} archivos
  */
-function agregarArchivos(archivos) {
-    var errEl = document.getElementById('archivo-err');
-    var lista = document.getElementById('archivos-lista');
+function agregarArchivosDocumento(valorDoc, archivos) {
     var MAX_MB = 10 * 1024 * 1024; // 10 MB
     var grandes = [];
+    if (!archivosPorDocumento[valorDoc]) archivosPorDocumento[valorDoc] = [];
 
     Array.from(archivos).forEach(function (archivo) {
-        if (archivo.size > MAX_MB) {
-            grandes.push(archivo.name);
-            return;
-        }
-        var chip = document.createElement('div');
-        chip.className = 'file-chip';
-        chip.innerHTML = [
-            '<svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor"',
-            '     stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">',
-            '<path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/>',
-            '<polyline points="14 2 14 8 20 8"/></svg>',
-            archivo.name,
-            ' <span style="color:#8da4c2">(' + (archivo.size / 1024).toFixed(0) + ' KB)</span>',
-            '<button type="button" onclick="this.parentElement.remove()" title="Quitar">',
-            '<svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor"',
-            '     stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">',
-            '<line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>',
-            '</button>'
-        ].join('');
-        lista.appendChild(chip);
+        if (archivo.size > MAX_MB) { grandes.push(archivo.name); return; }
+        archivosPorDocumento[valorDoc].push(archivo);
     });
 
-    if (grandes.length) {
-        errEl.textContent = 'Archivo(s) demasiado grande(s) (máx. 10 MB): ' + grandes.join(', ');
-        errEl.style.display = 'block';
-    } else {
-        errEl.style.display = 'none';
+    renderSecuenciaEvidencias();
+
+    var errEl = document.getElementById('archivo-err-' + valorDoc);
+    if (errEl) {
+        if (grandes.length) {
+            errEl.textContent = 'Archivo(s) demasiado grande(s) (máx. 10 MB): ' + grandes.join(', ');
+            errEl.style.display = 'block';
+        } else {
+            errEl.style.display = 'none';
+        }
     }
 }
 
-
-/** Maneja el drop de archivos sobre la zona de carga */
-function manejarDropArchivos(evento) {
+/** Maneja el drop de archivos sobre la zona de carga de un documento. */
+function manejarDropArchivosDocumento(evento, valorDoc) {
     evento.preventDefault();
     evento.currentTarget.style.borderColor = '';
     if (evento.dataTransfer && evento.dataTransfer.files) {
-        agregarArchivos(evento.dataTransfer.files);
+        agregarArchivosDocumento(valorDoc, evento.dataTransfer.files);
     }
+}
+
+/** Quita un archivo adjunto de un documento específico. */
+function eliminarArchivoDocumento(valorDoc, indice) {
+    if (archivosPorDocumento[valorDoc]) archivosPorDocumento[valorDoc].splice(indice, 1);
+    renderSecuenciaEvidencias();
+}
+
+/** Avanza al siguiente documento de la secuencia (o la da por completa). */
+function avanzarDocumentoEvidencia(valorDoc) {
+    var indice = EVIDENCIAS_ITEMS.findIndex(function (it) { return it.valor === valorDoc; });
+    if (indice === evidenciaIndiceActual) evidenciaIndiceActual = indice + 1;
+    renderSecuenciaEvidencias();
+}
+
+/** Retrocede al documento anterior de la secuencia. */
+function retrocederDocumentoEvidencia() {
+    if (evidenciaIndiceActual > 0) evidenciaIndiceActual--;
+    renderSecuenciaEvidencias();
+}
+
+/** Reabre un documento ya completado (u omitido) para editarlo. */
+function editarDocumentoEvidencia(indice) {
+    evidenciaIndiceActual = indice;
+    renderSecuenciaEvidencias();
 }
 
 
@@ -1234,15 +1702,18 @@ function nuevaSolicitud() {
     document.getElementById('bloque-consulta-popular').style.display = 'none';
     document.getElementById('campo-cual-instancia').style.display = 'none';
     document.getElementById('bloque-proyecto-consulta').style.display = 'none';
+    var avisoMenorEdadReset = document.getElementById('aviso-menor-edad');
+    if (avisoMenorEdadReset) avisoMenorEdadReset.style.display = 'none';
 
     // Limpiar lista de señalados y dejar una tarjeta vacía
     document.getElementById('lista-senalados').innerHTML = '';
     contadorSenalados = 0;
     agregarSenalado();
 
-    // Limpiar lista de archivos
-    document.getElementById('archivos-lista').innerHTML = '';
-    document.getElementById('archivo-err').style.display = 'none';
+    // Reiniciar la secuencia de evidencias (subida de documentos por partes)
+    evidenciaIndiceActual = 0;
+    archivosPorDocumento = {};
+    renderSecuenciaEvidencias();
 
     // Resetear contador de narración
     document.getElementById('narracion-contador').textContent = '0 / 3000 caracteres';

@@ -90,6 +90,28 @@
 .aviso-anonimato strong   { color: #5a3f00; }
 
 
+/* ─── AVISO DE MENOR DE EDAD (bloqueante) ─── */
+
+.aviso-menor-edad {
+  background: #fff0f0;
+  border: 1px solid #e8aaaa;
+  border-left: 5px solid #c1121f;
+  border-radius: 6px;
+  padding: 16px 22px;
+  display: flex;
+  align-items: flex-start;
+  gap: 14px;
+  margin: 4px 0 14px;
+  font-size: 0.88rem;
+  color: #7a1010;
+  line-height: 1.65;
+  animation: deslizarEntrada 0.2s ease;
+}
+
+.aviso-menor-edad .av-icon { flex-shrink: 0; margin-top: 2px; color: #c1121f; }
+.aviso-menor-edad strong   { color: #5a0000; }
+
+
 /* ─── SECCIÓN PRINCIPAL ─── */
 
 #denuncias {
@@ -800,6 +822,72 @@
 .senalado-card-campos:empty {
   margin-top: 0;
 }
+
+/* Enlace "+ Agregar... (opcional)" que despliega los campos opcionales */
+.btn-campos-opcionales {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  background: none;
+  border: none;
+  color: #1565c0;
+  font-size: 0.78rem;
+  font-weight: 700;
+  cursor: pointer;
+  padding: 4px 0;
+  margin-top: 16px;
+  transition: color 0.15s;
+}
+
+.btn-campos-opcionales svg { transition: transform 0.2s; flex-shrink: 0; }
+.btn-campos-opcionales:hover { color: #0d3f7a; text-decoration: underline; }
+.btn-campos-opcionales.expandido svg { transform: rotate(45deg); }
+
+.senalado-campos-opcionales {
+  margin-top: 14px;
+  padding-top: 14px;
+  border-top: 1px dashed #dde3ee;
+  animation: deslizarEntrada 0.2s ease;
+}
+
+
+/* ─── BOTONES DE ACCIÓN PEQUEÑOS (secuencia de evidencias) ─── */
+
+.btn-evidencia {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  font-family: 'Open Sans', sans-serif;
+  font-weight: 700;
+  font-size: 0.78rem;
+  padding: 8px 16px;
+  border-radius: 6px;
+  cursor: pointer;
+  border: 1.5px solid transparent;
+  transition: background 0.2s, transform 0.15s;
+}
+
+.btn-evidencia-primary { background: #1a4b8c; color: #ffffff; }
+.btn-evidencia-primary:hover { background: #163a6e; }
+
+.btn-evidencia-outline {
+  background: #ffffff;
+  color: #1565c0;
+  border-color: #cdd5e0;
+}
+.btn-evidencia-outline:hover { background: #eef4ff; }
+
+.btn-evidencia-link {
+  background: none;
+  border: none;
+  color: #1565c0;
+  font-size: 0.75rem;
+  font-weight: 600;
+  cursor: pointer;
+  text-decoration: underline;
+  padding: 0;
+}
+.btn-evidencia-link:hover { color: #0d3f7a; }
 
 
 /* ─── ZONA DE CARGA DE ARCHIVOS ─── */
