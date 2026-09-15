@@ -5,13 +5,12 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Gestión Comunitaria y Control Fiscal – Contraloría del Municipio Páez</title>
   
-  <!-- Tipografías -->
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link href="https://fonts.googleapis.com/css2?family=Merriweather:wght@400;700;900&family=Montserrat:wght@400;500;600;700;800&display=swap" rel="stylesheet">
   
-  <!-- CSS externos del apartado Escolar -->
   <link rel="stylesheet" href="../assets/css/contraloriaescolar.css">
   <link rel="stylesheet" href="../assets/css/contraloria.css">
+  
   
   <style>
     :root {
@@ -53,7 +52,7 @@
     }
 
     .header-container { 
-      display: flex; 
+      display: flex ; 
       align-items: center; 
       justify-content: space-between; 
       width: 100%; 
@@ -95,7 +94,6 @@
     }
 
     nav a {
-      color: white; 
       text-decoration: none; 
       font-size: 0.85rem; 
       font-weight: 500;
@@ -103,10 +101,6 @@
       padding: 5px 12px;
       border-radius: 6px;
       transition: background 0.3s ease;
-    }
-
-    nav a:hover {
-      background: var(--clr-accent);
     }
 
     .comm-hero {
@@ -131,7 +125,7 @@
 
     .hero-content {
       max-width: 900px;
-      margin: 0 auto;
+      margin: 90 auto;
       width: 100%;
     }
 
@@ -141,7 +135,7 @@
       font-size: clamp(1.3rem, 3.2vw, 2.1rem);
       margin-bottom: 12px;
       line-height: 1.25;
-      text-align: center;
+      text-align: flex;
       word-break: break-word;
     }
 
@@ -449,28 +443,6 @@
       animation: fadeInUp 0.3s ease;
     }
 
-    footer { 
-      background: #0f2340; 
-      color: white; 
-      padding: 30px 15px 15px; 
-      margin-top: 40px; 
-      width: 100%;
-    }
-
-    .footer-inner { 
-      max-width: 1100px; 
-      margin: 0 auto; 
-      width: 100%;
-    }
-
-    .footer-inner p, .footer-inner div {
-      text-align: justify;
-    }
-
-    .footer-inner .footer-copy {
-      text-align: center;
-    }
-
     .footer-inner .row {
       display: flex;
       flex-wrap: wrap;
@@ -479,33 +451,6 @@
       margin-bottom: 25px;
       padding-bottom: 25px;
       border-bottom: 1px solid rgba(255, 255, 255, 0.1);
-    }
-
-    .footer-inner .col-lg-4, .footer-inner .col-md-6 {
-      padding-right: 12px;
-      padding-left: 12px;
-      flex: 0 0 100%;
-      max-width: 100%;
-    }
-
-    @media (min-width: 768px) {
-      .footer-inner .col-md-6 {
-        flex: 0 0 50%;
-        max-width: 50%;
-      }
-    }
-
-    @media (min-width: 992px) {
-      .footer-inner .col-lg-4 {
-        flex: 0 0 33.333333%;
-        max-width: 33.333333%;
-      }
-    }
-
-    .footer-brand p {
-      margin-top: 12px;
-      font-size: 0.85rem;
-      opacity: 0.9;
     }
 
     .rif {
@@ -520,8 +465,8 @@
       display: flex;
       gap: 12px;
       align-items: center;
-      margin-top: 15px;
-      margin-bottom: 5px; 
+      margin-top: 10px;
+      margin-bottom: 10px; 
     }
 
     .social-row a {
@@ -532,7 +477,7 @@
       height: 32px;
       background: rgba(255, 255, 255, 0.08);
       color: white;
-      border-radius: 8px;
+      border-radius: 40px;
       transition: background 0.3s ease, transform 0.3s ease;
       text-decoration: none;
     }
@@ -577,14 +522,14 @@
 <header id="header">
   <div class="header-container">
     <a href="#" class="logo-link">
-      <img src="../assets/img/logo.jpeg" alt="Logo">
+      <img src="../assets/img/logonuevo.jpeg" alt="Logo">
       <div class="logo-texts">
         <div>CONTRALORÍA DEL</div>
         <div>MUNICIPIO PÁEZ</div>
       </div>
     </a>
     <nav id="navbar">
-      <a href="../index.html">Inicio</a>
+      <a href="../index.html" target="_blank" class="Inicio de Pagina">Inicio</a>
     </nav>
   </div>
 </header>
@@ -795,7 +740,7 @@
   <div class="footer-inner">
     <div class="row">
       <div class="col-lg-4 col-md-6 footer-brand">
-        <img src="../assets/img/logo.jpeg" alt="Logo" style="width:56px;height:56px; border-radius: 25px;">
+        <img src="../assets/img/logonuevo.jpeg" alt="Logo" style="width:56px;height:56px; border-radius: 25px;">
         <p>Contraloría del Municipio Páez — Estado Portuguesa, República Bolivariana de Venezuela. Órgano de Control Fiscal Municipal.</p>
         <div class="rif">RIF: G-20001628-0 · Acarigua, Estado Portuguesa</div>
         <div class="social-row">

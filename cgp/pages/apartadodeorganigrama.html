@@ -6,7 +6,8 @@
   <title>Estructura Organizativa – Contraloría del Municipio Páez</title>
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link href="https://fonts.googleapis.com/css2?family=Merriweather:wght@400;700;900&family=Source+Sans+3:wght@400;500;600;700&display=swap" rel="stylesheet">
-  
+  <link rel="stylesheet" href="../assets/css/denuncias.css">
+  <link rel="stylesheet" href="../assets/css/contraloria.css">
   <style>
     :root {
       --clr-primary:   #1a3a6b; 
@@ -24,20 +25,20 @@
     }
 
     .org-hero {
-      background: linear-gradient(135deg, rgba(15,35,64,.92), rgba(26,58,107,.90)), #0f2340;
-      padding: 60px 20px;
+      background: linear-gradient(135deg, rgba(15,35,64,.92), rgba(26,58,107,.90)), #0f2340; 
+      padding: 120px 20px 40px !important;
       color: white;
-      text-align: center;
+      text-align: flex;
     }
     .hero-title {
-      font-family: 'Merriweather', serif;
-      font-size: 2.5rem;
+      font-size: 2.5rem !important;
       margin-bottom: 10px;
+      color: white !important ;
     }
     .hero-desc {
-      max-width: 700px;
+      max-width: 900px !important;
       margin: 0 auto;
-      font-size: 1.1rem;
+      font-size: 1.1rem !importants;
       opacity: 0.9;
     }
 
@@ -45,7 +46,7 @@
     .stats-bar { 
       background: #0f2340; 
       color: #fff; 
-      padding: 30px 0; 
+      padding: 20px 0 !important; 
       margin-top: -20px; 
       animation: fadeIn 1.5s ease-in; 
     }
@@ -215,11 +216,22 @@
     .modal-overlay.active .modal-card { transform: translateY(0) scale(1); }
 
     .modal-photo-container {
-      width: 110px; height: 110px; border-radius: 50%; background: var(--clr-bg-light);
-      margin: 0 auto 15px auto; border: 4px solid var(--clr-primary); box-shadow: 0 8px 20px rgba(0,0,0,0.15);
-      overflow: hidden; position: relative; z-index: 2;
+      width: 200px; 
+      height: 200px; 
+      border-radius: 50%; 
+      background: var(--clr-bg-light);
+      margin: 0 auto 15px auto; 
+      border: 4px solid var(--clr-primary); 
+      box-shadow: 0 8px 20px rgba(0,0,0,0.15);
+      overflow: hidden; 
+      position: relative; 
+      z-index: 2;
     }
-    .modal-photo-container img { width: 100%; height: 100%; object-fit: cover; }
+    .modal-photo-container img { 
+      width: 100%; 
+      height: 100%; 
+      object-fit: cover; 
+    }
 
     .modal-header-title {
       color: var(--clr-primary); font-family: 'Merriweather', serif; font-size: 0.85rem;
@@ -251,7 +263,11 @@
       border: 1px solid rgba(26, 58, 107, 0.08);
     }
     .modal-sub-photo {
-      width: 55px; height: 55px; border-radius: 50%; object-fit: cover; flex-shrink: 0;
+      width: 135px; 
+      height: 135px; 
+      border-radius: 50%; 
+      object-fit: cover; 
+      flex-shrink: 0;
       border: 2px solid var(--clr-primary);
     }
     .modal-sub-details h4 {
@@ -308,11 +324,7 @@
   }
 
   /* 4. Ajustes de tamaño de foto y fuentes */
-  .modal-photo-container {
-    width: 90px;
-    height: 90px;
-    margin-bottom: 10px;
-  }
+
 
   .modal-header-title {
     font-size: 0.75rem;
@@ -340,6 +352,8 @@
   .modal-sub-details p {
     text-align: center;
   }
+
+  
 }
   </style>
 </head>
@@ -350,7 +364,8 @@
   <div class="header-container" style="display: flex; align-items: center; justify-content: space-between; width: 100%; max-width: 100%;">
     <a href="#" class="logo-link" style="display: flex; align-items: center; gap: 15px; text-decoration: none; color: white;">
       <div style="width:56px;height:56px;flex-shrink:0;display:flex;align-items:center;justify-content:center;">
-        <img src="../assets/img/logo.jpeg" alt="Logo" style="width:56px;height:56px; border-radius: 25px;">
+        <img src="../assets/img/logonuevo.jpeg" alt="Logo" style="width:56px;height:56px; border-radius: 25px;">
+
       </div>
       <div class="logo-texts">
         <div class="l1" style="font-weight: bold; font-size: 0.95rem; line-height: 1.2;">CONTRALORÍA DEL <br>MUNICIPIO PÁEZ</div>
@@ -455,222 +470,146 @@
   </div>
 </div>
 
-<!-- FOOTER -->
-<footer style="background: #0f2340; color: white; padding: 40px 20px 20px;">
-  <div class="footer-inner" style="max-width: 1100px; margin: 0 auto;">
-    <div style="border-bottom: 1px solid rgba(255,255,255,0.1); padding-bottom: 24px; margin-bottom: 24px; display: flex; flex-direction: column; gap: 12px;">
-      <img src="../assets/img/logo.jpeg" alt="Logo" style="width:56px;height:56px; border-radius: 25px;">
-      <p style="margin: 0; font-size: 0.9rem; opacity: 0.8;">Contraloría del Municipio Páez — Estado Portuguesa, República Bolivariana de Venezuela. Órgano de Control Fiscal Municipal.</p>
-      <div style="font-size: 0.85rem; opacity: 0.6;">RIF: G-20001628-0 · Acarigua, Estado Portuguesa</div>
+<footer>
+    <div class="footer-inner">
+
+      <!-- Bootstrap: row + col para el grid del footer responsivo -->
+      <div class="row g-4 pb-4" style="border-bottom: 1px solid rgba(255,255,255,0.1); margin-bottom: 24px; padding-bottom: 20px;">
+
+        <div class="col-lg-4 col-md-6 footer-brand">
+          <!-- LOGO EN EL FOOTER: mismo SVG que el header, con img para poder cambiarlo, porque el svg no lo entiendo tanto -->
+          <img src="../assets/img/logonuevo.jpeg" alt="Logo" style="width:56px;height:56px; border-radius: 25px;">
+          <p style="margin-top:12px;">Contraloría del Municipio Páez — Estado Portuguesa, República Bolivariana de
+            Venezuela. Órgano de Control Fiscal Municipal.</p>
+
+          <!-- rif actualizado -->
+          <div class="rif">RIF: G-20001628-0 · Acarigua, Estado Portuguesa</div>
+          <!-- debemos enlazar directamente a las redes, eso es con un link de referencia como lo puse con el instagram-->
+          <div class="social-row">
+            <a href="https://www.instagram.com/contraloria_mpaez/" target="_blank" title="Instagram">
+              <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
+                stroke-linecap="round" stroke-linejoin="round">
+                <rect x="2" y="2" width="20" height="20" rx="5" ry="5" />
+                <circle cx="12" cy="12" r="4" />
+                <circle cx="17.5" cy="6.5" r="0.5" fill="currentColor" />
+              </svg>
+            </a>
+            <a href="https://www.facebook.com/contraloriamunicipiopaez.estadoportuguesa?mibextid=wwXIfr&rdid=epBEXYSwKqdr16bV&share_url=https%3A%2F%2Fwww.facebook.com%2Fshare%2F1AcpjwhTbS%2F%3Fmibextid%3DwwXIfr#"
+              target="_blank" title="Facebook">
+              <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
+                stroke-linecap="round" stroke-linejoin="round">
+                <path d="M18 2h-3a5 5 0 0 0-5 5v3H7v4h3v8h4v-8h3l1-4h-4V7a1 1 0 0 1 1-1h3z" />
+              </svg>
+            </a>
+            <a href="https://x.com/cmeppaez" target="_blank" title="Twitter / X">
+              <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
+                stroke-linecap="round" stroke-linejoin="round">
+                <path d="M4 4l16 16M4 20L20 4" />
+                <path d="M20 4h-5l-11 16h5" />
+              </svg>
+            </a>
+          </div>
+        </div>
+
+      </div>
+
+      <div class="footer-bottom">
+        <span>© 2026 Contraloría del Municipio Páez · Dirección General de Tecnología de Información</span>
+        <a href="https://www.cgr.gob.ve" target="_blank">cgr.gob.ve</a>
+      </div>
+
     </div>
-    <p style="text-align:center; font-size:0.75rem; color:rgba(255,255,255,0.35); margin:0;">
-      © 2026 Contraloría del Municipio Páez · Estado Portuguesa
-    </p>
-  </div>
-</footer>
+  </footer>
 
 <!-- SCRIPT -->
 <script>
   const perfiles = {
     'contralor': { 
       titulo: 'Órgano Rector Superior – Despacho del Contralor', 
-      nombre: 'Leonel Lucena', 
+      nombre: 'ABG. LEONEL LUCENA', 
       desc: 'El vértice estratégico y la máxima instancia de gobernanza institucional. Ejerce el liderazgo directivo, la representación legal y la toma de decisiones vinculantes, dictando las directrices maestras que orientan la política de control fiscal hacia la transparentación y eficiencia de la gestión pública municipal.',
-      foto: '../assets/img/Contralor.png',
+      foto: '../assets/img/despachocontralor.jpg',
       subperfiles: []
     },
     'auditoria': { 
       titulo: 'Unidad de Soporte, Asesoría y Enlace Ciudadano', 
-      nombre: 'Merys Tovar', 
+      nombre: 'LIC. MERYS TOVAR', 
       desc: 'El mecanismo de autogobierno y control endógeno. Vela con absoluta independencia funcional por la probidad en el manejo de los recursos propios de la Contraloría, blindando sus procesos internos contra cualquier desviación operativa o financiera.',
-      foto: '../assets/img/placeholder.jpg',
+      foto: '../assets/img/despachoauditoria.jpg',
       subperfiles: []
     },
     'juridico': { 
       titulo: 'Dirección de Servicios Jurídicos', 
-      nombre: 'Esther Jiménez', 
+      nombre: 'ABG. ESTHER JIMÉNEZ', 
       desc: 'El blindaje normativo de la institución. Actúa como el núcleo de consultoría legal encargado de dotar de seguridad jurídica a cada acto administrativo, auditoría y resolución, asegurando la perfecta sincronía con el ordenamiento legal venezolano.',
-      foto: '../assets/img/placeholder.jpg',
+      foto: '../assets/img/despachoserviciosjuridicos.jpg',
       subperfiles: []
     },
     'oac': { 
       titulo: 'Oficina de Atención al Ciudadano (OAC)', 
-      nombre: 'Juan Romero', 
+      nombre: 'ING. JUAN ROMERO', 
       desc: 'La interfaz de participación popular y democratización del control fiscal. Canaliza, procesa y da trazabilidad a las denuncias y peticiones de la comunidad, sirviendo como el puente operativo inicial donde el clamor social se transforma en materia prima para la investigación institucional.',
-      foto: '../assets/img/placeholder.jpg',
-      subperfiles: [
-        {
-          nombre: 'Maribel Chirinos',
-          cargo: 'Promotor de Atención al Ciudadano',
-          desc: 'Encargada de la atención directa y orientación a los ciudadanos, facilitando la recepción de denuncias, quejas, reclamos y sugerencias.',
-          foto: '../assets/img/placeholder.jpg'
-        },
-        {
-          nombre: 'Juan Aranguren',
-          cargo: 'Promotor de Atención al Cliente',
-          desc: 'Brinda apoyo en la recepción y canalización de requerimientos ciudadanos, asegurando una atención oportuna y eficiente a los usuarios.',
-          foto: '../assets/img/placeholder.jpg'
-        }
-      ]
+      foto: '../assets/img/despachooac.jpg',
+      subperfiles: []
     },
     'planificacion': { 
       titulo: 'Dirección de Planificación y Archivo', 
-      nombre: 'Yolanda Rivero', 
+      nombre: 'LIC. YOLANDA RIVERO', 
       desc: 'El cerebro logístico y la memoria histórica del órgano. Diseña la brújula operativa de la institución mediante el seguimiento del Plan Operativo Anual (POA), al tiempo que resguarda el acervo documental e informacional bajo estrictos estándares de preservación y acceso.',
-      foto: '../assets/img/placeholder.jpg',
-      subperfiles: [
-        {
-          nombre: 'Vacante',
-          cargo: 'Planificador',
-          desc: 'Encargado de la formulación, seguimiento y evaluación de los planes operativos y estratégicos de la institución.',
-          foto: '../assets/img/siluetavacante.jpeg'
-        },
-        {
-          nombre: 'Jesús Unda',
-          cargo: 'Archivista',
-          desc: 'Responsable de la clasificación, custodia y organización del acervo documental e histórico del órgano de control.',
-          foto: '../assets/img/placeholder.jpg'
-        },
-        {
-          nombre: 'José Salas',
-          cargo: 'Mensajero',
-          desc: 'Encargado de la distribución oportuna de correspondencia, documentos oficiales y valijas institucionales.',
-          foto: '../assets/img/placeholder.jpg'
-        },
-        {
-          nombre: 'Alejandro Soto',
-          cargo: 'Oficial de Seguridad',
-          desc: 'Vela por la integridad física de las instalaciones, del personal y de los bienes de la institución.',
-          foto: '../assets/img/placeholder.jpg'
-        }
-      ]
+      foto: '../assets/img/despachoplanificacion.jpg',
+      subperfiles: []
     },
     'administrativo': { 
       titulo: 'Dirección Administrativa', 
-      nombre: 'Mary Urriola', 
+      nombre: 'LIC. MARY URRIOLA', 
       desc: 'El motor financiero y de suministros. Gestiona el flujo de recursos presupuestarios, las contrataciones públicas y la infraestructura material, garantizando la sostenibilidad y el soporte operativo continuo de todo el engranaje institucional.',
-      foto: '../assets/img/placeholder.jpg',
+      foto: '../assets/img/despachoadministrativo.jpg',
       subperfiles: [
         {
-          nombre: 'Jenifer Peña',
+          nombre: 'LIC. JENIFER PEÑA',
           cargo: 'Jefe de Presupuesto',
           desc: 'Encargada de la administración, control y ejecución del presupuesto financiero asignado a la institución.',
-          foto: '../assets/img/placeholder.jpg'
+          foto: '../assets/img/despachoadministrativosubperfil1.jpg'
         },
         {
-          nombre: 'Betzaida Suárez',
+          nombre: 'ING. BETSAIDA SUÁREZ',
           cargo: 'Jefe de Bienes e Informática',
           desc: 'Responsable del registro y control de los bienes institucionales, así como de la gestión y soporte tecnológico.',
-          foto: '../assets/img/placeholder.jpg'
+          foto: '../assets/img/despachoadministrativosubperfil2.jpg'
         }
       ]
     },
     'rrhh': { 
       titulo: 'Dirección de Talento Humano', 
-      nombre: 'Luis Jiménez', 
+      nombre: 'ING. LUIS JIMÉNEZ', 
       desc: 'El núcleo de ingeniería social y desarrollo del personal. Administra el ciclo de vida de los funcionarios públicos, optimizando el rendimiento, la capacitación, el clima organizacional y el bienestar integral del capital humano que da vida a la Contraloría.',
-      foto: '../assets/img/placeholder.jpg',
-      subperfiles: [
-        {
-          nombre: 'Jesús Grumeite',
-          cargo: 'Operador Logístico',
-          desc: 'Apoya en la coordinación de la logística operativa, eventos y mantenimiento general de actividades.',
-          foto: '../assets/img/placeholder.jpg'
-        },
-        {
-          nombre: 'José Parra',
-          cargo: 'Operador Logístico',
-          desc: 'Encargado del soporte logístico en las distintas dependencias y recursos materiales.',
-          foto: '../assets/img/placeholder.jpg'
-        },
-        {
-          nombre: 'Martiza Palacios',
-          cargo: 'Operador Logístico',
-          desc: 'Brinda asistencia en las tareas logísticas y de bienestar institucional orientadas al personal.',
-          foto: '../assets/img/placeholder.jpg'
-        }
-      ]
+      foto: '../assets/img/despachotalentohumano.jpg',
+      subperfiles: []
     },
     'posterior': { 
       titulo: 'Dirección de Control Posterior', 
-      nombre: 'Yanni Leal', 
+      nombre: 'ABG. YANNI LEAL', 
       desc: 'La línea de fiscalización ex post. Evalúa con rigor técnico y financiero la ejecución presupuestaria de los entes públicos después de haber sido ejecutada, midiendo la legalidad, exactitud y eficacia del gasto mediante auditorías e inspecciones exhaustivas.',
-      foto: '../assets/img/placeholder.jpg',
+      foto: '../assets/img/despachoposterior.jpg',
       subperfiles: [
         {
-          nombre: 'Lusbely Verde',
+          nombre: 'LIC. LUSBELY VERDE',
           cargo: 'Jefe de Actuaciones',
           desc: 'Coordina y supervisa la ejecución de las actuaciones fiscales y auditorías programadas.',
-          foto: '../assets/img/placeholder.jpg'
+          foto: '../assets/img/despachoposteriorsubperfil1.jpg'
         },
-        {
-          nombre: 'Diana Gutiérrez',
-          cargo: 'Auditor de Control Posterior',
-          desc: 'Ejecuta auditorías, inspecciones y revisiones fiscales para verificar la legalidad en el manejo de fondos.',
-          foto: '../assets/img/placeholder.jpg'
-        },
-        {
-          nombre: 'Dierésis Aldana',
-          cargo: 'Auditor de Control Posterior',
-          desc: 'Realiza análisis técnicos y financieros de la documentación administrativa.',
-          foto: '../assets/img/placeholder.jpg'
-        },
-        {
-          nombre: 'José Ramírez',
-          cargo: 'Auditor de Control Posterior',
-          desc: 'Revisa y evalúa los procesos de ejecución presupuestaria y contable de los entes sujetos a control.',
-          foto: '../assets/img/placeholder.jpg'
-        },
-        {
-          nombre: 'Darlin Alvarado',
-          cargo: 'Auditor de Control Posterior',
-          desc: 'Evalúa los procedimientos de control interno y fiscalización posterior en las entidades bajo jurisdicción.',
-          foto: '../assets/img/placeholder.jpg'
-        },
-        {
-          nombre: 'Vacante',
-          cargo: 'Auditor de Control Posterior',
-          desc: 'Posición actualmente disponible en el área de auditoría fiscal.',
-          foto: '../assets/img/siluetavacante.jpeg'
-        },
-        {
-          nombre: 'Vacante',
-          cargo: 'Auditor de Control Posterior',
-          desc: 'Posición actualmente disponible en el área de auditoría fiscal.',
-          foto: '../assets/img/siluetavacante.jpeg'
-        },
-        {
-          nombre: 'Vacante',
-          cargo: 'Auditor de Control Posterior',
-          desc: 'Posición actualmente disponible en el área de auditoría fiscal.',
-          foto: '../assets/img/siluetavacante.jpeg'
-        },
-        {
-          nombre: 'Vacante',
-          cargo: 'Auditor de Control Posterior',
-          desc: 'Posición actualmente disponible en el área de auditoría fiscal.',
-          foto: '../assets/img/siluetavacante.jpeg'
-        }
-
       ]
-    },
+    }, 
     'investigativa': { 
       titulo: 'Dirección de Potestad Investigativa', 
-      nombre: 'Juan Tejea', 
+      nombre: 'ABG. JUAN TEJEA', 
       desc: 'La instancia de instrucción y averiguación preliminar. Actúa de oficio o por indicios derivados del control posterior y la OAC para recabar evidencias, armar expedientes técnicos y configurar los elementos probatorios ante posibles irregularidades administrativas.',
-      foto: '../assets/img/placeholder.jpg',
-      subperfiles: [
-        {
-          nombre: 'Vacante',
-          cargo: 'Abogado Adscrito',
-          desc: 'Posición legal disponible para la sustentación y análisis jurídico dentro de la Dirección.',
-          foto: '../assets/img/siluetavacante.jpeg'
-        }
-      ]
+      foto: '../assets/img/despachoinvestigativo.jpg',
+      subperfiles: []
     },
     'responsabilidades': { 
       titulo: 'Dirección de Determinación de Responsabilidades', 
-      nombre: 'Gustavo Montes', 
+      nombre: 'GUSTAVO MONTES DE OCA', 
       desc: 'El tribunal administrativo sancionatorio. Con base en los expedientes de investigación, sustancia los juicios administrativos garantizando rigurosamente el debido proceso, culminando con la emisión de declaratorias de responsabilidad, multas, reparos o inhabilitaciones según corresponda.',
       foto: '../assets/img/placeholder.jpg',
       subperfiles: []

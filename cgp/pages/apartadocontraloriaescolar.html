@@ -15,7 +15,7 @@
   <div class="header-container">
     <a href="#" class="logo-link">
       <div style="width:56px;height:56px;flex-shrink:0;display:flex;align-items:center;justify-content:center;">
-        <img src="../assets/img/logo.jpeg" alt="Logo" style="width:56px;height:56px; border-radius: 25px;">
+        <img src="../assets/img/logonuevo.jpeg" alt="Logo" style="width:56px;height:56px; border-radius: 25px;">
       </div>
       <div class="logo-texts">
         <div class="l1">Contraloría del <br>Municipio Páez</div>
@@ -140,47 +140,58 @@
   <button class="modal-nav modal-next" id="modalNext" aria-label="Siguiente">
     <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M9 18l6-6-6-6"/></svg>
   </button>
-</div>
+</div>  
 
-<!-- ══════════ FOOTER ══════════ -->
 <footer>
-  <div class="footer-inner">
-    <div class="row g-4 pb-4" style="border-bottom: 1px solid rgba(255,255,255,0.1); margin-bottom: 24px;">
+    <div class="footer-inner">
 
-      <div class="col-lg-4 col-md-6 footer-brand">
-        <img src="../assets/img/logo.jpeg" alt="Logo" style="width:56px;height:56px; border-radius: 25px;">
-        <p style="margin-top:12px;">Contraloría del Municipio Páez — Estado Portuguesa, República Bolivariana de Venezuela. Órgano de Control Fiscal Municipal.</p>
-        <div class="rif">RIF: G-20001628-0 · Acarigua, Estado Portuguesa</div>
-        <div class="social-row">
-          <a href="https://www.instagram.com/contraloria_mpaez/" target="_blank" title="Instagram">
-            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-              <rect x="2" y="2" width="20" height="20" rx="5" ry="5"/>
-              <circle cx="12" cy="12" r="4"/>
-              <circle cx="17.5" cy="6.5" r="0.5" fill="currentColor"/>
-            </svg>
-          </a>
-          <a href="https://www.facebook.com/contraloriamunicipiopaez.estadoportuguesa?mibextid=wwXIfr" target="_blank" title="Facebook">
-            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-              <path d="M18 2h-3a5 5 0 0 0-5 5v3H7v4h3v8h4v-8h3l1-4h-4V7a1 1 0 0 1 1-1h3z"/>
-            </svg>
-          </a>
-          <a href="https://x.com/cmeppaez" target="_blank" title="Twitter / X">
-            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-              <path d="M4 4l16 16M4 20L20 4"/>
-              <path d="M20 4h-5l-11 16h5"/>
-              <br> 
-            </svg>
-          </a>
+      <!-- Bootstrap: row + col para el grid del footer responsivo -->
+      <div class="row g-4 pb-4" style="border-bottom: 1px solid rgba(255,255,255,0.1); margin-bottom: 24px; padding-bottom: 20px;">
+
+        <div class="col-lg-4 col-md-6 footer-brand">
+          <!-- LOGO EN EL FOOTER: mismo SVG que el header, con img para poder cambiarlo, porque el svg no lo entiendo tanto -->
+          <img src="../assets/img/logonuevo.jpeg" alt="Logo" style="width:56px;height:56px; border-radius: 25px;">
+          <p style="margin-top:12px;">Contraloría del Municipio Páez — Estado Portuguesa, República Bolivariana de
+            Venezuela. Órgano de Control Fiscal Municipal.</p>
+
+          <!-- rif actualizado -->
+          <div class="rif">RIF: G-20001628-0 · Acarigua, Estado Portuguesa</div>
+          <!-- debemos enlazar directamente a las redes, eso es con un link de referencia como lo puse con el instagram-->
+          <div class="social-row">
+            <a href="https://www.instagram.com/contraloria_mpaez/" target="_blank" title="Instagram">
+              <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
+                stroke-linecap="round" stroke-linejoin="round">
+                <rect x="2" y="2" width="20" height="20" rx="5" ry="5" />
+                <circle cx="12" cy="12" r="4" />
+                <circle cx="17.5" cy="6.5" r="0.5" fill="currentColor" />
+              </svg>
+            </a>
+            <a href="https://www.facebook.com/contraloriamunicipiopaez.estadoportuguesa?mibextid=wwXIfr&rdid=epBEXYSwKqdr16bV&share_url=https%3A%2F%2Fwww.facebook.com%2Fshare%2F1AcpjwhTbS%2F%3Fmibextid%3DwwXIfr#"
+              target="_blank" title="Facebook">
+              <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
+                stroke-linecap="round" stroke-linejoin="round">
+                <path d="M18 2h-3a5 5 0 0 0-5 5v3H7v4h3v8h4v-8h3l1-4h-4V7a1 1 0 0 1 1-1h3z" />
+              </svg>
+            </a>
+            <a href="https://x.com/cmeppaez" target="_blank" title="Twitter / X">
+              <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
+                stroke-linecap="round" stroke-linejoin="round">
+                <path d="M4 4l16 16M4 20L20 4" />
+                <path d="M20 4h-5l-11 16h5" />
+              </svg>
+            </a>
+          </div>
         </div>
+
+      </div>
+
+      <div class="footer-bottom">
+        <span>© 2026 Contraloría del Municipio Páez · Dirección General de Tecnología de Información</span>
+        <a href="https://www.cgr.gob.ve" target="_blank">cgr.gob.ve</a>
       </div>
 
     </div>
-    <p style="text-align:center; font-size:0.75rem; color:rgba(255,255,255,0.35); margin:0;">
-      © 2026 Contraloría del Municipio Páez · Estado Portuguesa
-    </p>
-  </div>
-</footer>
-
+  </footer>
 <script>
 /* ══ DATA ══ */
 const DATA = {
