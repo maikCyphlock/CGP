@@ -1232,6 +1232,9 @@ function agregarSenalado() {
         '  </div>' +
         '  <span class="error-msg" data-campo-err="tipo-senalado">Seleccione el tipo de señalado.</span>' +
         '  <p style="font-size:0.72rem;color:#888;margin:10px 0 0;">' +
+        '    Los datos que usted como denunciante puede conocer u observar con facilidad (nombre, cargo, dirección,' +
+        '    parroquia, etc.) son obligatorios. Los números de documento, R.I.F. o códigos administrativos son' +
+        '    opcionales: la Contraloría Municipal los verifica directamente.' +
         '  </p>' +
         '</div>' +
         '<div class="senalado-card-campos"></div>';
@@ -1349,14 +1352,16 @@ function obtenerEtiquetaPrimerSenalado() {
 
 /** Documentos de evidencia, en el orden en que se solicitan. */
 var EVIDENCIAS_ITEMS = [
-    { valor: 'ci_testigo', etiqueta: 'Copia C.I. del testigo' },
-    { valor: 'ci_denunciante', etiqueta: 'Copia C.I. del denunciante' },
-    { valor: 'carta_exposicion', etiqueta: 'Carta de exposición de motivo' },
-    { valor: 'fotografias', etiqueta: 'Fotografías' },
-    { valor: 'video', etiqueta: 'Video' },
-    { valor: 'grabacion_voz', etiqueta: 'Grabación de voz' },
-    { valor: 'testimonio_escrito', etiqueta: 'Testimonio escrito con firma y huella' },
-    { valor: 'otros_docs', etiqueta: 'Otros documentos' }
+    // Documentos requeridos
+    { valor: 'ci_denunciante', etiqueta: 'Copia C.I. del denunciante', opcional: false },
+    { valor: 'carta_exposicion', etiqueta: 'Carta de exposición de motivo', opcional: false },
+    // Documentos que el denunciante puede omitir
+    { valor: 'ci_testigo', etiqueta: 'Copia C.I. del testigo', opcional: true },
+    { valor: 'fotografias', etiqueta: 'Fotografías', opcional: true },
+    { valor: 'video', etiqueta: 'Video', opcional: true },
+    { valor: 'grabacion_voz', etiqueta: 'Grabación de voz', opcional: true },
+    { valor: 'testimonio_escrito', etiqueta: 'Testimonio escrito con firma y huella', opcional: true },
+    { valor: 'otros_docs', etiqueta: 'Otros documentos', opcional: true }
 ];
 
 /** Índice (0-based) del documento actualmente activo en la secuencia. */
@@ -1397,18 +1402,24 @@ function renderSecuenciaEvidencias() {
             : String(i + 1);
 
         var etiquetaEstado = estado === 'completado'
-            ? (archivos.length ? archivos.length + ' archivo(s) adjunto(s)' : 'Omitido')
+            ? (archivos.length ? archivos.length + ' archivo(s)' : 'Omitido')
             : (estado === 'activo' ? 'Documento actual' : 'Pendiente');
 
         var enlaceEditar = estado === 'completado'
-            ? ' &nbsp;·&nbsp; <button type="button" class="btn-evidencia-link" onclick="editarDocumentoEvidencia(' + i + ')">Editar</button>'
+            ? '<button type="button" class="btn-evidencia-link" onclick="editarDocumentoEvidencia(' + i + ')">Editar</button>'
+            : '';
+
+        var marcaOpcional = item.opcional
+            ? '<span class="evidencia-item-tag">Puede omitirlo</span>'
             : '';
 
         var cabecera =
             '<div class="evidencia-item-header">' +
-            '<div class="evidencia-num">' + numContenido + '</div>' +
-            '<div class="evidencia-item-titulo">' + item.etiqueta + '</div>' +
-            '<div class="evidencia-item-estado">' + etiquetaEstado + enlaceEditar + '</div>' +
+            '<span class="evidencia-num">' + numContenido + '</span>' +
+            '<span class="evidencia-item-titulo">' + item.etiqueta + '</span>' +
+            marcaOpcional +
+            '<span class="evidencia-item-estado">' + etiquetaEstado + '</span>' +
+            enlaceEditar +
             '</div>';
 
         var cuerpo = '';
@@ -1438,7 +1449,7 @@ function renderSecuenciaEvidencias() {
                     : '') +
                 '<button type="button" class="btn-evidencia ' + (archivos.length ? 'btn-evidencia-primary' : 'btn-evidencia-outline') + '" ' +
                 'onclick="avanzarDocumentoEvidencia(\'' + item.valor + '\')">' +
-                (archivos.length ? 'Siguiente documento' : 'Omitir este documento') +
+                (archivos.length ? 'Siguiente documento' : (item.opcional ? 'Omitir este documento' : 'Continuar sin adjuntar')) +
                 '</button>' +
                 '</div>' +
                 '</div>';
