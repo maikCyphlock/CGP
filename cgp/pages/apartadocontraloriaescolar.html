@@ -306,12 +306,11 @@
       opacity: 1;
     }
 
-    /* Borde azul decorativo a la izquierda */
     .feature-card::before {
       content: '';
       position: absolute;
       top: 0; 
-      left: 0; /* Borde a la izquierda */
+      left: 0; 
       right: auto;
       width: 4px; 
       height: 100%;
@@ -330,7 +329,6 @@
       background: var(--clr-accent);
     }
 
-    /* Título alineado a la izquierda */
     .feature-card h4 {
       font-weight: 700;
       font-size: 1rem;
@@ -344,7 +342,6 @@
       color: var(--clr-accent);
     }
 
-    /* Párrafo completamente justificado */
     .feature-card p {
       margin: 0;
       font-size: 0.85rem;
@@ -604,20 +601,24 @@
       transform: translateY(-2px);
     }
 
+    /* Alineado a la izquierda por defecto (responsivo/móvil) */
     .footer-bottom {
       display: flex;
       flex-direction: column;
       gap: 8px;
-      align-items: center;
+      align-items: flex-start;
       justify-content: space-between;
       font-size: 0.75rem;
       opacity: 0.7;
-      text-align: center;
+      text-align: left;
     }
 
+    /* En pantallas grandes (escritorio), se distribuye en fila */
     @media (min-width: 640px) {
       .footer-bottom {
         flex-direction: row;
+        align-items: center;
+        text-align: left;
       }
     }
 
@@ -631,10 +632,6 @@
     .footer-bottom a:hover {
       opacity: 1;
       text-decoration: underline;
-    }
-
-    body {
-      text-align: justify;
     }
 
     .faq-answer,
