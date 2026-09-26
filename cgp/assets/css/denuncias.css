@@ -229,12 +229,12 @@
 
 /* Paso completado */
 .paso-item.completado .paso-num {
-  border-color: #2e7d32;
-  background: #2e7d32;
+  border-color: #0023d4d6;
+  background: #0023d4d6;
   color: #ffffff;
 }
 
-.paso-item.completado .paso-etiqueta { color: #2e7d32; }
+.paso-item.completado .paso-etiqueta { color: #0023d4d6; }
 
 
 /* ─── TARJETAS DE SELECCIÓN ─── */
@@ -896,7 +896,7 @@
 }
 
 .evidencia-item.activo .evidencia-num     { background: #1a4b8c; color: #ffffff; }
-.evidencia-item.completado .evidencia-num { background: #2e9e56; color: #ffffff; }
+.evidencia-item.completado .evidencia-num { background: #002fff; color: #ffffff; }
 
 .evidencia-item-titulo {
   font-size: 0.84rem;
@@ -929,7 +929,7 @@
 }
 
 .evidencia-item.activo .evidencia-item-estado     { color: #1565c0; font-weight: 600; }
-.evidencia-item.completado .evidencia-item-estado { color: #2e9e56; font-weight: 600; }
+.evidencia-item.completado .evidencia-item-estado { color: #444745; font-weight: 600; }
 
 /* Cuerpo: zona de carga, lista de archivos y acciones */
 .evidencia-item-cuerpo {
@@ -1118,11 +1118,11 @@
 
 /* Botón PDF */
 .btn-pdf {
-  background: #2e7d32 !important;
+  background: #0023d4d6 !important;
 }
 
 .btn-pdf:hover {
-  background: #236347 !important;
+  background: #0023d4d6!important;
 }
 
 

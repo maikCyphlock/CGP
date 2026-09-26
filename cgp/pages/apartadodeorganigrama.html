@@ -28,7 +28,7 @@
       background: linear-gradient(135deg, rgba(15,35,64,.92), rgba(26,58,107,.90)), #0f2340; 
       padding: 120px 20px 40px !important;
       color: white;
-      text-align: flex;
+      text-align: center;
     }
     .hero-title {
       font-size: 2.5rem !important;
@@ -38,7 +38,7 @@
     .hero-desc {
       max-width: 900px !important;
       margin: 0 auto;
-      font-size: 1.1rem !importants;
+      font-size: 1.1rem !important;
       opacity: 0.9;
     }
 
@@ -192,6 +192,417 @@
     }
 
     .org-card.control { background: linear-gradient(135deg, #1b4d32, var(--clr-accent)); }
+
+
+    /* =========================================
+       CORRECCIÓN FINAL HEADER / HERO MÓVIL
+       ========================================= */
+
+    #header {
+      position: relative !important;
+      top: auto !important;
+      left: auto !important;
+      width: 100% !important;
+      z-index: 1000 !important;
+      visibility: visible !important;
+      opacity: 1 !important;
+    }
+
+    #header .header-container {
+      display: flex !important;
+      align-items: center !important;
+      justify-content: space-between !important;
+      visibility: visible !important;
+      opacity: 1 !important;
+    }
+
+    #header .logo-link,
+    #header .logo-texts,
+    #header .logo-texts .l1,
+    #navbar,
+    #navbar .btn-inicio {
+      visibility: visible !important;
+      opacity: 1 !important;
+    }
+
+    #navbar {
+      display: flex !important;
+      align-items: center !important;
+      justify-content: flex-end !important;
+      flex-shrink: 0 !important;
+    }
+
+    #navbar .btn-inicio {
+      display: inline-flex !important;
+      color: #fff !important;
+      background: transparent !important;
+      border: 1px solid rgba(255, 255, 255, 0.45) !important;
+      text-decoration: none !important;
+    }
+
+    /* El hero empieza después del header y nunca queda debajo de él. */
+    .org-hero {
+      position: relative !important;
+      z-index: 1 !important;
+      overflow: visible !important;
+    }
+
+    @media (max-width: 768px) {
+      #header .header-container {
+        min-height: 42px !important;
+        flex-direction: row !important;
+        flex-wrap: nowrap !important;
+      }
+
+      #header .logo-link {
+        flex: 1 1 auto !important;
+        width: auto !important;
+        max-width: calc(100% - 80px) !important;
+      }
+
+      #navbar {
+        display: flex !important;
+        flex: 0 0 auto !important;
+        width: auto !important;
+        margin-left: auto !important;
+        align-self: center !important;
+      }
+
+      #navbar .btn-inicio {
+        display: inline-flex !important;
+        width: auto !important;
+        min-width: 52px !important;
+      }
+
+      .org-hero {
+        padding-top: 34px !important;
+        padding-bottom: 28px !important;
+      }
+
+      .hero-content {
+        position: relative !important;
+        z-index: 2 !important;
+      }
+
+      .hero-title {
+        display: block !important;
+        visibility: visible !important;
+        opacity: 1 !important;
+        margin-top: 0 !important;
+        padding-top: 0 !important;
+      }
+
+      .hero-desc {
+        display: block !important;
+        visibility: visible !important;
+        opacity: 0.9 !important;
+      }
+    }
+
+    @media (max-width: 420px) {
+      .org-hero {
+        padding-top: 30px !important;
+      }
+
+      .hero-title {
+        font-size: 1.85rem !important;
+      }
+    }
+
+    /* =========================================
+       BOTÓN INICIO + AJUSTES RESPONSIVOS
+       ========================================= */
+
+    #header {
+      box-sizing: border-box;
+    }
+
+    #navbar {
+      display: flex;
+      align-items: center;
+      justify-content: flex-end;
+    }
+
+    .btn-inicio {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      padding: 8px 16px;
+      border: 1px solid rgba(255, 255, 255, 0.35);
+      border-radius: 20px;
+      background: transparent;
+      color: #fff !important;
+      text-decoration: none !important;
+      font-size: 0.9rem;
+      font-weight: 600 !important;
+      line-height: 1;
+      transition: background-color 0.2s ease, border-color 0.2s ease;
+      white-space: nowrap;
+    }
+
+    .btn-inicio:hover,
+    .btn-inicio:focus-visible {
+      background: rgba(255, 255, 255, 0.10);
+      border-color: rgba(255, 255, 255, 0.55);
+      outline: none;
+    }
+
+    /* El hero aprovecha mejor la altura disponible. */
+    .org-hero {
+      padding: 82px 20px 32px !important;
+      min-height: 250px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      box-sizing: border-box;
+    }
+
+    .hero-content {
+      width: 100%;
+      max-width: 900px;
+      margin: 0 auto;
+    }
+
+    .hero-title {
+      margin-top: 0;
+      margin-bottom: 8px;
+      line-height: 1.05;
+    }
+
+    .hero-desc {
+      line-height: 1.55;
+      margin-bottom: 0;
+    }
+
+    /* Barra de estadísticas más compacta. */
+    .stats-bar {
+      padding: 14px 15px !important;
+      margin-top: -10px;
+      box-sizing: border-box;
+    }
+
+    .stats-container {
+      gap: 14px 30px;
+      padding: 0 10px;
+      box-sizing: border-box;
+    }
+
+    .stat-item {
+      min-width: 120px;
+    }
+
+    .stat-item h3 {
+      line-height: 1.1;
+    }
+
+    .stat-item p {
+      margin-top: 4px;
+      line-height: 1.2;
+    }
+
+    /* Organigrama: ancho fluido sin desbordamiento. */
+    .org-grid-container {
+      width: min(100%, 1200px);
+      padding: 0 16px;
+      box-sizing: border-box;
+    }
+
+    .org-row {
+      box-sizing: border-box;
+    }
+
+    .org-card {
+      box-sizing: border-box;
+    }
+
+    @media (max-width: 768px) {
+      /* HEADER */
+      #header {
+        padding: 10px 14px !important;
+      }
+
+      .header-container {
+        gap: 10px;
+      }
+
+      .logo-link {
+        gap: 9px !important;
+        min-width: 0;
+      }
+
+      .logo-link > div:first-child {
+        width: 42px !important;
+        height: 42px !important;
+      }
+
+      .logo-link img {
+        width: 42px !important;
+        height: 42px !important;
+      }
+
+      .logo-texts .l1 {
+        font-size: 0.72rem !important;
+        line-height: 1.15 !important;
+      }
+
+      .btn-inicio {
+        padding: 7px 13px;
+        font-size: 0.8rem;
+      }
+
+      /* HERO */
+      .org-hero {
+        min-height: 245px;
+        padding: 58px 18px 28px !important;
+      }
+
+      .hero-title {
+        font-size: clamp(1.8rem, 8vw, 2.25rem) !important;
+        line-height: 1.05;
+      }
+
+      .hero-desc {
+        max-width: 100% !important;
+        font-size: 0.92rem !important;
+        line-height: 1.45;
+      }
+
+      /* STATS */
+      .stats-bar {
+        padding: 12px 10px !important;
+        margin-top: -6px;
+      }
+
+      .stats-container {
+        display: grid;
+        grid-template-columns: repeat(3, minmax(0, 1fr));
+        gap: 8px;
+        padding: 0;
+      }
+
+      .stat-item {
+        min-width: 0;
+      }
+
+      .stat-item h3 {
+        font-size: 1.25rem;
+      }
+
+      .stat-item p {
+        font-size: 0.68rem;
+        line-height: 1.15;
+      }
+
+      /* DIVISOR */
+      .section-divider {
+        padding: 32px 15px 12px;
+      }
+
+      .divider-title {
+        font-size: 1.25rem;
+        line-height: 1.25;
+      }
+
+      /* ORGANIGRAMA EN COLUMNA */
+      .org-section {
+        padding: 18px 0 60px;
+      }
+
+      .org-grid-container {
+        width: 100%;
+        padding: 0 15px;
+        gap: 38px;
+      }
+
+      .org-row,
+      .org-row.connected {
+        width: 100%;
+        flex-direction: column;
+        align-items: center;
+        justify-content: flex-start;
+        flex-wrap: nowrap;
+        gap: 28px;
+      }
+
+      .org-row.connected::before {
+        top: -28px;
+        height: 28px;
+        width: 2px;
+      }
+
+      .org-card,
+      .org-card.superior {
+        width: min(100%, 330px);
+        min-height: 72px;
+        padding: 15px 14px;
+        font-size: 0.94rem;
+        border-radius: 14px;
+      }
+
+      .org-card.superior {
+        font-size: 1.05rem;
+      }
+
+      /*
+       * En móvil cada tarjeta de una misma fila recibe un
+       * conector vertical superior, manteniendo el flujo limpio.
+       */
+      .org-row.connected .org-card:not(:first-child)::after {
+        content: '';
+        position: absolute;
+        left: 50%;
+        top: -29px;
+        width: 2px;
+        height: 28px;
+        background: linear-gradient(to bottom, var(--clr-primary), transparent);
+        transform: translateX(-50%);
+        opacity: 0.5;
+      }
+
+      /* Evita que el efecto 3D provoque desplazamientos visuales en móvil. */
+      .org-card:hover {
+        box-shadow: 0 12px 24px rgba(26, 58, 107, 0.25);
+      }
+
+      /* MODAL */
+      .modal-photo-container {
+        width: 150px;
+        height: 150px;
+      }
+    }
+
+    @media (max-width: 420px) {
+      .logo-texts .l1 {
+        font-size: 0.64rem !important;
+      }
+
+      .btn-inicio {
+        padding: 6px 11px;
+        font-size: 0.74rem;
+      }
+
+      .org-hero {
+        min-height: 225px;
+        padding-top: 52px !important;
+      }
+
+      .stats-container {
+        gap: 6px;
+      }
+
+      .stat-item h3 {
+        font-size: 1.12rem;
+      }
+
+      .stat-item p {
+        font-size: 0.62rem;
+      }
+
+      .org-card,
+      .org-card.superior {
+        width: min(100%, 310px);
+      }
+    }
 
     /* MODAL EXECUTIVE GLASS */
     .modal-overlay {
@@ -355,6 +766,233 @@
 
   
 }
+
+    /* =========================================
+       AJUSTE FINAL: HEADER EN UNA SOLA FILA
+       Y ESTADÍSTICAS ALINEADAS
+       ========================================= */
+
+    #header .header-container {
+      flex-direction: row !important;
+      flex-wrap: nowrap !important;
+    }
+
+    #navbar {
+      margin-left: auto !important;
+    }
+
+    .stats-container {
+      align-items: stretch !important;
+    }
+
+    .stat-item {
+      display: flex !important;
+      flex-direction: column !important;
+      align-items: center !important;
+      justify-content: flex-start !important;
+      text-align: center !important;
+      min-height: 44px;
+    }
+
+    .stat-item h3 {
+      width: 100% !important;
+      height: 22px;
+      display: flex !important;
+      align-items: center !important;
+      justify-content: center !important;
+      margin: 0 !important;
+      line-height: 1 !important;
+    }
+
+    .stat-item p {
+      width: 100% !important;
+      min-height: 18px;
+      display: flex !important;
+      align-items: flex-start !important;
+      justify-content: center !important;
+      margin: 4px 0 0 !important;
+      line-height: 1.15 !important;
+      white-space: normal !important;
+    }
+
+    @media (max-width: 768px) {
+      #header .header-container {
+        flex-direction: row !important;
+        flex-wrap: nowrap !important;
+        align-items: center !important;
+      }
+
+      #header .logo-link {
+        flex: 1 1 auto !important;
+        width: auto !important;
+        min-width: 0 !important;
+        max-width: calc(100% - 75px) !important;
+      }
+
+      #navbar {
+        display: flex !important;
+        flex: 0 0 auto !important;
+        width: auto !important;
+        margin-left: auto !important;
+      }
+
+      #navbar .btn-inicio {
+        display: inline-flex !important;
+        width: auto !important;
+      }
+
+      .stats-container {
+        grid-template-columns: repeat(3, minmax(0, 1fr)) !important;
+        align-items: start !important;
+      }
+
+      .stat-item {
+        min-height: 48px;
+      }
+
+      .stat-item h3 {
+        height: 20px;
+        font-size: 1.2rem !important;
+      }
+
+      .stat-item p {
+        min-height: 22px;
+        margin-top: 5px !important;
+        font-size: 0.62rem !important;
+        line-height: 1.15 !important;
+      }
+    }
+
+    @media (max-width: 420px) {
+      #header .logo-texts .l1 {
+        font-size: 0.62rem !important;
+      }
+
+      .stat-item h3 {
+        font-size: 1.08rem !important;
+      }
+
+      .stat-item p {
+        font-size: 0.58rem !important;
+      }
+    }
+
+
+    /* =========================================
+       CORRECCIÓN DEFINITIVA DEL BOTÓN INICIO
+       ========================================= */
+
+    #header {
+      position: relative !important;
+    }
+
+    #header .header-container {
+      position: relative !important;
+      display: flex !important;
+      flex-direction: row !important;
+      align-items: center !important;
+      justify-content: space-between !important;
+      width: 100% !important;
+      max-width: 100% !important;
+    }
+
+    #header .logo-link {
+      position: static !important;
+      flex: 0 1 auto !important;
+      margin: 0 !important;
+    }
+
+    #header #navbar {
+      position: static !important;
+      top: auto !important;
+      right: auto !important;
+      bottom: auto !important;
+      left: auto !important;
+      float: none !important;
+      transform: none !important;
+      display: flex !important;
+      align-items: center !important;
+      justify-content: flex-end !important;
+      width: auto !important;
+      height: auto !important;
+      margin: 0 0 0 auto !important;
+      padding: 0 !important;
+      flex: 0 0 auto !important;
+      z-index: 10 !important;
+    }
+
+    #header #navbar .btn-inicio {
+      position: static !important;
+      display: inline-flex !important;
+      float: none !important;
+      margin: 0 !important;
+      transform: none !important;
+      width: auto !important;
+      height: auto !important;
+      min-width: 52px !important;
+      box-sizing: border-box !important;
+    }
+
+    @media (max-width: 768px) {
+      #header .header-container {
+        flex-direction: row !important;
+        flex-wrap: nowrap !important;
+        align-items: center !important;
+      }
+
+      #header .logo-link {
+        flex: 1 1 auto !important;
+        min-width: 0 !important;
+        max-width: calc(100% - 75px) !important;
+      }
+
+      #header #navbar {
+        position: static !important;
+        flex: 0 0 auto !important;
+        width: auto !important;
+        margin-left: auto !important;
+      }
+
+      #header #navbar .btn-inicio {
+        position: static !important;
+        display: inline-flex !important;
+        margin: 0 !important;
+      }
+    }
+
+
+    /* =========================================
+       ESPACIADO SUPERIOR DE ESTADÍSTICAS
+       ========================================= */
+
+    .stats-bar {
+      padding-top: 18px !important;
+      padding-bottom: 14px !important;
+      box-sizing: border-box !important;
+    }
+
+    .stats-container {
+      margin-top: 2px !important;
+    }
+
+    @media (max-width: 768px) {
+      .stats-bar {
+        padding-top: 14px !important;
+        padding-bottom: 12px !important;
+      }
+
+      .stats-container {
+        margin-top: 1px !important;
+      }
+    }
+
+    @media (max-width: 420px) {
+      .stats-bar {
+        padding-top: 13px !important;
+        padding-bottom: 11px !important;
+      }
+    }
+
   </style>
 </head>
 <body>
@@ -364,7 +1002,7 @@
   <div class="header-container" style="display: flex; align-items: center; justify-content: space-between; width: 100%; max-width: 100%;">
     <a href="#" class="logo-link" style="display: flex; align-items: center; gap: 15px; text-decoration: none; color: white;">
       <div style="width:56px;height:56px;flex-shrink:0;display:flex;align-items:center;justify-content:center;">
-        <img src="../assets/img/logonuevo.jpeg" alt="Logo" style="width:56px;height:56px; border-radius: 25px;">
+        <img src="../assets/img/logonuevo.jpeg" alt="Logo" style="width:56px;height:56px;max-width:100%;border-radius:25px;">
 
       </div>
       <div class="logo-texts">
@@ -372,14 +1010,14 @@
       </div>
     </a>
     
-    <nav id="navbar">
-      <a href="../index.html" target="_blank" style="color: white; text-decoration: none; font-weight: normal;">Inicio</a>
+     <nav id="navbar">
+      <a href="../index.html" class="btn-inicio" aria-label="Ir al inicio">Inicio</a>
     </nav>
   </div>
 </header>
 
 <!-- HERO -->
-<section class="hero-banner org-hero" style="background: linear-gradient(135deg, rgba(26, 58, 107, 0.85) 0%), url('../assets/img/portadahero.jpg') center/cover no-repeat;">
+<section class="hero-banner org-hero" style="background: linear-gradient(135deg, rgba(15, 35, 64, 0.92), rgba(26, 58, 107, 0.82)), url('../assets/img/portadahero.jpg') center/cover no-repeat;">
   <div class="hero-content">
     <h1 class="hero-title">Estructura Organizativa</h1>
     <p class="hero-desc">Organización al servicio del pueblo, conoce el esquema de trabajo y las direcciones troncales que conforman la Contraloría del Municipio Páez.</p>
@@ -446,7 +1084,7 @@
 <div id="profileModal" class="modal-overlay">
   <div class="modal-card">
     
-    <button class="btn-close-modal">
+    <button class="btn-close-modal" type="button" aria-label="Cerrar perfil">
       <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
         <line x1="18" y1="6" x2="6" y2="18"></line>
         <line x1="6" y1="6" x2="18" y2="18"></line>
@@ -478,7 +1116,7 @@
 
         <div class="col-lg-4 col-md-6 footer-brand">
           <!-- LOGO EN EL FOOTER: mismo SVG que el header, con img para poder cambiarlo, porque el svg no lo entiendo tanto -->
-          <img src="../assets/img/logonuevo.jpeg" alt="Logo" style="width:56px;height:56px; border-radius: 25px;">
+          <img src="../assets/img/logonuevo.jpeg" alt="Logo" style="width:56px;height:56px;max-width:100%;border-radius:25px;">
           <p style="margin-top:12px;">Contraloría del Municipio Páez — Estado Portuguesa, República Bolivariana de
             Venezuela. Órgano de Control Fiscal Municipal.</p>
 
@@ -648,6 +1286,7 @@
       const modal = document.getElementById('profileModal');
       if (modal) {
         modal.style.display = 'flex';
+        document.body.style.overflow = 'hidden';
         setTimeout(() => { modal.classList.add('active'); }, 10);
       }
     }
@@ -658,6 +1297,7 @@
     const modal = document.getElementById('profileModal');
     if (modal) {
       modal.classList.remove('active');
+      document.body.style.overflow = '';
       setTimeout(() => { modal.style.display = 'none'; }, 400);
     }
   }
@@ -725,6 +1365,12 @@
     if (closeBtn) {
       closeBtn.addEventListener('click', closeProfile);
     }
+
+    document.addEventListener('keydown', (e) => {
+      if (e.key === 'Escape') {
+        closeProfile(e);
+      }
+    });
   });
 </script>
 

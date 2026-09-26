@@ -352,6 +352,7 @@
               <p class="mb-0 opacity-75">En la página principal</p>
             </div>
           </div>
+  
 
           <!-- Tarjeta de Estadísticas de Visitas -->
           <div class="admin-card mb-4">
@@ -395,6 +396,139 @@
     </div>
   </main>
 </div>
+
+<!-- ================= SECCIÓN: MÓDULO DE GESTIÓN DE EVIDENCIAS E INFORMES ================= -->
+      <div class="row mt-5">
+        <div class="col-12">
+          <h2 class="section-title">Gestión de Evidencias e Informes Fotográficos</h2>
+          <div class="title-underline"></div>
+        </div>
+      </div>
+
+      <div class="row">
+        <!-- Formulario de Carga de Informes -->
+        <div class="col-lg-8">
+          <div class="admin-card mb-4">
+            <div class="card-header d-flex justify-content-between align-items-center">
+              <span>Cargar Nuevo Reporte / Evidencia Fotográfica</span>
+              <span class="badge bg-primary" style="background-color: #0d1b3e !important;">Tipo Informe</span>
+            </div>
+            <div class="card-body">
+              <form>
+                <div class="row">
+                  <div class="col-md-6 mb-3">
+                    <label class="form-label">Módulo / Sección Destino</label>
+                    <select class="form-select">
+                      <option value="escolar">Contraloría Escolar ("La Contraloría va a la Escuela")</option>
+                      <option value="comunitaria">Gestión Comunitaria y Control Fiscal</option>
+                    </select>
+                  </div>
+                  <div class="col-md-6 mb-3">
+                    <label class="form-label">Período de Publicación</label>
+                    <select class="form-select">
+                      <option value="mensual">Mensual</option>
+                      <option value="trimestral">Trimestral</option>
+                      <option value="semestral">Semestral</option>
+                      <option value="anual">Anual</option>
+                    </select>
+                  </div>
+                </div>
+
+                <div class="mb-3">
+                  <label class="form-label">Título de la Actividad / Informe</label>
+                  <input type="text" class="form-control" placeholder="Ej: Elección del Contralor Escolar / Inspección de Obra Comunal">
+                </div>
+
+                <div class="row">
+                  <div class="col-md-6 mb-3">
+                    <label class="form-label">Ubicación / Plantel / Sector</label>
+                    <input type="text" class="form-control" placeholder="Ej: U.E.N. José Antonio Páez / Sector La Goajira">
+                  </div>
+                  <div class="col-md-6 mb-3">
+                    <label class="form-label">Fecha de Realización</label>
+                    <input type="date" class="form-control">
+                  </div>
+                </div>
+
+                <div class="mb-3">
+                  <label class="form-label">Resumen del Reporte (Descripción)</label>
+                  <textarea class="form-control" rows="3" placeholder="Redacte una síntesis de la jornada, inspección o taller realizado..."></textarea>
+                </div>
+
+                <div class="row">
+                  <div class="col-md-6 mb-3">
+                    <label class="form-label">Imagen de la Evidencia (Fotografía)</label>
+                    <input class="form-control" type="file" accept="image/*">
+                    <small class="text-muted">Formatos: JPG, PNG. Tamaño máximo recomendación: 3MB.</small>
+                  </div>
+                  <div class="col-md-6 mb-3">
+                    <label class="form-label">Documento PDF del Informe (Opcional)</label>
+                    <input class="form-control" type="file" accept=".pdf">
+                    <small class="text-muted">Formato: PDF. Tamaño máx: 10MB.</small>
+                  </div>
+                </div>
+
+                <div class="text-end mt-4">
+                  <button type="button" class="btn btn-outline-secondary me-2">Limpiar</button>
+                  <button type="submit" class="btn btn-primary-admin">Guardar y Publicar Reporte</button>
+                </div>
+              </form>
+            </div>
+          </div>
+        </div>
+
+        <!-- Panel Lateral: Estado de Cargas y Lista de Reportes -->
+        <div class="col-lg-4">
+          <!-- Tarjeta Informativa de Resumen -->
+          <div class="admin-card mb-4">
+            <div class="card-header">Reportes Publicados por Módulo</div>
+            <div class="card-body">
+              <div class="d-flex justify-content-between align-items-center mb-3">
+                <span class="fw-semibold text-muted">Contraloría Escolar</span>
+                <span class="badge bg-primary rounded-pill px-3 py-2" style="background-color: #0d1b3e !important;">12 Fotos</span>
+              </div>
+              <div class="d-flex justify-content-between align-items-center">
+                <span class="fw-semibold text-muted">Gestión Comunitaria</span>
+                <span class="badge bg-secondary rounded-pill px-3 py-2">8 Fotos</span>
+              </div>
+            </div>
+          </div>
+
+          <!-- Lista de Reportes Recientes -->
+          <div class="admin-card">
+            <div class="card-header d-flex justify-content-between align-items-center">
+              <span>Evidencias Recientes</span>
+              <small class="text-muted">Últimos cargados</small>
+            </div>
+            <div class="card-body p-0">
+              <ul class="list-group list-group-flush">
+                <li class="list-group-item p-3 border-bottom">
+                  <div class="d-flex justify-content-between align-items-start mb-1">
+                    <strong style="color: #1a2340; font-size: 0.88rem;">Elección Contralor Escolar</strong>
+                    <span class="badge bg-info text-dark" style="font-size: 0.7rem;">Escolar</span>
+                  </div>
+                  <p class="text-muted small mb-2">U.E.N. José Antonio Páez · Feb 2026</p>
+                  <div class="d-flex gap-2">
+                    <button class="btn btn-sm btn-outline-primary py-0 px-2" style="font-size: 0.75rem;">Editar</button>
+                    <button class="btn btn-sm btn-outline-danger py-0 px-2" style="font-size: 0.75rem;">Eliminar</button>
+                  </div>
+                </li>
+                <li class="list-group-item p-3 border-bottom">
+                  <div class="d-flex justify-content-between align-items-start mb-1">
+                    <strong style="color: #1a2340; font-size: 0.88rem;">Inspección Obra Comunal</strong>
+                    <span class="badge bg-warning text-dark" style="font-size: 0.7rem;">Comunitaria</span>
+                  </div>
+                  <p class="text-muted small mb-2">Sector La Goajira · Ene 2026</p>
+                  <div class="d-flex gap-2">
+                    <button class="btn btn-sm btn-outline-primary py-0 px-2" style="font-size: 0.75rem;">Editar</button>
+                    <button class="btn btn-sm btn-outline-danger py-0 px-2" style="font-size: 0.75rem;">Eliminar</button>
+                  </div>
+                </li>
+              </ul>
+            </div>
+          </div>
+        </div>
+      </div>
 
 <script src="https://cdnjs.cloudflare.com/ajax/libs/bootstrap/5.3.2/js/bootstrap.bundle.min.js"></script>
 </body>

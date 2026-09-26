@@ -6,7 +6,7 @@
   <title>Contraloría va a la Escuela – Contraloría del Municipio Páez</title>
   
   <link rel="preconnect" href="https://fonts.googleapis.com">
-  <link href="https://fonts.googleapis.com/css2?family=Merriweather:wght@400;700;900&family=Montserrat:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=Merriweather:wght@400;700;900&family=Montserrat:wght@400;500;600;700;800&family=Source+Sans+3:wght@400;500;600;700&display=swap" rel="stylesheet">
   
   <link rel="stylesheet" href="../assets/css/contraloriaescolar.css">
   <link rel="stylesheet" href="../assets/css/contraloria.css">
@@ -40,82 +40,192 @@
       font-family: 'Montserrat', sans-serif;
     }
 
-    header { 
-      background: #0f2340; 
-      padding: 10px 15px; 
-      color: white; 
-      position: sticky;
-      top: 0;
-      z-index: 1000;
-      width: 100%;
-    }
+    /* =========================================
+       HEADER EXACTO A APARTADODEORGANIGRAMA.HTML
+       ========================================= */
 
-    .header-container { 
-      display: flex; 
-      align-items: center; 
-      justify-content: space-between; 
-      width: 100%; 
-      max-width: 1200px;
-      margin: 0 auto;
-      gap: 8px;
-    }
-
-    .logo-link { 
-      display: flex; 
-      align-items: center; 
-      gap: 8px; 
-      text-decoration: none; 
+    #header {
+      position: relative !important;
+      top: auto !important;
+      left: auto !important;
+      width: 100% !important;
+      z-index: 1000 !important;
+      visibility: visible !important;
+      opacity: 1 !important;
+      box-sizing: border-box;
+      background: #0f2340;
+      padding: 15px 30px;
       color: white;
-      min-width: 0;
-      flex: 1;
     }
 
-    .logo-link img {
-      width: 38px;
-      height: 38px;
-      border-radius: 10px;
-      flex-shrink: 0;
+    #header .header-container {
+      position: relative !important;
+      display: flex !important;
+      flex-direction: row !important;
+      align-items: center !important;
+      justify-content: space-between !important;
+      width: 100% !important;
+      max-width: 100% !important;
+      visibility: visible !important;
+      opacity: 1 !important;
     }
 
-    .logo-texts div {
-      font-weight: 700; 
-      font-size: clamp(0.65rem, 2.5vw, 0.8rem); 
-      line-height: 1.15; 
-      text-align: left;
-      white-space: normal;
-    }
-
-    nav {
+    #header .logo-link {
+      position: static !important;
+      flex: 0 1 auto !important;
+      margin: 0 !important;
       display: flex;
-      gap: 8px;
       align-items: center;
-      flex-shrink: 0;
-    }
-
-    nav a {
-      text-decoration: none; 
-      font-size: 0.85rem; 
-      font-weight: 500;
-      background: rgba(255, 255, 255, 0.1);
+      gap: 15px;
+      text-decoration: none;
       color: white;
-      padding: 5px 12px;
-      border-radius: 6px;
-      transition: background 0.3s ease;
+      visibility: visible !important;
+      opacity: 1 !important;
     }
 
-    nav a:hover {
-      background: rgba(255, 255, 255, 0.25);
+    #header .logo-texts,
+    #header .logo-texts .l1 {
+      visibility: visible !important;
+      opacity: 1 !important;
     }
+
+    #header .logo-texts .l1 {
+      font-weight: bold;
+      font-size: 0.95rem;
+      line-height: 1.2;
+    }
+
+    #header #navbar {
+      position: static !important;
+      top: auto !important;
+      right: auto !important;
+      bottom: auto !important;
+      left: auto !important;
+      float: none !important;
+      transform: none !important;
+      display: flex !important;
+      align-items: center !important;
+      justify-content: flex-end !important;
+      width: auto !important;
+      height: auto !important;
+      margin: 0 0 0 auto !important;
+      padding: 0 !important;
+      flex: 0 0 auto !important;
+      z-index: 10 !important;
+      visibility: visible !important;
+      opacity: 1 !important;
+    }
+
+    .btn-inicio {
+      display: inline-flex !important;
+      align-items: center;
+      justify-content: center;
+      padding: 8px 16px;
+      border: 1px solid rgba(255, 255, 255, 0.35);
+      border-radius: 20px;
+      background: transparent !important;
+      color: #fff !important;
+      text-decoration: none !important;
+      font-size: 0.9rem;
+      font-weight: 600 !important;
+      line-height: 1;
+      transition: background-color 0.2s ease, border-color 0.2s ease;
+      white-space: nowrap;
+      visibility: visible !important;
+      opacity: 1 !important;
+      position: static !important;
+      float: none !important;
+      margin: 0 !important;
+      transform: none !important;
+      width: auto !important;
+      height: auto !important;
+      min-width: 52px !important;
+      box-sizing: border-box !important;
+    }
+
+    .btn-inicio:hover,
+    .btn-inicio:focus-visible {
+      background: rgba(255, 255, 255, 0.10) !important;
+      border-color: rgba(255, 255, 255, 0.55) !important;
+      outline: none;
+    }
+
+    @media (max-width: 768px) {
+      #header {
+        padding: 10px 14px !important;
+      }
+
+      #header .header-container {
+        min-height: 42px !important;
+        flex-direction: row !important;
+        flex-wrap: nowrap !important;
+        align-items: center !important;
+        gap: 10px;
+      }
+
+      #header .logo-link {
+        flex: 1 1 auto !important;
+        width: auto !important;
+        min-width: 0 !important;
+        max-width: calc(100% - 75px) !important;
+        gap: 9px !important;
+      }
+
+      #header .logo-link > div:first-child,
+      #header .logo-link img {
+        width: 42px !important;
+        height: 42px !important;
+      }
+
+      #header .logo-texts .l1 {
+        font-size: 0.72rem !important;
+        line-height: 1.15 !important;
+      }
+
+      #header #navbar {
+        position: static !important;
+        display: flex !important;
+        flex: 0 0 auto !important;
+        width: auto !important;
+        margin-left: auto !important;
+        align-self: center !important;
+      }
+
+      #header #navbar .btn-inicio {
+        position: static !important;
+        display: inline-flex !important;
+        width: auto !important;
+        min-width: 52px !important;
+        padding: 7px 13px;
+        font-size: 0.8rem;
+        margin: 0 !important;
+      }
+    }
+
+    @media (max-width: 420px) {
+      #header .logo-texts .l1 {
+        font-size: 0.62rem !important;
+      }
+
+      .btn-inicio {
+        padding: 6px 11px;
+        font-size: 0.74rem;
+      }
+    }
+
+    /* =========================================
+       ESTILOS DEL RESTO DE LA PÁGINA
+       ========================================= */
 
     .comm-hero {
       background: linear-gradient(135deg, rgba(15,35,64,.94), rgba(26,58,107,.92)), url('../assets/img/portadahero.jpg') center/cover no-repeat;
       padding: 150px 20px 40px 20px;
       display: flex;
       flex-direction: column;
-      align-items: flex-start; /* Alinea los hijos al borde izquierdo */
+      align-items: flex-start;
       justify-content: center;
       color: white;
-      text-align: left; /* Alinea el texto a la izquierda */
+      text-align: left;
       position: relative;
       overflow: hidden;
       width: 100%;
@@ -123,7 +233,7 @@
 
     .hero-content {
       max-width: 900px;
-      margin: 0; /* Elimina el centrado con auto */
+      margin: 0;
       width: 100%;
     }
 
@@ -133,7 +243,7 @@
       font-size: clamp(1.3rem, 3.2vw, 2.1rem);
       margin-bottom: 12px;
       line-height: 1.25;
-      text-align: left; /* Alinea el título a la izquierda */
+      text-align: left;
       word-break: break-word;
     }
 
@@ -144,9 +254,8 @@
       opacity: 0.95;
       line-height: 1.5;
       animation: fadeInUp 1s cubic-bezier(0.16, 1, 0.3, 1) forwards;
-      text-align: left; /* Alinea el párrafo a la izquierda */
+      text-align: justify !important;
     }
-
 
     @keyframes fadeInUp {
       from { opacity: 0; transform: translateY(20px); }
@@ -176,9 +285,10 @@
       }
     }
 
+    /* ---------- TARJETAS: BORDE Y TÍTULO A LA IZQUIERDA, PÁRRAFO JUSTIFICADO ---------- */
     .feature-card {
       background: #fff;
-      padding: 22px 18px;
+      padding: 22px 18px 22px 22px;
       border-radius: 14px;
       box-shadow: 0 6px 20px rgba(15, 35, 64, 0.04);
       border: 1px solid rgba(26, 58, 107, 0.08);
@@ -196,10 +306,15 @@
       opacity: 1;
     }
 
+    /* Borde azul decorativo a la izquierda */
     .feature-card::before {
       content: '';
       position: absolute;
-      top: 0; left: 0; width: 4px; height: 100%;
+      top: 0; 
+      left: 0; /* Borde a la izquierda */
+      right: auto;
+      width: 4px; 
+      height: 100%;
       background: var(--clr-primary);
       transition: width 0.3s cubic-bezier(0.16, 1, 0.3, 1), background 0.3s ease;
     }
@@ -215,12 +330,13 @@
       background: var(--clr-accent);
     }
 
+    /* Título alineado a la izquierda */
     .feature-card h4 {
       font-weight: 700;
       font-size: 1rem;
       color: var(--clr-secondary);
       margin: 0 0 8px 0;
-      text-align: justify;
+      text-align: left !important;
       transition: color 0.3s ease;
     }
 
@@ -228,12 +344,14 @@
       color: var(--clr-accent);
     }
 
+    /* Párrafo completamente justificado */
     .feature-card p {
       margin: 0;
       font-size: 0.85rem;
       color: #555;
-      line-height: 1.45;
-      text-align: justify;
+      line-height: 1.5 !important;
+      text-align: justify !important;
+      text-justify: inter-word;
       font-weight: 500;
     }
 
@@ -514,21 +632,218 @@
       opacity: 1;
       text-decoration: underline;
     }
+
+    body {
+      text-align: justify;
+    }
+
+    .faq-answer,
+    .faq-answer li,
+    .hero-desc {
+      text-align: justify !important;
+      text-justify: inter-word;
+    }
+
+    .hero-title,
+    .faq-section-title h2,
+    .faq-section-title p {
+      text-align: center !important;
+    }
+
+    .comm-hero {
+      position: relative !important;
+      width: 100% !important;
+      box-sizing: border-box !important;
+      overflow: hidden !important;
+      align-items: center !important;
+      justify-content: center !important;
+      padding: 80px 20px 38px !important;
+    }
+
+    .comm-hero .hero-content {
+      position: relative !important;
+      z-index: 2 !important;
+      width: min(100%, 900px) !important;
+      max-width: 900px !important;
+      margin: 0 auto !important;
+    }
+
+    .comm-hero .hero-title {
+      width: 100% !important;
+      margin: 0 0 12px !important;
+      line-height: 1.18 !important;
+      word-break: normal !important;
+      overflow-wrap: break-word !important;
+    }
+
+    .comm-hero .hero-desc {
+      width: 100% !important;
+      max-width: 900px !important;
+      margin: 0 auto !important;
+      line-height: 1.55 !important;
+    }
+
+    .main-container {
+      width: min(100%, 1000px) !important;
+      box-sizing: border-box !important;
+    }
+
+    @media (max-width: 768px) {
+      .comm-hero {
+        padding: 52px 18px 30px !important;
+        min-height: 300px;
+        align-items: center !important;
+      }
+
+      .comm-hero .hero-content {
+        width: 100% !important;
+      }
+
+      .comm-hero .hero-title {
+        font-size: clamp(1.55rem, 8vw, 2.15rem) !important;
+        line-height: 1.12 !important;
+        text-align: center !important;
+      }
+
+      .comm-hero .hero-desc {
+        font-size: 0.88rem !important;
+        line-height: 1.5 !important;
+        text-align: justify !important;
+      }
+
+      .main-container {
+        margin: 20px auto !important;
+        padding: 0 14px !important;
+      }
+
+      .features-grid {
+        grid-template-columns: 1fr !important;
+        gap: 14px !important;
+      }
+
+      .feature-card {
+        padding: 19px 16px 19px 20px !important;
+      }
+
+      .feature-card h4 {
+        text-align: left !important;
+      }
+
+      .feature-card p {
+        font-size: 0.83rem !important;
+        line-height: 1.48 !important;
+        text-align: justify !important;
+      }
+
+      .faq-section-title {
+        margin-top: 30px !important;
+        margin-bottom: 20px !important;
+      }
+
+      .faq-section-title h2 {
+        font-size: 1.25rem !important;
+      }
+
+      .faq-section-title p {
+        font-size: 0.82rem !important;
+        line-height: 1.45 !important;
+        text-align: center !important;
+      }
+
+      .faq-question {
+        text-align: justify !important;
+      }
+
+      .faq-answer,
+      .faq-answer li {
+        text-align: justify !important;
+      }
+    }
+
+    @media (max-width: 420px) {
+      .comm-hero {
+        padding: 44px 15px 27px !important;
+        min-height: 275px;
+      }
+
+      .comm-hero .hero-title {
+        font-size: 1.55rem !important;
+      }
+
+      .comm-hero .hero-desc {
+        font-size: 0.82rem !important;
+      }
+    }
+
+    /* Períodos de informes en una sola línea */
+    .period-tabs {
+      display: grid !important;
+      grid-template-columns: repeat(4, minmax(0, 1fr)) !important;
+      align-items: center !important;
+      justify-items: stretch !important;
+      gap: 6px !important;
+      width: 100% !important;
+      box-sizing: border-box !important;
+    }
+
+    .tab-btn {
+      width: 100% !important;
+      min-width: 0 !important;
+      margin: 0 !important;
+      padding: 9px 6px !important;
+      box-sizing: border-box !important;
+      white-space: nowrap !important;
+      text-align: center !important;
+    }
+
+    @media (max-width: 768px) {
+      .period-tabs-section {
+        width: 100% !important;
+        box-sizing: border-box !important;
+      }
+
+      .period-tabs {
+        grid-template-columns: repeat(4, minmax(0, 1fr)) !important;
+        gap: 5px !important;
+      }
+
+      .tab-btn {
+        min-height: 34px !important;
+        padding: 8px 3px !important;
+        font-size: 0.72rem !important;
+        line-height: 1 !important;
+      }
+    }
+
+    @media (max-width: 420px) {
+      .period-tabs {
+        gap: 4px !important;
+      }
+
+      .tab-btn {
+        min-height: 32px !important;
+        padding: 7px 2px !important;
+        font-size: 0.68rem !important;
+      }
+    }
+
   </style>
 </head>
 <body>
 
+<!-- HEADER UNIFICADO -->
 <header id="header">
   <div class="header-container">
     <a href="#" class="logo-link">
-      <img src="../assets/img/logonuevo.jpeg" alt="Logo">
+      <div style="width:56px;height:56px;flex-shrink:0;display:flex;align-items:center;justify-content:center;">
+        <img src="../assets/img/logonuevo.jpeg" alt="Logo" style="width:56px;height:56px;max-width:100%;border-radius:25px;">
+      </div>
       <div class="logo-texts">
-        <div>CONTRALORÍA DEL</div>
-        <div>MUNICIPIO PÁEZ</div>
+        <div class="l1">CONTRALORÍA DEL <br>MUNICIPIO PÁEZ</div>
       </div>
     </a>
     <nav id="navbar">
-      <a href="../index.html" class="Inicio de Pagina">Inicio</a>
+      <a href="../index.html" class="btn-inicio" aria-label="Ir al inicio">Inicio</a>
     </nav>
   </div>
 </header>

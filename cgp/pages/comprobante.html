@@ -2,134 +2,448 @@
 <html lang="es">
 <head>
     <meta charset="UTF-8">
-    <title>Diseño de Plantilla - OAC</title>
+    <title>Planilla de Recepción - Contraloría</title>
     <style>
+        /* Estilos generales para simular una hoja impresa */
         body {
-            background-color: #e0e0e0;
+            background-color: #525252;
             margin: 0;
             padding: 20px;
-            font-family: Arial, sans-serif;
+            font-family: Arial, Helvetica, sans-serif;
+            font-size: 10px;
+            color: #000;
         }
-        .hoja-carta {
-            width: 210mm;
-            min-height: 297mm;
+        .hoja {
+            width: 215.9mm; /* Ancho carta */
+            min-height: 279.4mm; /* Alto carta */
             background: #ffffff;
             margin: 0 auto;
-            padding: 20mm;
-            box-shadow: 0 0 10px rgba(0,0,0,0.15);
+            padding: 15mm;
+            box-shadow: 0 0 15px rgba(0,0,0,0.5);
             box-sizing: border-box;
-            position: relative; /* Necesario para fijar el footer abajo si se desea */
+            position: relative;
+        }
+        
+        /* Logos flotantes superiores corregidos */
+        .top-logos {
+            display: flex;
+            justify-content: space-between;
+            align-items: flex-start;
+            margin-bottom: 5px;
+            padding: 0 5px;
+        }
+        .top-logos img {
+            width: 75px; /* Tamaño controlado y pequeño */
+            height: auto;
+        }
+        .logo-sncf {
+            width: 105px !important;
+        }
+
+        /* Estructura de las tablas */
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-bottom: -1px; /* Evita bordes dobles entre tablas */
+        }
+        th, td {
+            border: 1px solid #444;
+            padding: 3px 4px;
+            vertical-align: top;
+        }
+        
+        /* Colores y franjas */
+        .bg-blue {
+            background-color: #a9d0f5; /* Azul claro idéntico a la imagen */
+            text-align: center;
+            font-weight: bold;
+            text-transform: uppercase;
+            font-size: 9px;
+            padding: 4px;
+        }
+        .label {
+            font-weight: bold;
+            font-size: 9px;
+            display: block;
+            margin-bottom: 2px;
+            color: #222;
+        }
+        
+        /* Checkboxes */
+        .check-container {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 8px;
+            margin-top: 2px;
+            align-items: center;
+        }
+        .check-item {
+            display: inline-flex;
+            align-items: center;
+            gap: 3px;
+            font-size: 9px;
+        }
+        .box {
+            display: inline-block;
+            width: 10px;
+            height: 10px;
+            border: 1px solid #444;
+            background-color: #fff;
+        }
+
+        /* Utilidades */
+        .center { text-align: center; }
+        .flex-row { display: flex; justify-content: space-between; width: 100%; }
+        .valign-middle { vertical-align: middle; }
+        .min-h-15 { min-height: 15px; }
+        .min-h-30 { min-height: 30px; }
+        
+        /* Sección de Firmas Inferiores */
+        .signatures-area {
+            display: flex;
+            justify-content: space-between;
+            margin-top: 20px;
+            text-align: center;
+            font-size: 9px;
+        }
+        .sig-block {
+            width: 18%;
             display: flex;
             flex-direction: column;
-        }
-
-        /* Contenido principal que empuja el footer hacia abajo */
-        .contenido-principal {
-            flex: 1;
-        }
-
-        /* Estilos del Membrete Institucional */
-        .header-table {
-            width: 100%;
-            border-collapse: collapse;
-            border-bottom: 2px solid #0b2545;
-            padding-bottom: 10px;
-            margin-bottom: 20px;
-        }
-        .header-table td {
-            vertical-align: middle;
-        }
-        .logo-izq { width: 40%; text-align: left; }
-        .logo-der { width: 40%; text-align: right; }
-
-        /* Estilos del Footer Institucional */
-        .footer-institucional {
-            width: 100%;
-            border-top: 1.5px solid #0b2545; /* Línea superior del footer */
-            padding-top: 8px;
-            margin-top: 30px;
-        }
-        .footer-table {
-            width: 100%;
-            border-collapse: collapse;
-        }
-        .footer-table td {
-            vertical-align: top;
-            font-size: 8pt;
-            color: #222222;
-            line-height: 1.3;
-        }
-        .footer-izquierda {
-            width: 60%;
-            text-align: left;
-            font-style: italic;
-        }
-        .footer-derecha {
-            width: 40%;
-            text-align: right;
-        }
-        .footer-derecha div {
-            display: flex;
-            align-items: center;
             justify-content: flex-end;
-            gap: 5px;
-            margin-bottom: 2px;
-            font-style: normal;
+            min-height: 80px;
         }
-        .footer-derecha img {
-            width: 12px;
-            height: 12px;
+        .sig-line {
+            border-top: 1px solid #000;
+            margin-top: 40px;
+            padding-top: 3px;
         }
-        .autor-linea {
-            font-size: 8.5pt;
-            font-style: italic;
-            margin-bottom: 4px;
-            color: #111;
-        }
+        
     </style>
 </head>
 <body>
 
-    <div class="hoja-carta">
+    <div class="hoja">
         
-        <div class="contenido-principal">
-            <!-- Tabla de Membrete con los Logos a los lados -->
-            <table class="header-table">
-                <tr>
-                    <td class="logo-izq">
-                        <img src="../assets/img/LOGO OFICO CMP.png" alt="Logo CMP" style="max-width: 180px; height: auto;">
-                    </td>
-                    <td class="logo-der">
-                        <img src="../assets/img/IMG-20241209-WA0052-removebg-preview.png" alt="Logo SNCF" style="max-width: 90px; height: auto;">
-                    </td>
-                </tr>
-            </table>
-
-            <!-- Contenido de tu documento o comprobante aquí -->
-            <h2 style="text-align: center; color: #0b2545; font-size: 14pt;">COMPROBANTE DE RECEPCIÓN</h2>
-
-            <!-- aqui deberia ir el resultado del comprobante, el codigo y eso, pero no se que mas hacer para conectarlo al sistema y que los datos que ingresen se vean, como el codigo generado y eso --> 
-            
+        <!-- LOGOS SUPERIORES EXTERNOS CORREGIDOS -->
+        <div class="top-logos">
+            <!-- Logo CMP superior izquierdo con tamaño restringido -->
+            <img src="../assets/img/logoletrasnegras.png" alt="Logo CMP">
+            <!-- Logo SNCF superior derecho -->
+            <img src="../assets/img/IMG-20241209-WA0052-removebg-preview.png" class="logo-sncf" alt="Logo SNCF">
         </div>
 
-        <!-- PIE DE PÁGINA INSTITUCIONAL -->
-        <div class="footer-institucional">
-            <div class="autor-linea">Lucena L. / Yolanda R.</div>
-            <table class="footer-table">
-                <tr>
-                    <td class="footer-izquierda">
-                        <strong>R.I.F.:</strong> G-20001628-0<br>
-                        Av. 33 con calle 35. Edif. Doña Cecilia. Frente a la Plaza Andrés Eloy Blanco.<br>
-                        Acarigua, municipio Páez, Estado Portuguesa<br>
-                        <strong>Correo electrónico:</strong> <span style="color: #0b2545; text-decoration: underline;">municipiopaezcontraloria@gmail.com</span>
-                    </td>
-                    <td class="footer-derecha">
-                        <div><span>@cmeppaez</span></div>
-                        <div><span>Contraloría Municipio Páez Estado Portuguesa</span></div>
-                        <div><span>@contraloria_mpaez</span></div>
-                    </td>
-                </tr>
-            </table>
+        <!-- TABLA 1: ENCABEZADO Y TIPO DE RECEPCIÓN -->
+        <table>
+            <tr>
+ <td style="width: 50%; position: relative; padding: 4px;" class="valign-middle">
+    <img src="../assets/img/logosinfondo.png" alt="Sello Pequeño" style="position: absolute; left: 6px; top: 50%; transform: translateY(-50%); width: 40px; height: auto;">
+    <div style="text-align: center; width: 100%;">
+        <div style=" font-size: 9px;">Contraloría del Municipio Páez<br>Del Estado Portuguesa</div>
+        <div style="font-size: 8.5px;">Dirección de Atención al Ciudadano</div>
+        <div style="font-weight: bold; font-size: 10px; margin-top: 2px;">PLANILLA DE RECEPCIÓN</div>
+    </div>
+</td>
+                <td style="width: 35%; padding: 0;">
+                    <table style="border: none; margin: 0; width: 100%; height: 100%;">
+                        <tr>
+                            <td colspan="3" style="border: none; border-bottom: 1px solid #444;">
+                                <span class="label">2. Fecha de solicitud:</span>
+                            </td>
+                        </tr>
+                        <tr>
+                            <td style="border: none; border-right: 1px solid #444; width: 33%;" class="center">Día</td>
+                            <td style="border: none; border-right: 1px solid #444; width: 33%;" class="center">Mes</td>
+                            <td style="border: none; width: 34%;" class="center">Año</td>
+                        </tr>
+                    </table>
+                </td>
+                <td style="width: 15%;">
+                    <span class="label">3. Hora:</span>
+                </td>
+            </tr>
+        </table>
+        
+        <table>
+            <tr>
+                <td style="width: 50%;">
+                    <span class="label">1. Tipo de Recepción:</span>
+                    <div style="display: flex; gap: 40px;">
+                        <div style="display: flex; flex-direction: column; gap: 4px;">
+                            <span class="check-item"><span class="box"></span> Denuncia</span>
+                            <span class="check-item"><span class="box"></span> Reclamo</span>
+                        </div>
+                        <div style="display: flex; flex-direction: column; gap: 4px;">
+                            <span class="check-item"><span class="box"></span> Queja</span>
+                            <span class="check-item"><span class="box"></span> Petición</span>
+                        </div>
+                    </div>
+                </td>
+                <td style="width: 50%;">
+                    <span class="label">4. Nro. Expediente / Registro:</span>
+                    <div class="min-h-15"></div>
+                </td>
+            </tr>
+        </table>
+
+        <!-- DATOS DEL CIUDADANO -->
+        <table>
+            <tr><td colspan="3" class="bg-blue">DATOS DEL CIUDADANO (SOLICITANTE)</td></tr>
+            <tr>
+                <td style="width: 40%;">
+                    <span class="label">5. Cédula de Identidad/Pasaporte:</span>
+                    <div class="check-container">
+                        <span class="check-item"><span class="box"></span> V</span>
+                        <span class="check-item"><span class="box"></span> E</span>
+                    </div>
+                </td>
+                <td colspan="2" style="width: 60%;">
+                    <span class="label">6. Apellidos y Nombres:</span>
+                    <div class="min-h-15"></div>
+                </td>
+            </tr>
+            <tr>
+                <td style="width: 20%;">
+                    <span class="label">7. Sexo:</span>
+                    <div class="check-container">
+                        <span class="check-item"><span class="box"></span> M</span>
+                        <span class="check-item"><span class="box"></span> F</span>
+                    </div>
+                </td>
+                <td style="width: 20%;">
+                    <span class="label">8. Edad:</span>
+                    <div class="min-h-15"></div>
+                </td>
+                <td style="width: 60%;">
+                    <span class="label">9. Estado Civil:</span>
+                    <div class="check-container">
+                        <span class="check-item"><span class="box"></span> Soltero(a)</span>
+                        <span class="check-item"><span class="box"></span> Casado(a)</span>
+                        <span class="check-item"><span class="box"></span> Divorciado(a)</span>
+                        <span class="check-item"><span class="box"></span> Viudo(a)</span>
+                    </div>
+                </td>
+            </tr>
+            <tr>
+                <td colspan="2">
+                    <span class="label">10. Lugar y fecha de nacimiento:</span>
+                    <div class="min-h-15"></div>
+                </td>
+                <td>
+                    <div style="display: flex; width: 100%;">
+                        <div style="width: 50%; border-right: 1px solid #444; padding-right: 4px;">
+                            <span class="label">11. Nivel Educativo:</span>
+                        </div>
+                        <div style="width: 50%; padding-left: 4px;">
+                            <span class="label">12. Profesión y/u ocupación:</span>
+                        </div>
+                    </div>
+                </td>
+            </tr>
+            <tr>
+                <td colspan="3">
+                    <span class="label">13. Dirección de habitación:</span>
+                    <div class="min-h-15"></div>
+                </td>
+            </tr>
+            <tr>
+                <td style="width: 33%;">
+                    <span class="label">14. Parroquia:</span>
+                    <div class="min-h-15"></div>
+                </td>
+                <td style="width: 33%;">
+                    <span class="label">15. Municipio:</span>
+                    <div class="min-h-15"></div>
+                </td>
+                <td style="width: 34%;">
+                    <span class="label">16. Ciudad:</span>
+                    <div class="min-h-15"></div>
+                </td>
+            </tr>
+            <tr>
+                <td>
+                    <span class="label">17. Correo Electrónico:</span>
+                    <div class="min-h-15"></div>
+                </td>
+                <td>
+                    <span class="label">18. Telf. Hab.:</span>
+                    <div class="min-h-15"></div>
+                </td>
+                <td>
+                    <div style="display: flex; width: 100%;">
+                        <div style="width: 50%; border-right: 1px solid #444; padding-right: 4px;">
+                            <span class="label">19. Telf. Celular:</span>
+                        </div>
+                        <div style="width: 50%; padding-left: 4px;">
+                            <span class="label">20. Telf. Trabajo:</span>
+                        </div>
+                    </div>
+                </td>
+            </tr>
+        </table>
+
+        <!-- DATOS DE IDENTIFICACIÓN SEÑALADO -->
+        <table>
+            <tr><td colspan="5" class="bg-blue">DATOS DE IDENTIFICACIÓN Y/O UBICACIÓN DEL SEÑALADO(S) SEGÚN SEA EL CASO</td></tr>
+            <tr>
+                <td colspan="5">
+                    <span class="label">21. Tipo del señalado(a):</span>
+                    <div class="check-container" style="gap: 15px;">
+                        <span class="check-item"><span class="box"></span> Persona Natural</span>
+                        <span class="check-item"><span class="box"></span> Persona Jurídica</span>
+                        <span class="check-item"><span class="box"></span> Órgano o Ente</span>
+                        <span class="check-item"><span class="box"></span> Comuna</span>
+                        <span class="check-item"><span class="box"></span> Consejo Comunal</span>
+                        <span class="check-item"><span class="box"></span> Juez de Paz</span>
+                        <span class="check-item"><span class="box"></span> Otro: ____________</span>
+                    </div>
+                </td>
+            </tr>
+            <tr>
+                <td colspan="5">
+                    <span class="label">22. Ubicación Geográfica del señalado(a) (Comuna y/o Consejo Comunal, Órgano, Ente, Dirección de habitación)</span>
+                    <div class="min-h-15"></div>
+                </td>
+            </tr>
+            <tr>
+                <td style="width: 15%;">
+                    <span class="label">23. Cédula de Identidad<br>(V/E):</span>
+                </td>
+                <td style="width: 25%;">
+                    <span class="label">24. Apellidos y Nombres:</span>
+                </td>
+                <td style="width: 25%;">
+                    <span class="label">25. Nombre de la Comuna o Consejo Comunal:</span>
+                </td>
+                <td style="width: 15%;">
+                    <span class="label">26. Código SITUR:</span>
+                </td>
+                <td style="width: 20%;">
+                    <span class="label">27. R.I.F.:</span>
+                </td>
+            </tr>
+            <tr>
+                <td class="min-h-15"></td><td></td><td></td><td></td><td></td>
+            </tr>
+        </table>
+
+        <!-- PROYECTO CONSULTA POPULAR -->
+        <table>
+            <tr><td colspan="2" class="bg-blue">PROYECTO DE LA CONSULTA POPULAR NACIONAL (DE SER EL CASO)</td></tr>
+            <tr>
+                <td style="width: 75%;">
+                    <span class="label">28. Nombre del Proyecto:</span>
+                    <div class="min-h-15"></div>
+                </td>
+                <td style="width: 25%;">
+                    <span class="label">29. Fecha de aprobación</span>
+                    <div class="min-h-15"></div>
+                </td>
+            </tr>
+            <tr>
+                <td>
+                    <span class="label">30. Monto estimado del Proyecto:</span>
+                    <div class="min-h-15"></div>
+                </td>
+                <td>
+                    <span class="label">31. Ente financiador:</span>
+                    <div class="min-h-15"></div>
+                </td>
+            </tr>
+        </table>
+
+        <!-- DESCRIPCIÓN Y SEÑALAMIENTO -->
+        <table>
+            <tr><td colspan="3" class="bg-blue">DESCRIPCIÓN Y SEÑALAMIENTO:</td></tr>
+            <tr>
+                <td colspan="3">
+                    <span class="label">32. Narración circunstanciada de los hechos:</span>
+                    <div class="min-h-30"></div>
+                </td>
+            </tr>
+            <tr>
+                <td colspan="2" style="width: 85%;">
+                    <span class="label" style="display:inline-block; margin:0;">33. ¿Esta situación y/o problemática ha sido presentada ante otra instancia en fecha anterior o en la presente fecha?</span>
+                </td>
+                <td style="width: 15%; text-align: center;" class="valign-middle">
+                    <div class="check-container" style="justify-content: center; margin:0;">
+                        <span class="check-item"><span class="box"></span> SÍ</span>
+                        <span class="check-item"><span class="box"></span> NO</span>
+                    </div>
+                </td>
+            </tr>
+            <tr>
+                <td colspan="3">
+                    <span class="label">34. Indique a cuál:</span>
+                    <div class="min-h-15"></div>
+                </td>
+            </tr>
+            <tr>
+                <td style="width: 30%;">
+                    <span class="label">35. Documentos que anexa como prueba de los hechos:</span>
+                </td>
+                <td colspan="2" style="padding: 0;">
+                    <table style="border: none; margin: 0; width: 100%;">
+                        <tr>
+                            <td style="border: none; border-bottom: 1px solid #444; border-right: 1px solid #444; width: 33%;"><span class="check-item"><span class="box"></span> Copia de C.I. del testigo</span></td>
+                            <td style="border: none; border-bottom: 1px solid #444; border-right: 1px solid #444; width: 33%;"><span class="check-item"><span class="box"></span> Carta de exposición de motivo</span></td>
+                            <td style="border: none; border-bottom: 1px solid #444; width: 34%;"><span class="check-item"><span class="box"></span> Fotografías</span></td>
+                        </tr>
+                        <tr>
+                            <td style="border: none; border-bottom: 1px solid #444; border-right: 1px solid #444;"><span class="check-item"><span class="box"></span> Copia de C.I. del denunciante</span></td>
+                            <td style="border: none; border-bottom: 1px solid #444; border-right: 1px solid #444;"><span class="check-item"><span class="box"></span> Video</span></td>
+                            <td style="border: none; border-bottom: 1px solid #444;"><span class="check-item"><span class="box"></span> Grabación de voz</span></td>
+                        </tr>
+                        <tr>
+                            <td colspan="3" style="border: none;"><span class="check-item"><span class="box"></span> Otros: _________________________________________________</span></td>
+                        </tr>
+                    </table>
+                </td>
+            </tr>
+            <tr>
+                <td style="width: 60%; padding-right: 15px;">
+                    <span class="label" style="text-align: justify;">36. Declaro que los datos suministrados son fidedignos, y estoy en conocimiento que cualquier falta o falsedad en los mismos, involucra sanciones o a la no aceptación de la solicitud</span>
+                </td>
+                <td style="width: 20%;" class="center">
+                    <span class="label">37. Firma del interesado</span>
+                    <div class="min-h-30"></div>
+                </td>
+                <td style="width: 20%;" class="center">
+                    <span class="label">38. Huella dactilar:</span>
+                    <div class="min-h-30"></div>
+                </td>
+            </tr>
+            <tr><td colspan="3" class="bg-blue">DESCRIPCIÓN Y SEÑALAMIENTO:</td></tr>
+            <tr>
+                <td colspan="2">
+                    <span class="label">39. Descripción del trámite</span>
+                    <div class="min-h-30"></div>
+                </td>
+                <td>
+                    <span class="label">40. Sello y firma del funcionario receptor:</span>
+                    <div class="min-h-30"></div>
+                </td>
+            </tr>
+        </table>
+
+        <!-- ZONA DE FIRMAS INFERIOR -->
+        <div class="signatures-area">
+            <div class="sig-block">
+                <span>Elaborado por:</span>
+                <div class="sig-line"></div>
+            </div>
+            <div class="sig-block">
+                <span>Revisado por:</span>
+                <div class="sig-line">Abg. Esther Jiménez</div>
+            </div>
+            <div class="sig-block" style="width: 22%;">
+                <span>Aprobado y autorizado por:</span>
+                <div class="sig-line">Abg. Leonel O. Lucena H.</div>
+            </div>
+            <div class="sig-block">
+                <span style="font-weight: bold;">Resolución<br>Administrativa N°</span>
+                <div style="margin-top: 10px; font-weight: bold;">CMP-013-2024<br>05/03/2024</div>
+            </div>
         </div>
 
     </div>

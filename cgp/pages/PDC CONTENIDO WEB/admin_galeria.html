@@ -3,8 +3,7 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>CMS - Galería</title>
-  <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;500;700&family=Open+Sans:wght@400;600&display=swap" rel="stylesheet">
+  <title>Gestión de Galería e Informes — Contraloría del Municipio Páez</title>
   <link href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap/5.3.2/css/bootstrap.min.css" rel="stylesheet">
   
   <style>
@@ -23,7 +22,7 @@
     /* Sidebar */
     .sidebar {
       width: 260px;
-      background-color: #08122a;
+      background-color: #08122a; 
       color: white;
       display: flex;
       flex-direction: column;
@@ -81,7 +80,7 @@
     .sidebar-menu a:hover, .sidebar-menu a.active {
       background-color: rgba(255,255,255,0.05);
       color: white;
-      border-left-color: #e63946;
+      border-left-color: #e63946; 
     }
 
     /* Main Content */
@@ -109,12 +108,6 @@
       font-weight: 700;
     }
 
-    .topbar-user {
-      display: flex;
-      align-items: center;
-      gap: 15px;
-    }
-
     .user-avatar {
       width: 40px;
       height: 40px;
@@ -127,7 +120,7 @@
       font-weight: 700;
     }
 
-    /* Tarjetas y Contenido */
+    /* Tarjetas */
     .section-title {
       font-family: 'Roboto', sans-serif;
       font-weight: 700;
@@ -143,6 +136,39 @@
       margin-bottom: 20px;
     }
 
+    .admin-card {
+      background: white;
+      border-radius: 8px;
+      border: 1px solid #e0e6ed;
+      box-shadow: 0 4px 6px rgba(0,0,0,0.02);
+      overflow: hidden;
+    }
+
+    .admin-card .card-header {
+      background-color: #f8f9fc;
+      border-bottom: 1px solid #e0e6ed;
+      padding: 15px 20px;
+      font-weight: 700;
+      color: #1a2340;
+      font-family: 'Roboto', sans-serif;
+    }
+
+    .admin-card .card-body {
+      padding: 25px;
+    }
+
+    .form-label {
+      font-weight: 600;
+      color: #444;
+      font-size: 0.9rem;
+    }
+
+    .form-control, .form-select {
+      border-radius: 6px;
+      border: 1px solid #cfd7e3;
+      padding: 10px 15px;
+    }
+
     .btn-primary-admin {
       background-color: #0d1b3e;
       color: white;
@@ -156,15 +182,15 @@
       background-color: #0d4a9e;
       color: white;
     }
-    
-    /* Estilos específicos de la galería */
-    .gallery-img { width: 100%; height: 200px; object-fit: cover; border-radius: 6px; border: 1px solid #e0e6ed; }
-    .gallery-item { position: relative; margin-bottom: 20px; }
-    .gallery-overlay { position: absolute; top: 0; left: 0; width: 100%; height: 100%; background: rgba(13, 27, 62, 0.7); display: flex; align-items: center; justify-content: center; opacity: 0; transition: opacity 0.3s; border-radius: 6px; }
-    .gallery-item:hover .gallery-overlay { opacity: 1; }
-    .btn-delete-img { background-color: #e63946; color: white; border: none; padding: 8px 15px; border-radius: 4px; font-weight: 600; cursor: pointer; }
 
-    /* Responsive */
+    .img-thumb {
+      width: 50px;
+      height: 50px;
+      object-fit: cover;
+      border-radius: 6px;
+      border: 1px solid #ddd;
+    }
+
     @media (max-width: 992px) {
       .sidebar { width: 80px; }
       .main-content { width: calc(100% - 80px); }
@@ -177,7 +203,7 @@
 <body>
 
 <div class="admin-wrapper">
-  <!-- Sidebar Menú -->
+  <!-- Sidebar -->
   <aside class="sidebar">
     <div class="sidebar-header">
       <img src="../../assets/img/logo.jpeg" alt="Logo">
@@ -187,29 +213,30 @@
       <li class="menu-category">Gestión Web</li>
       <li><a href="admin_cms.html"><span>Panel Principal</span></a></li>
       <li><a href="admin_hero.html"><span>Textos del Inicio (Hero)</span></a></li>
-      <li><a href="admin_galeria.html" class="active"><span>Galería e Imágenes</span></a></li>
+      <li><a href="admin_evidencias.html" class="active"><span>Carga de Informes y Galería</span></a></li>
+      <li><a href="admin_galeria.html"><span>Galería e Imágenes</span></a></li>
       <li class="menu-category">Rendimiento</li>
       <li><a href="admin_estadisticas.html"><span>Estadísticas de Tráfico</span></a></li>
     </ul>
   </aside>
 
-  <!-- Contenido Principal -->
+  <!-- Main Content -->
   <main class="main-content">
     <header class="topbar">
       <div class="topbar-title">
-        <h4>Edición de Contenido Web</h4>
+        <h4>Carga de Galerías e Informes Periódicos</h4>
       </div>
       <div class="topbar-user dropdown ms-auto">
-        <div class="d-flex align-items-center" role="button" data-bs-toggle="dropdown" aria-expanded="false" style="cursor: pointer; gap: 15px;">
+        <div class="d-flex align-items-center" role="button" data-bs-toggle="dropdown" aria-expanded="false" style="cursor: pointer;">
           <div class="user-avatar">M</div>
         </div>
         <ul class="dropdown-menu dropdown-menu-end shadow-lg border-0" style="width: 280px; border-radius: 12px; margin-top: 15px;">
           <li class="text-center p-4 border-bottom">
-            <img src="https://ui-avatars.com/api/?name=Maria+Laura+Perez&background=0d1b3e&color=fff&size=80" alt="Foto de perfil" class="rounded-circle mb-3" style="width: 80px; height: 80px; object-fit: cover; border: 3px solid #f4f6fb; box-shadow: 0 4px 10px rgba(0,0,0,0.1);">
-            <h6 class="mb-1" style="font-family: 'Roboto', sans-serif; font-weight: 700; color: #1a2340; font-size: 1.1rem;">María Laura Pérez</h6>
-            <span class="badge bg-secondary mb-2" style="font-weight: 500;">Editor: Prensa Institucional</span>
+            <img src="https://ui-avatars.com/api/?name=Maria+Laura+Perez&background=0d1b3e&color=fff&size=80" alt="Foto de perfil" class="rounded-circle mb-3" style="width: 80px; height: 80px; object-fit: cover; border: 3px solid #f4f6fb;">
+            <h6 class="mb-1" style="font-family: 'Roboto', sans-serif; font-weight: 700; color: #1a2340;">María Laura Pérez</h6>
+            <span class="badge bg-secondary mb-2">Editor: Prensa Institucional</span>
           </li>
-          <li><a class="dropdown-item py-2 px-3 mt-2 text-muted" href="admin_miperfil.html" style="font-size: 0.9rem; font-weight: 600;"> Mi Perfil</a></li>
+          <li><a class="dropdown-item py-2 px-3 text-muted" href="admin_miperfil.html" style="font-size: 0.9rem; font-weight: 600;">Mi Perfil</a></li>
           <li><a class="dropdown-item py-2 px-3 text-muted" href="configuracion.html" style="font-size: 0.9rem; font-weight: 600;">Configuración</a></li>
           <li><hr class="dropdown-divider"></li>
           <li><a class="dropdown-item py-2 px-3 text-danger fw-bold" href="../../logincontraloria.html" style="font-size: 0.9rem;">Cerrar Sesión</a></li>
@@ -218,28 +245,129 @@
     </header>
 
     <div class="container-fluid py-4">
-      <div class="d-flex justify-content-between align-items-center mb-4">
-        <div>
-          <h2 class="section-title">Galería de Imágenes</h2>
-          <div class="title-underline mb-0"></div>
+      <div class="row mb-4">
+        <div class="col-12">
+          <h2 class="section-title">Galería de Informes (Mensual / Trimestral / Semestral / Anual)</h2>
+          <div class="title-underline"></div>
         </div>
-        <!-- Botón con los atributos correctos para abrir el Modal -->
-        <button class="btn btn-primary-admin" data-bs-toggle="modal" data-bs-target="#uploadModal">+ Subir Imagen</button>
       </div>
 
       <div class="row">
-        <!-- Imagen de prueba 1 -->
-        <div class="col-md-4 col-lg-3 gallery-item">
-          <img src="https://images.unsplash.com/photo-1497366216548-37526070297c?auto=format&fit=crop&w=500&q=80" alt="Fachada" class="gallery-img">
-          <div class="gallery-overlay">
-            <button class="btn-delete-img">Eliminar</button>
+        <!-- Formulario de Carga Exclusivo de Galería -->
+        <div class="col-lg-5">
+          <div class="admin-card mb-4">
+            <div class="card-header">Agregar Imagen / Registro a Galería</div>
+            <div class="card-body">
+              <form>
+                <div class="mb-3">
+                  <label class="form-label">Sección / Módulo Destino</label>
+                  <select class="form-select">
+                    <option value="comunitaria">Gestión Comunitaria</option>
+                    <option value="escolar">Contraloría Escolar</option>
+                  </select>
+                </div>
+
+                <div class="mb-3">
+                  <label class="form-label">Clasificación por Período</label>
+                  <select class="form-select" id="selectPeriodo">
+                    <option value="mensual">Mensual</option>
+                    <option value="trimestral">Trimestral</option>
+                    <option value="semestral">Semestral</option>
+                    <option value="anual">Anual</option>
+                  </select>
+                </div>
+
+                <div class="row">
+                  <div class="col-md-6 mb-3">
+                    <label class="form-label">Año</label>
+                    <input type="number" class="form-control" value="2026" placeholder="2026">
+                  </div>
+                  <div class="col-md-6 mb-3">
+                    <label class="form-label">Nombre del Lapso</label>
+                    <input type="text" class="form-control" placeholder="Ej: Enero, I Trimestre, etc.">
+                  </div>
+                </div>
+
+                <div class="mb-3">
+                  <label class="form-label">Imagen de la Galería (Vista Previa)</label>
+                  <input class="form-control" type="file" accept="image/*">
+                  <small class="text-muted">Formatos: JPG, PNG, WEBP.</small>
+                </div>
+
+                <div class="mb-3">
+                  <label class="form-label">Archivo PDF del Informe (Opcional)</label>
+                  <input class="form-control" type="file" accept=".pdf">
+                  <small class="text-muted">Documento descargable asociado.</small>
+                </div>
+
+                <div class="text-end mt-4">
+                  <button type="submit" class="btn btn-primary-admin w-100">Cargar a la Galería</button>
+                </div>
+              </form>
+            </div>
           </div>
         </div>
-        <!-- Imagen de prueba 2 -->
-        <div class="col-md-4 col-lg-3 gallery-item">
-          <img src="https://images.unsplash.com/photo-1542744173-8e7e53415bb0?auto=format&fit=crop&w=500&q=80" alt="Reunión" class="gallery-img">
-          <div class="gallery-overlay">
-            <button class="btn-delete-img">Eliminar</button>
+
+        <!-- Tabla / Listado de Imágenes por Períodos -->
+        <div class="col-lg-7">
+          <div class="admin-card">
+            <div class="card-header d-flex justify-content-between align-items-center">
+              <span>Registros en Galería</span>
+              <ul class="nav nav-pills nav-fill gap-1" style="font-size: 0.8rem;">
+                <li class="nav-item"><a class="nav-link active py-1 px-2" href="#">Mensual</a></li>
+                <li class="nav-item"><a class="nav-link py-1 px-2 text-dark" href="#">Trimestral</a></li>
+                <li class="nav-item"><a class="nav-link py-1 px-2 text-dark" href="#">Semestral</a></li>
+                <li class="nav-item"><a class="nav-link py-1 px-2 text-dark" href="#">Anual</a></li>
+              </ul>
+            </div>
+            <div class="card-body p-0">
+              <div class="table-responsive">
+                <table class="table table-hover align-middle mb-0" style="font-size: 0.88rem;">
+                  <thead class="table-light">
+                    <tr>
+                      <th>Vista</th>
+                      <th>Año</th>
+                      <th>Período / Mes</th>
+                      <th>Sección</th>
+                      <th>PDF</th>
+                      <th class="text-end">Acciones</th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    <tr>
+                      <td><img src="https://via.placeholder.com/50x50?text=IMG" class="img-thumb" alt="Preview"></td>
+                      <td class="fw-bold">2026</td>
+                      <td>Enero</td>
+                      <td><span class="badge bg-warning text-dark">Comunitaria</span></td>
+                      <td><span class="badge bg-danger">PDF</span></td>
+                      <td class="text-end">
+                        <button class="btn btn-sm btn-outline-danger py-0 px-2">🗑️</button>
+                      </td>
+                    </tr>
+                    <tr>
+                      <td><img src="https://via.placeholder.com/50x50?text=IMG" class="img-thumb" alt="Preview"></td>
+                      <td class="fw-bold">2026</td>
+                      <td>Febrero</td>
+                      <td><span class="badge bg-info text-dark">Escolar</span></td>
+                      <td><span class="badge bg-danger">PDF</span></td>
+                      <td class="text-end">
+                        <button class="btn btn-sm btn-outline-danger py-0 px-2">🗑️</button>
+                      </td>
+                    </tr>
+                    <tr>
+                      <td><img src="https://via.placeholder.com/50x50?text=IMG" class="img-thumb" alt="Preview"></td>
+                      <td class="fw-bold">2025</td>
+                      <td>Marzo</td>
+                      <td><span class="badge bg-warning text-dark">Comunitaria</span></td>
+                      <td><span class="badge bg-secondary">Sin PDF</span></td>
+                      <td class="text-end">
+                        <button class="btn btn-sm btn-outline-danger py-0 px-2">🗑️</button>
+                      </td>
+                    </tr>
+                  </tbody>
+                </table>
+              </div>
+            </div>
           </div>
         </div>
       </div>
@@ -247,34 +375,6 @@
   </main>
 </div>
 
-<!-- Modal para Subir Imagen (Añadido) -->
-<div class="modal fade" id="uploadModal" tabindex="-1" aria-labelledby="uploadModalLabel" aria-hidden="true">
-  <div class="modal-dialog modal-dialog-centered">
-    <div class="modal-content border-0 rounded-4 shadow-lg">
-      <div class="modal-header border-bottom-0">
-        <h5 class="modal-title fw-bold" id="uploadModalLabel" style="font-family: 'Roboto', sans-serif; color: #1a2340;">Subir Nueva Imagen</h5>
-        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
-      </div>
-      <div class="modal-body">
-        <form>
-          <div class="mb-3">
-            <label class="form-label fw-semibold">Título o Descripción</label>
-            <input type="text" class="form-control" placeholder="Ej. Jornada comunitaria 2026">
-          </div>
-          <div class="mb-3">
-            <label class="form-label fw-semibold">Seleccionar archivo de imagen</label>
-            <input type="file" class="form-control" accept="image/*">
-          </div>
-        </form>
-      </div>
-      <div class="modal-footer border-top-0">
-        <button type="button" class="btn btn-light" data-bs-dismiss="modal">Cancelar</button>
-        <button type="button" class="btn btn-primary-admin">Guardar Imagen</button>
-      </div>
-    </div>
-  </div>
-</div>
-
 <script src="https://cdnjs.cloudflare.com/ajax/libs/bootstrap/5.3.2/js/bootstrap.bundle.min.js"></script>
 </body>
-</html>
+</html> 
