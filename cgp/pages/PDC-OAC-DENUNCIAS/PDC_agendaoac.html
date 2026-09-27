@@ -1,0 +1,497 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Agenda OAC - Contraloría del Municipio Páez</title>
+  <link href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap/5.3.2/css/bootstrap.min.css" rel="stylesheet">
+  <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
+  
+  <style>
+    :root {
+      --primary-color: #0d1b3e;
+      --primary-dark: #060d20;
+      --accent-color: #e63946;
+      --bg-color: #f4f7fc;
+      --card-border: #e2e8f0;
+    }
+
+    body {
+      font-family: 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
+      background-color: var(--bg-color);
+      margin: 0;
+      color: #334155;
+      overflow-x: hidden;
+    }
+
+    h1, h2, h3, h4, h5, h6, .btn, .badge, .dropdown-menu {
+      text-align: left;
+    }
+
+    .admin-wrapper { 
+      display: flex; 
+      min-height: 100vh; 
+      position: relative; 
+    }
+    
+    /* Estilos del Sidebar Institucional con pie fijo */
+    .sidebar { 
+      width: 260px; 
+      background: linear-gradient(180deg, var(--primary-color) 0%, var(--primary-dark) 100%); 
+      color: white; 
+      box-shadow: 4px 0 15px rgba(0,0,0,0.1); 
+      z-index: 1040; 
+      transition: transform 0.3s ease-in-out;
+      display: flex;
+      flex-direction: column;
+    }
+
+    .sidebar-content {
+      flex-grow: 1;
+      overflow-y: auto;
+    }
+
+    .sidebar-footer {
+      padding: 1rem;
+      border-top: 1px solid rgba(255, 255, 255, 0.1);
+    }
+
+    @media (max-width: 991.98px) {
+      .sidebar { 
+        position: fixed; 
+        top: 0; 
+        bottom: 0; 
+        left: 0; 
+        transform: translateX(-100%); 
+      }
+      .sidebar.show-sidebar { 
+        transform: translateX(0); 
+      }
+      .main-content { 
+        width: 100% !important; 
+      }
+      .sidebar-overlay { 
+        position: fixed; 
+        top: 0; 
+        left: 0; 
+        right: 0; 
+        bottom: 0; 
+        background: rgba(0,0,0,0.5); 
+        z-index: 1035; 
+        display: none; 
+      }
+      .sidebar-overlay.show { 
+        display: block; 
+      }
+    }
+
+    .sidebar a { transition: all 0.3s ease; text-align: left; }
+    .sidebar a:hover:not(.active-link) { 
+      background-color: rgba(255,255,255,0.1) !important; 
+      transform: translateX(5px); 
+    }
+    .active-link { 
+      background-color: rgba(255,255,255,0.15) !important; 
+      border-left: 4px solid var(--accent-color); 
+    }
+
+    .main-content { 
+      flex-grow: 1; 
+      display: flex; 
+      flex-direction: column; 
+      width: calc(100% - 260px); 
+      transition: width 0.3s ease-in-out;
+    }
+
+    /* Estilo del dropdown de perfil */
+    .profile-dropdown-menu {
+      width: 280px;
+      padding: 1rem;
+      border-radius: 16px !important;
+      box-shadow: 0 10px 30px rgba(0,0,0,0.1) !important;
+      border: none;
+      margin-top: 10px !important;
+      text-align: left;
+    }
+    
+    .profile-avatar-lg {
+      width: 64px;
+      height: 64px;
+      background-color: var(--primary-color);
+      font-size: 1.5rem;
+      font-weight: bold;
+      color: white;
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      margin: 0 auto 12px auto;
+      box-shadow: 0 4px 10px rgba(13, 27, 62, 0.2);
+    }
+
+    .profile-badge {
+      background-color: #f1f3f5;
+      color: #495057;
+      font-size: 0.75rem;
+      padding: 4px 10px;
+      border-radius: 20px;
+      font-weight: 600;
+      display: inline-block;
+      border: 1px solid #e9ecef;
+    }
+
+    .profile-menu-item {
+      padding: 8px 12px;
+      border-radius: 8px;
+      color: #495057;
+      text-decoration: none;
+      display: flex;
+      align-items: center;
+      font-size: 0.9rem;
+      font-weight: 500;
+      transition: background-color 0.2s;
+      text-align: left;
+    }
+
+    .profile-menu-item:hover {
+      background-color: #f8f9fa;
+      color: var(--primary-color);
+    }
+
+    /* Tarjetas y Paneles */
+    .dashboard-card {
+      background: white;
+      border: 1px solid var(--card-border);
+      border-radius: 14px;
+      box-shadow: 0 4px 20px rgba(0, 0, 0, 0.03);
+    }
+
+    /* Calendario Responsivo Mejorado */
+    .table-calendar {
+      table-layout: fixed;
+      width: 100%;
+    }
+
+    .table-calendar th {
+      font-size: 0.75rem;
+      text-align: center;
+      padding: 8px 2px !important;
+    }
+
+    .table-calendar td {
+      word-break: break-word;
+      padding: 6px 4px !important;
+      height: 90px;
+      vertical-align: top;
+      font-size: 0.8rem;
+    }
+
+    .calendar-badge {
+      font-size: 0.65rem !important;
+      padding: 2px 4px !important;
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+      display: block;
+      width: 100%;
+      border-radius: 4px;
+    }
+
+    @media (max-width: 768px) {
+      .table-calendar td {
+        height: 70px;
+        font-size: 0.7rem;
+        padding: 4px 2px !important;
+      }
+      .calendar-badge {
+        font-size: 0.55rem !important;
+        padding: 1px 2px !important;
+      }
+    }
+    
+    .text-justify-custom {
+      text-align: justify;
+    }
+  </style>
+</head>
+<body>
+
+<div class="sidebar-overlay" id="sidebarOverlay" onclick="toggleSidebar()"></div>
+
+<div class="admin-wrapper">
+  <aside class="sidebar" id="appSidebar">
+    <div class="p-4 border-bottom border-secondary d-flex align-items-center justify-content-between">
+      <div class="d-flex align-items-center gap-2">
+        <img src="../../assets/img/logo.jpeg" alt="Logo Institucional" style="width: 40px; border-radius: 4px; box-shadow: 0 2px 5px rgba(0,0,0,0.2);" onerror="this.src='https://via.placeholder.com/40'">
+        <span class="fw-bold" style="font-size: 1rem; letter-spacing: 0.5px;">OAC - Páez</span>
+      </div>
+      <!-- Boton X para cerrar el sidebar en dispositivos-->
+      <button class="btn btn-sm text-white d-lg-none border-0" onclick="toggleSidebar()" aria-label="Cerrar menú">
+        <i class="fa-solid fa-xmark fs-5"></i>
+      </button>
+    </div>
+    
+    <div class="sidebar-content">
+      <ul class="list-unstyled p-3 m-0">
+        <li class="text-uppercase text-secondary fw-bold mb-3 mt-2" style="font-size: 0.7rem; letter-spacing: 1px;">Gestión de Casos</li>
+        <li class="mb-1"><a href="PDC_denunciasinicio.html" class="text-white text-decoration-none d-block p-2 rounded"><i class="fa-solid fa-house-chimney me-2 fa-fw"></i> Panel Principal</a></li>
+        <li class="mb-1"><a href="PDC_protocolizacion.html" class="text-white text-decoration-none d-block p-2 rounded"><i class="fa-solid fa-folder-open me-2 fa-fw"></i> Revisión y Protocolización</a></li>
+        <li class="mb-1"><a href="PDC_seguimiento.html" class="text-white text-decoration-none d-block p-2 rounded"><i class="fa-solid fa-timeline me-2 fa-fw"></i> Seguimiento de Expedientes</a></li>
+        
+        <li class="text-uppercase text-secondary fw-bold mt-4 mb-3" style="font-size: 0.7rem; letter-spacing: 1px;">Control y Estadísticas</li>
+        <li class="mb-1"><a href="PDC_reportes.html" class="text-white text-decoration-none d-block p-2 rounded"><i class="fa-solid fa-chart-pie me-2 fa-fw"></i> Reportes Gerenciales</a></li>
+        <li class="mb-1"><a href="PDC_agendaoac.html" class="text-white text-decoration-none d-block p-2 rounded active-link"><i class="fa-solid fa-calendar-days me-2 fa-fw"></i> Agenda OAC</a></li>
+      </ul>
+    </div>
+    
+    <div class="sidebar-footer">
+      <a href="../../logincontraloria.html" class="btn w-100 d-flex align-items-center justify-content-center gap-2 text-danger fw-bold py-2" style="background-color: rgba(230, 57, 70, 0.08); border: 1px solid rgba(230, 57, 70, 0.3); border-radius: 8px; transition: all 0.2s;">
+        <i class="fa-solid fa-arrow-right-from-bracket"></i> Cerrar Sesión
+      </a>
+    </div>
+  </aside>
+
+  <!-- Contenido Principal -->
+  <main class="main-content w-100">
+    <!-- Header Superior -->
+    <header class="d-flex justify-content-between align-items-center bg-white px-4 py-3 border-bottom shadow-sm sticky-top" style="z-index: 1020;">
+      <div class="d-flex align-items-center gap-3">
+        <button class="btn btn-outline-secondary d-lg-none border-0 px-2 py-1" onclick="toggleSidebar()" aria-label="Abrir menú">
+          <i class="fa-solid fa-bars fs-5" style="color: var(--primary-color);"></i>
+        </button>
+        <h5 class="mb-0 fw-bold d-none d-sm-block" style="color: var(--primary-color); letter-spacing: 0.5px;">
+           Agenda OAC
+        </h5>
+        <h6 class="mb-0 fw-bold d-sm-none text-truncate" style="color: var(--primary-color); max-width: 180px;">
+          Agenda OAC
+        </h6>
+      </div>
+
+      <!-- Dropdown de Perfil -->
+      <div class="dropdown">
+        <div class="d-flex align-items-center dropdown-toggle cursor-pointer" role="button" data-bs-toggle="dropdown" aria-expanded="false" style="cursor: pointer;">
+          <div class="text-end me-2 d-none d-md-block">
+            <span class="mb-0 fw-bold text-dark d-block" style="font-size: 0.85rem;">María Laura Pérez</span>
+            <small class="text-muted" style="font-size: 0.75rem;">Oficina de Atención al Ciudadano</small>
+          </div>
+          <div class="rounded-circle d-flex align-items-center justify-content-center fw-bold text-white shadow-sm" style="width: 38px; height: 38px; background: linear-gradient(135deg, #0d1b3e, #1a3375);">M</div>
+        </div>
+        
+        <ul class="dropdown-menu dropdown-menu-end profile-dropdown-menu text-center">
+          <li>
+            <div class="profile-avatar-lg">MP</div>
+            <h6 class="fw-bold text-dark mb-1" style="font-size: 0.95rem;">María Laura Pérez</h6>
+            <div class="profile-badge mb-3">Editor: Jefe de OAC</div>
+          </li>
+          <li><hr class="dropdown-divider my-2"></li>
+          <li>
+            <a class="profile-menu-item" href="PDC_perfil.html">
+              <i class="fa-regular fa-user me-3 text-secondary"></i>Mi Perfil
+            </a>
+          </li>
+          <li>
+            <a class="profile-menu-item" href="PDC_configuracion.html">
+              <i class="fa-solid fa-gear me-3 text-secondary"></i>Configuración
+            </a>
+          </li>
+          <li><hr class="dropdown-divider my-2"></li>
+          <li>
+            <a class="profile-menu-item text-danger fw-bold" href="../../logincontraloria.html">
+              <i class="fa-solid fa-power-off me-3"></i>Cerrar Sesión
+            </a>
+          </li>
+        </ul>
+      </div>
+    </header>
+
+    <div class="container-fluid p-4">
+      
+      <!-- Título de sección y Botón para abrir el Modal -->
+      <div class="mb-4">
+        <h3 class="fw-bold" style="color: var(--primary-color);">Cronograma de Actividades y Seguimiento</h3>
+        <p class="text-muted small text-justify-custom">Gestión centralizada de inspecciones en campo, comparecencias y reuniones de control fiscal programadas por la Oficina de Atención al Ciudadano.</p>
+        
+        <button type="button" class="btn btn-dark fw-bold px-4 py-2 mt-2 shadow-sm" style="background-color: var(--primary-color); border-radius: 8px;" data-bs-toggle="modal" data-bs-target="#modalNuevaActividad">
+          <i class="fa-solid fa-plus me-2"></i> Programar Nueva Actividad
+        </button>
+      </div>
+
+      <!-- Fila Principal: Calendario Responsivo & Próximas Actividades -->
+      <div class="row g-4">
+        <!-- Bloque del Calendario -->
+        <div class="col-xl-8">
+          <div class="dashboard-card p-3 p-md-4 h-100">
+            
+            <!-- Controles del Mes -->
+            <div class="d-flex justify-content-between align-items-center mb-3">
+              <div class="fw-bold text-dark" style="font-size: 0.95rem;">
+                <i class="fa-solid fa-calendar-days me-2 text-secondary"></i> CALENDARIO - SEPTIEMBRE 2026
+              </div>
+              <div class="btn-group" role="group">
+                <button type="button" class="btn btn-outline-secondary btn-sm px-2"><i class="fa-solid fa-chevron-left"></i></button>
+                <button type="button" class="btn btn-outline-secondary btn-sm px-3 fw-bold">Hoy</button>
+                <button type="button" class="btn btn-outline-secondary btn-sm px-2"><i class="fa-solid fa-chevron-right"></i></button>
+              </div>
+            </div>
+
+            <!-- Tabla del Calendario Adaptada -->
+            <div class="table-responsive">
+              <table class="table table-bordered table-calendar mb-0">
+                <thead>
+                  <tr class="text-secondary" style="background-color: #f8f9fa;">
+                    <th>Lun</th><th>Mar</th><th>Mié</th><th>Jue</th><th>Vie</th><th>Sáb</th><th>Dom</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  <tr>
+                    <td class="text-muted bg-light">31</td>
+                    <td>1</td>
+                    <td class="bg-primary-subtle border border-primary">
+                      <span class="fw-bold">2</span>
+                      <div class="mt-1">
+                        <span class="badge bg-warning text-dark calendar-badge" title="Comparecencia">Comparecencia</span>
+                      </div>
+                    </td>
+                    <td>3</td>
+                    <td>4</td>
+                    <td>
+                      <span class="fw-bold">5</span>
+                      <div class="mt-1">
+                        <span class="badge bg-success calendar-badge" title="Reunión OAC">Reunión OAC</span>
+                      </div>
+                    </td>
+                    <td>6</td>
+                  </tr>
+                  <tr>
+                    <td>7</td><td>8</td><td>9</td><td>10</td>
+                    <td class="bg-primary-subtle border border-primary">
+                      <span class="fw-bold">11</span>
+                      <div class="mt-1">
+                        <span class="badge bg-danger calendar-badge" title="Inspección">Inspección</span>
+                      </div>
+                    </td>
+                    <td>12</td><td>13</td>
+                  </tr>
+                  <tr>
+                    <td>14</td><td>15</td><td>16</td><td>17</td><td>18</td><td>19</td><td>20</td>
+                  </tr>
+                  <tr>
+                    <td>21</td><td>22</td><td>23</td><td>24</td><td>25</td><td>26</td><td>27</td>
+                  </tr>
+                </tbody>
+              </table>
+            </div>
+
+          </div>
+        </div>
+
+        <!-- Bloque de Próximas Actividades -->
+        <div class="col-xl-4">
+          <div class="dashboard-card p-4 h-100 d-flex flex-column">
+            <h6 class="fw-bold text-uppercase mb-3" style="color: var(--primary-color); font-size: 0.85rem; letter-spacing: 0.5px;">
+              <i class="fa-solid fa-list-check me-2 text-secondary"></i> Próximas Actividades
+            </h6>
+            
+            <div class="d-flex flex-column gap-3">
+              <div class="p-3 bg-light rounded border-start border-4 border-warning">
+                <div class="d-flex justify-content-between align-items-center mb-1">
+                  <span class="badge bg-warning text-dark" style="font-size: 0.7rem;">02 Sep - 10:30 AM</span>
+                  <small class="text-muted" style="font-size: 0.75rem;"><i class="fa-solid fa-users me-1"></i> Sala 2</small>
+                </div>
+                <h6 class="fw-bold text-dark mb-1" style="font-size: 0.9rem;">Comparecencia de entes sujetos a control</h6>
+                <p class="text-muted mb-0 text-justify-custom" style="font-size: 0.75rem;">Revisión de recaudos y aclaratorias con directores de entes descentralizados.</p>
+              </div>
+
+              <div class="p-3 bg-light rounded border-start border-4 border-success">
+                <div class="d-flex justify-content-between align-items-center mb-1">
+                  <span class="badge bg-success text-white" style="font-size: 0.7rem;">05 Sep - 09:00 AM</span>
+                  <small class="text-muted" style="font-size: 0.75rem;"><i class="fa-solid fa-users me-1"></i> Despacho</small>
+                </div>
+                <h6 class="fw-bold text-dark mb-1" style="font-size: 0.9rem;">Reunión de Coordinación OAC</h6>
+                <p class="text-muted mb-0 text-justify-custom" style="font-size: 0.75rem;">Evaluación de expedientes ingresados y plan de atención ciudadana semanal.</p>
+              </div>
+
+              <!-- Tarjeta de Inspección agregada correspondientes al 11 de Septiembre -->
+              <div class="p-3 bg-light rounded border-start border-4 border-danger">
+                <div class="d-flex justify-content-between align-items-center mb-1">
+                  <span class="badge bg-danger text-white" style="font-size: 0.7rem;">11 Sep - 08:30 AM</span>
+                  <small class="text-muted" style="font-size: 0.75rem;"><i class="fa-solid fa-location-dot me-1"></i> Campo</small>
+                </div>
+                <h6 class="fw-bold text-dark mb-1" style="font-size: 0.9rem;">Inspección a Obra Parcial</h6>
+                <p class="text-muted mb-0 text-justify-custom" style="font-size: 0.75rem;">Verificación física de estatus de avance en proyectos viales del municipio.</p>
+              </div>
+            </div>
+
+          </div>
+        </div>
+      </div>
+
+    </div>
+  </main>
+</div>
+
+<!-- Modal para Programar Nueva Actividad -->
+<div class="modal fade" id="modalNuevaActividad" tabindex="-1" aria-labelledby="modalNuevaActividadLabel" aria-hidden="true">
+  <div class="modal-dialog modal-dialog-centered">
+    <div class="modal-content" style="border-radius: 14px; border: none;">
+      <div class="modal-header" style="background-color: var(--primary-color); color: white; border-top-left-radius: 14px; border-top-right-radius: 14px;">
+        <h5 class="modal-title fw-bold" id="modalNuevaActividadLabel" style="font-size: 1.05rem;">
+          <i class="fa-solid fa-calendar-plus me-2"></i> Programar Nueva Actividad
+        </h5>
+        <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Cerrar"></button>
+      </div>
+      <div class="modal-body p-4">
+        <form>
+          <div class="mb-3">
+            <label for="tituloActividad" class="form-label fw-bold text-dark" style="font-size: 0.85rem;">Título de la Actividad</label>
+            <input type="text" class="form-control" id="tituloActividad" placeholder="Ej. Inspección de obra municipal" required>
+          </div>
+          <div class="row g-3 mb-3">
+            <div class="col-md-6">
+              <label for="fechaActividad" class="form-label fw-bold text-dark" style="font-size: 0.85rem;">Fecha</label>
+              <input type="date" class="form-control" id="fechaActividad" required>
+            </div>
+            <div class="col-md-6">
+              <label for="horaActividad" class="form-label fw-bold text-dark" style="font-size: 0.85rem;">Hora</label>
+              <input type="time" class="form-control" id="horaActividad" required>
+            </div>
+          </div>
+          <div class="mb-3">
+            <label for="tipoActividad" class="form-label fw-bold text-dark" style="font-size: 0.85rem;">Tipo de Actividad</label>
+            <select class="form-select" id="tipoActividad">
+              <option value="Comparecencia">Comparecencia</option>
+              <option value="Inspección">Inspección</option>
+              <option value="Reunión OAC">Reunión OAC</option>
+            </select>
+          </div>
+          <div class="mb-3">
+            <label for="ubicacionActividad" class="form-label fw-bold text-dark" style="font-size: 0.85rem;">Lugar / Sala</label>
+            <input type="text" class="form-control" id="ubicacionActividad" placeholder="Ej. Sala 2 / Campo / Despacho">
+          </div>
+          <div class="mb-3">
+            <label for="descripcionActividad" class="form-label fw-bold text-dark" style="font-size: 0.85rem;">Descripción y Observaciones</label>
+            <textarea class="form-control" id="descripcionActividad" rows="3" placeholder="Detalles de la diligencia..."></textarea>
+          </div>
+          <div class="d-flex justify-content-end gap-2 mt-4">
+            <button type="button" class="btn btn-outline-secondary px-4" data-bs-dismiss="modal">Cancelar</button>
+            <button type="submit" class="btn text-white px-4 fw-bold" style="background-color: var(--primary-color);">Guardar en Agenda</button>
+          </div>
+        </form>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- Scripts de Bootstrap -->
+<script src="https://cdnjs.cloudflare.com/ajax/libs/bootstrap/5.3.2/js/bootstrap.bundle.min.js"></script>
+<script>
+  // Control del Menú Hamburguesa Responsivo
+  function toggleSidebar() {
+    const sidebar = document.getElementById('appSidebar');
+    const overlay = document.getElementById('sidebarOverlay');
+    sidebar.classList.toggle('show-sidebar');
+    overlay.classList.toggle('show');
+  }
+</script>
+</body>
+</html>

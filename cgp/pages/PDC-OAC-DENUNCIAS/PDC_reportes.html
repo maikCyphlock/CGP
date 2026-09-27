@@ -6,171 +6,405 @@
   <title>Reportes Gerenciales - OAC Contraloría del Municipio Páez</title>
   <link href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap/5.3.2/css/bootstrap.min.css" rel="stylesheet">
   <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
-  
-  <!-- CDN de Chart.js -->
+  <!-- Chart.js para gráficos estadísticos avanzados -->
   <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
   
   <style>
-    body { font-family: 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif; background-color: #f0f4f8; margin: 0; color: #333; }
-    .admin-wrapper { display: flex; min-height: 100vh; }
-    
-    /* Sidebar institucional */
-    .sidebar { width: 260px; background: linear-gradient(180deg, #0d1b3e 0%, #060d20 100%); color: white; box-shadow: 4px 0 15px rgba(0,0,0,0.1); z-index: 10; }
-    .sidebar a { transition: all 0.3s ease; }
-    .sidebar a:hover:not(.active-link) { background-color: rgba(255,255,255,0.1) !important; transform: translateX(5px); }
-    .active-link { background-color: rgba(255,255,255,0.15); border-left: 4px solid #e63946; }
-
-    .main-content { flex-grow: 1; display: flex; flex-direction: column; width: calc(100% - 260px); }
-    
-    /* Estilos para tarjetas de reportes */
-    .card-kpi { border-left: 4px solid #0d1b3e; border-radius: 8px; transition: transform 0.3s ease, box-shadow 0.3s ease; }
-    .card-kpi:hover { transform: translateY(-3px); box-shadow: 0 8px 15px rgba(0,0,0,0.06) !important; }
-    
-    .btn-report {
-      background-color: #0d1b3e;
-      color: white;
-      transition: all 0.3s ease;
-      border: none;
+    :root {
+      --primary-color: #0d1b3e;
+      --primary-dark: #060d20;
+      --accent-color: #e63946;
+      --bg-color: #f4f7fc;
+      --card-border: #e2e8f0;
     }
-    .btn-report:hover {
-      background-color: #162c63;
+
+    body {
+      font-family: 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
+      background-color: var(--bg-color);
+      margin: 0;
+      color: #334155;
+      overflow-x: hidden;
+    }
+
+    h1, h2, h3, h4, h5, h6, .btn, .badge, .dropdown-menu {
+      text-align: left;
+    }
+
+    .admin-wrapper { 
+      display: flex; 
+      min-height: 100vh; 
+      position: relative; 
+    }
+    
+    /* Estilos del Sidebar Institucional con pie fijo */
+    .sidebar { 
+      width: 260px; 
+      background: linear-gradient(180deg, var(--primary-color) 0%, var(--primary-dark) 100%); 
+      color: white; 
+      box-shadow: 4px 0 15px rgba(0,0,0,0.1); 
+      z-index: 1040; 
+      transition: transform 0.3s ease-in-out;
+      display: flex;
+      flex-direction: column;
+    }
+
+    .sidebar-content {
+      flex-grow: 1;
+      overflow-y: auto;
+    }
+
+    .sidebar-footer {
+      padding: 1rem;
+      border-top: 1px solid rgba(255, 255, 255, 0.1);
+    }
+
+    @media (max-width: 991.98px) {
+      .sidebar { 
+        position: fixed; 
+        top: 0; 
+        bottom: 0; 
+        left: 0; 
+        transform: translateX(-100%); 
+      }
+      .sidebar.show-sidebar { 
+        transform: translateX(0); 
+      }
+      .main-content { 
+        width: 100% !important; 
+      }
+      .sidebar-overlay { 
+        position: fixed; 
+        top: 0; 
+        left: 0; 
+        right: 0; 
+        bottom: 0; 
+        background: rgba(0,0,0,0.5); 
+        z-index: 1035; 
+        display: none; 
+      }
+      .sidebar-overlay.show { 
+        display: block; 
+      }
+    }
+
+    .sidebar a { transition: all 0.3s ease; text-align: left; }
+    .sidebar a:hover:not(.active-link) { 
+      background-color: rgba(255,255,255,0.1) !important; 
+      transform: translateX(5px); 
+    }
+    .active-link { 
+      background-color: rgba(255,255,255,0.15) !important; 
+      border-left: 4px solid var(--accent-color); 
+    }
+
+    .main-content { 
+      flex-grow: 1; 
+      display: flex; 
+      flex-direction: column; 
+      width: calc(100% - 260px); 
+      transition: width 0.3s ease-in-out;
+    }
+
+    /* Estilo del dropdown de perfil */
+    .profile-dropdown-menu {
+      width: 280px;
+      padding: 1rem;
+      border-radius: 16px !important;
+      box-shadow: 0 10px 30px rgba(0,0,0,0.1) !important;
+      border: none;
+      margin-top: 10px !important;
+      text-align: left;
+    }
+    
+    .profile-avatar-lg {
+      width: 64px;
+      height: 64px;
+      background-color: var(--primary-color);
+      font-size: 1.5rem;
+      font-weight: bold;
       color: white;
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      margin: 0 auto 12px auto;
+      box-shadow: 0 4px 10px rgba(13, 27, 62, 0.2);
+    }
+
+    .profile-badge {
+      background-color: #f1f3f5;
+      color: #495057;
+      font-size: 0.75rem;
+      padding: 4px 10px;
+      border-radius: 20px;
+      font-weight: 600;
+      display: inline-block;
+      border: 1px solid #e9ecef;
+    }
+
+    .profile-menu-item {
+      padding: 8px 12px;
+      border-radius: 8px;
+      color: #495057;
+      text-decoration: none;
+      display: flex;
+      align-items: center;
+      font-size: 0.9rem;
+      font-weight: 500;
+      transition: background-color 0.2s;
+      text-align: left;
+    }
+
+    .profile-menu-item:hover {
+      background-color: #f8f9fa;
+      color: var(--primary-color);
+    }
+
+    /* Tarjetas y Paneles Innovadores */
+    .dashboard-card {
+      background: white;
+      border: 1px solid var(--card-border);
+      border-radius: 14px;
+      box-shadow: 0 4px 20px rgba(0, 0, 0, 0.03);
+      transition: transform 0.2s ease, box-shadow 0.2s ease;
+    }
+    .dashboard-card:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 6px 25px rgba(0, 0, 0, 0.06);
+    }
+
+    .circular-progress {
+      width: 100px;
+      height: 100px;
+      border-radius: 50%;
+      background: conic-gradient(var(--accent-color) 82%, #e2e8f0 0deg);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      position: relative;
+      margin: 0 auto;
+    }
+    .circular-progress::before {
+      content: "";
+      position: absolute;
+      width: 78px;
+      height: 78px;
+      border-radius: 50%;
+      background-color: white;
+    }
+    .progress-value {
+      position: relative;
+      font-size: 1.25rem;
+      font-weight: bold;
+      color: var(--primary-color);
     }
   </style>
 </head>
 <body>
 
+<div class="sidebar-overlay" id="sidebarOverlay" onclick="toggleSidebar()"></div>
+
 <div class="admin-wrapper">
-  <!-- Menú Lateral -->
-  <aside class="sidebar">
-    <div class="p-4 border-bottom border-secondary d-flex align-items-center gap-3">
-      <img src="../../assets/img/logo.jpeg" alt="Logo Institucional" style="width: 45px; border-radius: 4px; box-shadow: 0 2px 5px rgba(0,0,0,0.2);">
-      <span class="fw-bold" style="font-size: 1.05rem; letter-spacing: 0.5px;">OAC - Páez</span>
+  <!-- Menú Lateral Institucional -->
+  <aside class="sidebar" id="appSidebar">
+    <div class="p-4 border-bottom border-secondary d-flex align-items-center justify-content-between">
+      <div class="d-flex align-items-center gap-2">
+        <img src="../../assets/img/logo.jpeg" alt="Logo Institucional" style="width: 40px; border-radius: 4px; box-shadow: 0 2px 5px rgba(0,0,0,0.2);" onerror="this.src='https://via.placeholder.com/40'">
+        <span class="fw-bold" style="font-size: 1rem; letter-spacing: 0.5px;">OAC - Páez</span>
+      </div>
+      <!-- Botón X para cerrar el sidebar en dispositivos móviles -->
+      <button class="btn btn-sm text-white d-lg-none border-0" onclick="toggleSidebar()" aria-label="Cerrar menú">
+        <i class="fa-solid fa-xmark fs-5"></i>
+      </button>
     </div>
-   <ul class="list-unstyled p-3 m-0">
-      <li class="text-uppercase text-secondary fw-bold mb-3 mt-2" style="font-size: 0.7rem; letter-spacing: 1px;">Gestión de Casos</li>
-      <li class="mb-1"><a href="PDC_denunciasinicio.html" class="text-white-50 text-decoration-none d-block p-2 rounded">Panel Principal</a></li>
-      <li class="mb-1"><a href="PDC_protocolizacion.html" class="text-white-50 text-decoration-none d-block p-2 rounded">Revisión y Protocolización</a></li>
-      <li class="mb-1"><a href="PDC_seguimiento.html" class="text-white-50 text-decoration-none d-block p-2 rounded">Seguimiento de Expedientes</a></li>
-      
-      <li class="text-uppercase text-secondary fw-bold mt-4 mb-3" style="font-size: 0.7rem; letter-spacing: 1px;">Control y Estadísticas</li>
-      <li class="mb-1"><a href="PDC_reportes.html" class="text-white text-decoration-none d-block p-2 rounded active-link">Reportes Gerenciales</a></li>
-   </ul>
+    
+    <div class="sidebar-content">
+      <ul class="list-unstyled p-3 m-0">
+        <li class="text-uppercase text-secondary fw-bold mb-3 mt-2" style="font-size: 0.7rem; letter-spacing: 1px;">Gestión de Casos</li>
+        <li class="mb-1"><a href="PDC_denunciasinicio.html" class="text-white text-decoration-none d-block p-2 rounded"><i class="fa-solid fa-house-chimney me-2 fa-fw"></i> Panel Principal</a></li>
+        <li class="mb-1"><a href="PDC_protocolizacion.html" class="text-white text-decoration-none d-block p-2 rounded"><i class="fa-solid fa-folder-open me-2 fa-fw"></i> Revisión y Protocolización</a></li>
+        <li class="mb-1"><a href="PDC_seguimiento.html" class="text-white text-decoration-none d-block p-2 rounded"><i class="fa-solid fa-timeline me-2 fa-fw"></i> Seguimiento de Expedientes</a></li>
+        
+        <li class="text-uppercase text-secondary fw-bold mt-4 mb-3" style="font-size: 0.7rem; letter-spacing: 1px;">Control y Estadísticas</li>
+        <li class="mb-1"><a href="PDC_reportes.html" class="text-white text-decoration-none d-block p-2 rounded active-link"><i class="fa-solid fa-chart-pie me-2 fa-fw"></i> Reportes Gerenciales</a></li>
+        <li class="mb-1"><a href="PDC_agendaoac.html" class="text-white text-decoration-none d-block p-2 rounded"><i class="fa-solid fa-calendar-days me-2 fa-fw"></i> Agenda OAC</a></li>
+      </ul>
+    </div>
+
+    <!-- Botón de Cerrar Sesión fijo abajo a la izquierda -->
+    <div class="sidebar-footer">
+      <a href="../../logincontraloria.html" class="btn w-100 d-flex align-items-center justify-content-center gap-2 text-danger fw-bold py-2" style="background-color: rgba(230, 57, 70, 0.08); border: 1px solid rgba(230, 57, 70, 0.3); border-radius: 8px; transition: all 0.2s;">
+        <i class="fa-solid fa-arrow-right-from-bracket"></i> Cerrar Sesión
+      </a>
+    </div>
   </aside>
 
   <!-- Contenido Principal -->
   <main class="main-content w-100">
-    <header class="d-flex justify-content-between align-items-center bg-white p-3 border-bottom shadow-sm" style="z-index: 5;">
-      <h5 class="mb-0 fw-bold" style="color: #0d1b3e; letter-spacing: 0.5px;">
-        Reportes y Estadísticas Gerenciales
-      </h5>
+    <!-- Header Superior -->
+    <header class="d-flex justify-content-between align-items-center bg-white px-4 py-3 border-bottom shadow-sm sticky-top" style="z-index: 1020;">
+      <div class="d-flex align-items-center gap-3">
+        <button class="btn btn-outline-secondary d-lg-none border-0 px-2 py-1" onclick="toggleSidebar()" aria-label="Abrir menú">
+          <i class="fa-solid fa-bars fs-5" style="color: var(--primary-color);"></i>
+        </button>
+        <h5 class="mb-0 fw-bold d-none d-sm-block" style="color: var(--primary-color); letter-spacing: 0.5px;">
+           Reportes Gerenciales y Estadísticas
+        </h5>
+        <h6 class="mb-0 fw-bold d-sm-none text-truncate" style="color: var(--primary-color); max-width: 180px;">
+          Reportes
+        </h6>
+      </div>
+
+      <!-- Dropdown de Perfil -->
       <div class="dropdown">
-        <div class="d-flex align-items-center dropdown-toggle" role="button" data-bs-toggle="dropdown" aria-expanded="false">
-          <div class="text-end me-3 d-none d-md-block">
-            <p class="mb-0 fw-bold text-dark" style="font-size: 0.85rem;">María Laura Pérez</p>
+        <div class="d-flex align-items-center dropdown-toggle cursor-pointer" role="button" data-bs-toggle="dropdown" aria-expanded="false" style="cursor: pointer;">
+          <div class="text-end me-2 d-none d-md-block">
+            <span class="mb-0 fw-bold text-dark d-block" style="font-size: 0.85rem;">María Laura Pérez</span>
             <small class="text-muted" style="font-size: 0.75rem;">Oficina de Atención al Ciudadano</small>
           </div>
           <div class="rounded-circle d-flex align-items-center justify-content-center fw-bold text-white shadow-sm" style="width: 38px; height: 38px; background: linear-gradient(135deg, #0d1b3e, #1a3375);">M</div>
         </div>
-        <!-- Menú desplegable que faltaba -->
-        <ul class="dropdown-menu dropdown-menu-end shadow border-0 mt-2 rounded-2">
-          <li><a class="dropdown-item text-muted" href="PDC_configuracion.html"><i class="fa-solid fa-gear me-2"></i>Configuración</a></li>
-          <li><hr class="dropdown-divider"></li>
-          <li><a class="dropdown-item text-danger fw-bold" href="../../logincontraloria.html"><i class="fa-solid fa-right-from-bracket me-2"></i>Cerrar Sesión</a></li>
+        
+        <ul class="dropdown-menu dropdown-menu-end profile-dropdown-menu text-center">
+          <li>
+            <div class="profile-avatar-lg">MP</div>
+            <h6 class="fw-bold text-dark mb-1" style="font-size: 0.95rem;">María Laura Pérez</h6>
+            <div class="profile-badge mb-3">Editor: Jefe de OAC</div>
+          </li>
+          <li><hr class="dropdown-divider my-2"></li>
+          <li>
+            <a class="profile-menu-item" href="PDC_perfil.html">
+              <i class="fa-regular fa-user me-3 text-secondary"></i>Mi Perfil
+            </a>
+          </li>
+          <li>
+            <a class="profile-menu-item" href="PDC_configuracion.html">
+              <i class="fa-solid fa-gear me-3 text-secondary"></i>Configuración
+            </a>
+          </li>
+          <li><hr class="dropdown-divider my-2"></li>
+          <li>
+            <a class="profile-menu-item text-danger fw-bold" href="../../logincontraloria.html">
+              <i class="fa-solid fa-power-off me-3"></i>Cerrar Sesión
+            </a>
+          </li>
         </ul>
       </div>
     </header>
 
     <div class="container-fluid p-4">
       
-      <!-- Filtro de Fechas para Reportes -->
-      <div class="card border-0 shadow-sm rounded-3 mb-4">
-        <div class="card-body">
-          <div class="row align-items-end g-3">
-            <div class="col-md-4">
-              <label class="form-label fw-bold text-muted" style="font-size: 0.85rem;">Desde (Mes / Año)</label>
-              <input type="month" class="form-control form-control-sm" value="2026-01">
-            </div>
-            <div class="col-md-4">
-              <label class="form-label fw-bold text-muted" style="font-size: 0.85rem;">Hasta (Mes / Año)</label>
-              <input type="month" class="form-control form-control-sm" value="2026-08">
-            </div>
-            <div class="col-md-4">
-              <button class="btn btn-sm btn-report w-100 fw-bold py-2">
-                Generar Reporte PDF
-              </button>
-            </div>
-          </div>
-        </div>
+      <!-- Alerta de descarga exitosa de PDF -->
+      <div id="alertaPdf" class="alert alert-success alert-dismissible fade d-none shadow-sm mb-4" role="alert">
+        <i class="fa-solid fa-file-pdf me-2"></i><strong>¡Reporte generado con éxito!</strong> Redirigiendo al formato de comprobante ejecutivo...
+        <button type="button" class="btn-close" onclick="document.getElementById('alertaPdf').classList.add('d-none');"></button>
       </div>
 
-      <!-- Tarjetas Resumen Estadístico -->
+      <!-- Fila 1: Generación de Reportes Rápidos & Indicador de Eficiencia -->
       <div class="row g-4 mb-4">
-        <div class="col-md-4">
-          <div class="card card-kpi border-0 shadow-sm h-100 bg-white p-3">
-            <div class="card-body">
-              <h6 class="text-muted text-uppercase fw-bold mb-2" style="font-size: 0.75rem;">Eficiencia de Resolución</h6>
-              <h2 class="fw-bold mb-1" style="color: #0d1b3e;">75%</h2>
-              <small class="text-secondary fw-semibold">Casos cerrados vs. recibidos</small>
+        <!-- Generación de Reportes Rápidos (PDF) -->
+        <div class="col-xl-8">
+          <div class="dashboard-card p-4 h-100 d-flex flex-column justify-content-between">
+            <div>
+              <div class="d-flex align-items-center justify-content-between mb-3">
+                <h5 class="fw-bold mb-0" style="color: var(--primary-color);">
+                  <i class="fa-solid fa-file-lines me-2 text-secondary"></i> Generación de Reportes Ejecutivos
+                </h5>
+                <span class="badge bg-light text-dark border">Actualizado hoy</span>
+              </div>
+              <p class="text-muted small mb-4">
+                Exporta de manera inmediata resúmenes ejecutivos oficiales listos para consignar ante el Despacho del Contralor y la Dirección General.
+              </p>
+            </div>
+            <div class="row g-3">
+              <div class="col-md-6">
+                <button onclick="descargarReportePDF('Resumen del Día')" class="btn btn-outline-dark d-flex align-items-center justify-content-center gap-2 py-3 fw-bold shadow-sm w-100" style="border-radius: 10px;">
+                  <i class="fa-solid fa-file-pdf text-danger fs-4"></i> Descargar Resumen del Día
+                </button>
+              </div>
+              <div class="col-md-6">
+                <!-- Enlace directo vinculado a la vista del comprobante del reporte semanal -->
+                <button onclick="descargarReportePDF('Resumen Semanal')" class="btn btn-outline-dark d-flex align-items-center justify-content-center gap-2 py-3 fw-bold shadow-sm w-100" style="border-radius: 10px; background-color: var(--primary-color); color: white; border: none;">
+                  <i class="fa-solid fa-file-arrow-down text-white fs-4"></i> Descargar Reporte Semanal
+                </button>
+              </div>
             </div>
           </div>
         </div>
-        <div class="col-md-4">
-          <div class="card card-kpi border-0 shadow-sm h-100 bg-white p-3" style="border-left-color: #4a6fa5;">
-            <div class="card-body">
-              <h6 class="text-muted text-uppercase fw-bold mb-2" style="font-size: 0.75rem;">Tiempo Promedio de Respuesta</h6>
-              <h2 class="fw-bold mb-1" style="color: #333;">4.5 Días</h2>
-              <small class="text-secondary fw-semibold">Desde la recepción hasta la protocolización</small>
+
+        <!-- Indicador de Eficiencia -->
+        <div class="col-xl-4">
+          <div class="dashboard-card p-4 text-center h-100 d-flex flex-column justify-content-between">
+            <h6 class="fw-bold text-muted text-uppercase" style="font-size: 0.75rem; letter-spacing: 1px;">Eficiencia de Cierre (Mes)</h6>
+            <div class="my-2">
+              <div class="circular-progress">
+                <div class="progress-value">82%</div>
+              </div>
             </div>
-          </div>
-        </div>
-        <div class="col-md-4">
-          <div class="card card-kpi border-0 shadow-sm h-100 bg-white p-3" style="border-left-color: #495057;">
-            <div class="card-body">
-              <h6 class="text-muted text-uppercase fw-bold mb-2" style="font-size: 0.75goedrem;">Total Acumulado (Anual)</h6>
-              <h2 class="fw-bold mb-1" style="color: #333;">142</h2>
-              <small class="text-secondary fw-semibold">Expedientes procesados en el año</small>
+            <div>
+              <p class="small text-muted mb-1"><strong>41 casos cerrados</strong> de 50 recibidos</p>
+              <span class="badge bg-success-subtle text-success border border-success-subtle px-2 py-1" style="font-size: 0.75rem;">
+                <i class="fa-solid fa-arrow-trend-up me-1"></i> +5.4% que el mes anterior
+              </span>
             </div>
           </div>
         </div>
       </div>
 
-      <!-- Sección de Gráficos con Chart.js -->
+      <!-- Fila 2: Gráficos y Estadísticas Visuales & Alertas/Vencimientos -->
       <div class="row g-4">
-        <div class="col-lg-8">
-          <div class="card border-0 shadow-sm rounded-3 h-100">
-            <div class="card-header bg-white py-3 border-bottom">
-              <h6 class="mb-0 fw-bold text-uppercase" style="font-size: 0.85rem; color: #0d1b3e;">
-                Comportamiento Mensual de Denuncias
-              </h6>
+        <!-- Gráfica de distribución rápida de denuncias -->
+        <div class="col-xl-7">
+          <div class="dashboard-card p-4 h-100">
+            <div class="d-flex justify-content-between align-items-center mb-3">
+              <h5 class="fw-bold mb-0" style="color: var(--primary-color);">
+                <i class="fa-solid fa-chart-pie me-2 text-secondary"></i> Denuncias Más Frecuentes
+              </h5>
+              <select class="form-select form-select-sm w-auto shadow-none">
+                <option value="mes">Este Mes</option>
+                <option value="ano">Año Actual</option>
+              </select>
             </div>
-            <div class="card-body bg-white p-3" style="position: relative; height: 300px;">
-              <!-- Canvas donde Chart.js dibuja el gráfico de barras -->
-              <canvas id="graficoDenuncias"></canvas>
+            <p class="text-muted small mb-3">Distribución porcentual de motivos de ingreso en el municipio Páez.</p>
+            <div style="height: 260px; position: relative; display: flex; justify-content: center; align-items: center;">
+              <canvas id="chartDenuncias"></canvas>
             </div>
           </div>
         </div>
 
-        <div class="col-lg-4">
-          <div class="card border-0 shadow-sm rounded-3 h-100">
-            <div class="card-header bg-white py-3 border-bottom">
-              <h6 class="mb-0 fw-bold text-uppercase" style="font-size: 0.85rem; color: #0d1b3e;">
-                Tipos de Solicitud
-              </h6>
+        <!-- Sección de Alertas, Vencimientos y Avisos Institucionales -->
+        <div class="col-xl-5">
+          <div class="d-flex flex-column gap-4 h-100">
+            
+            <!-- Indicador de plazos legales -->
+            <div class="dashboard-card p-3 border-start border-4 border-danger">
+              <div class="d-flex align-items-center justify-content-between mb-1">
+                <h6 class="fw-bold text-danger mb-0" style="font-size: 0.9rem;">
+                  <i class="fa-solid fa-triangle-exclamation me-2"></i> Alerta de Plazos Legales
+                </h6>
+                <span class="badge bg-danger text-white">2 Expedientes</span>
+              </div>
+              <p class="small text-muted mb-2">Expedientes próximos a cumplir el límite de respuesta legal (Art. 51 LOYPA).</p>
+              <div class="bg-light p-2 rounded d-flex justify-content-between align-items-center" style="font-size: 0.85rem;">
+                <div>
+                  <span class="fw-bold text-dark">EXP-OAC-2026-038</span>
+                  <div class="text-muted" style="font-size: 0.75rem;">Vence en: <strong>48 horas</strong></div>
+                </div>
+                <a href="PDC_seguimiento.html" class="btn btn-sm btn-outline-danger py-0 px-2">Revisar</a>
+              </div>
             </div>
-            <div class="card-body p-0">
-              <ul class="list-group list-group-flush" style="font-size: 0.9rem;">
-                <li class="list-group-item d-flex justify-content-between align-items-center py-3">
-                  Denuncias Administrativas <span class="badge rounded-pill text-white" style="background-color: #0d1b3e;">65%</span>
-                </li>
-                <li class="list-group-item d-flex justify-content-between align-items-center py-3">
-                  Quejas y Sugerencias <span class="badge rounded-pill text-white" style="background-color: #4a6fa5;">20%</span>
-                </li>
-                <li class="list-group-item d-flex justify-content-between align-items-center py-3">
-                  Solicitudes de Información <span class="badge rounded-pill text-white" style="background-color: #495057;">15%</span>
-                </li>
-              </ul>
+
+            <!-- Avisos institucionales internos -->
+            <div class="dashboard-card p-3 border-start border-4 border-primary">
+              <div class="d-flex align-items-center justify-content-between mb-1">
+                <h6 class="fw-bold mb-0" style="color: var(--primary-color); font-size: 0.9rem;">
+                  <i class="fa-solid fa-bullhorn me-2"></i> Avisos Institucionales
+                </h6>
+                <span class="badge bg-primary text-white">Circular N° 12</span>
+              </div>
+              <p class="small text-muted mb-1"><strong>Despacho del Contralor:</strong> Se recuerda la obligatoriedad de protocolizar actas semanales antes de cada viernes a las 12:00 PM.</p>
             </div>
+
           </div>
         </div>
       </div>
@@ -179,46 +413,73 @@
   </main>
 </div>
 
-<!-- Script para Inicializar el Gráfico con Chart.js -->
+<!-- Scripts de Bootstrap y Chart.js -->
+<script src="https://cdnjs.cloudflare.com/ajax/libs/bootstrap/5.3.2/js/bootstrap.bundle.min.js"></script>
 <script>
-  const ctx = document.getElementById('graficoDenuncias').getContext('2d');
-  const graficoDenuncias = new Chart(ctx, {
-    type: 'bar', // Tipo de gráfico: barras
-    data: {
-      labels: ['Enero', 'Febrero', 'Marzo', 'Abril', 'Mayo', 'Junio', 'Julio', 'Agosto'],
-      datasets: [{
-        label: 'Casos Registrados',
-        data: [12, 19, 15, 22, 18, 25, 20, 24],
-        backgroundColor: '#0d1b3e', // Color azul institucional principal
-        borderRadius: 4
-      }]
-    },
-    options: {
-      responsive: true,
-      maintainAspectRatio: false,
-      plugins: {
-        legend: {
-          display: false // Ocultamos la leyenda para mantenerlo limpio
-        }
+  // Control del Menú Hamburguesa Responsive
+  function toggleSidebar() {
+    const sidebar = document.getElementById('appSidebar');
+    const overlay = document.getElementById('sidebarOverlay');
+    sidebar.classList.toggle('show-sidebar');
+    overlay.classList.toggle('show');
+  }
+
+  // Simulación de Descarga de Reportes PDF con redirección al comprobante
+  function descargarReportePDF(tipo) {
+    const alerta = document.getElementById('alertaPdf');
+    alerta.classList.remove('d-none');
+    alerta.classList.add('show');
+
+    // Si el reporte seleccionado es el semanal, redirige al archivo del comprobante exacto
+    setTimeout(() => {
+      if (tipo === 'Resumen Semanal') {
+        window.location.href = 'PDC_ejemplodereporte.html';
+      } else {
+        alerta.classList.remove('show');
+        alerta.classList.add('d-none');
+      }
+    }, 1200);
+  }
+
+  // Inicialización de Gráfico Estadístico Moderno
+  document.addEventListener("DOMContentLoaded", function () {
+    const ctx = document.getElementById('chartDenuncias').getContext('2d');
+    new Chart(ctx, {
+      type: 'doughnut',
+      data: {
+        labels: ['Servicios Públicos', 'Obras Paralizadas', 'Infraestructura', 'Denuncias Laborales', 'Otros Trámites'],
+        datasets: [{
+          data: [35, 25, 18, 12, 10],
+          backgroundColor: [
+            '#0d1b3e',
+            '#e63946',
+            '#457b9d',
+            '#1d3557',
+            '#a8dadc'
+          ],
+          borderWidth: 2,
+          borderColor: '#ffffff'
+        }]
       },
-      scales: {
-        y: {
-          beginAtZero: true,
-          grid: {
-            color: '#f0f0f0'
+      options: {
+        responsive: true,
+        maintainAspectRatio: false,
+        plugins: {
+          legend: {
+            position: 'bottom',
+            labels: {
+              boxWidth: 12,
+              font: {
+                size: 11,
+                family: "'Segoe UI', Roboto, sans-serif"
+              }
+            }
           }
         },
-        x: {
-          grid: {
-            display: false
-          }
-        }
+        cutout: '65%'
       }
-    }
+    });
   });
 </script>
-
-<script src="https://cdnjs.cloudflare.com/ajax/libs/bootstrap/5.3.2/js/bootstrap.bundle.min.js"></script>
-
 </body>
 </html>

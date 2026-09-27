@@ -8,19 +8,145 @@
   <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
   
   <style>
-    body { font-family: 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif; background-color: #f0f4f8; margin: 0; color: #333; }
-    .admin-wrapper { display: flex; min-height: 100vh; }
-    
-    /* Mismos estilos del Sidebar institucional */
-    .sidebar { width: 260px; background: linear-gradient(180deg, #0d1b3e 0%, #060d20 100%); color: white; box-shadow: 4px 0 15px rgba(0,0,0,0.1); z-index: 10; }
-    .sidebar a { transition: all 0.3s ease; }
-    .sidebar a:hover:not(.active-link) { background-color: rgba(255,255,255,0.1) !important; transform: translateX(5px); }
-    .active-link { background-color: rgba(255,255,255,0.15); border-left: 4px solid #e63946; }
+    :root {
+      --primary-color: #0d1b3e;
+      --primary-dark: #060d20;
+      --accent-color: #e63946;
+      --bg-color: #f0f4f8;
+    }
 
-    .main-content { flex-grow: 1; display: flex; flex-direction: column; width: calc(100% - 260px); }
+    body {
+      font-family: 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
+      background-color: var(--bg-color);
+      margin: 0;
+      color: #333;
+      overflow-x: hidden;
+      text-align: justify;
+    }
+
+    h1, h2, h3, h4, h5, h6, .btn, .badge, .dropdown-menu {
+      text-align: left;
+    }
     
+    .admin-wrapper { 
+      display: flex; 
+      min-height: 100vh; 
+      position: relative;
+    }
+    
+    .sidebar { 
+      width: 260px; 
+      background: linear-gradient(180deg, var(--primary-color) 0%, var(--primary-dark) 100%); 
+      color: white; 
+      box-shadow: 4px 0 15px rgba(0,0,0,0.1);
+      z-index: 1040;
+      transition: transform 0.3s ease-in-out;
+    }
+
+    @media (max-width: 991.98px) {
+      .sidebar {
+        position: fixed;
+        top: 0;
+        bottom: 0;
+        left: 0;
+        transform: translateX(-100%);
+      }
+      .sidebar.show-sidebar {
+        transform: translateX(0);
+      }
+      .main-content {
+        width: 100% !important;
+      }
+      .sidebar-overlay {
+        position: fixed;
+        top: 0;
+        left: 0;
+        right: 0;
+        bottom: 0;
+        background: rgba(0,0,0,0.5);
+        z-index: 1035;
+        display: none;
+      }
+      .sidebar-overlay.show {
+        display: block;
+      }
+    }
+
+    .sidebar a { transition: all 0.3s ease; text-align: left; }
+    .sidebar a:hover:not(.active-link) {
+      background-color: rgba(255,255,255,0.1) !important;
+      transform: translateX(5px);
+    }
+    .active-link {
+      background-color: rgba(255,255,255,0.15) !important;
+      border-left: 4px solid var(--accent-color);
+    }
+
+    .main-content { 
+      flex-grow: 1; 
+      display: flex; 
+      flex-direction: column; 
+      width: calc(100% - 260px); 
+      transition: width 0.3s ease-in-out;
+    }
+
+    /* Estilo del dropdown de perfil limpio */
+    .profile-dropdown-menu {
+      width: 280px;
+      padding: 1rem;
+      border-radius: 16px !important;
+      box-shadow: 0 10px 30px rgba(0,0,0,0.1) !important;
+      border: none;
+      margin-top: 10px !important;
+      text-align: left;
+    }
+    
+    .profile-avatar-lg {
+      width: 64px;
+      height: 64px;
+      background-color: var(--primary-color);
+      font-size: 1.5rem;
+      font-weight: bold;
+      color: white;
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      margin: 0 auto 12px auto;
+      box-shadow: 0 4px 10px rgba(13, 27, 62, 0.2);
+    }
+
+    .profile-badge {
+      background-color: #f1f3f5;
+      color: #495057;
+      font-size: 0.75rem;
+      padding: 4px 10px;
+      border-radius: 20px;
+      font-weight: 600;
+      display: inline-block;
+      border: 1px solid #e9ecef;
+    }
+
+    .profile-menu-item {
+      padding: 8px 12px;
+      border-radius: 8px;
+      color: #495057;
+      text-decoration: none;
+      display: flex;
+      align-items: center;
+      font-size: 0.9rem;
+      font-weight: 500;
+      transition: background-color 0.2s;
+      text-align: left;
+    }
+
+    .profile-menu-item:hover {
+      background-color: #f8f9fa;
+      color: var(--primary-color);
+    }
+
     .btn-custom {
-      background-color: #0d1b3e;
+      background-color: var(--primary-color);
       color: white;
       transition: all 0.3s ease;
       border: none;
@@ -28,78 +154,125 @@
     .btn-custom:hover {
       background-color: #162c63;
       color: white;
+      transform: translateY(-1px);
+    }
+    
+    .card {
+      border-radius: 12px;
+      transition: box-shadow 0.3s ease;
+    }
+    .card:hover {
+      box-shadow: 0 8px 25px rgba(0,0,0,0.06) !important;
     }
   </style>
 </head>
 <body>
 
+<div class="sidebar-overlay" id="sidebarOverlay" onclick="toggleSidebar()"></div>
+
 <div class="admin-wrapper">
-  <!-- Menú Lateral -->
-  <aside class="sidebar">
-    <div class="p-4 border-bottom border-secondary d-flex align-items-center gap-3">
-      <img src="../../assets/img/logo.jpeg" alt="Logo Institucional" style="width: 45px; border-radius: 4px; box-shadow: 0 2px 5px rgba(0,0,0,0.2);">
-      <span class="fw-bold" style="font-size: 1.05rem; letter-spacing: 0.5px;">OAC - Páez</span>
+  <!-- Menu lateral institucional -->
+  <aside class="sidebar" id="appSidebar">
+    <div class="p-4 border-bottom border-secondary d-flex align-items-center gap-2">
+      <img src="../../assets/img/logo.jpeg" alt="Logo Institucional" style="width: 40px; border-radius: 4px; box-shadow: 0 2px 5px rgba(0,0,0,0.2);" onerror="this.src='https://via.placeholder.com/40'">
+      <span class="fw-bold" style="font-size: 1rem; letter-spacing: 0.5px;">OAC - Páez</span>
     </div>
-   <ul class="list-unstyled p-3 m-0">
+    <ul class="list-unstyled p-3 m-0">
       <li class="text-uppercase text-secondary fw-bold mb-3 mt-2" style="font-size: 0.7rem; letter-spacing: 1px;">Gestión de Casos</li>
-      <li class="mb-1"><a href="PDC_denunciasinicio.html" class="text-white-50 text-decoration-none d-block p-2 rounded">Panel Principal</a></li>
-      <li class="mb-1"><a href="PDC_protocolizacion.html" class="text-white-50 text-decoration-none d-block p-2 rounded">Revisión y Protocolización</a></li>
-      <li class="mb-1"><a href="PDC_seguimiento.html" class="text-white-50 text-decoration-none d-block p-2 rounded">Seguimiento de Expedientes</a></li>
-      
+      <li class="mb-1"><a href="PDC_denunciasinicio.html" class="text-white text-decoration-none d-block p-2 rounded"><i class="fa-solid fa-house-chimney me-2 fa-fw"></i> Panel Principal</a></li>
+      <li class="mb-1"><a href="PDC_protocolizacion.html" class="text-white text-decoration-none d-block p-2 rounded"><i class="fa-solid fa-folder-open me-2 fa-fw"></i> Revisión y Protocolización</a></li>
+      <li class="mb-1"><a href="PDC_seguimiento.html" class="text-white text-decoration-none d-block p-2 rounded"><i class="fa-solid fa-timeline me-2 fa-fw"></i> Seguimiento de Expedientes</a></li>
+
       <li class="text-uppercase text-secondary fw-bold mt-4 mb-3" style="font-size: 0.7rem; letter-spacing: 1px;">Control y Estadísticas</li>
-      <li class="mb-1"><a href="PDC_reportes.html" class="text-white-50 text-decoration-none d-block p-2 rounded">Reportes Gerenciales</a></li>
-   </ul>
+      <li class="mb-1"><a href="PDC_reportes.html" class="text-white text-decoration-none d-block p-2 rounded"><i class="fa-solid fa-chart-pie me-2 fa-fw"></i> Reportes Gerenciales</a></li>
+      <li class="mb-1"><a href="PDC_agendaoac.html" class="text-white text-decoration-none d-block p-2 rounded"><i class="fa-solid fa-calendar-days me-2 fa-fw"></i> Agenda OAC</a></li>
+    </ul>
   </aside>
 
   <!-- Contenido Principal -->
-  <main class="main-content w-100">
-    <!-- Header con menú de perfil funcional -->
-    <header class="d-flex justify-content-between align-items-center bg-white p-3 border-bottom shadow-sm" style="z-index: 5;">
-      <h5 class="mb-0 fw-bold" style="color: #0d1b3e; letter-spacing: 0.5px;">
-        Configuración de Cuenta y Sistema
-      </h5>
+  <main class="main-content">
+    <!-- Barra Superior -->
+    <header class="d-flex justify-content-between align-items-center bg-white px-4 py-3 border-bottom shadow-sm sticky-top" style="z-index: 1020;">
+      <div class="d-flex align-items-center gap-3">
+        <!-- menu de hamburguesa -->
+        <button class="btn btn-outline-secondary d-lg-none border-0 px-2 py-1" onclick="toggleSidebar()" aria-label="Abrir menú">
+          <i class="fa-solid fa-bars fs-5" style="color: var(--primary-color);"></i>
+        </button>
+        <h5 class="mb-0 fw-bold d-none d-sm-block" style="color: var(--primary-color); letter-spacing: 0.5px;">
+          Configuración de Cuenta y Sistema
+        </h5>
+        <h6 class="mb-0 fw-bold d-sm-none text-truncate" style="color: var(--primary-color); max-width: 180px;">
+          Configuración
+        </h6>
+      </div>
+
+      <!-- Dropdown de Perfil -->
       <div class="dropdown">
-        <div class="d-flex align-items-center dropdown-toggle" role="button" data-bs-toggle="dropdown" aria-expanded="false">
-          <div class="text-end me-3 d-none d-md-block">
-            <p class="mb-0 fw-bold text-dark" style="font-size: 0.85rem;">María Laura Pérez</p>
+        <div class="d-flex align-items-center dropdown-toggle cursor-pointer" role="button" data-bs-toggle="dropdown" aria-expanded="false" style="cursor: pointer;">
+          <div class="text-end me-2 d-none d-md-block">
+            <span class="mb-0 fw-bold text-dark d-block" style="font-size: 0.85rem;">María Laura Pérez</span>
             <small class="text-muted" style="font-size: 0.75rem;">Oficina de Atención al Ciudadano</small>
           </div>
           <div class="rounded-circle d-flex align-items-center justify-content-center fw-bold text-white shadow-sm" style="width: 38px; height: 38px; background: linear-gradient(135deg, #0d1b3e, #1a3375);">M</div>
         </div>
-        <ul class="dropdown-menu dropdown-menu-end shadow border-0 mt-2 rounded-2">
-          <li><a class="dropdown-item text-muted" href="#"><i class="fa-solid fa-gear me-2"></i>Configuración</a></li>
-          <li><hr class="dropdown-divider"></li>
-          <li><a class="dropdown-item text-danger fw-bold" href="../../logincontraloria.html"><i class="fa-solid fa-right-from-bracket me-2"></i>Cerrar Sesión</a></li>
+        
+        <ul class="dropdown-menu dropdown-menu-end profile-dropdown-menu text-center">
+          <li>
+            <div class="profile-avatar-lg">MP</div>
+            <h6 class="fw-bold text-dark mb-1" style="font-size: 0.95rem;">María Laura Pérez</h6>
+            <div class="profile-badge mb-3">Editor: Jefe de OAC</div>
+          </li>
+          <li><hr class="dropdown-divider my-2"></li>
+          <li>
+            <a class="profile-menu-item" href="PDC_perfil.html">
+              <i class="fa-regular fa-user me-3 text-secondary"></i>Mi Perfil
+            </a>
+          </li>
+          <li>
+            <a class="profile-menu-item" href="PDC_configuracion.html">
+              <i class="fa-solid fa-gear me-3 text-secondary"></i>Configuración
+            </a>
+          </li>
+          <li><hr class="dropdown-divider my-2"></li>
+          <li>
+            <a class="profile-menu-item text-danger fw-bold" href="../../logincontraloria.html">
+              <i class="fa-solid fa-power-off me-3"></i>Cerrar Sesión
+            </a>
+          </li>
         </ul>
       </div>
     </header>
 
+    <!-- Contenido de Configuración -->
     <div class="container-fluid p-4">
       <div class="row g-4">
         
         <!-- Tarjeta: Perfil del Usuario -->
         <div class="col-lg-6">
-          <div class="card border-0 shadow-sm rounded-3 h-100">
-            <div class="card-header bg-white py-3 border-bottom">
-              <h6 class="mb-0 fw-bold text-uppercase" style="font-size: 0.85rem; color: #0d1b3e;">
+          <div class="card border-0 shadow-sm h-100">
+            <div class="card-header bg-white py-3 border-bottom d-flex align-items-center gap-2">
+              <i class="fa-solid fa-id-card text-primary"></i>
+              <h6 class="mb-0 fw-bold text-uppercase" style="font-size: 0.85rem; color: var(--primary-color);">
                 Perfil del Funcionario
               </h6>
             </div>
             <div class="card-body p-4">
               <form>
                 <div class="mb-3">
-                  <label class="form-label fw-bold text-muted" style="font-size: 0.85rem;">Nombre Completo</label>
+                  <label class="form-label fw-bold text-secondary" style="font-size: 0.85rem;">Nombre Completo</label>
                   <input type="text" class="form-control" value="María Laura Pérez">
                 </div>
                 <div class="mb-3">
-                  <label class="form-label fw-bold text-muted" style="font-size: 0.85rem;">Cargo / Departamento</label>
-                  <input type="text" class="form-control" value="Oficina de Atención al Ciudadano (OAC)" disabled>
+                  <label class="form-label fw-bold text-secondary" style="font-size: 0.85rem;">Cargo / Departamento</label>
+                  <input type="text" class="form-control bg-light" value="Oficina de Atención al Ciudadano (OAC)" disabled>
                 </div>
                 <div class="mb-3">
-                  <label class="form-label fw-bold text-muted" style="font-size: 0.85rem;">Correo Electrónico Institucional</label>
+                  <label class="form-label fw-bold text-secondary" style="font-size: 0.85rem;">Correo Electrónico Institucional</label>
                   <input type="email" class="form-control" value="oac.contraloriapaez@gmail.com">
                 </div>
-                <button type="button" class="btn btn-custom btn-sm fw-bold px-4 py-2">Guardar Cambios</button>
+                <button type="button" class="btn btn-custom btn-sm fw-bold px-4 py-2.5 shadow-sm">
+                  <i class="fa-solid fa-floppy-disk me-2"></i> Guardar Cambios
+                </button>
               </form>
             </div>
           </div>
@@ -107,27 +280,30 @@
 
         <!-- Tarjeta: Seguridad y Contraseña -->
         <div class="col-lg-6">
-          <div class="card border-0 shadow-sm rounded-3 h-100">
-            <div class="card-header bg-white py-3 border-bottom">
-              <h6 class="mb-0 fw-bold text-uppercase" style="font-size: 0.85rem; color: #0d1b3e;">
+          <div class="card border-0 shadow-sm h-100">
+            <div class="card-header bg-white py-3 border-bottom d-flex align-items-center gap-2">
+              <i class="fa-solid fa-shield-halved text-danger"></i>
+              <h6 class="mb-0 fw-bold text-uppercase" style="font-size: 0.85rem; color: var(--primary-color);">
                 Seguridad y Contraseña
               </h6>
             </div>
             <div class="card-body p-4">
               <form>
                 <div class="mb-3">
-                  <label class="form-label fw-bold text-muted" style="font-size: 0.85rem;">Contraseña Actual</label>
+                  <label class="form-label fw-bold text-secondary" style="font-size: 0.85rem;">Contraseña Actual</label>
                   <input type="password" class="form-control" placeholder="••••••••">
                 </div>
                 <div class="mb-3">
-                  <label class="form-label fw-bold text-muted" style="font-size: 0.85rem;">Nueva Contraseña</label>
+                  <label class="form-label fw-bold text-secondary" style="font-size: 0.85rem;">Nueva Contraseña</label>
                   <input type="password" class="form-control" placeholder="Mínimo 8 caracteres">
                 </div>
                 <div class="mb-3">
-                  <label class="form-label fw-bold text-muted" style="font-size: 0.85rem;">Confirmar Nueva Contraseña</label>
+                  <label class="form-label fw-bold text-secondary" style="font-size: 0.85rem;">Confirmar Nueva Contraseña</label>
                   <input type="password" class="form-control" placeholder="Repita la contraseña">
                 </div>
-                <button type="button" class="btn btn-custom btn-sm fw-bold px-4 py-2">Actualizar Contraseña</button>
+                <button type="button" class="btn btn-custom btn-sm fw-bold px-4 py-2.5 shadow-sm">
+                  <i class="fa-solid fa-key me-2"></i> Actualizar Contraseña
+                </button>
               </form>
             </div>
           </div>
@@ -138,7 +314,16 @@
   </main>
 </div>
 
-<!-- Script indispensable para Bootstrap -->
+<!-- Scripts de Bootstrap -->
 <script src="https://cdnjs.cloudflare.com/ajax/libs/bootstrap/5.3.2/js/bootstrap.bundle.min.js"></script>
+<script>
+  // Control del menu lateral en telefonos (Hamburguesa)
+  function toggleSidebar() {
+    const sidebar = document.getElementById('appSidebar');
+    const overlay = document.getElementById('sidebarOverlay');
+    sidebar.classList.toggle('show-sidebar');
+    overlay.classList.toggle('show');
+  }
+</script>
 </body>
 </html>

@@ -8,75 +8,277 @@
   <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
   
   <style>
-    body { font-family: 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif; background-color: #f0f4f8; margin: 0; color: #333; }
-    .admin-wrapper { display: flex; min-height: 100vh; }
-    
-    .sidebar { width: 260px; background: linear-gradient(180deg, #0d1b3e 0%, #060d20 100%); color: white; box-shadow: 4px 0 15px rgba(0,0,0,0.1); z-index: 10; }
-    .sidebar a { transition: all 0.3s ease; }
-    .sidebar a:hover:not(.active-link) { background-color: rgba(255,255,255,0.1) !important; transform: translateX(5px); }
-    .active-link { background-color: rgba(255,255,255,0.15); border-left: 4px solid #e63946; }
+    :root {
+      --primary-color: #0d1b3e;
+      --primary-dark: #060d20;
+      --accent-color: #e63946;
+      --bg-color: #f0f4f8;
+    }
 
-    .main-content { flex-grow: 1; display: flex; flex-direction: column; width: calc(100% - 260px); }
+    body {
+      font-family: 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
+      background-color: var(--bg-color);
+      margin: 0;
+      color: #333;
+      overflow-x: hidden;
+    }
+
+    h1, h2, h3, h4, h5, h6, .btn, .badge, .dropdown-menu {
+      text-align: left;
+    }
+
+    .admin-wrapper { 
+      display: flex; 
+      min-height: 100vh; 
+      position: relative; 
+    }
+    
+    /* Estilos del Sidebar Institucional */
+    .sidebar { 
+      width: 260px; 
+      background: linear-gradient(180deg, var(--primary-color) 0%, var(--primary-dark) 100%); 
+      color: white; 
+      box-shadow: 4px 0 15px rgba(0,0,0,0.1); 
+      z-index: 1040; 
+      transition: transform 0.3s ease-in-out;
+      display: flex;
+      flex-direction: column;
+    }
+
+    .sidebar-content {
+      flex-grow: 1;
+      overflow-y: auto;
+    }
+
+    .sidebar-footer {
+      padding: 1rem;
+      border-top: 1px solid rgba(255, 255, 255, 0.1);
+    }
+
+    @media (max-width: 991.98px) {
+      .sidebar { 
+        position: fixed; 
+        top: 0; 
+        bottom: 0; 
+        left: 0; 
+        transform: translateX(-100%); 
+      }
+      .sidebar.show-sidebar { 
+        transform: translateX(0); 
+      }
+      .main-content { 
+        width: 100% !important; 
+      }
+      .sidebar-overlay { 
+        position: fixed; 
+        top: 0; 
+        left: 0; 
+        right: 0; 
+        bottom: 0; 
+        background: rgba(0,0,0,0.5); 
+        z-index: 1035; 
+        display: none; 
+      }
+      .sidebar-overlay.show { 
+        display: block; 
+      }
+    }
+
+    .sidebar a { transition: all 0.3s ease; text-align: left; }
+    .sidebar a:hover:not(.active-link) { 
+      background-color: rgba(255,255,255,0.1) !important; 
+      transform: translateX(5px); 
+    }
+    .active-link { 
+      background-color: rgba(255,255,255,0.15) !important; 
+      border-left: 4px solid var(--accent-color); 
+    }
+
+    .main-content { 
+      flex-grow: 1; 
+      display: flex; 
+      flex-direction: column; 
+      width: calc(100% - 260px); 
+      transition: width 0.3s ease-in-out;
+    }
+
     .table-hover tbody tr { transition: background-color 0.2s ease; }
     .table-hover tbody tr:hover { background-color: #f8faff; }
+
+    /* Estilo del dropdown de perfil */
+    .profile-dropdown-menu {
+      width: 280px;
+      padding: 1rem;
+      border-radius: 16px !important;
+      box-shadow: 0 10px 30px rgba(0,0,0,0.1) !important;
+      border: none;
+      margin-top: 10px !important;
+      text-align: left;
+    }
+    
+    .profile-avatar-lg {
+      width: 64px;
+      height: 64px;
+      background-color: var(--primary-color);
+      font-size: 1.5rem;
+      font-weight: bold;
+      color: white;
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      margin: 0 auto 12px auto;
+      box-shadow: 0 4px 10px rgba(13, 27, 62, 0.2);
+    }
+
+    .profile-badge {
+      background-color: #f1f3f5;
+      color: #495057;
+      font-size: 0.75rem;
+      padding: 4px 10px;
+      border-radius: 20px;
+      font-weight: 600;
+      display: inline-block;
+      border: 1px solid #e9ecef;
+    }
+
+    .profile-menu-item {
+      padding: 8px 12px;
+      border-radius: 8px;
+      color: #495057;
+      text-decoration: none;
+      display: flex;
+      align-items: center;
+      font-size: 0.9rem;
+      font-weight: 500;
+      transition: background-color 0.2s;
+      text-align: left;
+    }
+
+    .profile-menu-item:hover {
+      background-color: #f8f9fa;
+      color: var(--primary-color);
+    }
+
+    /* Estilos Modal de Actualización */
+    .modal-content {
+      border: none;
+      border-radius: 16px;
+      box-shadow: 0 15px 35px rgba(0,0,0,0.2);
+    }
+    .modal-header {
+      background: linear-gradient(135deg, var(--primary-color), var(--primary-dark));
+      color: white;
+      border-top-left-radius: 16px;
+      border-top-right-radius: 16px;
+    }
   </style>
 </head>
 <body>
 
+<div class="sidebar-overlay" id="sidebarOverlay" onclick="toggleSidebar()"></div>
+
 <div class="admin-wrapper">
-  <!-- Menú Lateral -->
-  <aside class="sidebar">
-    <div class="p-4 border-bottom border-secondary d-flex align-items-center gap-3">
-      <img src="../../assets/img/logo.jpeg" alt="Logo Institucional" style="width: 45px; border-radius: 4px; box-shadow: 0 2px 5px rgba(0,0,0,0.2);">
-      <span class="fw-bold" style="font-size: 1.05rem; letter-spacing: 0.5px;">OAC - Páez</span>
+  <!-- Menú Lateral Institucional -->
+  <aside class="sidebar" id="appSidebar">
+    <div class="p-4 border-bottom border-secondary d-flex align-items-center justify-content-between">
+      <div class="d-flex align-items-center gap-2">
+        <img src="../../assets/img/logo.jpeg" alt="Logo Institucional" style="width: 40px; border-radius: 4px; box-shadow: 0 2px 5px rgba(0,0,0,0.2);" onerror="this.src='https://via.placeholder.com/40'">
+        <span class="fw-bold" style="font-size: 1rem; letter-spacing: 0.5px;">OAC - Páez</span>
+      </div>
+      <button class="btn btn-sm text-white d-lg-none border-0" onclick="toggleSidebar()" aria-label="Cerrar menú">
+        <i class="fa-solid fa-xmark fs-5"></i>
+      </button>
     </div>
-   <ul class="list-unstyled p-3 m-0">
-      <li class="text-uppercase text-secondary fw-bold mb-3 mt-2" style="font-size: 0.7rem; letter-spacing: 1px;">Gestión de Casos</li>
-      <li class="mb-1"><a href="PDC_denunciasinicio.html" class="text-white-50 text-decoration-none d-block p-2 rounded">Panel Principal</a></li>
-      <li class="mb-1"><a href="PDC_protocolizacion.html" class="text-white-50 text-decoration-none d-block p-2 rounded">Revisión y Protocolización</a></li>
-      <li class="mb-1"><a href="PDC_seguimiento.html" class="text-white text-decoration-none d-block p-2 rounded active-link">Seguimiento de Expedientes</a></li>
-      
-      <li class="text-uppercase text-secondary fw-bold mt-4 mb-3" style="font-size: 0.7rem; letter-spacing: 1px;">Control y Estadísticas</li>
-      <li class="mb-1"><a href="PDC_reportes.html" class="text-white-50 text-decoration-none d-block p-2 rounded">Reportes Gerenciales</a></li>
-   </ul>
+    
+    <div class="sidebar-content">
+      <ul class="list-unstyled p-3 m-0">
+        <li class="text-uppercase text-secondary fw-bold mb-3 mt-2" style="font-size: 0.7rem; letter-spacing: 1px;">Gestión de Casos</li>
+        <li class="mb-1"><a href="PDC_denunciasinicio.html" class="text-white text-decoration-none d-block p-2 rounded"><i class="fa-solid fa-house-chimney me-2 fa-fw"></i> Panel Principal</a></li>
+        <li class="mb-1"><a href="PDC_protocolizacion.html" class="text-white text-decoration-none d-block p-2 rounded"><i class="fa-solid fa-folder-open me-2 fa-fw"></i> Revisión y Protocolización</a></li>
+        <li class="mb-1"><a href="PDC_seguimiento.html" class="text-white text-decoration-none d-block p-2 rounded active-link"><i class="fa-solid fa-timeline me-2 fa-fw"></i> Seguimiento de Expedientes</a></li>
+        
+        <li class="text-uppercase text-secondary fw-bold mt-4 mb-3" style="font-size: 0.7rem; letter-spacing: 1px;">Control y Estadísticas</li>
+        <li class="mb-1"><a href="PDC_reportes.html" class="text-white text-decoration-none d-block p-2 rounded"><i class="fa-solid fa-chart-pie me-2 fa-fw"></i> Reportes Gerenciales</a></li>
+        <li class="mb-1"><a href="PDC_agendaoac.html" class="text-white text-decoration-none d-block p-2 rounded"><i class="fa-solid fa-calendar-days me-2 fa-fw"></i> Agenda OAC</a></li>
+      </ul>
+    </div>
+    <div class="sidebar-footer">
+      <a href="../../logincontraloria.html" class="btn w-100 d-flex align-items-center justify-content-center gap-2 text-danger fw-bold py-2" style="background-color: rgba(230, 57, 70, 0.08); border: 1px solid rgba(230, 57, 70, 0.3); border-radius: 8px; transition: all 0.2s;">
+        <i class="fa-solid fa-arrow-right-from-bracket"></i> Cerrar Sesión
+      </a>
+    </div>
   </aside>
 
   <!-- Contenido Principal -->
   <main class="main-content w-100">
-    <header class="d-flex justify-content-between align-items-center bg-white p-3 border-bottom shadow-sm" style="z-index: 5;">
-      <h5 class="mb-0 fw-bold" style="color: #0d1b3e; letter-spacing: 0.5px;">
-        Seguimiento y Control
-      </h5>
+    <!-- Header con Menu Hamburguesa y Dropdown Estilizado -->
+    <header class="d-flex justify-content-between align-items-center bg-white px-4 py-3 border-bottom shadow-sm sticky-top" style="z-index: 1020;">
+      <div class="d-flex align-items-center gap-3">
+        <button class="btn btn-outline-secondary d-lg-none border-0 px-2 py-1" onclick="toggleSidebar()" aria-label="Abrir menú">
+          <i class="fa-solid fa-bars fs-5" style="color: var(--primary-color);"></i>
+        </button>
+        <h5 class="mb-0 fw-bold d-none d-sm-block" style="color: var(--primary-color); letter-spacing: 0.5px;">
+           Seguimiento y Control
+        </h5>
+        <h6 class="mb-0 fw-bold d-sm-none text-truncate" style="color: var(--primary-color); max-width: 180px;">
+          Seguimiento
+        </h6>
+      </div>
+
       <div class="dropdown">
-        <div class="d-flex align-items-center dropdown-toggle" role="button" data-bs-toggle="dropdown" aria-expanded="false">
-          <div class="text-end me-3 d-none d-md-block">
-            <p class="mb-0 fw-bold text-dark" style="font-size: 0.85rem;">María Laura Pérez</p>
+        <div class="d-flex align-items-center dropdown-toggle cursor-pointer" role="button" data-bs-toggle="dropdown" aria-expanded="false" style="cursor: pointer;">
+          <div class="text-end me-2 d-none d-md-block">
+            <span class="mb-0 fw-bold text-dark d-block" style="font-size: 0.85rem;">María Laura Pérez</span>
             <small class="text-muted" style="font-size: 0.75rem;">Oficina de Atención al Ciudadano</small>
           </div>
           <div class="rounded-circle d-flex align-items-center justify-content-center fw-bold text-white shadow-sm" style="width: 38px; height: 38px; background: linear-gradient(135deg, #0d1b3e, #1a3375);">M</div>
         </div>
-        <!-- Menú desplegable que faltaba -->
-        <ul class="dropdown-menu dropdown-menu-end shadow border-0 mt-2 rounded-2">
-          <li><a class="dropdown-item text-muted" href="PDC_configuracion.html"><i class="fa-solid fa-gear me-2"></i>Configuración</a></li>
-          <li><hr class="dropdown-divider"></li>
-          <li><a class="dropdown-item text-danger fw-bold" href= "../../logincontraloria.html"> <i class="fa-solid fa-right-from-bracket me-2"></i>Cerrar Sesión</a></li>
+        
+        <ul class="dropdown-menu dropdown-menu-end profile-dropdown-menu text-center">
+          <li>
+            <div class="profile-avatar-lg">MP</div>
+            <h6 class="fw-bold text-dark mb-1" style="font-size: 0.95rem;">María Laura Pérez</h6>
+            <div class="profile-badge mb-3">Editor: Jefe de OAC</div>
+          </li>
+          <li><hr class="dropdown-divider my-2"></li>
+          <li>
+            <a class="profile-menu-item" href="PDC_perfil.html">
+              <i class="fa-regular fa-user me-3 text-secondary"></i>Mi Perfil
+            </a>
+          </li>
+          <li>
+            <a class="profile-menu-item" href="PDC_configuracion.html">
+              <i class="fa-solid fa-gear me-3 text-secondary"></i>Configuración
+            </a>
+          </li>
+          <li><hr class="dropdown-divider my-2"></li>
+          <li>
+            <a class="profile-menu-item text-danger fw-bold" href="../../logincontraloria.html">
+              <i class="fa-solid fa-power-off me-3"></i>Cerrar Sesión
+            </a>
+          </li>
         </ul>
       </div>
     </header>
 
     <div class="container-fluid p-4">
-      
+      <div id="alertaExito" class="alert alert-success alert-dismissible fade d-none shadow-sm mb-4" role="alert">
+        <i class="fa-solid fa-circle-check me-2"></i><strong>¡Éxito!</strong> El estatus del expediente ha sido actualizado correctamente en el sistema.
+        <button type="button" class="btn-close" onclick="document.getElementById('alertaExito').classList.remove('show'); document.getElementById('alertaExito').classList.add('d-none');"></button>
+      </div>
+
       <!-- Buscador y Filtros -->
-      <div class="card border-0 shadow-sm rounded-3 mb-4">
-        <div class="card-body">
-          <form class="row g-3 align-items-end">
+      <div class="card border-0 shadow-sm rounded-3 mb-4 bg-white">
+        <div class="card-body p-3">
+          <form class="row g-3 align-items-end" onsubmit="event.preventDefault();">
             <div class="col-md-4">
               <label class="form-label fw-bold text-muted" style="font-size: 0.85rem;">N° de Expediente</label>
-              <input type="text" class="form-control form-control-sm" placeholder="Ej: EXP-OAC-2026-001">
+              <input type="text" class="form-control form-control-sm shadow-none" placeholder="Ej: EXP-OAC-2026-001">
             </div>
             <div class="col-md-4">
               <label class="form-label fw-bold text-muted" style="font-size: 0.85rem;">Estatus Actual</label>
-              <select class="form-select form-select-sm">
+              <select class="form-select form-select-sm shadow-none">
                 <option selected>Todos los estatus</option>
                 <option value="1">En Proceso</option>
                 <option value="2">Remitido a Dirección</option>
@@ -84,50 +286,80 @@
               </select>
             </div>
             <div class="col-md-4">
-              <button type="submit" class="btn btn-sm btn-secondary w-100 fw-bold" style="background-color: #0d1b3e; border: none;">
-                Buscar Expediente
+              <button type="button" class="btn btn-sm btn-secondary w-100 fw-bold py-2" style="background-color: var(--primary-color); border: none;">
+                <i class="fa-solid fa-magnifying-glass me-2"></i> Buscar Expediente
               </button>
             </div>
           </form>
         </div>
       </div>
 
-      <!-- Tabla de Seguimiento -->
-      <div class="card border-0 shadow-sm rounded-3 overflow-hidden">
+      <!-- Tabla de Seguimiento con 5 opciones, SOLO EJEMPLOS PARA MAQUETA VISUAL -->
+      <div class="card border-0 shadow-sm rounded-3 overflow-hidden bg-white">
         <div class="card-body p-0">
           <div class="table-responsive">
             <table class="table table-hover align-middle mb-0" style="font-size: 0.9rem;">
               <thead style="background-color: #f8f9fa;">
                 <tr>
                   <th class="ps-4 py-3 fw-bold text-muted border-0">Expediente</th>
-                  <th class="fw-bold text-muted border-0">Fecha Protocolización</th>
+                  <th class="fw-bold text-muted border-0">Solicitante</th>
+                  <th class="fw-bold text-muted border-0">Fecha Actualización</th>
                   <th class="fw-bold text-muted border-0">Estatus</th>
                   <th class="fw-bold text-muted border-0 text-center">Gestión</th>
                 </tr>
               </thead>
               <tbody>
-                <tr>
-                  <td class="ps-4 fw-bold" style="color: #0d1b3e;">EXP-OAC-2026-045</td>
-                  <td class="text-secondary fw-semibold">22/08/2026</td>
-                  <td><span class="badge border" style="background-color: #cce5ff; color: #004085;">En Proceso</span></td>
+                <tr id="fila-EXP-OAC-2026-045">
+                  <td class="ps-4 fw-bold" style="color: var(--primary-color);">EXP-OAC-2026-045</td>
+                  <td class="text-dark">Maikol Aguilar (V-30.345.678)</td>
+                  <td class="text-secondary fw-semibold fecha-exp">22/08/2026</td>
+                  <td><span class="badge border px-2 py-1 estatus-badge" style="background-color: #cce5ff; color: #004085;">En Proceso</span></td>
                   <td class="text-center">
-                    <button class="btn btn-sm btn-outline-dark"> Actualizar</button>
+                    <button class="btn btn-sm btn-outline-dark px-3" data-bs-toggle="modal" data-bs-target="#modalActualizar" onclick="cargarExpediente('EXP-OAC-2026-045', 'Maikol Aguilar')">
+                      <i class="fa-solid fa-pen-to-square me-1"></i> Actualizar
+                    </button>
                   </td>
                 </tr>
-                <tr>
-                  <td class="ps-4 fw-bold" style="color: #0d1b3e;">EXP-OAC-2026-042</td>
-                  <td class="text-secondary fw-semibold">15/08/2026</td>
-                  <td><span class="badge text-white" style="background-color: #0d1b3e;">Remitido</span></td>
+                <tr id="fila-EXP-OAC-2026-044">
+                  <td class="ps-4 fw-bold" style="color: var(--primary-color);">EXP-OAC-2026-044</td>
+                  <td class="text-dark">Katherine Escalona (V-32.876.543)</td>
+                  <td class="text-secondary fw-semibold fecha-exp">20/08/2026</td>
+                  <td><span class="badge border px-2 py-1 estatus-badge" style="background-color: #fff3cd; color: #856404;">En Evaluación Legal</span></td>
                   <td class="text-center">
-                    <button class="btn btn-sm btn-outline-dark"> Actualizar</button>
+                    <button class="btn btn-sm btn-outline-dark px-3" data-bs-toggle="modal" data-bs-target="#modalActualizar" onclick="cargarExpediente('EXP-OAC-2026-044', 'Katherine Escalona')">
+                      <i class="fa-solid fa-pen-to-square me-1"></i> Actualizar
+                    </button>
                   </td>
                 </tr>
-                <tr>
-                  <td class="ps-4 fw-bold" style="color: #0d1b3e;">EXP-OAC-2026-039</td>
-                  <td class="text-secondary fw-semibold">10/08/2026</td>
-                  <td><span class="badge text-white" style="background-color: #495057;">Cerrado</span></td>
+                <tr id="fila-EXP-OAC-2026-042">
+                  <td class="ps-4 fw-bold" style="color: var(--primary-color);">EXP-OAC-2026-042</td>
+                  <td class="text-dark">Carlos Lopez (V-32.432.112)</td>
+                  <td class="text-secondary fw-semibold fecha-exp">15/08/2026</td>
+                  <td><span class="badge text-white px-2 py-1 estatus-badge" style="background-color: var(--primary-color);">Remitido</span></td>
                   <td class="text-center">
-                    <button class="btn btn-sm btn-outline-dark" disabled><i class="fa-solid fa-lock"></i></button>
+                    <button class="btn btn-sm btn-outline-dark px-3" data-bs-toggle="modal" data-bs-target="#modalActualizar" onclick="cargarExpediente('EXP-OAC-2026-042', 'Carlos Lopez')">
+                      <i class="fa-solid fa-pen-to-square me-1"></i> Actualizar
+                    </button>
+                  </td>
+                </tr>
+                <tr id="fila-EXP-OAC-2026-040">
+                  <td class="ps-4 fw-bold" style="color: var(--primary-color);">EXP-OAC-2026-040</td>
+                  <td class="text-dark">Bill Chirinos (V-31.606.008)</td>
+                  <td class="text-secondary fw-semibold fecha-exp">12/08/2026</td>
+                  <td><span class="badge border px-2 py-1 estatus-badge" style="background-color: #d4edda; color: #155724;">Aprobado preliminar</span></td>
+                  <td class="text-center">
+                    <button class="btn btn-sm btn-outline-dark px-3" data-bs-toggle="modal" data-bs-target="#modalActualizar" onclick="cargarExpediente('EXP-OAC-2026-040', 'Bill Chirinos')">
+                      <i class="fa-solid fa-pen-to-square me-1"></i> Actualizar
+                    </button>
+                  </td>
+                </tr>
+                <tr id="fila-EXP-OAC-2026-039">
+                  <td class="ps-4 fw-bold" style="color: var(--primary-color);">EXP-OAC-2026-039</td>
+                  <td class="text-dark">Maria Laura Perez (V-31.056.913)</td>
+                  <td class="text-secondary fw-semibold fecha-exp">10/08/2026</td>
+                  <td><span class="badge text-white px-2 py-1 estatus-badge" style="background-color: #495057;">Cerrado</span></td>
+                  <td class="text-center">
+                    <button class="btn btn-sm btn-outline-dark px-3" disabled><i class="fa-solid fa-lock me-1"></i> Bloqueado</button>
                   </td>
                 </tr>
               </tbody>
@@ -139,6 +371,129 @@
   </main>
 </div>
 
+<!-- Modal de Actualización de Expediente -->
+<div class="modal fade" id="modalActualizar" tabindex="-1" aria-labelledby="modalActualizarLabel" aria-hidden="true">
+  <div class="modal-dialog modal-dialog-centered modal-lg">
+    <div class="modal-content">
+      <div class="modal-header px-4 py-3">
+        <h5 class="modal-title fw-bold" id="modalActualizarLabel">
+          <i class="fa-solid fa-pen-to-square me-2"></i> Actualizar Estatus de Expediente
+        </h5>
+        <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Cerrar"></button>
+      </div>
+      <div class="modal-body p-4">
+        <form id="formActualizar" onsubmit="guardarActualizacion(event)">
+          <div class="row g-3">
+            <div class="col-md-6">
+              <label class="form-label fw-bold text-muted small">N° de Expediente</label>
+              <input type="text" id="txtExpediente" class="form-control bg-light fw-bold text-primary" readonly>
+            </div>
+            <div class="col-md-6">
+              <label class="form-label fw-bold text-muted small">Ciudadano Solicitante</label>
+              <input type="text" id="txtSolicitante" class="form-control bg-light" readonly>
+            </div>
+            <div class="col-md-6">
+              <label class="form-label fw-bold text-muted small">Nuevo Estatus del Trámite</label>
+              <select id="selectNuevoEstatus" class="form-select shadow-none">
+                <option value="En Proceso">En Proceso</option>
+                <option value="En Evaluación Legal">En Evaluación Legal</option>
+                <option value="Remitido a Dirección">Remitido a Dirección</option>
+                <option value="Aprobado preliminar">Aprobado preliminar</option>
+                <option value="Cerrado / Concluido">Cerrado / Concluido</option>
+              </select>
+            </div>
+            <div class="col-md-6">
+              <label class="form-label fw-bold text-muted small">Funcionario Responsable</label>
+              <input type="text" class="form-control shadow-none" value="María Laura Pérez" readonly>
+            </div>
+            <div class="col-12">
+              <label class="form-label fw-bold text-muted small">Observaciones o Notas de Seguimiento</label>
+              <textarea class="form-control shadow-none" rows="3" placeholder="Describa brevemente los avances, diligencias o motivos del cambio de estatus..."></textarea>
+            </div>
+            <div class="col-12">
+              <label class="form-label fw-bold text-muted small">Adjuntar Documento de Soporte (Opcional)</label>
+              <input type="file" class="form-control form-control-sm shadow-none">
+            </div>
+          </div>
+          <div class="d-flex justify-content-end gap-2 mt-4 pt-3 border-top">
+            <button type="button" class="btn btn-light px-4 border" data-bs-dismiss="modal">Cancelar</button>
+            <button type="submit" class="btn text-white px-4 fw-bold" style="background-color: var(--primary-color);">
+              <i class="fa-solid fa-floppy-disk me-2"></i> Guardar Cambios
+            </button>
+          </div>
+        </form>
+      </div>
+    </div>
+  </div>
+</div>
+
 <script src="https://cdnjs.cloudflare.com/ajax/libs/bootstrap/5.3.2/js/bootstrap.bundle.min.js"></script>
+<script>
+  function toggleSidebar() {
+    const sidebar = document.getElementById('appSidebar');
+    const overlay = document.getElementById('sidebarOverlay');
+    sidebar.classList.toggle('show-sidebar');
+    overlay.classList.toggle('show');
+  }
+
+  function cargarExpediente(expediente, solicitante) {
+    document.getElementById('txtExpediente').value = expediente;
+    document.getElementById('txtSolicitante').value = solicitante;
+  }
+
+  function guardarActualizacion(event) {
+    event.preventDefault(); // Evitar recarga real del formulario
+    
+    const expedienteId = document.getElementById('txtExpediente').value;
+    const nuevoEstatus = document.getElementById('selectNuevoEstatus').value;
+    
+    // Obtener la fila correspondiente en la tabla
+    const fila = document.getElementById('fila-' + expedienteId);
+    if (fila) {
+      // Actualizar texto y color del badge visualmente
+      const badge = fila.querySelector('.estatus-badge');
+      badge.textContent = nuevoEstatus;
+      
+      // Asignar colores institucionales según el estatus seleccionado
+      if (nuevoEstatus === 'En Proceso') {
+        badge.style.backgroundColor = '#cce5ff';
+        badge.style.color = '#004085';
+      } else if (nuevoEstatus === 'En Evaluación Legal') {
+        badge.style.backgroundColor = '#fff3cd';
+        badge.style.color = '#856404';
+      } else if (nuevoEstatus.includes('Remitido')) {
+        badge.style.backgroundColor = '#0d1b3e';
+        badge.style.color = '#ffffff';
+      } else if (nuevoEstatus.includes('Aprobado')) {
+        badge.style.backgroundColor = '#d4edda';
+        badge.style.color = '#155724';
+      } else {
+        badge.style.backgroundColor = '#495057';
+        badge.style.color = '#ffffff';
+      }
+
+      // Actualizar la fecha de modificación actual
+      const hoy = new Date();
+      const fechaFormateada = String(hoy.getDate()).padStart(2, '0') + '/' + String(hoy.getMonth() + 1).padStart(2, '0') + '/' + hoy.getFullYear();
+      fila.querySelector('.fecha-exp').textContent = fechaFormateada;
+    }
+
+    // Cerrar el modal mediante Bootstrap de forma nativa
+    const modalElement = document.getElementById('modalActualizar');
+    const modalInstance = bootstrap.Modal.getInstance(modalElement);
+    modalInstance.hide();
+
+    // Mostrar alerta de éxito visual
+    const alerta = document.getElementById('alertaExito');
+    alerta.classList.remove('d-none');
+    alerta.classList.add('show');
+
+    // Auto-ocultar la alerta a los 4 segundos
+    setTimeout(() => {
+      alerta.classList.remove('show');
+      alerta.classList.add('d-none');
+    }, 4000);
+  }
+</script>
 </body>
 </html>

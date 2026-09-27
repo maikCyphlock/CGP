@@ -1,0 +1,480 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Perfil del Funcionario - OAC Contraloría del Municipio Páez</title>
+  <link href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap/5.3.2/css/bootstrap.min.css" rel="stylesheet">
+  <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
+  
+  <style>
+    :root {
+      --primary-color: #0d1b3e;
+      --primary-dark: #060d20;
+      --accent-color: #e63946;
+      --bg-color: #f0f4f8;
+      --card-border: #e2e8f0;
+    }
+
+    body {
+      font-family: 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
+      background-color: var(--bg-color);
+      margin: 0;
+      color: #333;
+      overflow-x: hidden;
+      text-align: justify;
+    }
+
+    h1, h2, h3, h4, h5, h6, .btn, .badge, .dropdown-menu {
+      text-align: left;
+    }
+    
+    .admin-wrapper { 
+      display: flex; 
+      min-height: 100vh; 
+      position: relative;
+    }
+    
+    /* Sidebar Institucional */
+    .sidebar { 
+      width: 260px; 
+      background: linear-gradient(180deg, var(--primary-color) 0%, var(--primary-dark) 100%); 
+      color: white; 
+      box-shadow: 4px 0 15px rgba(0,0,0,0.1); 
+      z-index: 1040; 
+      transition: transform 0.3s ease-in-out;
+      display: flex;
+      flex-direction: column;
+    }
+
+    .sidebar-content {
+      flex-grow: 1;
+      overflow-y: auto;
+    }
+
+    .sidebar-footer {
+      padding: 1rem;
+      border-top: 1px solid rgba(255, 255, 255, 0.1);
+    }
+
+    @media (max-width: 991.98px) {
+      .sidebar { 
+        position: fixed; 
+        top: 0; 
+        bottom: 0; 
+        left: 0; 
+        transform: translateX(-100%); 
+      }
+      .sidebar.show-sidebar { 
+        transform: translateX(0); 
+      }
+      .main-content { 
+        width: 100% !important; 
+      }
+      .sidebar-overlay { 
+        position: fixed; 
+        top: 0; 
+        left: 0; 
+        right: 0; 
+        bottom: 0; 
+        background: rgba(0,0,0,0.5); 
+        z-index: 1035; 
+        display: none; 
+      }
+      .sidebar-overlay.show { 
+        display: block; 
+      }
+    }
+
+    .sidebar a { transition: all 0.3s ease; text-align: left; }
+    .sidebar a:hover:not(.active-link) { 
+      background-color: rgba(255,255,255,0.1) !important; 
+      transform: translateX(5px); 
+    }
+    .active-link { 
+      background-color: rgba(255,255,255,0.15) !important; 
+      border-left: 4px solid var(--accent-color); 
+    }
+
+    .main-content { 
+      flex-grow: 1; 
+      display: flex; 
+      flex-direction: column; 
+      width: calc(100% - 260px); 
+      transition: width 0.3s ease-in-out;
+    }
+
+    /* DROPDOWN DE PERFIL ESTILO FORMAL (IGUAL A LA IMAGEN) */
+    .profile-dropdown-menu {
+      width: 270px;
+      padding: 1.25rem 0.85rem 1rem 0.85rem;
+      border-radius: 20px !important;
+      box-shadow: 0 12px 35px rgba(0, 0, 0, 0.12) !important;
+      border: 1px solid rgba(0, 0, 0, 0.05) !important;
+      margin-top: 10px !important;
+      background: #ffffff;
+      text-align: center;
+    }
+    
+    .profile-avatar-lg {
+      width: 72px;
+      height: 72px;
+      background-color: var(--primary-color);
+      font-size: 1.6rem;
+      font-weight: 700;
+      color: #ffffff;
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      margin: 0 auto 10px auto;
+      box-shadow: 0 6px 16px rgba(13, 27, 62, 0.2);
+    }
+
+    .profile-badge {
+      background-color: #f1f5f9;
+      color: #475569;
+      font-size: 0.78rem;
+      padding: 5px 16px;
+      border-radius: 30px;
+      font-weight: 500;
+      display: inline-block;
+    }
+
+    .profile-menu-item {
+      padding: 9px 14px;
+      border-radius: 10px;
+      color: #334155;
+      text-decoration: none;
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      font-size: 0.92rem;
+      font-weight: 500;
+      transition: all 0.2s ease;
+      text-align: left;
+    }
+
+    .profile-menu-item:hover {
+      background-color: #f8fafc;
+      color: var(--primary-color);
+    }
+
+    .profile-menu-item.logout-item:hover {
+      background-color: #fef2f2;
+    }
+
+    /* Tarjetas de Perfil */
+    .profile-header-card {
+      background: linear-gradient(135deg, #070f22 0%, #0d1b3e 100%);
+      border-radius: 14px;
+      color: white;
+      position: relative;
+      overflow: hidden;
+      box-shadow: 0 10px 25px rgba(7, 15, 34, 0.2);
+    }
+
+    .profile-big-avatar {
+      width: 100px;
+      height: 100px;
+      border-radius: 50%;
+      background: linear-gradient(135deg, #1a3375, #0d1b3e);
+      border: 3px solid rgba(255, 255, 255, 0.3);
+      font-size: 2.2rem;
+      font-weight: bold;
+      color: white;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      box-shadow: 0 8px 20px rgba(0, 0, 0, 0.3);
+      margin: 0 auto;
+    }
+
+    .card-custom {
+      background: white;
+      border-radius: 12px;
+      border: 1px solid var(--card-border);
+      box-shadow: 0 4px 20px rgba(0, 0, 0, 0.03);
+      transition: box-shadow 0.3s ease;
+    }
+
+    .card-custom:hover {
+      box-shadow: 0 8px 25px rgba(0,0,0,0.06);
+    }
+
+    .info-label {
+      font-size: 0.75rem;
+      text-uppercase: uppercase;
+      letter-spacing: 0.5px;
+      font-weight: 700;
+      color: #6c757d;
+      margin-bottom: 2px;
+      display: block;
+    }
+
+    .info-value {
+      font-size: 0.95rem;
+      font-weight: 600;
+      color: #1e293b;
+    }
+  </style>
+</head>
+<body>
+
+<div class="sidebar-overlay" id="sidebarOverlay" onclick="toggleSidebar()"></div>
+
+<div class="admin-wrapper">
+  <!-- Menú Lateral Institucional -->
+  <aside class="sidebar" id="appSidebar">
+    <div class="p-4 border-bottom border-secondary d-flex align-items-center justify-content-between">
+      <div class="d-flex align-items-center gap-2">
+        <img src="../../assets/img/logo.jpeg" alt="Logo Institucional" style="width: 40px; border-radius: 4px; box-shadow: 0 2px 5px rgba(0,0,0,0.2);" onerror="this.src='https://via.placeholder.com/40'">
+        <span class="fw-bold" style="font-size: 1rem; letter-spacing: 0.5px;">OAC - Páez</span>
+      </div>
+      <button class="btn btn-sm text-white d-lg-none border-0" onclick="toggleSidebar()" aria-label="Cerrar menú">
+        <i class="fa-solid fa-xmark fs-5"></i>
+      </button>
+    </div>
+    
+    <div class="sidebar-content">
+      <ul class="list-unstyled p-3 m-0">
+        <li class="text-uppercase text-secondary fw-bold mb-3 mt-2" style="font-size: 0.7rem; letter-spacing: 1px;">Gestión de Casos</li>
+        <li class="mb-1"><a href="PDC_denunciasinicio.html" class="text-white text-decoration-none d-block p-2 rounded"><i class="fa-solid fa-house-chimney me-2 fa-fw"></i> Panel Principal</a></li>
+        <li class="mb-1"><a href="PDC_protocolizacion.html" class="text-white text-decoration-none d-block p-2 rounded"><i class="fa-solid fa-folder-open me-2 fa-fw"></i> Revisión y Protocolización</a></li>
+        <li class="mb-1"><a href="PDC_seguimiento.html" class="text-white text-decoration-none d-block p-2 rounded"><i class="fa-solid fa-timeline me-2 fa-fw"></i> Seguimiento de Expedientes</a></li>
+
+        <li class="text-uppercase text-secondary fw-bold mt-4 mb-3" style="font-size: 0.7rem; letter-spacing: 1px;">Control y Estadísticas</li>
+        <li class="mb-1"><a href="PDC_reportes.html" class="text-white text-decoration-none d-block p-2 rounded"><i class="fa-solid fa-chart-pie me-2 fa-fw"></i> Reportes Gerenciales</a></li>
+        <li class="mb-1"><a href="PDC_agendaoac.html" class="text-white text-decoration-none d-block p-2 rounded"><i class="fa-solid fa-calendar-days me-2 fa-fw"></i> Agenda OAC</a></li>
+      </ul>
+    </div>
+
+    <div class="sidebar-footer">
+      <a href="../../logincontraloria.html" class="btn w-100 d-flex align-items-center justify-content-center gap-2 text-danger fw-bold py-2" style="background-color: rgba(230, 57, 70, 0.08); border: 1px solid rgba(230, 57, 70, 0.3); border-radius: 8px; transition: all 0.2s;">
+        <i class="fa-solid fa-arrow-right-from-bracket"></i> Cerrar Sesión
+      </a>
+    </div>
+  </aside>
+
+  <!-- Contenido Principal -->
+  <main class="main-content">
+    <!-- Barra Superior / Header -->
+    <header class="d-flex justify-content-between align-items-center bg-white px-4 py-3 border-bottom shadow-sm sticky-top" style="z-index: 1020;">
+      <div class="d-flex align-items-center gap-3">
+        <button class="btn btn-outline-secondary d-lg-none border-0 px-2 py-1" onclick="toggleSidebar()" aria-label="Abrir menú">
+          <i class="fa-solid fa-bars fs-5" style="color: var(--primary-color);"></i>
+        </button>
+        <h5 class="mb-0 fw-bold d-none d-sm-block" style="color: var(--primary-color); letter-spacing: 0.5px;">
+          Perfil del Funcionario
+        </h5>
+        <h6 class="mb-0 fw-bold d-sm-none text-truncate text-center" style="color: var(--primary-color);">
+          Mi Perfil
+        </h6>
+      </div>
+
+      <!-- Dropdown de Perfil Estilizado -->
+      <div class="dropdown">
+        <div class="d-flex align-items-center dropdown-toggle cursor-pointer" role="button" data-bs-toggle="dropdown" aria-expanded="false" style="cursor: pointer;">
+          <div class="text-end me-2 d-none d-md-block">
+            <span class="mb-0 fw-bold text-dark d-block" style="font-size: 0.85rem;">María Laura Pérez</span>
+            <small class="text-muted" style="font-size: 0.75rem;">Oficina de Atención al Ciudadano</small>
+          </div>
+          <div class="rounded-circle d-flex align-items-center justify-content-center fw-bold text-white shadow-sm" style="width: 38px; height: 38px; background: linear-gradient(135deg, #0d1b3e, #1a3375);">M</div>
+        </div>
+        
+        <ul class="dropdown-menu dropdown-menu-end profile-dropdown-menu">
+          <!-- Cabecera del Dropdown -->
+          <li class="px-2 pb-2">
+            <div class="profile-avatar-lg">MP</div>
+            <h6 class="fw-bold text-dark mb-1" style="font-size: 0.98rem; text-align: center;">María Laura Pérez</h6>
+            <div class="profile-badge mb-1">Editor: Jefe de OAC</div>
+          </li>
+          
+          <li><hr class="dropdown-divider my-2" style="border-color: #f1f5f9;"></li>
+          
+          <!-- Opciones de Navegación -->
+          <li class="px-1">
+            <a class="profile-menu-item" href="PDC_perfil.html">
+              <i class="fa-regular fa-user text-secondary" style="font-size: 0.95rem; width: 18px;"></i>
+              <span>Mi Perfil</span>
+            </a>
+          </li>
+          <li class="px-1">
+            <a class="profile-menu-item" href="PDC_configuracion.html">
+              <i class="fa-solid fa-gear text-secondary" style="font-size: 0.95rem; width: 18px;"></i>
+              <span>Configuración</span>
+            </a>
+          </li>
+          
+          <li><hr class="dropdown-divider my-2" style="border-color: #f1f5f9;"></li>
+          
+          <!-- Opción Cerrar Sesión -->
+          <li class="px-1">
+            <a class="profile-menu-item logout-item" href="../../logincontraloria.html">
+              <i class="fa-solid fa-power-off text-danger" style="font-size: 0.95rem; width: 18px;"></i>
+              <span class="text-danger fw-bold">Cerrar Sesión</span>
+            </a>
+          </li>
+        </ul>
+      </div>
+    </header>
+
+    <!-- Contenido del Perfil del Funcionario -->
+    <div class="container-fluid p-4">
+      
+      <!-- Banner Principal de Perfil -->
+      <div class="profile-header-card p-4 p-md-5 mb-4">
+        <div class="row align-items-center flex-column flex-lg-row text-center">
+          <div class="col-lg-2 text-center mb-3 mb-lg-0">
+            <div class="profile-big-avatar">MP</div>
+          </div>
+          <div class="col-lg-8 text-center">
+            <div class="d-inline-flex align-items-center gap-2 px-3 py-1 rounded-pill mb-2" style="background: rgba(255, 255, 255, 0.12); border: 1px solid rgba(255, 255, 255, 0.2); font-size: 0.8rem; font-weight: 600;">
+              <i class="fa-solid fa-user-check me-1 text-success"></i> Funcionario Activo
+            </div>
+            
+            <!-- Nombre Centrado -->
+            <h2 class="fw-bold mb-1 text-center" style="text-align: center;">María Laura Pérez</h2>
+            
+            <p class="text-white-50 mb-2" style="font-size: 0.95rem;">
+              Jefe de la Oficina de Atención al Ciudadano (OAC)
+            </p>
+            <small class="text-white-50"><i class="fa-solid fa-building-columns me-1"></i> Contraloría Municipal del Municipio Páez — Estado Portuguesa</small>
+          </div>
+          <div class="col-lg-2 text-center text-lg-end mt-3 mt-lg-0">
+            <a href="PDC_configuracion.html" class="btn btn-light fw-bold px-3 py-2 shadow-sm rounded-3">
+              <i class="fa-solid fa-user-pen me-1" style="color: var(--primary-color);"></i> Editar
+            </a>
+          </div>
+        </div>
+      </div>
+
+      <!-- Detalles del Funcionario en Tarjetas -->
+      <div class="row g-4">
+        
+        <!-- Ficha Institucional e Identificación -->
+        <div class="col-lg-6">
+          <div class="card card-custom h-100">
+            <div class="card-header bg-white py-3 border-bottom d-flex align-items-center gap-2">
+              <i class="fa-solid fa-id-card text-primary fs-5"></i>
+              <h6 class="mb-0 fw-bold text-uppercase" style="font-size: 0.85rem; color: var(--primary-color);">
+                Ficha Institucional e Identificación
+              </h6>
+            </div>
+            <div class="card-body p-4">
+              <div class="row g-3">
+                <div class="col-md-6">
+                  <span class="info-label">Cédula de Identidad</span>
+                  <div class="info-value">V-31.056.913</div>
+                </div>
+                <div class="col-md-6">
+                  <span class="info-label">Código de Funcionario</span>
+                  <div class="info-value">CMP-OAC-2024-008</div>
+                </div>
+                <div class="col-md-6">
+                  <span class="info-label">Cargo Actual</span>
+                  <div class="info-value">Jefe de Oficina (OAC)</div>
+                </div>
+                <div class="col-md-6">
+                  <span class="info-label">Tipo de Nombramiento</span>
+                  <div class="info-value">Funcionario de Carrera</div>
+                </div>
+                <div class="col-md-6">
+                  <span class="info-label">Fecha de Ingreso</span>
+                  <div class="info-value">15 de Enero de 2021</div>
+                </div>
+                <div class="col-md-6">
+                  <span class="info-label">Resolución Aprobatoria</span>
+                  <div class="info-value">Res. N° CMP-013-2024</div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Contacto y Ubicación Administrativa -->
+        <div class="col-lg-6">
+          <div class="card card-custom h-100">
+            <div class="card-header bg-white py-3 border-bottom d-flex align-items-center gap-2">
+              <i class="fa-solid fa-at text-danger fs-5"></i>
+              <h6 class="mb-0 fw-bold text-uppercase" style="font-size: 0.85rem; color: var(--primary-color);">
+                Contacto y Asignación Administrativa
+              </h6>
+            </div>
+            <div class="card-body p-4">
+              <div class="row g-3">
+                <div class="col-12">
+                  <span class="info-label">Correo Institucional</span>
+                  <div class="info-value"><i class="fa-regular fa-envelope me-2 text-secondary"></i>oac.contraloriapaez@gmail.com</div>
+                </div>
+                <div class="col-md-6">
+                  <span class="info-label">Teléfono Interno</span>
+                  <div class="info-value"><i class="fa-solid fa-phone me-2 text-secondary"></i>(0256) 512-4022</div>
+                </div>
+                <div class="col-md-6">
+                  <span class="info-label">Extensión Telefónica</span>
+                  <div class="info-value"><i class="fa-solid fa-tty me-2 text-secondary"></i>Ext. 104 (Despacho OAC)</div>
+                </div>
+                <div class="col-12">
+                  <span class="info-label">Ubicación Física de la Oficina</span>
+                  <div class="info-value"><i class="fa-solid fa-location-dot me-2 text-secondary"></i>Sede Principal Contraloría, Planta Baja, Acarigua, Municipio Páez.</div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Atribuciones Legales y Nivel de Acceso -->
+        <div class="col-lg-12">
+          <div class="card card-custom">
+            <div class="card-header bg-white py-3 border-bottom d-flex align-items-center gap-2">
+              <h6 class="mb-0 fw-bold text-uppercase" style="font-size: 0.85rem; color: var(--primary-color);">
+                Atribuciones Legales y Permisos en el Sistema
+              </h6>
+            </div>
+            <div class="card-body p-4">
+              <div class="row g-3">
+                <div class="col-md-4">
+                  <div class="p-3 bg-light rounded border border-secondary-subtle h-100">
+                    <span class="badge bg-primary mb-2">Rol del Sistema</span>
+                    <h6 class="fw-bold text-dark mb-1" style="font-size: 0.9rem;">Editor General / Protocolizador</h6>
+                    <p class="text-muted small mb-0">Habilitado para la recepción, verificación, asignación de folios definitivos y firma digital de expedientes.</p>
+                  </div>
+                </div>
+                <div class="col-md-4">
+                  <div class="p-3 bg-light rounded border border-secondary-subtle h-100">
+                    <span class="badge bg-success mb-2">Alcance Fiscal</span>
+                    <h6 class="fw-bold text-dark mb-1" style="font-size: 0.9rem;">Atención y Control Ciudadano</h6>
+                    <p class="text-muted small mb-0">Atención presencial/web de denuncias, quejas, reclamos, peticiones y sugerencias según ley (LOYPA).</p>
+                  </div>
+                </div>
+                <div class="col-md-4">
+                  <div class="p-3 bg-light rounded border border-secondary-subtle h-100">
+                    <span class="badge bg-danger mb-2">Estatus de Seguridad</span>
+                    <h6 class="fw-bold text-dark mb-1" style="font-size: 0.9rem;">Firma Electrónica Autorizada</h6>
+                    <p class="text-muted small mb-0">Certificado digital válido para la emisión de reportes gerenciales y actas de protocolización.</p>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+      </div>
+
+    </div>
+  </main>
+</div>
+
+<!-- Scripts de Bootstrap -->
+<script src="https://cdnjs.cloudflare.com/ajax/libs/bootstrap/5.3.2/js/bootstrap.bundle.min.js"></script>
+<script>
+  function toggleSidebar() {
+    const sidebar = document.getElementById('appSidebar');
+    const overlay = document.getElementById('sidebarOverlay');
+    sidebar.classList.toggle('show-sidebar');
+    overlay.classList.toggle('show');
+  }
+</script>
+</body>
+</html>
