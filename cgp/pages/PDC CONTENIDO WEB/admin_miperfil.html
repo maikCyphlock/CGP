@@ -66,6 +66,20 @@
       letter-spacing: 0.3px;
     }
 
+    .btn-close-sidebar {
+      color: rgba(255, 255, 255, 0.7);
+      background: none;
+      border: none;
+      font-size: 1.25rem;
+      padding: 4px 8px;
+      transition: color 0.2s ease, transform 0.2s ease;
+    }
+
+    .btn-close-sidebar:hover {
+      color: #ffffff;
+      transform: scale(1.1);
+    }
+
     .sidebar-menu {
       list-style: none;
       padding: 20px 0;
@@ -320,11 +334,14 @@
     <div class="sidebar-header">
       <img src="../../assets/img/logonuevo.jpeg" alt="Logo">
       <span>Portal Web CMP</span>
+      <button class="btn-close-sidebar ms-auto d-lg-none" onclick="toggleSidebar()" aria-label="Cerrar menú">
+        <i class="fa-solid fa-xmark"></i>
+      </button>
     </div>
     <ul class="sidebar-menu">
       <li class="menu-category">Gestión Web</li>
-      <li><a href="admin_inicio.html" class="active"><i class="fa-solid fa-chart-pie"></i> Inicio</a></li>
-      <li><a href="admin_cms.html" class="active"><i class="fa-solid fa-newspaper"></i> Noticias</a></li>
+      <li><a href="admin_inicio.html"><i class="fa-solid fa-chart-pie"></i> Inicio</a></li>
+      <li><a href="admin_cms.html"><i class="fa-solid fa-newspaper"></i> Noticias</a></li>
       <li><a href="admin_hero.html"><i class="fa-solid fa-sliders"></i> Textos del Inicio (Hero)</a></li>
       <li><a href="admin_contraloriaescolarygestioncomunitaria.html"><i class="fa-solid fa-folder-open"></i> Carga de Reportes</a></li>
       <li class="menu-category mt-3">Rendimiento</li>
