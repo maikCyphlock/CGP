@@ -3,12 +3,10 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Estadísticas - Contraloría del Municipio Páez</title>
+  <title>Contraloría del Municipio Páez - Carga de Reportes</title>
   <link href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap/5.3.2/css/bootstrap.min.css" rel="stylesheet">
   <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.2/css/all.min.css" rel="stylesheet">
   <link href="https://fonts.googleapis.com/css2?family=Open+Sans:wght@400;600&family=Roboto:wght@500;700&display=swap" rel="stylesheet">
-  <!-- Chart.js para las gráficas -->
-  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
   
   <style>
     :root {
@@ -191,7 +189,7 @@
       background-color: #edf2f7;
     }
 
-    /* Componentes de Estadísticas */
+    /* Tarjetas y Contenido */
     .section-title {
       font-family: 'Roboto', sans-serif;
       font-weight: 700;
@@ -214,7 +212,6 @@
       border: 1px solid var(--card-border);
       box-shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.04), 0 8px 10px -6px rgba(0, 0, 0, 0.04);
       overflow: hidden;
-      height: 100%;
       transition: transform 0.2s ease, box-shadow 0.2s ease;
     }
 
@@ -235,27 +232,42 @@
     .admin-card .card-body {
       padding: 28px;
     }
-    
-    .stat-number {
-      font-size: 2.3rem;
-      font-weight: 800;
-      color: var(--secondary-color);
-      line-height: 1;
-      margin-bottom: 5px;
-    }
-    
-    .stat-label {
-      font-size: 0.82rem;
-      color: #64748b;
-      text-transform: uppercase;
-      letter-spacing: 0.5px;
-      font-weight: 700;
-    }
-    
-    .trend-up {
-      color: #10b981;
-      font-size: 0.85rem;
+
+    .form-label {
       font-weight: 600;
+      color: #334155;
+      font-size: 0.88rem;
+    }
+
+    .form-control, .form-select {
+      border-radius: 8px;
+      border: 1px solid #cbd5e1;
+      padding: 11px 16px;
+      font-size: 0.95rem;
+      transition: all 0.2s;
+    }
+
+    .form-control:focus, .form-select:focus {
+      border-color: var(--secondary-color);
+      box-shadow: 0 0 0 0.25rem rgba(13, 27, 62, 0.12);
+    }
+
+    .btn-primary-admin {
+      background-color: var(--secondary-color);
+      color: white;
+      font-weight: 600;
+      padding: 11px 26px;
+      border-radius: 8px;
+      border: none;
+      transition: all 0.2s;
+      box-shadow: 0 4px 12px rgba(13, 27, 62, 0.2);
+    }
+
+    .btn-primary-admin:hover {
+      background-color: #172a59;
+      color: white;
+      transform: translateY(-1px);
+      box-shadow: 0 6px 15px rgba(13, 27, 62, 0.3);
     }
 
     /* Responsive Design / Media Queries */
@@ -308,14 +320,14 @@
       <img src="../../assets/img/logonuevo.jpeg" alt="Logo Contraloría">
       <span>Portal Web CMP</span>
     </div>
-  <ul class="sidebar-menu">
+    <ul class="sidebar-menu">
       <li class="menu-category">Gestión Web</li>
       <li><a href="admin_inicio.html"><i class="fa-solid fa-chart-pie"></i> Inicio</a></li>
       <li><a href="admin_cms.html"><i class="fa-solid fa-newspaper"></i> Noticias</a></li>
       <li><a href="admin_hero.html"><i class="fa-solid fa-sliders"></i> Textos del Inicio (Hero)</a></li>
-      <li><a href="admin_contraloriaescolarygestioncomunitaria.html"><i class="fa-solid fa-folder-open"></i> Carga de Reportes</a></li>
+      <li><a href="admin_contraloriaescolarygestioncomunitaria.html" class="active"><i class="fa-solid fa-folder-open"></i> Carga de Reportes</a></li>
       <li class="menu-category mt-3">Rendimiento</li>
-      <li><a href="admin_estadisticas.html" class="active"><i class="fa-solid fa-chart-line"></i> Estadísticas de Tráfico</a></li>
+      <li><a href="admin_estadisticas.html"><i class="fa-solid fa-chart-line"></i> Estadísticas de Tráfico</a></li>
     </ul>
     <div class="sidebar-footer">
       <a href="../../logincontraloria.html" class="logout-btn">
@@ -324,7 +336,7 @@
     </div>
   </aside>
 
-  <!-- Contenido Principal -->
+  <!-- Main Content -->
   <main class="main-content">
     
     <!-- Topbar -->
@@ -334,7 +346,7 @@
           <i class="fa-solid fa-bars"></i>
         </button>
         <div class="topbar-title">
-          <h4>Métricas y Tráfico</h4>
+          <h4>Edición de Contenido Web</h4>
         </div>
       </div>
 
@@ -358,98 +370,143 @@
       </div>
     </header>
 
+    <!-- Contenido Principal -->
     <div class="container-fluid py-4 px-3 px-md-4">
       <div class="row mb-4">
         <div class="col-12">
-          <h2 class="section-title">Resumen de Actividad</h2>
+          <h2 class="section-title">Gestión de Evidencias e Informes Fotográficos</h2>
           <div class="title-underline"></div>
         </div>
       </div>
 
-      <!-- Fila de Tarjetas de Resumen -->
-      <div class="row g-4 mb-4">
-        <div class="col-xl-3 col-md-6">
-          <div class="admin-card">
-            <div class="card-body text-center py-4">
-              <div class="stat-number">142</div>
-              <div class="stat-label">Visitas Hoy</div>
-              <div class="trend-up mt-2"><i class="fa-solid fa-arrow-trend-up me-1"></i> 12% vs ayer</div>
-            </div>
-          </div>
-        </div>
-        <div class="col-xl-3 col-md-6">
-          <div class="admin-card">
-            <div class="card-body text-center py-4">
-              <div class="stat-number text-danger">854</div>
-              <div class="stat-label">Esta Semana</div>
-              <div class="trend-up mt-2 text-muted"><i class="fa-solid fa-minus me-1"></i> Promedio estable</div>
-            </div>
-          </div>
-        </div>
-        <div class="col-xl-3 col-md-6">
-          <div class="admin-card">
-            <div class="card-body text-center py-4">
-              <div class="stat-number">3,210</div>
-              <div class="stat-label">Este Mes</div>
-              <div class="trend-up mt-2"><i class="fa-solid fa-arrow-trend-up me-1"></i> 5% vs mes anterior</div>
-            </div>
-          </div>
-        </div>
-        <div class="col-xl-3 col-md-6">
-          <div class="admin-card text-white shadow-sm" style="background: linear-gradient(135deg, #0d2354 0%, var(--secondary-color) 100%);">
-            <div class="card-body text-center py-4">
-              <div class="stat-number text-white">45</div>
-              <div class="stat-label text-white opacity-75">Interacciones Totales</div>
-              <div class="mt-2 opacity-75 small"><i class="fa-solid fa-bullseye me-1"></i> Clics en quejas y reportes</div>
-            </div>
-          </div>
-        </div>
-      </div>
-
-      <!-- Fila de Gráficos -->
-      <div class="row g-4 mb-4">
+      <div class="row g-4">
+        <!-- Formulario de Carga de Informes -->
         <div class="col-lg-8">
           <div class="admin-card">
             <div class="card-header d-flex justify-content-between align-items-center">
-              <span><i class="fa-solid fa-chart-line me-2 text-primary"></i> Tráfico de los últimos 7 días</span>
-              <button class="btn btn-sm btn-outline-secondary px-3"><i class="fa-solid fa-download me-1"></i> Descargar</button>
+              <span><i class="fa-solid fa-cloud-arrow-up me-2 text-primary"></i> Cargar Nuevo Reporte / Evidencia</span>
+              <span class="badge bg-primary px-3 py-1.5 rounded-pill" style="background-color: var(--secondary-color) !important;">Tipo Informe</span>
             </div>
             <div class="card-body">
-              <canvas id="traficoChart" height="110"></canvas>
+              <form>
+                <div class="row">
+                  <div class="col-md-6 mb-3">
+                    <label class="form-label">Módulo / Sección Destino</label>
+                    <select class="form-select">
+                      <option value="escolar">Contraloría Escolar ("La Contraloría va a la Escuela")</option>
+                      <option value="comunitaria">Gestión Comunitaria y Control Fiscal</option>
+                    </select>
+                  </div>
+                  <div class="col-md-6 mb-3">
+                    <label class="form-label">Período de Publicación</label>
+                    <select class="form-select">
+                      <option value="mensual">Mensual</option>
+                      <option value="trimestral">Trimestral</option>
+                      <option value="semestral">Semestral</option>
+                      <option value="anual">Anual</option>
+                    </select>
+                  </div>
+                </div>
+
+                <div class="mb-3">
+                  <label class="form-label">Título de la Actividad / Informe</label>
+                  <input type="text" class="form-control" placeholder="Ej: Elección del Contralor Escolar / Inspección de Obra Comunal">
+                </div>
+
+                <div class="row">
+                  <div class="col-md-6 mb-3">
+                    <label class="form-label">Ubicación / Plantel / Sector</label>
+                    <input type="text" class="form-control" placeholder="Ej: U.E.N. José Antonio Páez / Sector La Goajira">
+                  </div>
+                  <div class="col-md-6 mb-3">
+                    <label class="form-label">Fecha de Realización</label>
+                    <input type="date" class="form-control">
+                  </div>
+                </div>
+
+                <div class="mb-3">
+                  <label class="form-label">Resumen del Reporte (Descripción)</label>
+                  <textarea class="form-control" rows="3" placeholder="Redacte una síntesis de la jornada, inspección o taller realizado..."></textarea>
+                </div>
+
+                <div class="row">
+                  <div class="col-md-6 mb-3">
+                    <label class="form-label">Imagen de la Evidencia (Fotografía)</label>
+                    <input class="form-control" type="file" accept="image/*">
+                    <small class="text-muted d-block mt-1">Formatos: JPG, PNG. Tamaño máx: 3MB.</small>
+                  </div>
+                  <div class="col-md-6 mb-3">
+                    <label class="form-label">Documento PDF del Informe (Opcional)</label>
+                    <input class="form-control" type="file" accept=".pdf">
+                    <small class="text-muted d-block mt-1">Formato: PDF. Tamaño máx: 10MB.</small>
+                  </div>
+                </div>
+
+                <div class="d-flex flex-column flex-sm-row justify-content-end gap-2 mt-4">
+                  <button type="button" class="btn btn-outline-secondary px-4 py-2 rounded-8 w-100 w-sm-auto">Limpiar</button>
+                  <button type="submit" class="btn btn-primary-admin w-100 w-sm-auto">Guardar y Publicar Reporte</button>
+                </div>
+              </form>
             </div>
           </div>
         </div>
-        
+
+        <!-- Panel Lateral: Estado de Cargas y Lista de Reportes -->
         <div class="col-lg-4">
+          <!-- Tarjeta Informativa de Resumen -->
+          <div class="admin-card mb-4">
+            <div class="card-header"><i class="fa-solid fa-chart-pie me-2 text-primary"></i> Reportes Publicados por Módulo</div>
+            <div class="card-body">
+              <div class="d-flex justify-content-between align-items-center mb-3">
+                <span class="fw-semibold text-secondary">Contraloría Escolar</span>
+                <span class="badge bg-primary rounded-pill px-3 py-2" style="background-color: var(--secondary-color) !important;">12 Fotos</span>
+              </div>
+              <div class="d-flex justify-content-between align-items-center">
+                <span class="fw-semibold text-secondary">Gestión Comunitaria</span>
+                <span class="badge bg-secondary rounded-pill px-3 py-2">8 Fotos</span>
+              </div>
+            </div>
+          </div>
+
+          <!-- Lista de Reportes Recientes -->
           <div class="admin-card">
-            <div class="card-header"><i class="fa-solid fa-ranking-star me-2 text-primary"></i> Páginas más visitadas</div>
-            <ul class="list-group list-group-flush">
-              <li class="list-group-item d-flex justify-content-between align-items-center py-3 border-bottom">
-                <span class="fw-medium text-secondary">Inicio (Home)</span>
-                <span class="badge bg-primary rounded-pill px-3 py-1.5" style="background-color: var(--secondary-color) !important;">1,204</span>
-              </li>
-              <li class="list-group-item d-flex justify-content-between align-items-center py-3 border-bottom">
-                <span class="fw-medium text-secondary">Noticias</span>
-                <span class="badge bg-secondary rounded-pill px-3 py-1.5">850</span>
-              </li>
-              <li class="list-group-item d-flex justify-content-between align-items-center py-3 border-bottom">
-                <span class="fw-medium text-secondary">Atención al Ciudadano</span>
-                <span class="badge bg-secondary rounded-pill px-3 py-1.5">630</span>
-              </li>
-              <li class="list-group-item d-flex justify-content-between align-items-center py-3 border-0">
-                <span class="fw-medium text-secondary">Directorio</span>
-                <span class="badge bg-secondary rounded-pill px-3 py-1.5">312</span>
-              </li>
-            </ul>
+            <div class="card-header d-flex justify-content-between align-items-center">
+              <span><i class="fa-solid fa-clock-rotate-left me-2 text-primary"></i> Evidencias Recientes</span>
+              <small class="text-muted">Últimos cargados</small>
+            </div>
+            <div class="card-body p-0">
+              <ul class="list-group list-group-flush">
+                <li class="list-group-item p-3 border-bottom">
+                  <div class="d-flex justify-content-between align-items-start mb-2">
+                    <strong style="color: var(--secondary-color); font-size: 0.9rem;">Elección Contralor Escolar</strong>
+                    <span class="badge bg-info bg-opacity-10 text-info fw-semibold px-2 py-1" style="font-size: 0.7rem;">Escolar</span>
+                  </div>
+                  <p class="text-muted small mb-3">U.E.N. José Antonio Páez · Feb 2026</p>
+                  <div class="d-flex flex-wrap gap-2">
+                    <button class="btn btn-sm btn-outline-primary py-1 px-2.5" style="font-size: 0.75rem;"><i class="fa-solid fa-pen me-1"></i> Editar</button>
+                    <button class="btn btn-sm btn-outline-danger py-1 px-2.5" style="font-size: 0.75rem;"><i class="fa-solid fa-trash me-1"></i> Eliminar</button>
+                  </div>
+                </li>
+                <li class="list-group-item p-3 border-0">
+                  <div class="d-flex justify-content-between align-items-start mb-2">
+                    <strong style="color: var(--secondary-color); font-size: 0.9rem;">Inspección Obra Comunal</strong>
+                    <span class="badge bg-warning bg-opacity-10 text-warning text-dark fw-semibold px-2 py-1" style="font-size: 0.7rem;">Comunitaria</span>
+                  </div>
+                  <p class="text-muted small mb-3">Sector La Goajira · Ene 2026</p>
+                  <div class="d-flex flex-wrap gap-2">
+                    <button class="btn btn-sm btn-outline-primary py-1 px-2.5" style="font-size: 0.75rem;"><i class="fa-solid fa-pen me-1"></i> Editar</button>
+                    <button class="btn btn-sm btn-outline-danger py-1 px-2.5" style="font-size: 0.75rem;"><i class="fa-solid fa-trash me-1"></i> Eliminar</button>
+                  </div>
+                </li>
+              </ul>
+            </div>
           </div>
         </div>
       </div>
-
     </div>
   </main>
 </div>
 
-<!-- Scripts -->
 <script src="https://cdnjs.cloudflare.com/ajax/libs/bootstrap/5.3.2/js/bootstrap.bundle.min.js"></script>
 <script>
   function toggleSidebar() {
@@ -458,34 +515,6 @@
     sidebar.classList.toggle('show');
     backdrop.classList.toggle('show');
   }
-
-  const ctx = document.getElementById('traficoChart').getContext('2d');
-  const traficoChart = new Chart(ctx, {
-      type: 'line',
-      data: {
-          labels: ['Lunes', 'Martes', 'Miércoles', 'Jueves', 'Viernes', 'Sábado', 'Domingo'],
-          datasets: [{
-              label: 'Visitas Diarias',
-              data: [120, 190, 142, 160, 210, 95, 110],
-              backgroundColor: 'rgba(13, 27, 62, 0.08)',
-              borderColor: '#0d1b3e',
-              borderWidth: 3,
-              pointBackgroundColor: '#e63946',
-              pointRadius: 5,
-              pointHoverRadius: 7,
-              fill: true,
-              tension: 0.35
-          }]
-      },
-      options: {
-          responsive: true,
-          plugins: { legend: { display: false } },
-          scales: {
-              y: { beginAtZero: true, grid: { borderDash: [5, 5], color: '#e2e8f0' } },
-              x: { grid: { display: false } }
-          }
-      }
-  });
 </script>
 </body>
 </html>

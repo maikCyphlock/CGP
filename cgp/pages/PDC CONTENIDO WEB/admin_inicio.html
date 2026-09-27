@@ -1,0 +1,653 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Portal Web CMP - Panel Principal</title>
+  <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;500;700&family=Open+Sans:wght@400;600&display=swap" rel="stylesheet">
+  <link href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap/5.3.2/css/bootstrap.min.css" rel="stylesheet">
+  <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.2/css/all.min.css" rel="stylesheet">
+  
+  <style>
+    :root {
+      --primary-color: #08122a;
+      --secondary-color: #0d1b3e;
+      --accent-color: #e63946;
+      --bg-color: #f4f6fb;
+      --card-border: #e2e8f0;
+    }
+
+    body {
+      font-family: 'Open Sans', sans-serif;
+      background-color: var(--bg-color);
+      margin: 0;
+      color: #222;
+      overflow-x: hidden;
+      text-align: justify;
+    }
+
+    /* Regla general para justificar todos los párrafos y textos descriptivos */
+    p, .welcome-banner p, .activity-content p, .card-body p, .text-muted {
+      text-align: justify !important;
+    }
+
+    .admin-wrapper {
+      display: flex;
+      min-height: 100vh;
+      position: relative;
+    }
+
+    /* Sidebar Institucional */
+    .sidebar {
+      width: 280px;
+      background: linear-gradient(180deg, var(--primary-color) 0%, #040917 100%);
+      color: white;
+      display: flex;
+      flex-direction: column;
+      box-shadow: 4px 0 20px rgba(0,0,0,0.08);
+      z-index: 1040;
+      transition: all 0.3s ease;
+    }
+
+    .sidebar-header {
+      padding: 24px 20px;
+      display: flex;
+      align-items: center;
+      gap: 15px;
+      border-bottom: 1px solid rgba(255,255,255,0.08);
+    }
+
+    .sidebar-header img {
+      width: 42px;
+      height: 42px;
+      border-radius: 12px;
+      object-fit: cover;
+      box-shadow: 0 4px 10px rgba(0,0,0,0.2);
+    }
+
+    .sidebar-header span {
+      font-family: 'Roboto', sans-serif;
+      font-weight: 700;
+      font-size: 1.1rem;
+      letter-spacing: 0.3px;
+    }
+
+    .sidebar-menu {
+      list-style: none;
+      padding: 20px 0;
+      margin: 0;
+      flex-grow: 1;
+    }
+
+    .menu-category {
+      font-size: 0.7rem;
+      text-transform: uppercase;
+      letter-spacing: 0.15em;
+      color: rgba(255,255,255,0.4);
+      padding: 0 24px;
+      margin-bottom: 10px;
+      font-weight: 700;
+      text-align: left !important;
+    }
+
+    .sidebar-menu a {
+      display: flex;
+      align-items: center;
+      gap: 14px;
+      padding: 13px 24px;
+      color: rgba(255,255,255,0.75);
+      text-decoration: none;
+      font-size: 0.92rem;
+      font-weight: 500;
+      transition: all 0.25s ease;
+      border-left: 4px solid transparent;
+      margin: 4px 0;
+      text-align: left !important;
+    }
+
+    .sidebar-menu a i {
+      font-size: 1.1rem;
+      width: 24px;
+      text-align: center;
+    }
+
+    .sidebar-menu a:hover, .sidebar-menu a.active {
+      background-color: rgba(255,255,255,0.06);
+      color: white;
+      border-left-color: var(--accent-color);
+    }
+
+    .sidebar-footer {
+      padding: 20px;
+      border-top: 1px solid rgba(255,255,255,0.08);
+    }
+
+    .logout-btn {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 10px;
+      width: 100%;
+      color: #ff6b6b;
+      text-decoration: none;
+      font-size: 0.9rem;
+      font-weight: 600;
+      padding: 12px;
+      border: 1px solid rgba(255,107,107,0.3);
+      border-radius: 8px;
+      transition: all 0.2s ease;
+      background: rgba(255, 107, 107, 0.03);
+    }
+
+    .logout-btn:hover {
+      background-color: rgba(255,107,107,0.15);
+      color: #ff6b6b;
+    }
+
+    /* Contenido Principal */
+    .main-content {
+      flex-grow: 1;
+      display: flex;
+      flex-direction: column;
+      width: 100%;
+      min-width: 0;
+    }
+
+    .topbar {
+      background-color: rgba(255, 255, 255, 0.9);
+      backdrop-filter: blur(10px);
+      height: 75px;
+      padding: 0 30px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      box-shadow: 0 2px 15px rgba(0,0,0,0.03);
+      position: sticky;
+      top: 0;
+      z-index: 1030;
+    }
+
+    .topbar-title h4 {
+      margin: 0;
+      font-family: 'Roboto', sans-serif;
+      color: var(--secondary-color);
+      font-weight: 700;
+      font-size: 1.25rem;
+    }
+
+    .menu-toggle-btn {
+      background: none;
+      border: none;
+      font-size: 1.4rem;
+      color: var(--secondary-color);
+      cursor: pointer;
+      display: none;
+      padding: 5px 10px;
+      border-radius: 6px;
+    }
+
+    /* Banner de Bienvenida con Fotografía de Fondo e Institutional Overlay */
+    .welcome-banner {
+      background: linear-gradient(135deg, rgba(8, 18, 42, 0.85) 0%, rgba(17, 34, 68, 0.9) 100%), url('../../assets/img/portadahero.jpg') center/cover no-repeat;
+      border-radius: 12px;
+      color: white;
+      padding: 40px 35px;
+      margin-bottom: 30px;
+      position: relative;
+      box-shadow: 0 10px 25px rgba(13, 27, 62, 0.15);
+      border: 1px solid rgba(255, 255, 255, 0.1);
+    }
+
+    .welcome-banner h1 {
+      font-family: 'Roboto', sans-serif;
+      font-weight: 700;
+      font-size: 1.75rem;
+      margin-bottom: 12px;
+      text-align: left;
+    }
+
+    .welcome-banner p {
+      color: rgba(255, 255, 255, 0.85);
+      font-size: 0.95rem;
+      margin-bottom: 20px;
+      max-width: 650px;
+      line-height: 1.6;
+      text-align: justify !important;
+    }
+
+    .system-status-badge {
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      background: rgba(255, 255, 255, 0.12);
+      padding: 5px 12px;
+      border-radius: 4px;
+      font-size: 0.8rem;
+      font-weight: 600;
+      letter-spacing: 0.3px;
+      margin-bottom: 15px;
+      border: 1px solid rgba(255, 255, 255, 0.15);
+    }
+
+    .pulse-dot {
+      width: 7px;
+      height: 7px;
+      background-color: #2ecc71;
+      border-radius: 50%;
+    }
+
+    /* Tarjetas KPI */
+    .kpi-card {
+      background: white;
+      border-radius: 10px;
+      border: 1px solid var(--card-border);
+      padding: 22px;
+      box-shadow: 0 4px 6px rgba(0, 0, 0, 0.02);
+      height: 100%;
+    }
+
+    .kpi-icon {
+      width: 44px;
+      height: 44px;
+      border-radius: 8px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 1.1rem;
+      margin-bottom: 15px;
+    }
+
+    .kpi-value {
+      font-family: 'Roboto', sans-serif;
+      font-size: 1.5rem;
+      font-weight: 700;
+      color: var(--secondary-color);
+      margin-bottom: 2px;
+      text-align: left;
+    }
+
+    .kpi-label {
+      color: #64748b;
+      font-size: 0.82rem;
+      font-weight: 600;
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+      text-align: left;
+    }
+
+    .kpi-trend {
+      font-size: 0.75rem;
+      font-weight: 600;
+      padding: 2px 6px;
+      border-radius: 4px;
+    }
+    .trend-up { background-color: #d1fae5; color: #065f46; }
+    .trend-neutral { background-color: #f1f5f9; color: #475569; }
+
+    /* Tarjetas del Sistema */
+    .admin-card {
+      background: white;
+      border-radius: 10px;
+      border: 1px solid var(--card-border);
+      box-shadow: 0 4px 6px rgba(0, 0, 0, 0.02);
+      overflow: hidden;
+      margin-bottom: 24px;
+      height: 100%;
+    }
+
+    .admin-card .card-header {
+      background-color: #fafbfd;
+      border-bottom: 1px solid var(--card-border);
+      padding: 16px 20px;
+      font-weight: 700;
+      color: var(--secondary-color);
+      font-family: 'Roboto', sans-serif;
+      font-size: 1rem;
+      text-align: left;
+    }
+
+    .admin-card .card-body {
+      padding: 22px;
+    }
+
+    /* Timeline Institucional */
+    .activity-timeline {
+      position: relative;
+      padding-left: 20px;
+      margin: 5px 0 0 5px;
+    }
+
+    .activity-timeline::before {
+      content: '';
+      position: absolute;
+      left: 6px;
+      top: 5px;
+      bottom: 5px;
+      width: 2px;
+      background-color: #e2e8f0;
+    }
+
+    .activity-item {
+      position: relative;
+      margin-bottom: 20px;
+    }
+
+    .activity-item:last-child {
+      margin-bottom: 0;
+    }
+
+    .activity-dot {
+      position: absolute;
+      left: -20px;
+      top: 3px;
+      width: 12px;
+      height: 12px;
+      border-radius: 50%;
+      background: white;
+      border: 2px solid var(--secondary-color);
+    }
+
+    .activity-dot.accent {
+      border-color: var(--accent-color);
+    }
+
+    .activity-content p {
+      margin: 0;
+      font-size: 0.88rem;
+      color: #334155;
+      text-align: justify !important;
+    }
+
+    .activity-content p strong {
+      color: var(--secondary-color);
+    }
+
+    .activity-time {
+      font-size: 0.73rem;
+      color: #94a3b8;
+      margin-top: 2px;
+      display: block;
+      text-align: left;
+    }
+
+    /* Responsive */
+    @media (max-width: 992px) {
+      .sidebar {
+        position: fixed;
+        left: -280px;
+        top: 0;
+        bottom: 0;
+        height: 100vh;
+      }
+      .sidebar.show {
+        left: 0;
+      }
+      .menu-toggle-btn {
+        display: block;
+      }
+      .topbar {
+        padding: 0 15px;
+      }
+    }
+
+    .sidebar-backdrop {
+      display: none;
+      position: fixed;
+      top: 0;
+      left: 0;
+      right: 0;
+      bottom: 0;
+      background: rgba(0, 0, 0, 0.5);
+      z-index: 1035;
+    }
+    .sidebar-backdrop.show {
+      display: block;
+    }
+  </style>
+</head>
+<body>
+
+<div class="admin-wrapper">
+  
+  <div class="sidebar-backdrop" id="sidebarBackdrop" onclick="toggleSidebar()"></div>
+
+  <!-- Sidebar -->
+  <aside class="sidebar" id="appSidebar">
+    <div class="sidebar-header">
+      <img src="../../assets/img/logonuevo.jpeg" alt="Logo">
+      <span>Portal Web CMP</span>
+    </div>
+    <ul class="sidebar-menu">
+      <li class="menu-category">Gestión Web</li>
+      <li><a href="admin_inicio.html" class="active"><i class="fa-solid fa-chart-pie"></i> Inicio</a></li>
+      <li><a href="admin_cms.html"><i class="fa-solid fa-newspaper"></i> Noticias</a></li>
+      <li><a href="admin_hero.html"><i class="fa-solid fa-sliders"></i> Textos del Inicio (Hero)</a></li>
+      <li><a href="admin_contraloriaescolarygestioncomunitaria.html"><i class="fa-solid fa-folder-open"></i> Carga de Reportes</a></li>
+      <li class="menu-category mt-3">Rendimiento</li>
+      <li><a href="admin_estadisticas.html"><i class="fa-solid fa-chart-line"></i> Estadísticas de Tráfico</a></li>
+    </ul>
+    <div class="sidebar-footer">
+      <a href="../../logincontraloria.html" class="logout-btn">
+        <i class="fa-solid fa-arrow-right-from-bracket"></i> Cerrar Sesión
+      </a>
+    </div>
+  </aside>
+
+  <!-- Contenido Principal -->
+  <main class="main-content">
+    
+    <!-- Topbar -->
+    <header class="topbar">
+      <div class="d-flex align-items-center gap-3">
+        <button class="menu-toggle-btn" id="menuToggle" onclick="toggleSidebar()" aria-label="Abrir menú">
+          <i class="fa-solid fa-bars"></i>
+        </button>
+        <div class="topbar-title">
+          <h4>Panel de Control</h4>
+        </div>
+      </div>
+
+      <!-- Menú de Usuario -->
+      <div class="topbar-user dropdown ms-auto">
+        <div class="d-flex align-items-center" role="button" data-bs-toggle="dropdown" aria-expanded="false" style="cursor: pointer; gap: 12px;">
+          <div class="user-avatar shadow-sm" style="background-color: var(--secondary-color); width: 40px; height: 40px; color: white; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-weight: 700; font-size: 0.9rem;">M</div>
+        </div>
+        
+        <ul class="dropdown-menu dropdown-menu-end shadow-lg border-0" style="width: 280px; border-radius: 10px; margin-top: 15px; padding: 10px;">
+          <li class="text-center p-3 border-bottom">
+            <img src="https://ui-avatars.com/api/?name=Maria+Laura+Perez&background=0d1b3e&color=fff&size=80" alt="Foto de perfil" class="rounded-circle mb-2 shadow-sm" style="width: 70px; height: 70px; object-fit: cover; border: 2px solid #f4f6fb;">
+            <h6 class="mb-1" style="font-family: 'Roboto', sans-serif; font-weight: 700; color: #1a2340; font-size: 0.95rem;">María Laura Pérez</h6>
+            <span class="badge bg-light text-dark border px-2 py-1" style="font-weight: 600; font-size: 0.7rem;">Editor: Prensa Institucional</span>
+          </li>
+          <li><a class="dropdown-item py-2 px-3 mt-2 rounded text-secondary" href="admin_miperfil.html" style="font-size: 0.88rem; font-weight: 600;"><i class="fa-regular fa-user me-2"></i> Mi Perfil</a></li>
+          <li><a class="dropdown-item py-2 px-3 rounded text-secondary" href="configuracion.html" style="font-size: 0.88rem; font-weight: 600;"><i class="fa-solid fa-gear me-2"></i> Configuración</a></li>
+          <li><hr class="dropdown-divider my-2"></li>
+          <li><a class="dropdown-item py-2 px-3 rounded text-danger fw-bold" href="../../logincontraloria.html" style="font-size: 0.88rem;"><i class="fa-solid fa-power-off me-2"></i> Cerrar Sesión</a></li>
+        </ul>
+      </div>
+    </header>
+
+    <div class="container-fluid py-4 px-3 px-md-4">
+      
+      <!-- Banner Institucional de Bienvenida con Fotografía de Fondo -->
+      <div class="welcome-banner">
+        <div class="system-status-badge">
+          <span class="pulse-dot"></span> Sistema operando con normalidad
+        </div>
+        <h1 id="dynamicGreeting">Estimada María Laura Pérez</h1>
+        <p>Bienvenida al centro de gestión de contenidos del portal institucional. Desde este panel principal puede supervisar la actividad del sitio, coordinar publicaciones y gestionar los reportes oficiales.</p>
+        <div class="d-flex gap-2 flex-wrap">
+          <a href="admin_hero.html" class="btn btn-light btn-sm fw-bold px-3 py-2 text-dark"><i class="fa-solid fa-sliders me-1 text-primary"></i> Gestionar Textos Hero</a>
+          <a href="admin_contraloriaescolarygestioncomunitaria.html" class="btn btn-danger btn-sm fw-bold px-3 py-2"><i class="fa-solid fa-folder-plus me-1"></i> Cargar Reporte Oficial</a>
+        </div>
+      </div>
+
+      <!-- Tarjetas de Métricas Clave (KPIs) -->
+      <div class="row g-3 mb-4">
+        <div class="col-md-4">
+          <div class="kpi-card">
+            <div class="d-flex justify-content-between align-items-start">
+              <div class="kpi-icon bg-primary bg-opacity-10 text-primary">
+                <i class="fa-solid fa-eye"></i>
+              </div>
+              <span class="kpi-trend trend-up">+14% semanal</span>
+            </div>
+            <div class="kpi-value">2,845</div>
+            <div class="kpi-label">Visitas Totales</div>
+          </div>
+        </div>
+        <div class="col-md-4">
+          <div class="kpi-card">
+            <div class="d-flex justify-content-between align-items-start">
+              <div class="kpi-icon bg-success bg-opacity-10 text-success">
+                <i class="fa-solid fa-file-arrow-up"></i>
+              </div>
+              <span class="kpi-trend trend-up">+3 nuevos</span>
+            </div>
+            <div class="kpi-value">42</div>
+            <div class="kpi-label">Reportes Publicados</div>
+          </div>
+        </div>
+        <div class="col-md-4">
+          <div class="kpi-card">
+            <div class="d-flex justify-content-between align-items-start">
+              <div class="kpi-icon bg-secondary bg-opacity-10 text-secondary">
+                <i class="fa-solid fa-user-shield"></i>
+              </div>
+              <span class="kpi-trend trend-neutral">Sesión activa</span>
+            </div>
+            <div class="kpi-value">3</div>
+            <div class="kpi-label">Editores Conectados</div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Sección Inferior: Accesos Rápidos y Actividad Institucional -->
+      <div class="row">
+        <!-- Accesos Rápidos -->
+        <div class="col-lg-7 mb-4">
+          <div class="admin-card h-100">
+            <div class="card-header">
+              <span><i class="fa-solid fa-compass text-primary me-2"></i> Accesos Directos del Sistema</span>
+            </div>
+            <div class="card-body">
+              <div class="row g-3">
+                <div class="col-sm-6">
+                  <a href="admin_hero.html" class="text-decoration-none">
+                    <div class="p-3 border rounded bg-light h-100 transition-hover">
+                      <div class="text-primary mb-2 fs-5"><i class="fa-solid fa-pen-nib"></i></div>
+                      <h6 class="fw-bold text-dark mb-1 text-start" style="font-size: 0.92rem;">Sección Hero</h6>
+                      <p class="text-muted small mb-0">Modifique los títulos y subtítulos del inicio.</p>
+                    </div>
+                  </a>
+                </div>
+                <div class="col-sm-6">
+                  <a href="admin_contraloriaescolarygestioncomunitaria.html" class="text-decoration-none">
+                    <div class="p-3 border rounded bg-light h-100 transition-hover">
+                      <div class="text-danger mb-2 fs-5"><i class="fa-solid fa-cloud-arrow-up"></i></div>
+                      <h6 class="fw-bold text-dark mb-1 text-start" style="font-size: 0.92rem;">Carga de Reportes</h6>
+                      <p class="text-muted small mb-0">Publique archivos de contraloría y gestión.</p>
+                    </div>
+                  </a>
+                </div>
+                <div class="col-sm-6">
+                  <a href="admin_estadisticas.html" class="text-decoration-none">
+                    <div class="p-3 border rounded bg-light h-100 transition-hover">
+                      <div class="text-success mb-2 fs-5"><i class="fa-solid fa-chart-line"></i></div>
+                      <h6 class="fw-bold text-dark mb-1 text-start" style="font-size: 0.92rem;">Métricas de Tráfico</h6>
+                      <p class="text-muted small mb-0">Revise las estadísticas de visitas y descargas.</p>
+                    </div>
+                  </a>
+                </div>
+                <div class="col-sm-6">
+                  <a href="configuracion.html" class="text-decoration-none">
+                    <div class="p-3 border rounded bg-light h-100 transition-hover">
+                      <div class="text-secondary mb-2 fs-5"><i class="fa-solid fa-gear"></i></div>
+                      <h6 class="fw-bold text-dark mb-1 text-start" style="font-size: 0.92rem;">Configuración</h6>
+                      <p class="text-muted small mb-0">Ajuste datos institucionales y preferencias.</p>
+                    </div>
+                  </a>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Registro de Actividad Institucional -->
+        <div class="col-lg-5 mb-4">
+          <div class="admin-card h-100">
+            <div class="card-header">
+              <span><i class="fa-solid fa-clock-rotate-left text-primary me-2"></i> Bitácora de Actividad</span>
+            </div>
+            <div class="card-body">
+              <div class="activity-timeline">
+                
+                <div class="activity-item">
+                  <div class="activity-dot accent"></div>
+                  <div class="activity-content">
+                    <p><strong>María Pérez</strong> actualizó los textos del módulo <strong>Hero</strong>.</p>
+                    <span class="activity-time">Hace 15 minutos</span>
+                  </div>
+                </div>
+
+                <div class="activity-item">
+                  <div class="activity-dot"></div>
+                  <div class="activity-content">
+                    <p>Carga de nuevo reporte institucional en <strong>Contraloría Escolar</strong>.</p>
+                    <span class="activity-time">Hace 3 horas</span>
+                  </div>
+                </div>
+
+                <div class="activity-item">
+                  <div class="activity-dot"></div>
+                  <div class="activity-content">
+                    <p>El sistema ejecutó la rutina automática de respaldo de datos.</p>
+                    <span class="activity-time">Ayer a las 11:30 PM</span>
+                  </div>
+                </div>
+
+                <div class="activity-item">
+                  <div class="activity-dot"></div>
+                  <div class="activity-content">
+                    <p><strong>Maikol Aguilar</strong> modificó los datos de contacto público.</p>
+                    <span class="activity-time">Hace 2 días</span>
+                  </div>
+                </div>
+
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+    </div>
+  </main>
+</div>
+
+<!-- Scripts -->
+<script src="https://cdnjs.cloudflare.com/ajax/libs/bootstrap/5.3.2/js/bootstrap.bundle.min.js"></script>
+<script>
+  function toggleSidebar() {
+    const sidebar = document.getElementById('appSidebar');
+    const backdrop = document.getElementById('sidebarBackdrop');
+    sidebar.classList.toggle('show');
+    backdrop.classList.toggle('show');
+  }
+
+  // Saludo formal según la hora del día
+  window.addEventListener('DOMContentLoaded', () => {
+    const hour = new Date().getHours();
+    const greetingEl = document.getElementById('dynamicGreeting');
+    if (greetingEl) {
+      if (hour < 12) {
+        greetingEl.textContent = "Buenos días, María Laura Pérez";
+      } else if (hour < 18) {
+        greetingEl.textContent = "Buenas tardes, María Laura Pérez";
+      } else {
+        greetingEl.textContent = "Buenas noches, María Laura Pérez";
+      }
+    }
+  });
+</script>
+</body>
+</html>

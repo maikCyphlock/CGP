@@ -3,51 +3,67 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Contraloría del Municipio Páez</title>
+  <title>Contraloría del Municipio Páez - Panel Administrativo</title>
   <link href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap/5.3.2/css/bootstrap.min.css" rel="stylesheet">
+  <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.2/css/all.min.css" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=Open+Sans:wght@400;600&family=Roboto:wght@500;700&display=swap" rel="stylesheet">
   
   <style>
+    :root {
+      --primary-color: #08122a;
+      --secondary-color: #0d1b3e;
+      --accent-color: #e63946;
+      --bg-color: #f4f6fb;
+      --card-border: #e2e8f0;
+    }
+
     body {
       font-family: 'Open Sans', sans-serif;
-      background-color: #f4f6fb;
+      background-color: var(--bg-color);
       margin: 0;
       color: #222;
+      overflow-x: hidden;
     }
 
     .admin-wrapper {
       display: flex;
       min-height: 100vh;
+      position: relative;
     }
 
-    /* Sidebar */
+    /* Sidebar de Escritorio */
     .sidebar {
-      width: 260px;
-      background-color: #08122a; 
+      width: 280px;
+      background: linear-gradient(180deg, var(--primary-color) 0%, #040917 100%);
       color: white;
       display: flex;
       flex-direction: column;
-      box-shadow: 4px 0 10px rgba(0,0,0,0.1);
-      z-index: 10;
+      box-shadow: 4px 0 20px rgba(0,0,0,0.08);
+      z-index: 1040;
+      transition: all 0.3s ease;
     }
 
     .sidebar-header {
-      padding: 20px;
+      padding: 24px 20px;
       display: flex;
       align-items: center;
       gap: 15px;
-      border-bottom: 1px solid rgba(255,255,255,0.1);
+      border-bottom: 1px solid rgba(255,255,255,0.08);
     }
 
     .sidebar-header img {
-      width: 40px;
-      height: 40px;
-      border-radius: 10px;
+      width: 42px;
+      height: 42px;
+      border-radius: 12px;
+      object-fit: cover;
+      box-shadow: 0 4px 10px rgba(0,0,0,0.2);
     }
 
     .sidebar-header span {
       font-family: 'Roboto', sans-serif;
       font-weight: 700;
       font-size: 1.1rem;
+      letter-spacing: 0.3px;
     }
 
     .sidebar-menu {
@@ -58,57 +74,84 @@
     }
 
     .menu-category {
-      font-size: 0.75rem;
+      font-size: 0.7rem;
       text-transform: uppercase;
-      letter-spacing: 0.1em;
+      letter-spacing: 0.15em;
       color: rgba(255,255,255,0.4);
-      padding: 0 20px;
+      padding: 0 24px;
       margin-bottom: 10px;
       font-weight: 700;
     }
 
     .sidebar-menu a {
-      display: block;
-      padding: 12px 20px;
-      color: rgba(255,255,255,0.8);
+      display: flex;
+      align-items: center;
+      gap: 14px;
+      padding: 13px 24px;
+      color: rgba(255,255,255,0.75);
       text-decoration: none;
-      font-size: 0.9rem;
-      transition: all 0.2s;
+      font-size: 0.92rem;
+      font-weight: 500;
+      transition: all 0.25s ease;
       border-left: 4px solid transparent;
+      margin: 4px 0;
+    }
+
+    .sidebar-menu a i {
+      font-size: 1.1rem;
+      width: 24px;
+      text-align: center;
+      transition: transform 0.2s;
+    }
+
+    .sidebar-menu a:hover {
+      background-color: rgba(255,255,255,0.06);
+      color: white;
+      border-left-color: var(--accent-color);
+    }
+
+    .sidebar-menu a.active {
+      background-color: transparent;
+      color: white;
+      border-left-color: var(--accent-color);
+    }
+
+    .sidebar-menu a:hover i {
+      transform: scale(1.1);
     }
 
     .sidebar-menu a:hover, .sidebar-menu a.active {
-      background-color: rgba(255,255,255,0.05);
-      color: white;
-      border-left-color: #e63946; 
-    }
-
-    .sidebar-menu a.locked {
-      color: rgba(255,255,255,0.3);
-      cursor: not-allowed;
-    }
+  background-color: rgba(255,255,255,0.06);
+  color: white;
+  border-left-color: var(--accent-color);
+}
 
     .sidebar-footer {
       padding: 20px;
-      border-top: 1px solid rgba(255,255,255,0.1);
+      border-top: 1px solid rgba(255,255,255,0.08);
     }
 
     .logout-btn {
-      display: block;
-      text-align: center;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 10px;
+      width: 100%;
       color: #ff6b6b;
       text-decoration: none;
       font-size: 0.9rem;
       font-weight: 600;
-      padding: 10px;
+      padding: 12px;
       border: 1px solid rgba(255,107,107,0.3);
-      border-radius: 6px;
-      transition: background 0.2s;
+      border-radius: 8px;
+      transition: all 0.2s ease;
+      background: rgba(255, 107, 107, 0.03);
     }
 
     .logout-btn:hover {
-      background-color: rgba(255,107,107,0.1);
+      background-color: rgba(255,107,107,0.15);
       color: #ff6b6b;
+      box-shadow: 0 4px 12px rgba(255, 107, 107, 0.1);
     }
 
     /* Main Content */
@@ -116,184 +159,235 @@
       flex-grow: 1;
       display: flex;
       flex-direction: column;
-      width: calc(100% - 260px);
+      width: 100%;
+      min-width: 0;
     }
 
     .topbar {
-      background-color: white;
-      height: 70px;
+      background-color: rgba(255, 255, 255, 0.9);
+      backdrop-filter: blur(10px);
+      height: 75px;
       padding: 0 30px;
       display: flex;
       justify-content: space-between;
       align-items: center;
-      box-shadow: 0 2px 10px rgba(0,0,0,0.05);
+      box-shadow: 0 2px 15px rgba(0,0,0,0.03);
+      position: sticky;
+      top: 0;
+      z-index: 1030;
     }
 
     .topbar-title h4 {
       margin: 0;
       font-family: 'Roboto', sans-serif;
-      color: #1a2340;
+      color: var(--secondary-color);
       font-weight: 700;
+      font-size: 1.25rem;
     }
 
-    .topbar-user {
-      display: flex;
-      align-items: center;
-      gap: 15px;
+    .menu-toggle-btn {
+      background: none;
+      border: none;
+      font-size: 1.4rem;
+      color: var(--secondary-color);
+      cursor: pointer;
+      display: none;
+      padding: 5px 10px;
+      border-radius: 6px;
+      transition: background 0.2s;
     }
 
-    .user-role {
-      font-size: 0.85rem;
-      color: #666;
-      font-weight: 600;
-    }
-
-    .user-avatar {
-      width: 40px;
-      height: 40px;
-      background-color: #0d1b3e;
-      color: white;
-      border-radius: 50%;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      font-weight: 700;
+    .menu-toggle-btn:hover {
+      background-color: #edf2f7;
     }
 
     /* Tarjetas y Contenido */
     .section-title {
       font-family: 'Roboto', sans-serif;
       font-weight: 700;
-      color: #1a2340;
-      font-size: 1.5rem;
+      color: var(--secondary-color);
+      font-size: 1.6rem;
       margin-bottom: 5px;
     }
 
     .title-underline {
-      width: 40px; 
-      height: 3px;
-      background: #e63946;
-      margin-bottom: 20px;
+      width: 50px; 
+      height: 4px;
+      background: var(--accent-color);
+      margin-bottom: 25px;
+      border-radius: 2px;
     }
 
     .admin-card {
       background: white;
-      border-radius: 8px;
-      border: 1px solid #e0e6ed;
-      box-shadow: 0 4px 6px rgba(0,0,0,0.02);
+      border-radius: 12px;
+      border: 1px solid var(--card-border);
+      box-shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.04), 0 8px 10px -6px rgba(0, 0, 0, 0.04);
       overflow: hidden;
+      transition: transform 0.2s ease, box-shadow 0.2s ease;
+    }
+
+    .admin-card:hover {
+      box-shadow: 0 15px 30px -5px rgba(0, 0, 0, 0.07);
     }
 
     .admin-card .card-header {
-      background-color: #f8f9fc;
-      border-bottom: 1px solid #e0e6ed;
-      padding: 15px 20px;
+      background-color: #fafbfd;
+      border-bottom: 1px solid var(--card-border);
+      padding: 18px 24px;
       font-weight: 700;
-      color: #1a2340;
+      color: var(--secondary-color);
       font-family: 'Roboto', sans-serif;
+      font-size: 1.05rem;
     }
 
     .admin-card .card-body {
-      padding: 25px;
+      padding: 28px;
     }
 
     .form-label {
       font-weight: 600;
-      color: #444;
-      font-size: 0.9rem;
+      color: #334155;
+      font-size: 0.88rem;
     }
 
     .form-control, .form-select {
-      border-radius: 6px;
-      border: 1px solid #cfd7e3;
-      padding: 10px 15px;
+      border-radius: 8px;
+      border: 1px solid #cbd5e1;
+      padding: 11px 16px;
+      font-size: 0.95rem;
+      transition: all 0.2s;
     }
 
     .form-control:focus, .form-select:focus {
-      border-color: #0d1b3e;
-      box-shadow: 0 0 0 0.2rem #0d1b3e;
+      border-color: var(--secondary-color);
+      box-shadow: 0 0 0 0.25rem rgba(13, 27, 62, 0.12);
     }
 
     .btn-primary-admin {
-      background-color:#0d1b3e;
+      background-color: var(--secondary-color);
       color: white;
       font-weight: 600;
-      padding: 10px 24px;
-      border-radius: 6px;
+      padding: 11px 26px;
+      border-radius: 8px;
       border: none;
+      transition: all 0.2s;
+      box-shadow: 0 4px 12px rgba(13, 27, 62, 0.2);
     }
 
     .btn-primary-admin:hover {
-      background-color: #0d4a9e;
+      background-color: #172a59;
       color: white;
+      transform: translateY(-1px);
+      box-shadow: 0 6px 15px rgba(13, 27, 62, 0.3);
     }
 
     .bg-primary-gradient {
-      background: linear-gradient(135deg, #1565c0 0%, #1a4b8c 100%);
+      background: linear-gradient(135deg, #0d2354 0%, var(--secondary-color) 100%);
       border: none;
+      border-radius: 12px;
     }
 
-    /* Responsive */
+    /* Responsive Design / Media Queries */
     @media (max-width: 992px) {
-      .sidebar { width: 80px; }
-      .main-content { width: calc(100% - 80px); }
-      .sidebar-header span, .menu-category, .sidebar-menu a span { display: none; }
-      .sidebar-header { justify-content: center; padding: 20px 0; }
-      .sidebar-menu a { text-align: center; padding: 15px 0; }
-      .sidebar-menu a::before { content: '📁'; font-size: 1.2rem; }
-      .logout-btn { font-size: 0; padding: 10px 0; border: none; }
-      .logout-btn::before { content: '🚪'; font-size: 1.2rem; }
+      .sidebar {
+        position: fixed;
+        left: -280px;
+        top: 0;
+        bottom: 0;
+        height: 100vh;
+      }
+      .sidebar.show {
+        left: 0;
+      }
+      .menu-toggle-btn {
+        display: block;
+      }
+      .topbar {
+        padding: 0 15px;
+      }
+    }
+
+    /* Fondo oscuro para cuando se abre el menú en móviles */
+    .sidebar-backdrop {
+      display: none;
+      position: fixed;
+      top: 0;
+      left: 0;
+      right: 0;
+      bottom: 0;
+      background: rgba(0, 0, 0, 0.5);
+      backdrop-filter: blur(2px);
+      z-index: 1035;
+    }
+    .sidebar-backdrop.show {
+      display: block;
     }
   </style>
 </head>
 <body>
 
 <div class="admin-wrapper">
-  <!-- Sidebar Menú -->
-  <aside class="sidebar">
+  
+  <!-- Backdrop para dispositivos móviles -->
+  <div class="sidebar-backdrop" id="sidebarBackdrop" onclick="toggleSidebar()"></div>
+
+  <!-- Sidebar Moderno con Iconos -->
+  <aside class="sidebar" id="appSidebar">
     <div class="sidebar-header">
-      <img src="../../assets/img/logo.jpeg" alt="Logo">
+      <img src="../../assets/img/logonuevo.jpeg" alt="Logo Contraloría">
       <span>Portal Web CMP</span>
     </div>
-   <ul class="sidebar-menu">
+    <ul class="sidebar-menu">
       <li class="menu-category">Gestión Web</li>
-      <li><a href="admin_cms.html" class="active"><span>Panel Principal</span></a></li>
-      <li><a href="admin_hero.html"><span>Textos del Inicio (Hero)</span></a></li>
-      <li><a href="admin_galeria.html"><span>Galería e Imágenes</span></a></li>
-      <li class="menu-category">Rendimiento</li>
-      <li><a href="admin_estadisticas.html"><span>Estadísticas de Tráfico</span></a></li>
-   </ul>
+      <li><a href="admin_inicio.html"><i class="fa-solid fa-chart-pie"></i> Inicio</a></li>
+      <li><a href="admin_cms.html" class="active"><i class="fa-solid fa-newspaper"></i> Noticias</a></li>
+      <li><a href="admin_hero.html"><i class="fa-solid fa-sliders"></i> Textos del Inicio (Hero)</a></li>
+      <li><a href="admin_contraloriaescolarygestioncomunitaria.html"><i class="fa-solid fa-folder-open"></i> Carga de Reportes</a></li>
+      <li class="menu-category mt-3">Rendimiento</li>
+      <li><a href="admin_estadisticas.html"><i class="fa-solid fa-chart-line"></i> Estadísticas de Tráfico</a></li>
+    </ul>
+    <div class="sidebar-footer">
+      <a href="../../logincontraloria.html" class="logout-btn">
+        <i class="fa-solid fa-arrow-right-from-bracket"></i> Cerrar Sesión
+      </a>
+    </div>
   </aside>
 
- 
+  <!-- Contenido Principal -->
   <main class="main-content">
     
     <header class="topbar">
-      <div class="topbar-title">
-        <h4>Edición de Contenido Web</h4>
+      <div class="d-flex align-items-center gap-3">
+        <button class="menu-toggle-btn" id="menuToggle" onclick="toggleSidebar()" aria-label="Abrir menú">
+          <i class="fa-solid fa-bars"></i>
+        </button>
+        <div class="topbar-title">
+          <h4>Edición de Contenido Web</h4>
+        </div>
       </div>
+
+      <!-- Menú de Usuario Desplegable -->
       <div class="topbar-user dropdown ms-auto">
-        <!-- Botón que activa el menú (Avatar y Rol) -->
-        <div class="d-flex align-items-center" role="button" data-bs-toggle="dropdown" aria-expanded="false" style="cursor: pointer; gap: 15px;">
-          <div class="user-avatar" style="background-color: #0d1b3e;">M</div>
+        <div class="d-flex align-items-center" role="button" data-bs-toggle="dropdown" aria-expanded="false" style="cursor: pointer; gap: 12px;">
+          <div class="user-avatar shadow-sm" style="background-color: var(--secondary-color); width: 42px; height: 42px; color: white; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-weight: 700;">M</div>
         </div>
         
-        <ul class="dropdown-menu dropdown-menu-end shadow-lg border-0" style="width: 280px; border-radius: 12px; margin-top: 15px;">
-          <li class="text-center p-4 border-bottom">
-            <img src="https://ui-avatars.com/api/?name=Maria+Laura+Perez&background=0d1b3e&color=fff&size=80" alt="Foto de perfil" class="rounded-circle mb-3" style="width: 80px; height: 80px; object-fit: cover; border: 3px solid #f4f6fb; box-shadow: 0 4px 10px rgba(0,0,0,0.1);">
-            <h6 class="mb-1" style="font-family: 'Roboto', sans-serif; font-weight: 700; color: #1a2340; font-size: 1.1rem;">María Laura Pérez</h6>
-            <span class="badge bg-secondary mb-2" style="font-weight: 500;">Editor: Prensa Institucional</span>
+        <ul class="dropdown-menu dropdown-menu-end shadow-lg border-0" style="width: 280px; border-radius: 14px; margin-top: 15px; padding: 10px;">
+          <li class="text-center p-3 border-bottom">
+            <img src="https://ui-avatars.com/api/?name=Maria+Laura+Perez&background=0d1b3e&color=fff&size=80" alt="Foto de perfil" class="rounded-circle mb-2 shadow-sm" style="width: 75px; height: 75px; object-fit: cover; border: 3px solid #f4f6fb;">
+            <h6 class="mb-1" style="font-family: 'Roboto', sans-serif; font-weight: 700; color: #1a2340; font-size: 1rem;">María Laura Pérez</h6>
+            <span class="badge bg-light text-dark border px-2 py-1" style="font-weight: 600; font-size: 0.75rem;">Editor: Prensa Institucional</span>
           </li>
-          <li><a class="dropdown-item py-2 px-3 mt-2 text-muted" href="admin_miperfil.html" style="font-size: 0.9rem; font-weight: 600;"> Mi Perfil</a></li>
-          <li><a class="dropdown-item py-2 px-3 text-muted" href="configuracion.html" style="font-size: 0.9rem; font-weight: 600;">Configuración</a></li>
-          <li><hr class="dropdown-divider"></li>
-          <li><a class="dropdown-item py-2 px-3 text-danger fw-bold" href="../../logincontraloria.html" style="font-size: 0.9rem;">Cerrar Sesión</a></li>
+          <li><a class="dropdown-item py-2 px-3 mt-2 rounded text-secondary" href="admin_miperfil.html" style="font-size: 0.9rem; font-weight: 600;"><i class="fa-regular fa-user me-2"></i> Mi Perfil</a></li>
+          <li><a class="dropdown-item py-2 px-3 rounded text-secondary" href="configuracion.html" style="font-size: 0.9rem; font-weight: 600;"><i class="fa-solid fa-gear me-2"></i> Configuración</a></li>
+          <li><hr class="dropdown-divider my-2"></li>
+          <li><a class="dropdown-item py-2 px-3 rounded text-danger fw-bold" href="../../logincontraloria.html" style="font-size: 0.9rem;"><i class="fa-solid fa-power-off me-2"></i> Cerrar Sesión</a></li>
         </ul>
       </div>
     </header>
 
-  
-    <div class="container-fluid py-4">
+    <div class="container-fluid py-4 px-3 px-md-4">
       <div class="row mb-4">
         <div class="col-12">
           <h2 class="section-title">Añadir / Editar Noticias</h2>
@@ -302,10 +396,10 @@
       </div>
 
       <!-- Formulario Gestor de Noticias -->
-      <div class="row">
+      <div class="row g-4">
         <div class="col-lg-8">
-          <div class="admin-card mb-4">
-            <div class="card-header">Redacción de Nueva Noticia</div>
+          <div class="admin-card">
+            <div class="card-header"><i class="fa-solid fa-pen-nib me-2 text-primary"></i> Redacción de Nueva Noticia</div>
             <div class="card-body">
               <form>
                 <div class="mb-3">
@@ -332,10 +426,10 @@
                 <div class="mb-3">
                   <label class="form-label">Imagen de Portada</label>
                   <input class="form-control" type="file" id="formFile">
-                  <small class="text-muted">Formatos recomendados: JPG, PNG. Tamaño máx: 2MB.</small>
+                  <small class="text-muted d-block mt-1">Formatos recomendados: JPG, PNG. Tamaño máx: 2MB.</small>
                 </div>
                 <div class="text-end mt-4">
-                  <button type="button" class="btn btn-outline-secondary me-2">Cancelar</button>
+                  <button type="button" class="btn btn-outline-secondary me-2 px-4 py-2 rounded-8">Cancelar</button>
                   <button type="submit" class="btn btn-primary-admin">Publicar Noticia</button>
                 </div>
               </form>
@@ -343,51 +437,52 @@
           </div>
         </div>
 
-        <!-- Panel Lateral de Estadísticas Rápidas, lo ideal seria que se haga automatico -->
+        <!-- Panel Lateral de Estadísticas Rápidas -->
         <div class="col-lg-4">
-          <div class="admin-card mb-4 bg-primary-gradient text-white">
+          <div class="admin-card mb-4 bg-primary-gradient text-white shadow-sm">
             <div class="card-body text-center py-4">
-              <h5 class="mb-1">Noticias Publicadas</h5>
-              <h2 class="display-4 fw-bold">3</h2>
-              <p class="mb-0 opacity-75">En la página principal</p>
+              <i class="fa-solid fa-newspaper fa-2x mb-2 opacity-75"></i>
+              <h5 class="mb-1 fw-normal">Noticias Publicadas</h5>
+              <h2 class="display-4 fw-bold my-1">3</h2>
+              <p class="mb-0 opacity-75 small">Activas en la página principal</p>
             </div>
           </div>
-  
 
-          <!-- Tarjeta de Estadísticas de Visitas -->
+          <!-- Tarjeta de Tráfico -->
           <div class="admin-card mb-4">
             <div class="card-header d-flex justify-content-between align-items-center">
-              Tráfico de la Página
-              <span class="badge bg-primary rounded-pill" style="background-color: #0d1b3e !important;">Hoy</span>
+              <span><i class="fa-solid fa-chart-simple me-2 text-primary"></i> Tráfico de la Página</span>
+              <span class="badge bg-primary rounded-pill" style="background-color: var(--secondary-color) !important;">Hoy</span>
             </div>
             <div class="card-body text-center">
-              <h3 class="display-5 fw-bold mb-0" style="color: #1a2340;">142</h3>
-              <p class="text-muted mt-1 mb-3">Personas han visto el portal hoy</p>
+              <h3 class="display-5 fw-bold mb-0 text-dark">142</h3>
+              <p class="text-muted small mt-1 mb-3">Personas han visto el portal hoy</p>
               
               <div class="d-flex justify-content-around border-top pt-3 mt-3">
                 <div>
-                  <div class="text-muted small text-uppercase fw-bold">Esta Semana</div>
-                  <div class="fw-bold fs-5" style="color: #e63946;">854</div>
+                  <div class="text-muted small text-uppercase fw-bold" style="font-size: 0.7rem;">Esta Semana</div>
+                  <div class="fw-bold fs-5 text-danger">854</div>
                 </div>
                 <div class="border-start"></div>
                 <div>
-                  <div class="text-muted small text-uppercase fw-bold">Este Mes</div>
-                  <div class="fw-bold fs-5" style="color: #1a2340;">3,210</div>
+                  <div class="text-muted small text-uppercase fw-bold" style="font-size: 0.7rem;">Este Mes</div>
+                  <div class="fw-bold fs-5 text-dark">3,210</div>
                 </div>
               </div>
             </div>
           </div>
 
+          <!-- Noticias Recientes -->
           <div class="admin-card">
-            <div class="card-header">Noticias Recientes</div>
+            <div class="card-header"><i class="fa-solid fa-clock-rotate-left me-2 text-primary"></i> Noticias Recientes</div>
             <ul class="list-group list-group-flush">
-              <li class="list-group-item d-flex justify-content-between align-items-center border-0 border-bottom">
-                Entrega de Informe...
-                <span class="badge bg-success rounded-pill">Activa</span>
+              <li class="list-group-item d-flex justify-content-between align-items-center py-3 border-bottom">
+                <span class="text-truncate pe-2" style="max-width: 180px;">Entrega de Informe...</span>
+                <span class="badge bg-success bg-opacity-10 text-success px-2 py-1 rounded-pill fw-semibold">Activa</span>
               </li>
-              <li class="list-group-item d-flex justify-content-between align-items-center border-0">
-                Obligación de DJP
-                <span class="badge bg-danger rounded-pill">Urgente</span>
+              <li class="list-group-item d-flex justify-content-between align-items-center py-3 border-0">
+                <span class="text-truncate pe-2" style="max-width: 180px;">Obligación de DJP</span>
+                <span class="badge bg-danger bg-opacity-10 text-danger px-2 py-1 rounded-pill fw-semibold">Urgente</span>
               </li>
             </ul>
           </div>
@@ -397,139 +492,14 @@
   </main>
 </div>
 
-<!-- ================= SECCIÓN: MÓDULO DE GESTIÓN DE EVIDENCIAS E INFORMES ================= -->
-      <div class="row mt-5">
-        <div class="col-12">
-          <h2 class="section-title">Gestión de Evidencias e Informes Fotográficos</h2>
-          <div class="title-underline"></div>
-        </div>
-      </div>
-
-      <div class="row">
-        <!-- Formulario de Carga de Informes -->
-        <div class="col-lg-8">
-          <div class="admin-card mb-4">
-            <div class="card-header d-flex justify-content-between align-items-center">
-              <span>Cargar Nuevo Reporte / Evidencia Fotográfica</span>
-              <span class="badge bg-primary" style="background-color: #0d1b3e !important;">Tipo Informe</span>
-            </div>
-            <div class="card-body">
-              <form>
-                <div class="row">
-                  <div class="col-md-6 mb-3">
-                    <label class="form-label">Módulo / Sección Destino</label>
-                    <select class="form-select">
-                      <option value="escolar">Contraloría Escolar ("La Contraloría va a la Escuela")</option>
-                      <option value="comunitaria">Gestión Comunitaria y Control Fiscal</option>
-                    </select>
-                  </div>
-                  <div class="col-md-6 mb-3">
-                    <label class="form-label">Período de Publicación</label>
-                    <select class="form-select">
-                      <option value="mensual">Mensual</option>
-                      <option value="trimestral">Trimestral</option>
-                      <option value="semestral">Semestral</option>
-                      <option value="anual">Anual</option>
-                    </select>
-                  </div>
-                </div>
-
-                <div class="mb-3">
-                  <label class="form-label">Título de la Actividad / Informe</label>
-                  <input type="text" class="form-control" placeholder="Ej: Elección del Contralor Escolar / Inspección de Obra Comunal">
-                </div>
-
-                <div class="row">
-                  <div class="col-md-6 mb-3">
-                    <label class="form-label">Ubicación / Plantel / Sector</label>
-                    <input type="text" class="form-control" placeholder="Ej: U.E.N. José Antonio Páez / Sector La Goajira">
-                  </div>
-                  <div class="col-md-6 mb-3">
-                    <label class="form-label">Fecha de Realización</label>
-                    <input type="date" class="form-control">
-                  </div>
-                </div>
-
-                <div class="mb-3">
-                  <label class="form-label">Resumen del Reporte (Descripción)</label>
-                  <textarea class="form-control" rows="3" placeholder="Redacte una síntesis de la jornada, inspección o taller realizado..."></textarea>
-                </div>
-
-                <div class="row">
-                  <div class="col-md-6 mb-3">
-                    <label class="form-label">Imagen de la Evidencia (Fotografía)</label>
-                    <input class="form-control" type="file" accept="image/*">
-                    <small class="text-muted">Formatos: JPG, PNG. Tamaño máximo recomendación: 3MB.</small>
-                  </div>
-                  <div class="col-md-6 mb-3">
-                    <label class="form-label">Documento PDF del Informe (Opcional)</label>
-                    <input class="form-control" type="file" accept=".pdf">
-                    <small class="text-muted">Formato: PDF. Tamaño máx: 10MB.</small>
-                  </div>
-                </div>
-
-                <div class="text-end mt-4">
-                  <button type="button" class="btn btn-outline-secondary me-2">Limpiar</button>
-                  <button type="submit" class="btn btn-primary-admin">Guardar y Publicar Reporte</button>
-                </div>
-              </form>
-            </div>
-          </div>
-        </div>
-
-        <!-- Panel Lateral: Estado de Cargas y Lista de Reportes -->
-        <div class="col-lg-4">
-          <!-- Tarjeta Informativa de Resumen -->
-          <div class="admin-card mb-4">
-            <div class="card-header">Reportes Publicados por Módulo</div>
-            <div class="card-body">
-              <div class="d-flex justify-content-between align-items-center mb-3">
-                <span class="fw-semibold text-muted">Contraloría Escolar</span>
-                <span class="badge bg-primary rounded-pill px-3 py-2" style="background-color: #0d1b3e !important;">12 Fotos</span>
-              </div>
-              <div class="d-flex justify-content-between align-items-center">
-                <span class="fw-semibold text-muted">Gestión Comunitaria</span>
-                <span class="badge bg-secondary rounded-pill px-3 py-2">8 Fotos</span>
-              </div>
-            </div>
-          </div>
-
-          <!-- Lista de Reportes Recientes -->
-          <div class="admin-card">
-            <div class="card-header d-flex justify-content-between align-items-center">
-              <span>Evidencias Recientes</span>
-              <small class="text-muted">Últimos cargados</small>
-            </div>
-            <div class="card-body p-0">
-              <ul class="list-group list-group-flush">
-                <li class="list-group-item p-3 border-bottom">
-                  <div class="d-flex justify-content-between align-items-start mb-1">
-                    <strong style="color: #1a2340; font-size: 0.88rem;">Elección Contralor Escolar</strong>
-                    <span class="badge bg-info text-dark" style="font-size: 0.7rem;">Escolar</span>
-                  </div>
-                  <p class="text-muted small mb-2">U.E.N. José Antonio Páez · Feb 2026</p>
-                  <div class="d-flex gap-2">
-                    <button class="btn btn-sm btn-outline-primary py-0 px-2" style="font-size: 0.75rem;">Editar</button>
-                    <button class="btn btn-sm btn-outline-danger py-0 px-2" style="font-size: 0.75rem;">Eliminar</button>
-                  </div>
-                </li>
-                <li class="list-group-item p-3 border-bottom">
-                  <div class="d-flex justify-content-between align-items-start mb-1">
-                    <strong style="color: #1a2340; font-size: 0.88rem;">Inspección Obra Comunal</strong>
-                    <span class="badge bg-warning text-dark" style="font-size: 0.7rem;">Comunitaria</span>
-                  </div>
-                  <p class="text-muted small mb-2">Sector La Goajira · Ene 2026</p>
-                  <div class="d-flex gap-2">
-                    <button class="btn btn-sm btn-outline-primary py-0 px-2" style="font-size: 0.75rem;">Editar</button>
-                    <button class="btn btn-sm btn-outline-danger py-0 px-2" style="font-size: 0.75rem;">Eliminar</button>
-                  </div>
-                </li>
-              </ul>
-            </div>
-          </div>
-        </div>
-      </div>
-
 <script src="https://cdnjs.cloudflare.com/ajax/libs/bootstrap/5.3.2/js/bootstrap.bundle.min.js"></script>
+<script>
+  function toggleSidebar() {
+    const sidebar = document.getElementById('appSidebar');
+    const backdrop = document.getElementById('sidebarBackdrop');
+    sidebar.classList.toggle('show');
+    backdrop.classList.toggle('show');
+  }
+</script>
 </body>
 </html>
