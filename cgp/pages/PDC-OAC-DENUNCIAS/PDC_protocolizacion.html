@@ -106,7 +106,6 @@
     .table-hover tbody tr { transition: background-color 0.2s ease; }
     .table-hover tbody tr:hover { background-color: #f8faff; }
 
-    /* Ajuste responsivo para los botones de la tabla en móviles */
     .action-buttons-container {
       display: flex;
       align-items: center;
@@ -123,7 +122,6 @@
       }
     }
 
-    /* Filtros ordenados en línea */
     .filter-badges-container {
       display: flex;
       flex-wrap: nowrap;
@@ -139,7 +137,6 @@
       border-radius: 4px;
     }
 
-    /* Estilo del dropdown de perfil idéntico al de denuncias inicio */
     .profile-dropdown-menu {
       width: 280px;
       padding: 1rem;
@@ -193,6 +190,107 @@
       background-color: #f8f9fa;
       color: var(--primary-color);
     }
+
+    /* ESTILOS EXACTOS DE LA PLANILLA (COMPROBANTE) ADAPTADOS AL MODAL */
+    .hoja-comprobante {
+      width: 100%;
+      background: #ffffff;
+      padding: 15px;
+      box-sizing: border-box;
+      font-family: Arial, Helvetica, sans-serif;
+      font-size: 10px;
+      color: #000;
+    }
+    .hoja-comprobante .top-logos {
+      display: flex;
+      justify-content: space-between;
+      align-items: flex-start;
+      margin-bottom: 5px;
+      padding: 0 5px;
+    }
+    .hoja-comprobante .top-logos img {
+      width: 75px;
+      height: auto;
+    }
+    .hoja-comprobante .logo-sncf {
+      width: 105px !important;
+    }
+    .hoja-comprobante table {
+      width: 100%;
+      border-collapse: collapse;
+      margin-bottom: -1px;
+    }
+    .hoja-comprobante th, .hoja-comprobante td {
+      border: 1px solid #444;
+      padding: 3px 4px;
+      vertical-align: top;
+    }
+    .hoja-comprobante .bg-blue {
+      background-color: #a9d0f5;
+      text-align: center;
+      font-weight: bold;
+      text-transform: uppercase;
+      font-size: 9px;
+      padding: 4px;
+    }
+    .hoja-comprobante .label {
+      font-weight: bold;
+      font-size: 9px;
+      display: block;
+      margin-bottom: 2px;
+      color: #222;
+    }
+    .hoja-comprobante .check-container {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 8px;
+      margin-top: 2px;
+      align-items: center;
+    }
+    .hoja-comprobante .check-item {
+      display: inline-flex;
+      align-items: center;
+      gap: 3px;
+      font-size: 9px;
+    }
+    .hoja-comprobante .box {
+      display: inline-block;
+      width: 10px;
+      height: 10px;
+      border: 1px solid #444;
+      background-color: #fff;
+      text-align: center;
+      line-height: 10px;
+      font-size: 8px;
+      font-weight: bold;
+    }
+    .hoja-comprobante .box.checked::after {
+      content: "X";
+      color: #000;
+    }
+    .hoja-comprobante .center { text-align: center; }
+    .hoja-comprobante .valign-middle { vertical-align: middle; }
+    .hoja-comprobante .min-h-15 { min-height: 15px; }
+    .hoja-comprobante .min-h-30 { min-height: 30px; }
+    .hoja-comprobante .signatures-area {
+      display: flex;
+      justify-content: space-between;
+      margin-top: 15px;
+      text-align: center;
+      font-size: 9px;
+    }
+    .hoja-comprobante .sig-block {
+      width: 18%;
+      display: flex;
+      flex-direction: column;
+      justify-content: flex-end;
+      min-height: 70px;
+    }
+    .hoja-comprobante .sig-line {
+      border-top: 1px solid #000;
+      margin-top: 30px;
+      padding-top: 3px;
+    }
   </style>
 </head>
 <body>
@@ -233,7 +331,6 @@
 
   <!-- Contenido Principal -->
   <main class="main-content w-100">
-    <!-- Header con Menú Hamburguesa y Dropdown de Perfil Estilizado -->
     <header class="d-flex justify-content-between align-items-center bg-white px-4 py-3 border-bottom shadow-sm sticky-top" style="z-index: 1020;">
       <div class="d-flex align-items-center gap-3">
         <button class="btn btn-outline-secondary d-lg-none border-0 px-2 py-1" onclick="toggleSidebar()" aria-label="Abrir menú">
@@ -258,9 +355,11 @@
         
         <ul class="dropdown-menu dropdown-menu-end profile-dropdown-menu text-center">
           <li>
-            <div class="profile-avatar-lg">MP</div>
-            <h6 class="fw-bold text-dark mb-1" style="font-size: 0.95rem;">María Laura Pérez</h6>
-            <div class="profile-badge mb-3">Editor: Jefe de OAC</div>
+            <div class="d-flex flex-column align-items-center text-center w-100">
+              <div class="profile-avatar-lg">MP</div>
+              <h6 class="fw-bold text-dark mb-1" style="font-size: 0.95rem;">María Laura Pérez</h6>
+              <div class="profile-badge mb-3">Editor: Jefe de OAC</div>
+            </div>
           </li>
           <li><hr class="dropdown-divider my-2"></li>
           <li>
@@ -287,6 +386,14 @@
       <div class="mb-4">
         <h4 class="fw-bold text-dark mb-1">Bandeja de Casos Pendientes</h4>
         <p class="text-secondary" style="font-size: 0.95rem;">Seleccione una solicitud ciudadana para verificar los datos y generar el número de expediente formal.</p>
+      </div>
+
+      <!-- AVISO LEGAL E INSTITUCIONAL DE PROTOCOLIZACIÓN -->
+      <div class="alert alert-primary border-0 shadow-sm d-flex align-items-center mb-4 rounded-3 p-3" role="alert" style="background-color: #e8f0fe; color: var(--primary-color);">
+        <i class="fa-solid fa-triangle-exclamation fs-4 me-3 text-primary"></i>
+        <div style="font-size: 0.9rem;">
+          <strong>Aviso Normativo OAC:</strong> Al efectuar la acción de <em>Protocolización</em>, se le hace saber formalmente al ciudadano que su trámite ha sido recibido e inscrito oficialmente en los libros de la Contraloría, procediendo con la asignación y notificación de su número de expediente definitivo.
+        </div>
       </div>
 
       <!-- Barra de búsqueda y filtros ordenados en línea -->
@@ -333,7 +440,7 @@
                   <td>Denuncia Administrativa</td>
                   <td class="text-center">
                     <div class="action-buttons-container">
-                      <button class="btn btn-sm btn-outline-secondary px-2 py-1" title="Ver Detalles" onclick="abrirModalDetalles('Folio-Web-2026-089', 'Maikol Aguilar', 'V-30.345.678', 'Denuncia Administrativa', 'Presunta irregularidad en procesos de contratación pública.')"><i class="fa-solid fa-eye"></i></button>
+                      <button class="btn btn-sm btn-outline-secondary px-2 py-1" title="Ver Comprobante Oficial" onclick="abrirModalDetalles('Folio-Web-2026-089', '23/08/2026', 'Maikol Aguilar', 'V-30.345.678', 'Denuncia', 'M', '28', 'Soltero(a)', 'Acarigua, 12/03/1998', 'Universitario', 'Ingeniero', 'Urbanización Los Próceres, Calle 4', 'Acarigua', 'Páez', 'Acarigua', 'maikol.aguilar@email.com', '0255-5551234', '0412-1234567', 'Presunta irregularidad en procesos de contratación pública y adjudicación de obras municipales.', 'EXP-OAC-2026-001')"><i class="fa-solid fa-eye"></i></button>
                       <button class="btn btn-sm btn-primary" style="background-color: var(--primary-color); border: none;" onclick="protocolizarCaso(this)">Protocolizar</button>
                     </div>
                   </td>
@@ -345,7 +452,7 @@
                   <td>Queja Comunitaria</td>
                   <td class="text-center">
                     <div class="action-buttons-container">
-                      <button class="btn btn-sm btn-outline-secondary px-2 py-1" title="Ver Detalles" onclick="abrirModalDetalles('Folio-Web-2026-090', 'Katherine Escalona', 'V-32.876.543', 'Queja Comunitaria', 'Deficiencia en la atención de servicios públicos municipales.')"><i class="fa-solid fa-eye"></i></button>
+                      <button class="btn btn-sm btn-outline-secondary px-2 py-1" title="Ver Comprobante Oficial" onclick="abrirModalDetalles('Folio-Web-2026-090', '23/08/2026', 'Katherine Escalona', 'V-32.876.543', 'Queja', 'F', '26', 'Soltero(a)', 'Araure, 05/09/2000', 'Superior', 'T.S.U.', 'Av. Libertador, Sector Centro', 'Acarigua', 'Páez', 'Acarigua', 'katherine.escalona@email.com', '0255-5559876', '0414-9876543', 'Deficiencia notoria en la prestación y atención de servicios públicos municipales en la comunidad.', 'EXP-OAC-2026-002')"><i class="fa-solid fa-eye"></i></button>
                       <button class="btn btn-sm btn-primary" style="background-color: var(--primary-color); border: none;" onclick="protocolizarCaso(this)">Protocolizar</button>
                     </div>
                   </td>
@@ -357,7 +464,7 @@
                   <td>Reclamo Laboral</td>
                   <td class="text-center">
                     <div class="action-buttons-container">
-                      <button class="btn btn-sm btn-outline-secondary px-2 py-1" title="Ver Detalles" onclick="abrirModalDetalles('Folio-Web-2026-091', 'Carlos Lopez', 'V-32.432.112', 'Reclamo Laboral', 'Disconformidad con retraso en trámites de constancias.')"><i class="fa-solid fa-eye"></i></button>
+                      <button class="btn btn-sm btn-outline-secondary px-2 py-1" title="Ver Comprobante Oficial" onclick="abrirModalDetalles('Folio-Web-2026-091', '24/08/2026', 'Carlos Lopez', 'V-32.432.112', 'Reclamo', 'M', '32', 'Casado(a)', 'Acarigua, 15/11/1993', 'Secundaria', 'Comercio', 'Barrio La Victoria, Calle Principal', 'Acarigua', 'Páez', 'Acarigua', 'carlos.lopez@email.com', '0255-5554321', '0416-5554433', 'Disconformidad con retraso injustificado en trámites de emisión de constancias administrativas.', 'EXP-OAC-2026-003')"><i class="fa-solid fa-eye"></i></button>
                       <button class="btn btn-sm btn-primary" style="background-color: var(--primary-color); border: none;" onclick="protocolizarCaso(this)">Protocolizar</button>
                     </div>
                   </td>
@@ -369,7 +476,7 @@
                   <td>Petición de Información</td>
                   <td class="text-center">
                     <div class="action-buttons-container">
-                      <button class="btn btn-sm btn-outline-secondary px-2 py-1" title="Ver Detalles" onclick="abrirModalDetalles('Folio-Web-2026-092', 'Bill Chirinos', 'V-31.606.008', 'Petición de Información', 'Solicitud de estatus sobre obras comunitarias.')"><i class="fa-solid fa-eye"></i></button>
+                      <button class="btn btn-sm btn-outline-secondary px-2 py-1" title="Ver Comprobante Oficial" onclick="abrirModalDetalles('Folio-Web-2026-092', '24/08/2026', 'Bill Chirinos', 'V-31.606.008', 'Petición', 'M', '27', 'Soltero(a)', 'Acarigua, 20/02/1999', 'Universitario', 'Analista', 'Urbanización Piedras Blancas', 'Acarigua', 'Páez', 'Acarigua', 'bill.chirinos@email.com', '0255-5556677', '0424-6667788', 'Solicitud formal de información y estatus sobre el desarrollo de obras comunitarias adscritas al municipio.', 'EXP-OAC-2026-004')"><i class="fa-solid fa-eye"></i></button>
                       <button class="btn btn-sm btn-primary" style="background-color: var(--primary-color); border: none;" onclick="protocolizarCaso(this)">Protocolizar</button>
                     </div>
                   </td>
@@ -381,7 +488,7 @@
                   <td>Sugerencia Ciudadana</td>
                   <td class="text-center">
                     <div class="action-buttons-container">
-                      <button class="btn btn-sm btn-outline-secondary px-2 py-1" title="Ver Detalles" onclick="abrirModalDetalles('Folio-Web-2026-093', 'Maria Laura Perez', 'V-31.056.913', 'Sugerencia Ciudadana', 'Propuesta de mejora para la atención presencial en OAC.')"><i class="fa-solid fa-eye"></i></button>
+                      <button class="btn btn-sm btn-outline-secondary px-2 py-1" title="Ver Comprobante Oficial" onclick="abrirModalDetalles('Folio-Web-2026-093', '25/08/2026', 'Maria Laura Perez', 'V-31.056.913', 'Sugerencia', 'F', '29', 'Soltero(a)', 'Acarigua, 10/07/1997', 'Superior', 'Licenciada', 'Barrio Ajuro, Calle 8', 'Acarigua', 'Páez', 'Acarigua', 'marialaura.perez@email.com', '0255-5559988', '0412-9998877', 'Propuesta de mejora orientada a optimizar la atención presencial y digital en la oficina de OAC.', 'EXP-OAC-2026-005')"><i class="fa-solid fa-eye"></i></button>
                       <button class="btn btn-sm btn-primary" style="background-color: var(--primary-color); border: none;" onclick="protocolizarCaso(this)">Protocolizar</button>
                     </div>
                   </td>
@@ -395,25 +502,265 @@
   </main>
 </div>
 
-<!-- Modal de Detalles -->
-<div class="modal fade" id="modalDetalles" tabindex="-1" aria-hidden="true">
-  <div class="modal-dialog modal-dialog-centered">
-    <div class="modal-content border-0 shadow">
-      <div class="modal-header bg-light">
-        <h5 class="modal-title fw-bold" style="color: var(--primary-color); font-size: 1rem;">Detalle del Trámite</h5>
-        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+<!-- Modal con la Plantilla Exacta del Comprobante (Sin la 'X' superior y con rutas de logos corregidas) -->
+<div class="modal fade" id="modalDetalles" tabindex="-1" aria-hidden="true" data-bs-backdrop="static" data-bs-keyboard="false">
+  <div class="modal-dialog modal-xl modal-dialog-centered modal-dialog-scrollable">
+    <div class="modal-content border-0 shadow-lg">
+      <div class="modal-header bg-primary text-white py-2">
+        <h5 class="modal-title fw-bold" style="font-size: 0.95rem;">Vista Previa del Comprobante de Recepción Oficial</h5>
       </div>
-      <div class="modal-body" style="font-size: 0.9rem;">
-        <p class="mb-2"><strong>Folio:</strong> <span id="mFolio" class="text-primary"></span></p>
-        <p class="mb-2"><strong>Solicitante:</strong> <span id="mSolicitante"></span></p>
-        <p class="mb-2"><strong>Cédula:</strong> <span id="mCedula"></span></p>
-        <p class="mb-2"><strong>Tipo de Caso:</strong> <span id="mTipo"></span></p>
-        <hr>
-        <p class="mb-1 fw-bold text-secondary">Descripción:</p>
-        <p id="mDesc" class="p-3 bg-light rounded text-muted mb-0"></p>
+      <div class="modal-body bg-secondary bg-opacity-25 p-3">
+        
+        <!-- HOJA DE COMPROBANTE EXACTA -->
+        <div class="hoja-comprobante shadow rounded">
+          
+          <!-- LOGOS SUPERIORES (Rutas corregidas: asegúrate de ajustarlas si tus imágenes están directamente en la carpeta assets/img) -->
+          <div class="top-logos">
+            <img src="../../assets/img/logoletrasnegras.png" alt="Logo CMP" onerror="this.src='../assets/img/logoletrasnegras.png';">
+            <img src="../../assets/img/IMG-20241209-WA0052-removebg-preview.png" class="logo-sncf" alt="Logo SNCF" onerror="this.src='../assets/img/IMG-20241209-WA0052-removebg-preview.png';">
+          </div>
+
+          <!-- TABLA 1: ENCABEZADO Y TIPO DE RECEPCIÓN -->
+          <table>
+            <tr>
+              <td style="width: 50%; position: relative; padding: 4px;" class="valign-middle">
+                <img src="../../assets/img/logosinfondo.png" alt="Sello Pequeño" style="position: absolute; left: 6px; top: 50%; transform: translateY(-50%); width: 35px; height: auto;" onerror="this.src='../assets/img/logosinfondo.png'">
+                <div style="text-align: center; width: 100%;">
+                  <div style="font-size: 9px;">Contraloría del Municipio Páez<br>Del Estado Portuguesa</div>
+                  <div style="font-size: 8.5px;">Dirección de Atención al Ciudadano</div>
+                  <div style="font-weight: bold; font-size: 10px; margin-top: 2px;">PLANILLA DE RECEPCIÓN</div>
+                </div>
+              </td>
+              <td style="width: 35%; padding: 0;">
+                <table style="border: none; margin: 0; width: 100%; height: 100%;">
+                  <tr>
+                    <td colspan="3" style="border: none; border-bottom: 1px solid #444;">
+                      <span class="label">2. Fecha de solicitud:</span>
+                      <div class="center fw-bold" id="lblFecha">23/08/2026</div>
+                    </td>
+                  </tr>
+                  <tr>
+                    <td style="border: none; border-right: 1px solid #444; width: 33%;" class="center">Día</td>
+                    <td style="border: none; border-right: 1px solid #444; width: 33%;" class="center">Mes</td>
+                    <td style="border: none; width: 34%;" class="center">Año</td>
+                  </tr>
+                </table>
+              </td>
+              <td style="width: 15%;">
+                <span class="label">3. Hora:</span>
+                <div class="center fw-bold mt-1">10:30 AM</div>
+              </td>
+            </tr>
+          </table>
+          
+          <table>
+            <tr>
+              <td style="width: 50%;">
+                <span class="label">1. Tipo de Recepción:</span>
+                <div style="display: flex; gap: 30px; margin-top: 4px;">
+                  <div style="display: flex; flex-direction: column; gap: 4px;">
+                    <span class="check-item"><span class="box" id="chkDenuncia"></span> Denuncia</span>
+                    <span class="check-item"><span class="box" id="chkReclamo"></span> Reclamo</span>
+                  </div>
+                  <div style="display: flex; flex-direction: column; gap: 4px;">
+                    <span class="check-item"><span class="box" id="chkQueja"></span> Queja</span>
+                    <span class="check-item"><span class="box" id="chkPeticion"></span> Petición</span>
+                  </div>
+                </div>
+              </td>
+              <td style="width: 50%;">
+                <span class="label">4. Nro. Expediente / Registro:</span>
+                <div class="min-h-15 fw-bold text-danger fs-6" id="lblExpediente">EXP-OAC-2026-001</div>
+              </td>
+            </tr>
+          </table>
+
+          <!-- DATOS DEL CIUDADANO -->
+          <table>
+            <tr><td colspan="3" class="bg-blue">DATOS DEL CIUDADANO (SOLICITANTE)</td></tr>
+            <tr>
+              <td style="width: 40%;">
+                <span class="label">5. Cédula de Identidad/Pasaporte:</span>
+                <div class="check-container">
+                  <span class="check-item"><span class="box checked"></span> V</span>
+                  <span class="check-item"><span class="box"></span> E</span>
+                  <span class="ms-2 fw-bold" id="lblCedula">V-30.345.678</span>
+                </div>
+              </td>
+              <td colspan="2" style="width: 60%;">
+                <span class="label">6. Apellidos y Nombres:</span>
+                <div class="min-h-15 fw-bold" id="lblSolicitante">Maikol Aguilar</div>
+              </td>
+            </tr>
+            <tr>
+              <td style="width: 20%;">
+                <span class="label">7. Sexo:</span>
+                <div class="check-container">
+                  <span class="check-item"><span class="box" id="boxSexoM"></span> M</span>
+                  <span class="check-item"><span class="box" id="boxSexoF"></span> F</span>
+                </div>
+              </td>
+              <td style="width: 20%;">
+                <span class="label">8. Edad:</span>
+                <div class="min-h-15 fw-bold" id="lblEdad">28</div>
+              </td>
+              <td style="width: 60%;">
+                <span class="label">9. Estado Civil:</span>
+                <div class="check-container">
+                  <span class="check-item"><span class="box" id="boxSoltero"></span> Soltero(a)</span>
+                  <span class="check-item"><span class="box" id="boxCasado"></span> Casado(a)</span>
+                  <span class="check-item"><span class="box"></span> Divorciado(a)</span>
+                  <span class="check-item"><span class="box"></span> Viudo(a)</span>
+                </div>
+              </td>
+            </tr>
+            <tr>
+              <td colspan="2">
+                <span class="label">10. Lugar y fecha de nacimiento:</span>
+                <div class="min-h-15" id="lblLugarNac">Acarigua, 12/03/1998</div>
+              </td>
+              <td>
+                <div style="display: flex; width: 100%;">
+                  <div style="width: 50%; border-right: 1px solid #444; padding-right: 4px;">
+                    <span class="label">11. Nivel Educativo:</span>
+                    <span id="lblEducacion">Universitario</span>
+                  </div>
+                  <div style="width: 50%; padding-left: 4px;">
+                    <span class="label">12. Profesión y/u ocupación:</span>
+                    <span id="lblProfesion">Ingeniero</span>
+                  </div>
+                </div>
+              </td>
+            </tr>
+            <tr>
+              <td colspan="3">
+                <span class="label">13. Dirección de habitación:</span>
+                <div class="min-h-15" id="lblDireccion">Urbanización Los Próceres, Calle 4, Acarigua</div>
+              </td>
+            </tr>
+            <tr>
+              <td style="width: 33%;">
+                <span class="label">14. Parroquia:</span>
+                <div class="min-h-15" id="lblParroquia">Acarigua</div>
+              </td>
+              <td style="width: 33%;">
+                <span class="label">15. Municipio:</span>
+                <div class="min-h-15" id="lblMunicipio">Páez</div>
+              </td>
+              <td style="width: 34%;">
+                <span class="label">16. Ciudad:</span>
+                <div class="min-h-15" id="lblCiudad">Acarigua</div>
+              </td>
+            </tr>
+            <tr>
+              <td>
+                <span class="label">17. Correo Electrónico:</span>
+                <div class="min-h-15" id="lblCorreo">maikol.aguilar@email.com</div>
+              </td>
+              <td>
+                <span class="label">18. Telf. Hab.:</span>
+                <div class="min-h-15" id="lblTelfHab">0255-5551234</div>
+              </td>
+              <td>
+                <div style="display: flex; width: 100%;">
+                  <div style="width: 50%; border-right: 1px solid #444; padding-right: 4px;">
+                    <span class="label">19. Telf. Celular:</span>
+                    <span id="lblTelfCel">0412-1234567</span>
+                  </div>
+                  <div style="width: 50%; padding-left: 4px;">
+                    <span class="label">20. Telf. Trabajo:</span>
+                    <span>N/D</span>
+                  </div>
+                </div>
+              </td>
+            </tr>
+          </table>
+
+          <!-- DATOS DE IDENTIFICACIÓN SEÑALADO -->
+          <table>
+            <tr><td colspan="5" class="bg-blue">DATOS DE IDENTIFICACIÓN Y/O UBICACIÓN DEL SEÑALADO(S)</td></tr>
+            <tr>
+              <td colspan="5">
+                <span class="label">21. Tipo del señalado(a):</span>
+                <div class="check-container" style="gap: 15px;">
+                  <span class="check-item"><span class="box checked"></span> Persona Natural</span>
+                  <span class="check-item"><span class="box"></span> Órgano o Ente</span>
+                </div>
+              </td>
+            </tr>
+            <tr>
+              <td colspan="5">
+                <span class="label">22. Ubicación Geográfica del señalado(a):</span>
+                <div class="min-h-15">Dirección de adscripción institucional / Dependencia municipal</div>
+              </td>
+            </tr>
+            <tr>
+              <td style="width: 15%;"><span class="label">23. Cédula (V/E):</span> V-18.234.567</td>
+              <td style="width: 25%;"><span class="label">24. Apellidos y Nombres:</span> Funcionario Responsable Área de Compras</td>
+              <td style="width: 25%;"><span class="label">25. Comuna/Consejo Comunal:</span> N/A</td>
+              <td style="width: 15%;"><span class="label">26. Código SITUR:</span> N/A</td>
+              <td style="width: 20%;"><span class="label">27. R.I.F.:</span> G-20001234-5</td>
+            </tr>
+          </table>
+
+          <!-- DESCRIPCIÓN Y SEÑALAMIENTO -->
+          <table>
+            <tr><td colspan="3" class="bg-blue">DESCRIPCIÓN Y SEÑALAMIENTO:</td></tr>
+            <tr>
+              <td colspan="3">
+                <span class="label">32. Narración circunstanciada de los hechos:</span>
+                <div class="min-h-30 p-2 bg-light rounded text-dark" id="lblDesc" style="font-size: 10px;">Presunta irregularidad en procesos de contratación pública.</div>
+              </td>
+            </tr>
+            <tr>
+              <td colspan="2" style="width: 85%;">
+                <span class="label" style="display:inline-block; margin:0;">33. ¿Esta situación y/o problemática ha sido presentada ante otra instancia?</span>
+              </td>
+              <td style="width: 15%; text-align: center;" class="valign-middle">
+                <div class="check-container" style="justify-content: center; margin:0;">
+                  <span class="check-item"><span class="box"></span> SÍ</span>
+                  <span class="check-item"><span class="box checked"></span> NO</span>
+                </div>
+              </td>
+            </tr>
+            <tr>
+              <td colspan="3">
+                <span class="label">35. Documentos que anexa como prueba de los hechos:</span>
+                <div class="check-container mt-1">
+                  <span class="check-item"><span class="box checked"></span> Copia de C.I. del denunciante</span>
+                  <span class="check-item"><span class="box checked"></span> Carta de exposición de motivo</span>
+                  <span class="check-item"><span class="box"></span> Fotografías</span>
+                </div>
+              </td>
+            </tr>
+          </table>
+
+          <!-- ZONA DE FIRMAS INFERIOR -->
+          <div class="signatures-area">
+            <div class="sig-block">
+              <span>Elaborado por:</span>
+              <div class="sig-line">María L. Pérez</div>
+            </div>
+            <div class="sig-block">
+              <span>Revisado por:</span>
+              <div class="sig-line">Abg. Esther Jiménez</div>
+            </div>
+            <div class="sig-block" style="width: 22%;">
+              <span>Aprobado y autorizado por:</span>
+              <div class="sig-line">Abg. Leonel O. Lucena H.</div>
+            </div>
+            <div class="sig-block">
+              <span style="font-weight: bold;">Resolución<br>Administrativa N°</span>
+              <div style="margin-top: 10px; font-weight: bold;">CMP-013-2024<br>05/03/2024</div>
+            </div>
+          </div>
+
+        </div>
+
       </div>
       <div class="modal-footer bg-light">
-        <button type="button" class="btn btn-secondary btn-sm" data-bs-dismiss="modal">Cerrar</button>
+        <button type="button" class="btn btn-secondary btn-sm" data-bs-dismiss="modal"><i class="fa-solid fa-xmark me-1"></i> Cerrar</button>
+        <button type="button" class="btn btn-primary btn-sm" onclick="window.print()"><i class="fa-solid fa-print me-1"></i> Imprimir Comprobante</button>
       </div>
     </div>
   </div>
@@ -423,8 +770,8 @@
 <div class="position-fixed bottom-0 end-0 p-3" style="z-index: 1100;">
   <div id="liveToast" class="toast align-items-center text-white bg-success border-0 shadow" role="alert" aria-live="assertive" aria-atomic="true">
     <div class="d-flex">
-      <div class="toast-body">
-        <i class="fa-solid fa-check-circle me-2"></i> Expediente protocolizado con éxito.
+      <div class="toast-body" id="toastMessage">
+        <i class="fa-solid fa-check-circle me-2"></i> Trámite protocolizado con éxito y ciudadano notificado.
       </div>
       <button type="button" class="btn-close btn-close-white me-2 m-auto" data-bs-dismiss="toast" aria-label="Close"></button>
     </div>
@@ -440,24 +787,49 @@
     overlay.classList.toggle('show');
   }
 
-  function abrirModalDetalles(folio, solicitante, cedula, tipo, desc) {
-    document.getElementById('mFolio').innerText = folio;
-    document.getElementById('mSolicitante').innerText = solicitante;
-    document.getElementById('mCedula').innerText = cedula;
-    document.getElementById('mTipo').innerText = tipo;
-    document.getElementById('mDesc').innerText = desc;
+  function abrirModalDetalles(folio, fecha, solicitante, cedula, tipo, sexo, edad, estadoCivil, lugarNac, educacion, profesion, direccion, parroquia, municipio, ciudad, correo, telfHab, telfCel, desc, expediente) {
+    document.getElementById('lblFecha').innerText = fecha;
+    document.getElementById('lblExpediente').innerText = expediente;
+    document.getElementById('lblCedula').innerText = cedula;
+    document.getElementById('lblSolicitante').innerText = solicitante;
+    document.getElementById('lblEdad').innerText = edad;
+    document.getElementById('lblLugarNac').innerText = lugarNac;
+    document.getElementById('lblEducacion').innerText = educacion;
+    document.getElementById('lblProfesion').innerText = profesion;
+    document.getElementById('lblDireccion').innerText = direccion;
+    document.getElementById('lblParroquia').innerText = parroquia;
+    document.getElementById('lblMunicipio').innerText = municipio;
+    document.getElementById('lblCiudad').innerText = ciudad;
+    document.getElementById('lblCorreo').innerText = correo;
+    document.getElementById('lblTelfHab').innerText = telfHab;
+    document.getElementById('lblTelfCel').innerText = telfCel;
+    document.getElementById('lblDesc').innerText = desc;
+
+    // Checkboxes dinámicos de tipo
+    document.getElementById('chkDenuncia').className = 'box ' + (tipo === 'Denuncia' ? 'checked' : '');
+    document.getElementById('chkQueja').className = 'box ' + (tipo === 'Queja' ? 'checked' : '');
+    document.getElementById('chkReclamo').className = 'box ' + (tipo === 'Reclamo' ? 'checked' : '');
+    document.getElementById('chkPeticion').className = 'box ' + (tipo === 'Petición' ? 'checked' : '');
+
+    // Sexo
+    document.getElementById('boxSexoM').className = 'box ' + (sexo === 'M' ? 'checked' : '');
+    document.getElementById('boxSexoF').className = 'box ' + (sexo === 'F' ? 'checked' : '');
+
+    // Estado civil
+    document.getElementById('boxSoltero').className = 'box ' + (estadoCivil.includes('Soltero') ? 'checked' : '');
+    document.getElementById('boxCasado').className = 'box ' + (estadoCivil.includes('Casado') ? 'checked' : '');
+
     var myModal = new bootstrap.Modal(document.getElementById('modalDetalles'));
     myModal.show();
   }
 
   function protocolizarCaso(btn) {
-    // Cambiar el estado visual del botón a Protocolizado
     btn.innerHTML = '<i class="fa-solid fa-check me-1"></i> Protocolizado';
     btn.classList.remove('btn-primary');
     btn.classList.add('btn-success');
     btn.disabled = true;
 
-    // Mostrar el toast de notificación
+    document.getElementById('toastMessage').innerHTML = '<i class="fa-solid fa-circle-check me-2"></i> ¡Trámite protocolizado! Se le ha notificado formalmente al ciudadano vía sistema y correo que su denuncia ha sido recibida e inscrita.';
     var toast = new bootstrap.Toast(document.getElementById('liveToast'));
     toast.show();
   }
