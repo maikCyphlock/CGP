@@ -16,7 +16,10 @@
       --secondary-color: #0d1b3e;
       --accent-color: #e63946;
       --bg-color: #f4f6fb;
-      --card-border: #e2e8f0;
+      --card-border: #cbd5e1;
+      --futur-border-hover: #1e3a8a;
+      --futur-glow-hover: 0 12px 30px -6px rgba(30, 58, 138, 0.2), 0 0 0 1px rgba(30, 58, 138, 0.4);
+      --futur-accent-blue: #2563eb;
     }
 
     body {
@@ -222,57 +225,92 @@
       border-radius: 2px;
     }
 
+    /* Estilo de Tarjetas */
     .admin-card {
-      background: white;
-      border-radius: 12px;
+      background: #ffffff;
+      border-radius: 16px;
       border: 1px solid var(--card-border);
-      box-shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.04), 0 8px 10px -6px rgba(0, 0, 0, 0.04);
+      box-shadow: 0 4px 6px rgba(0, 0, 0, 0.01);
       overflow: hidden;
+      transition: transform 0.3s cubic-bezier(0.16, 1, 0.3, 1), box-shadow 0.3s cubic-bezier(0.16, 1, 0.3, 1), border-color 0.3s ease;
+      position: relative;
       height: 100%;
-      transition: transform 0.2s ease, box-shadow 0.2s ease;
+      display: flex;
+      flex-direction: column;
+    }
+
+    .admin-card::before {
+      content: '';
+      position: absolute;
+      top: 0;
+      left: 0;
+      right: 0;
+      height: 3px;
+      background: var(--futur-accent-blue);
+      opacity: 0.8;
+      transition: opacity 0.3s ease;
     }
 
     .admin-card:hover {
-      box-shadow: 0 15px 30px -5px rgba(0, 0, 0, 0.07);
+      transform: translateY(-5px);
+      border-color: var(--futur-border-hover);
+      box-shadow: var(--futur-glow-hover);
     }
 
     .admin-card .card-header {
-      background-color: #fafbfd;
+      background-color: #f8fafc;
       border-bottom: 1px solid var(--card-border);
-      padding: 18px 24px;
+      padding: 16px 20px;
       font-weight: 700;
       color: var(--secondary-color);
       font-family: 'Roboto', sans-serif;
-      font-size: 1.05rem;
+      font-size: 1rem;
     }
 
     .admin-card .card-body {
-      padding: 28px;
+      padding: 24px;
+      flex-grow: 1;
+      display: flex;
+      flex-direction: column;
+      justify-content: space-between;
     }
     
-    .stat-number {
-      font-size: 2.3rem;
-      font-weight: 800;
-      color: var(--secondary-color);
-      line-height: 1;
-      margin-bottom: 5px;
-    }
-    
-    .stat-label {
-      font-size: 0.82rem;
-      color: #64748b;
-      text-transform: uppercase;
-      letter-spacing: 0.5px;
+    .stat-category {
+      font-size: 0.72rem;
       font-weight: 700;
-    }
-    
-    .trend-up {
-      color: #10b981;
-      font-size: 0.85rem;
-      font-weight: 600;
+      color: #64748b;
+      letter-spacing: 0.8px;
+      text-transform: uppercase;
     }
 
-    /* Responsive Design / Media Queries */
+    .stat-number {
+      font-size: clamp(2rem, 2.5vw, 2.6rem);
+      font-weight: 800;
+      color: var(--secondary-color);
+      line-height: 1.1;
+      margin: 12px 0 10px 0;
+      font-family: 'Roboto', sans-serif;
+      letter-spacing: -0.5px;
+    }
+    
+    .stat-desc {
+      font-size: 0.83rem;
+      color: #64748b;
+      line-height: 1.45;
+      margin-top: 14px;
+      border-top: 1px solid #f1f5f9;
+      padding-top: 12px;
+    }
+
+    /* Contenedor responsivo optimizado para la gráfica */
+    .chart-container {
+      position: relative;
+      width: 100%;
+      height: 280px;
+      max-height: 320px;
+    }
+
+    /* Responsive Design */
     @media (max-width: 992px) {
       .sidebar {
         position: fixed;
@@ -290,9 +328,11 @@
       .topbar {
         padding: 0 15px;
       }
+      .chart-container {
+        height: 240px;
+      }
     }
 
-    /* Fondo oscuro para cuando se abre el menú en móviles */
     .sidebar-backdrop {
       display: none;
       position: fixed;
@@ -313,10 +353,8 @@
 
 <div class="admin-wrapper">
   
-  <!-- Backdrop para dispositivos móviles -->
   <div class="sidebar-backdrop" id="sidebarBackdrop" onclick="toggleSidebar()"></div>
 
-  <!-- Sidebar Moderno con Iconos -->
   <aside class="sidebar" id="appSidebar">
     <div class="sidebar-header">
       <img src="../../assets/img/logonuevo.jpeg" alt="Logo Contraloría">
@@ -341,10 +379,8 @@
     </div>
   </aside>
 
-  <!-- Contenido Principal -->
   <main class="main-content">
     
-    <!-- Topbar -->
     <header class="topbar">
       <div class="d-flex align-items-center gap-3">
         <button class="menu-toggle-btn" id="menuToggle" onclick="toggleSidebar()" aria-label="Abrir menú">
@@ -355,7 +391,6 @@
         </div>
       </div>
 
-      <!-- Menú de Usuario Desplegable -->
       <div class="topbar-user dropdown ms-auto">
         <div class="d-flex align-items-center" role="button" data-bs-toggle="dropdown" aria-expanded="false" style="cursor: pointer; gap: 12px;">
           <div class="user-avatar shadow-sm" style="background-color: var(--secondary-color); width: 42px; height: 42px; color: white; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-weight: 700;">M</div>
@@ -383,80 +418,152 @@
         </div>
       </div>
 
-      <!-- Fila de Tarjetas de Resumen -->
+      <!-- Tarjetas Superiores Restauradas e intactas -->
       <div class="row g-4 mb-4">
         <div class="col-xl-3 col-md-6">
           <div class="admin-card">
-            <div class="card-body text-center py-4">
-              <div class="stat-number">142</div>
-              <div class="stat-label">Visitas Hoy</div>
-              <div class="trend-up mt-2"><i class="fa-solid fa-arrow-trend-up me-1"></i> 12% vs ayer</div>
+            <div class="card-body">
+              <div>
+                <div class="d-flex justify-content-between align-items-center mb-2">
+                  <span class="stat-category">Portal / Hoy</span>
+                  <span class="badge text-white fw-semibold px-2.5 py-1 rounded-pill" style="font-size: 0.7rem; background-color: #0f172a;">Activo</span>
+                </div>
+                <div class="stat-number">142</div>
+                <div class="fw-semibold text-secondary" style="font-size: 0.9rem;">Visitas Registradas</div>
+              </div>
+              <div>
+                <div class="stat-desc">
+                  Total de accesos reportados durante el transcurso del día de hoy.
+                </div>
+                <div class="mt-3">
+                  <div class="progress" style="height: 4px; background-color: #e2e8f0;">
+                    <div class="progress-bar" style="width: 75%; background-color: #0f172a;"></div>
+                  </div>
+                </div>
+              </div>
             </div>
           </div>
         </div>
+
         <div class="col-xl-3 col-md-6">
           <div class="admin-card">
-            <div class="card-body text-center py-4">
-              <div class="stat-number text-danger">854</div>
-              <div class="stat-label">Esta Semana</div>
-              <div class="trend-up mt-2 text-muted"><i class="fa-solid fa-minus me-1"></i> Promedio estable</div>
+            <div class="card-body">
+              <div>
+                <div class="d-flex justify-content-between align-items-center mb-2">
+                  <span class="stat-category">Rango Semanal</span>
+                  <span class="badge text-white fw-semibold px-2.5 py-1 rounded-pill" style="font-size: 0.7rem; background-color: #1e3a8a;"><i class="fa-solid fa-rotate me-1"></i> En Curso</span>
+                </div>
+                <div class="stat-number">854</div>
+                <div class="fw-semibold text-secondary" style="font-size: 0.9rem;">Visitas de la Semana</div>
+              </div>
+              <div>
+                <div class="stat-desc">
+                  Acumulado semanal con promedio de tráfico estable en el portal web.
+                </div>
+                <div class="mt-3">
+                  <div class="progress" style="height: 4px; background-color: #e2e8f0;">
+                    <div class="progress-bar" style="width: 60%; background-color: #1e3a8a;"></div>
+                  </div>
+                </div>
+              </div>
             </div>
           </div>
         </div>
+
         <div class="col-xl-3 col-md-6">
           <div class="admin-card">
-            <div class="card-body text-center py-4">
-              <div class="stat-number">3,210</div>
-              <div class="stat-label">Este Mes</div>
-              <div class="trend-up mt-2"><i class="fa-solid fa-arrow-trend-up me-1"></i> 5% vs mes anterior</div>
+            <div class="card-body">
+              <div>
+                <div class="d-flex justify-content-between align-items-center mb-2">
+                  <span class="stat-category">Rango Mensual</span>
+                  <span class="badge text-white fw-semibold px-2.5 py-1 rounded-pill" style="font-size: 0.7rem; background-color: #3b82f6;">Crecimiento</span>
+                </div>
+                <div class="stat-number">3,210</div>
+                <div class="fw-semibold text-secondary" style="font-size: 0.9rem;">Visitas del Mes</div>
+              </div>
+              <div>
+                <div class="stat-desc">
+                  Aumento sostenido del 5% en comparación con el periodo anterior.
+                </div>
+                <div class="mt-3">
+                  <div class="progress" style="height: 4px; background-color: #e2e8f0;">
+                    <div class="progress-bar" style="width: 85%; background-color: #3b82f6;"></div>
+                  </div>
+                </div>
+              </div>
             </div>
           </div>
         </div>
+
         <div class="col-xl-3 col-md-6">
-          <div class="admin-card text-white shadow-sm" style="background: linear-gradient(135deg, #0d2354 0%, var(--secondary-color) 100%);">
-            <div class="card-body text-center py-4">
-              <div class="stat-number text-white">45</div>
-              <div class="stat-label text-white opacity-75">Interacciones Totales</div>
-              <div class="mt-2 opacity-75 small"><i class="fa-solid fa-bullseye me-1"></i> Clics en quejas y reportes</div>
+          <div class="admin-card">
+            <div class="card-body">
+              <div>
+                <div class="d-flex justify-content-between align-items-center mb-2">
+                  <span class="stat-category">Interacciones</span>
+                  <span class="badge text-white fw-semibold px-2.5 py-1 rounded-pill" style="font-size: 0.7rem; background-color: #475569;">Concluido</span>
+                </div>
+                <div class="stat-number">45</div>
+                <div class="fw-semibold text-secondary" style="font-size: 0.9rem;">Clics en Secciones</div>
+              </div>
+              <div>
+                <div class="stat-desc">
+                  Interacciones directas de los usuarios en quejas y reportes ciudadanos.
+                </div>
+                <div class="mt-3">
+                  <div class="progress" style="height: 4px; background-color: #e2e8f0;">
+                    <div class="progress-bar" style="width: 40%; background-color: #475569;"></div>
+                  </div>
+                </div>
+              </div>
             </div>
           </div>
         </div>
       </div>
 
-      <!-- Fila de Gráficos -->
+      <!-- Fila de Gráficos con Descarga Funcional y Diseño Puntual -->
       <div class="row g-4 mb-4">
         <div class="col-lg-8">
           <div class="admin-card">
-            <div class="card-header d-flex justify-content-between align-items-center">
-              <span><i class="fa-solid fa-chart-line me-2 text-primary"></i> Tráfico de los últimos 7 días</span>
-              <button class="btn btn-sm btn-outline-secondary px-3"><i class="fa-solid fa-download me-1"></i> Descargar</button>
+            <div class="card-header d-flex justify-content-between align-items-center flex-wrap gap-2">
+              <span>Tráfico de los últimos 7 días</span>
+              <button class="btn btn-sm btn-outline-secondary px-3" id="btnDescargarGrafica" onclick="descargarEstadistica()">
+                <i class="fa-solid fa-download me-1"></i> Descargar
+              </button>
             </div>
             <div class="card-body">
-              <canvas id="traficoChart" height="110"></canvas>
+              <div class="chart-container">
+                <canvas id="traficoChart"></canvas>
+              </div>
             </div>
           </div>
         </div>
         
         <div class="col-lg-4">
           <div class="admin-card">
-            <div class="card-header"><i class="fa-solid fa-ranking-star me-2 text-primary"></i> Páginas más visitadas</div>
+            <div class="card-header">Páginas más visitadas</div>
             <ul class="list-group list-group-flush">
               <li class="list-group-item d-flex justify-content-between align-items-center py-3 border-bottom">
                 <span class="fw-medium text-secondary">Inicio (Home)</span>
-                <span class="badge bg-primary rounded-pill px-3 py-1.5" style="background-color: var(--secondary-color) !important;">1,204</span>
+                <span class="badge rounded-pill px-3 py-1.5" style="background-color: var(--secondary-color) !important; color: white;">1,204</span>
+              </li>
+               <li class="list-group-item d-flex justify-content-between align-items-center py-3 border-bottom">
+                <span class="fw-medium text-secondary">Denuncias</span>
+                <span class="badge rounded-pill px-3 py-1.5" style="background-color: var(--secondary-color) !important; color: white;">1,000</span>
               </li>
               <li class="list-group-item d-flex justify-content-between align-items-center py-3 border-bottom">
-                <span class="fw-medium text-secondary">Noticias</span>
-                <span class="badge bg-secondary rounded-pill px-3 py-1.5">850</span>
+                <span class="fw-medium text-secondary">Organigrama Estructural</span>
+                <span class="badge bg-secondary rounded-pill px-3 py-1.5 text-white">850</span>
               </li>
               <li class="list-group-item d-flex justify-content-between align-items-center py-3 border-bottom">
-                <span class="fw-medium text-secondary">Atención al Ciudadano</span>
-                <span class="badge bg-secondary rounded-pill px-3 py-1.5">630</span>
+                <span class="fw-medium text-secondary">Contraloría Escolar</span>
+                <span class="badge bg-secondary rounded-pill px-3 py-1.5 text-white">630</span>
               </li>
               <li class="list-group-item d-flex justify-content-between align-items-center py-3 border-0">
-                <span class="fw-medium text-secondary">Directorio</span>
-                <span class="badge bg-secondary rounded-pill px-3 py-1.5">312</span>
+                <span class="fw-medium text-secondary">Gestión Comunitaria</span>
+                <span class="badge bg-secondary rounded-pill px-3 py-1.5 text-white">312</span>
               </li>
+              
             </ul>
           </div>
         </div>
@@ -476,6 +583,7 @@
     backdrop.classList.toggle('show');
   }
 
+  // Inicialización optimizada de la gráfica de tráfico
   const ctx = document.getElementById('traficoChart').getContext('2d');
   const traficoChart = new Chart(ctx, {
       type: 'line',
@@ -484,25 +592,52 @@
           datasets: [{
               label: 'Visitas Diarias',
               data: [120, 190, 142, 160, 210, 95, 110],
-              backgroundColor: 'rgba(13, 27, 62, 0.08)',
+              backgroundColor: 'rgba(13, 27, 62, 0.06)',
               borderColor: '#0d1b3e',
               borderWidth: 3,
               pointBackgroundColor: '#e63946',
-              pointRadius: 5,
-              pointHoverRadius: 7,
+              pointBorderColor: '#ffffff',
+              pointBorderWidth: 2,
+              pointRadius: 6,
+              pointHoverRadius: 8,
               fill: true,
               tension: 0.35
           }]
       },
       options: {
           responsive: true,
-          plugins: { legend: { display: false } },
+          maintainAspectRatio: false,
+          plugins: { 
+            legend: { display: false },
+            tooltip: {
+              backgroundColor: '#0d1b3e',
+              titleFont: { family: 'Roboto', size: 13 },
+              bodyFont: { family: 'Open Sans', size: 13 },
+              padding: 10,
+              cornerRadius: 8
+            }
+          },
           scales: {
-              y: { beginAtZero: true, grid: { borderDash: [5, 5], color: '#e2e8f0' } },
-              x: { grid: { display: false } }
+              y: { 
+                beginAtZero: true, 
+                grid: { color: '#f1f5f9' },
+                ticks: { font: { family: 'Open Sans', size: 11 }, color: '#64748b' }
+              },
+              x: { 
+                grid: { display: false },
+                ticks: { font: { family: 'Open Sans', size: 11 }, color: '#64748b' }
+              }
           }
       }
   });
+
+  // Función para Descargar la Gráfica como Imagen al hacer clic
+  function descargarEstadistica() {
+    const link = document.createElement('a');
+    link.download = 'trafico_ultimos_7_dias.png';
+    link.href = document.getElementById('traficoChart').toDataURL('image/png', 1.0);
+    link.click();
+  }
 </script>
 </body>
 </html>

@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>CMS - Textos de Inicio</title>
+  <title>CMP - Textos de Inicio</title>
   <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;500;700&family=Open+Sans:wght@400;600&display=swap" rel="stylesheet">
   <link href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap/5.3.2/css/bootstrap.min.css" rel="stylesheet">
   <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.2/css/all.min.css" rel="stylesheet">
@@ -14,7 +14,10 @@
       --secondary-color: #0d1b3e;
       --accent-color: #e63946;
       --bg-color: #f4f6fb;
-      --card-border: #e2e8f0;
+      --card-border: #cbd5e1;
+      --futur-border-hover: #1e3a8a;
+      --futur-glow-hover: 0 10px 25px -5px rgba(30, 58, 138, 0.15), 0 0 0 1px rgba(30, 58, 138, 0.3);
+      --futur-accent-blue: #2563eb;
     }
 
     body {
@@ -31,7 +34,7 @@
       position: relative;
     }
 
-    /* Sidebar Moderno */
+    /* Sidebar Moderno[cite: 5] */
     .sidebar {
       width: 280px;
       background: linear-gradient(180deg, var(--primary-color) 0%, #040917 100%);
@@ -220,18 +223,38 @@
       border-radius: 2px;
     }
 
-    /* Tarjetas del Administrador */
+    /* Tarjetas del Administrador con Estilo Futurista Elegante */
     .admin-card {
-      background: white;
+      background: #ffffff;
       border-radius: 12px;
       border: 1px solid var(--card-border);
-      box-shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.04), 0 8px 10px -6px rgba(0, 0, 0, 0.04);
+      box-shadow: 0 4px 6px rgba(0, 0, 0, 0.01);
       overflow: hidden;
       height: 100%;
+      position: relative;
+      transition: all 0.35s cubic-bezier(0.16, 1, 0.3, 1);
+    }
+
+    /* Línea sutil superior futurista */
+    .admin-card::before {
+      content: '';
+      position: absolute;
+      top: 0;
+      left: 0;
+      right: 0;
+      height: 3px;
+      background: var(--futur-accent-blue);
+      opacity: 0.8;
+    }
+
+    .admin-card:hover {
+      transform: translateY(-2px);
+      border-color: var(--futur-border-hover);
+      box-shadow: var(--futur-glow-hover);
     }
 
     .admin-card .card-header {
-      background-color: #fafbfd;
+      background-color: #f8fafc;
       border-bottom: 1px solid var(--card-border);
       padding: 18px 24px;
       font-weight: 700;
@@ -282,7 +305,7 @@
       transform: translateY(-1px);
     }
 
-    /* Caja de Vista Previa Dinámica con Fondo de Imagen */
+    /* Caja de Vista Previa Dinámica con Fondo de Imagen[cite: 5] */
    .live-preview-box {
       background: linear-gradient(135deg, rgba(8, 18, 42, 0.85) 0%, rgba(17, 34, 68, 0.9) 100%), url('../../assets/img/portadahero.jpg') center/cover no-repeat;
       border-radius: 12px;
@@ -325,7 +348,7 @@
       text-shadow: 0 1px 3px rgba(0,0,0,0.3);
     }
 
-    /* Media Queries */
+    /* Media Queries[cite: 5] */
     @media (max-width: 992px) {
       .sidebar {
         position: fixed;
@@ -365,10 +388,10 @@
 
 <div class="admin-wrapper">
   
-  <!-- Backdrop para móviles -->
+  <!-- Backdrop para móviles[cite: 5] -->
   <div class="sidebar-backdrop" id="sidebarBackdrop" onclick="toggleSidebar()"></div>
 
-  <!-- Sidebar Moderno con Iconos -->
+  <!-- Sidebar Moderno con Iconos[cite: 5] -->
   <aside class="sidebar" id="appSidebar">
     <div class="sidebar-header">
       <img src="../../assets/img/logonuevo.jpeg" alt="Logo">
@@ -393,10 +416,10 @@
     </div>
   </aside>
 
-  <!-- Contenido Principal -->
+  <!-- Contenido Principal[cite: 5] -->
   <main class="main-content">
     
-    <!-- Topbar -->
+    <!-- Topbar[cite: 5] -->
     <header class="topbar">
       <div class="d-flex align-items-center gap-3">
         <button class="menu-toggle-btn" id="menuToggle" onclick="toggleSidebar()" aria-label="Abrir menú">
@@ -407,7 +430,7 @@
         </div>
       </div>
 
-      <!-- Menú de Usuario -->
+      <!-- Menú de Usuario[cite: 5] -->
       <div class="topbar-user dropdown ms-auto">
         <div class="d-flex align-items-center" role="button" data-bs-toggle="dropdown" aria-expanded="false" style="cursor: pointer; gap: 12px;">
           <div class="user-avatar shadow-sm" style="background-color: var(--secondary-color); width: 42px; height: 42px; color: white; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-weight: 700;">M</div>
@@ -431,12 +454,12 @@
       <h2 class="section-title">Textos y Banner (Inicio)</h2>
       <div class="title-underline"></div>
 
-      <!-- Vista Previa en Vivo -->
+      <!-- Vista Previa en Vivo-->
       <div class="row mb-4">
         <div class="col-12">
           <div class="admin-card">
             <div class="card-header">
-              <i class="fa-solid fa-eye text-primary"></i> Vista Previa Visual del Banner
+              Vista Previa Visual del Banner
             </div>
             <div class="card-body p-4">
               <div class="live-preview-box" id="previewContainer">
@@ -454,7 +477,7 @@
         <div class="col-12">
           <div class="admin-card mb-4">
             <div class="card-header">
-              <i class="fa-solid fa-pen-to-square text-primary"></i> Configuración y Carga de Elementos
+               Configuración y Carga de Elementos
             </div>
             <div class="card-body">
               <form id="heroForm" onsubmit="event.preventDefault(); alert('¡Banner y textos guardados con éxito!');">
@@ -485,15 +508,15 @@
                   </div>
                 </div>
 
-               <div class="d-flex flex-column flex-sm-row justify-content-sm-between align-items-center gap-3 pt-3 border-top">
+                <div class="d-flex flex-column flex-sm-row justify-content-sm-between align-items-center gap-3 pt-3 border-top">
                   <span class="text-muted small text-center text-sm-start text-justify-custom">
                     <i class="fa-solid fa-circle-info me-1"></i> Los cambios visuales se actualizan de inmediato en la maqueta superior.
                   </span>
                   <button type="submit" class="btn btn-primary-admin w-100 w-sm-auto">
-                    <i class="fa-solid fa-floppy-disk me-2"></i> Guardar Cambios
+                     Guardar Cambios
                   </button>
                 </div>
-                </div>
+
               </form>
             </div>
           </div>
@@ -529,7 +552,6 @@
       const reader = new FileReader();
       reader.onload = function(e) {
         const previewContainer = document.getElementById('previewContainer');
-        // Aplica la imagen cargada manteniendo una capa oscura encima para contraste tipográfico
         previewContainer.style.background = `linear-gradient(135deg, rgba(8, 18, 42, 0.85) 0%, rgba(17, 34, 68, 0.9) 100%), url('${e.target.result}') center/cover no-repeat`;
       }
       reader.readAsDataURL(file);

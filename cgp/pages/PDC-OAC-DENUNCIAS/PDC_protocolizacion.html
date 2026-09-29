@@ -6,6 +6,7 @@
   <title>Protocolización - OAC Contraloría del Municipio Páez</title>
   <link href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap/5.3.2/css/bootstrap.min.css" rel="stylesheet">
   <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js"></script>
   
   <style>
     :root {
@@ -34,7 +35,6 @@
       position: relative; 
     }
     
-    /* Estilos del Sidebar Institucional */
     .sidebar { 
       width: 260px; 
       background: linear-gradient(180deg, var(--primary-color) 0%, var(--primary-dark) 100%); 
@@ -191,21 +191,33 @@
       color: var(--primary-color);
     }
 
-    /* ESTILOS EXACTOS DE LA PLANILLA (COMPROBANTE) ADAPTADOS AL MODAL */
-    .hoja-comprobante {
+    /* CONTENEDOR CON SCROLL PARA DISPOSITIVOS MÓVILES */
+    .table-responsive-comprobante {
       width: 100%;
+      overflow-x: auto;
+      -webkit-overflow-scrolling: touch;
+      background: #ffffff;
+      padding: 10px;
+      border-radius: 6px;
+    }
+
+    /* ESTILOS EXACTOS DE LA PLANILLA (COMPROBANTE) CON ANCHO FIJO PARA EVITAR DEFORMACIONES */
+    .hoja-comprobante {
+      width: 750px;
+      min-width: 750px;
       background: #ffffff;
       padding: 15px;
       box-sizing: border-box;
       font-family: Arial, Helvetica, sans-serif;
       font-size: 10px;
       color: #000;
+      margin: 0 auto;
     }
     .hoja-comprobante .top-logos {
       display: flex;
       justify-content: space-between;
       align-items: flex-start;
-      margin-bottom: 5px;
+      margin-bottom: 8px;
       padding: 0 5px;
     }
     .hoja-comprobante .top-logos img {
@@ -226,7 +238,8 @@
       vertical-align: top;
     }
     .hoja-comprobante .bg-blue {
-      background-color: #a9d0f5;
+      background-color: #a9d0f5 !important;
+      -webkit-print-color-adjust: exact;
       text-align: center;
       font-weight: bold;
       text-transform: uppercase;
@@ -502,7 +515,7 @@
   </main>
 </div>
 
-<!-- Modal con la Plantilla Exacta del Comprobante (Sin la 'X' superior y con rutas de logos corregidas) -->
+<!-- Modal con la Plantilla Exacta del Comprobante (Sin la 'X' superior) -->
 <div class="modal fade" id="modalDetalles" tabindex="-1" aria-hidden="true" data-bs-backdrop="static" data-bs-keyboard="false">
   <div class="modal-dialog modal-xl modal-dialog-centered modal-dialog-scrollable">
     <div class="modal-content border-0 shadow-lg">
@@ -511,256 +524,261 @@
       </div>
       <div class="modal-body bg-secondary bg-opacity-25 p-3">
         
-        <!-- HOJA DE COMPROBANTE EXACTA -->
-        <div class="hoja-comprobante shadow rounded">
-          
-          <!-- LOGOS SUPERIORES (Rutas corregidas: asegúrate de ajustarlas si tus imágenes están directamente en la carpeta assets/img) -->
-          <div class="top-logos">
-            <img src="../../assets/img/logoletrasnegras.png" alt="Logo CMP" onerror="this.src='../assets/img/logoletrasnegras.png';">
-            <img src="../../assets/img/IMG-20241209-WA0052-removebg-preview.png" class="logo-sncf" alt="Logo SNCF" onerror="this.src='../assets/img/IMG-20241209-WA0052-removebg-preview.png';">
+        <!-- CONTENEDOR CON SCROLL HORIZONTAL PARA MÓVILES -->
+        <div class="table-responsive-comprobante shadow-sm">
+          <!-- HOJA DE COMPROBANTE EXACTA CON ANCHO FIJO -->
+          <div class="hoja-comprobante" id="areaComprobante">
+            
+            <!-- LOGOS SUPERIORES -->
+            <div class="top-logos">
+              <img src="../../assets/img/logoletrasnegras.png" alt="Logo CMP" onerror="this.src='../assets/img/logoletrasnegras.png';">
+              <img src="../../assets/img/IMG-20241209-WA0052-removebg-preview.png" class="logo-sncf" alt="Logo SNCF" onerror="this.src='../assets/img/IMG-20241209-WA0052-removebg-preview.png';">
+            </div>
+
+            <!-- TABLA 1: ENCABEZADO Y TIPO DE RECEPCIÓN -->
+            <table>
+              <tr>
+                <td style="width: 50%; padding: 4px;" class="valign-middle">
+                  <div style="display: flex; align-items: center; gap: 8px;">
+                    <img src="../../assets/img/logosinfondo.png" alt="Sello Pequeño" style="width: 35px; height: auto; flex-shrink: 0;" onerror="this.src='../assets/img/logosinfondo.png'">
+                    <div style="text-align: center; width: 100%;">
+                      <div style="font-size: 9px;">Contraloría del Municipio Páez<br>Del Estado Portuguesa</div>
+                      <div style="font-size: 8.5px;">Dirección de Atención al Ciudadano</div>
+                      <div style="font-weight: bold; font-size: 10px; margin-top: 2px;">PLANILLA DE RECEPCIÓN</div>
+                    </div>
+                  </div>
+                </td>
+                <td style="width: 35%; padding: 0;">
+                  <table style="border: none; margin: 0; width: 100%; height: 100%;">
+                    <tr>
+                      <td colspan="3" style="border: none; border-bottom: 1px solid #444;">
+                        <span class="label">2. Fecha de solicitud:</span>
+                        <div class="center fw-bold" id="lblFecha">23/08/2026</div>
+                      </td>
+                    </tr>
+                    <tr>
+                      <td style="border: none; border-right: 1px solid #444; width: 33%;" class="center">Día</td>
+                      <td style="border: none; border-right: 1px solid #444; width: 33%;" class="center">Mes</td>
+                      <td style="border: none; width: 34%;" class="center">Año</td>
+                    </tr>
+                  </table>
+                </td>
+                <td style="width: 15%;">
+                  <span class="label">3. Hora:</span>
+                  <div class="center fw-bold mt-1">10:30 AM</div>
+                </td>
+              </tr>
+            </table>
+            
+            <table>
+              <tr>
+                <td style="width: 50%;">
+                  <span class="label">1. Tipo de Recepción:</span>
+                  <div style="display: flex; gap: 30px; margin-top: 4px;">
+                    <div style="display: flex; flex-direction: column; gap: 4px;">
+                      <span class="check-item"><span class="box" id="chkDenuncia"></span> Denuncia</span>
+                      <span class="check-item"><span class="box" id="chkReclamo"></span> Reclamo</span>
+                    </div>
+                    <div style="display: flex; flex-direction: column; gap: 4px;">
+                      <span class="check-item"><span class="box" id="chkQueja"></span> Queja</span>
+                      <span class="check-item"><span class="box" id="chkPeticion"></span> Petición</span>
+                    </div>
+                  </div>
+                </td>
+                <td style="width: 50%;">
+                  <span class="label">4. Nro. Expediente / Registro:</span>
+                  <div class="min-h-15 fw-bold text-danger fs-6" id="lblExpediente">EXP-OAC-2026-001</div>
+                </td>
+              </tr>
+            </table>
+
+            <!-- DATOS DEL CIUDADANO -->
+            <table>
+              <tr><td colspan="3" class="bg-blue">DATOS DEL CIUDADANO (SOLICITANTE)</td></tr>
+              <tr>
+                <td style="width: 40%;">
+                  <span class="label">5. Cédula de Identidad/Pasaporte:</span>
+                  <div class="check-container">
+                    <span class="check-item"><span class="box checked"></span> V</span>
+                    <span class="check-item"><span class="box"></span> E</span>
+                    <span class="ms-2 fw-bold" id="lblCedula">V-30.345.678</span>
+                  </div>
+                </td>
+                <td colspan="2" style="width: 60%;">
+                  <span class="label">6. Apellidos y Nombres:</span>
+                  <div class="min-h-15 fw-bold" id="lblSolicitante">Maikol Aguilar</div>
+                </td>
+              </tr>
+              <tr>
+                <td style="width: 20%;">
+                  <span class="label">7. Sexo:</span>
+                  <div class="check-container">
+                    <span class="check-item"><span class="box" id="boxSexoM"></span> M</span>
+                    <span class="check-item"><span class="box" id="boxSexoF"></span> F</span>
+                  </div>
+                </td>
+                <td style="width: 20%;">
+                  <span class="label">8. Edad:</span>
+                  <div class="min-h-15 fw-bold" id="lblEdad">28</div>
+                </td>
+                <td style="width: 60%;">
+                  <span class="label">9. Estado Civil:</span>
+                  <div class="check-container">
+                    <span class="check-item"><span class="box" id="boxSoltero"></span> Soltero(a)</span>
+                    <span class="check-item"><span class="box" id="boxCasado"></span> Casado(a)</span>
+                    <span class="check-item"><span class="box"></span> Divorciado(a)</span>
+                    <span class="check-item"><span class="box"></span> Viudo(a)</span>
+                  </div>
+                </td>
+              </tr>
+              <tr>
+                <td colspan="2">
+                  <span class="label">10. Lugar y fecha de nacimiento:</span>
+                  <div class="min-h-15" id="lblLugarNac">Acarigua, 12/03/1998</div>
+                </td>
+                <td>
+                  <div style="display: flex; width: 100%;">
+                    <div style="width: 50%; border-right: 1px solid #444; padding-right: 4px;">
+                      <span class="label">11. Nivel Educativo:</span>
+                      <span id="lblEducacion">Universitario</span>
+                    </div>
+                    <div style="width: 50%; padding-left: 4px;">
+                      <span class="label">12. Profesión y/u ocupación:</span>
+                      <span id="lblProfesion">Ingeniero</span>
+                    </div>
+                  </div>
+                </td>
+              </tr>
+              <tr>
+                <td colspan="3">
+                  <span class="label">13. Dirección de habitación:</span>
+                  <div class="min-h-15" id="lblDireccion">Urbanización Los Próceres, Calle 4, Acarigua</div>
+                </td>
+              </tr>
+              <tr>
+                <td style="width: 33%;">
+                  <span class="label">14. Parroquia:</span>
+                  <div class="min-h-15" id="lblParroquia">Acarigua</div>
+                </td>
+                <td style="width: 33%;">
+                  <span class="label">15. Municipio:</span>
+                  <div class="min-h-15" id="lblMunicipio">Páez</div>
+                </td>
+                <td style="width: 34%;">
+                  <span class="label">16. Ciudad:</span>
+                  <div class="min-h-15" id="lblCiudad">Acarigua</div>
+                </td>
+              </tr>
+              <tr>
+                <td>
+                  <span class="label">17. Correo Electrónico:</span>
+                  <div class="min-h-15" id="lblCorreo">maikol.aguilar@email.com</div>
+                </td>
+                <td>
+                  <span class="label">18. Telf. Hab.:</span>
+                  <div class="min-h-15" id="lblTelfHab">0255-5551234</div>
+                </td>
+                <td>
+                  <div style="display: flex; width: 100%;">
+                    <div style="width: 50%; border-right: 1px solid #444; padding-right: 4px;">
+                      <span class="label">19. Telf. Celular:</span>
+                      <span id="lblTelfCel">0412-1234567</span>
+                    </div>
+                    <div style="width: 50%; padding-left: 4px;">
+                      <span class="label">20. Telf. Trabajo:</span>
+                      <span>N/D</span>
+                    </div>
+                  </div>
+                </td>
+              </tr>
+            </table>
+
+            <!-- DATOS DE IDENTIFICACIÓN SEÑALADO -->
+            <table>
+              <tr><td colspan="5" class="bg-blue">DATOS DE IDENTIFICACIÓN Y/O UBICACIÓN DEL SEÑALADO(S)</td></tr>
+              <tr>
+                <td colspan="5">
+                  <span class="label">21. Tipo del señalado(a):</span>
+                  <div class="check-container" style="gap: 15px;">
+                    <span class="check-item"><span class="box checked"></span> Persona Natural</span>
+                    <span class="check-item"><span class="box"></span> Órgano o Ente</span>
+                  </div>
+                </td>
+              </tr>
+              <tr>
+                <td colspan="5">
+                  <span class="label">22. Ubicación Geográfica del señalado(a):</span>
+                  <div class="min-h-15">Dirección de adscripción institucional / Dependencia municipal</div>
+                </td>
+              </tr>
+              <tr>
+                <td style="width: 15%;"><span class="label">23. Cédula (V/E):</span> V-18.234.567</td>
+                <td style="width: 25%;"><span class="label">24. Apellidos y Nombres:</span> Funcionario Responsable Área de Compras</td>
+                <td style="width: 25%;"><span class="label">25. Comuna/Consejo Comunal:</span> N/A</td>
+                <td style="width: 15%;"><span class="label">26. Código SITUR:</span> N/A</td>
+                <td style="width: 20%;"><span class="label">27. R.I.F.:</span> G-20001234-5</td>
+              </tr>
+            </table>
+
+            <!-- DESCRIPCIÓN Y SEÑALAMIENTO -->
+            <table>
+              <tr><td colspan="3" class="bg-blue">DESCRIPCIÓN Y SEÑALAMIENTO:</td></tr>
+              <tr>
+                <td colspan="3">
+                  <span class="label">32. Narración circunstanciada de los hechos:</span>
+                  <div class="min-h-30 p-2 bg-light rounded text-dark" id="lblDesc" style="font-size: 10px;">Presunta irregularidad en procesos de contratación pública.</div>
+                </td>
+              </tr>
+              <tr>
+                <td colspan="2" style="width: 85%;">
+                  <span class="label" style="display:inline-block; margin:0;">33. ¿Esta situación y/o problemática ha sido presentada ante otra instancia?</span>
+                </td>
+                <td style="width: 15%; text-align: center;" class="valign-middle">
+                  <div class="check-container" style="justify-content: center; margin:0;">
+                    <span class="check-item"><span class="box"></span> SÍ</span>
+                    <span class="check-item"><span class="box checked"></span> NO</span>
+                  </div>
+                </td>
+              </tr>
+              <tr>
+                <td colspan="3">
+                  <span class="label">35. Documentos que anexa como prueba de los hechos:</span>
+                  <div class="check-container mt-1">
+                    <span class="check-item"><span class="box checked"></span> Copia de C.I. del denunciante</span>
+                    <span class="check-item"><span class="box checked"></span> Carta de exposición de motivo</span>
+                    <span class="check-item"><span class="box"></span> Fotografías</span>
+                  </div>
+                </td>
+              </tr>
+            </table>
+
+            <!-- ZONA DE FIRMAS INFERIOR -->
+            <div class="signatures-area">
+              <div class="sig-block">
+                <span>Elaborado por:</span>
+                <div class="sig-line">María L. Pérez</div>
+              </div>
+              <div class="sig-block">
+                <span>Revisado por:</span>
+                <div class="sig-line">Abg. Esther Jiménez</div>
+              </div>
+              <div class="sig-block" style="width: 22%;">
+                <span>Aprobado y autorizado por:</span>
+                <div class="sig-line">Abg. Leonel O. Lucena H.</div>
+              </div>
+              <div class="sig-block">
+                <span style="font-weight: bold;">Resolución<br>Administrativa N°</span>
+                <div style="margin-top: 10px; font-weight: bold;">CMP-013-2024<br>05/03/2024</div>
+              </div>
+            </div>
+
           </div>
-
-          <!-- TABLA 1: ENCABEZADO Y TIPO DE RECEPCIÓN -->
-          <table>
-            <tr>
-              <td style="width: 50%; position: relative; padding: 4px;" class="valign-middle">
-                <img src="../../assets/img/logosinfondo.png" alt="Sello Pequeño" style="position: absolute; left: 6px; top: 50%; transform: translateY(-50%); width: 35px; height: auto;" onerror="this.src='../assets/img/logosinfondo.png'">
-                <div style="text-align: center; width: 100%;">
-                  <div style="font-size: 9px;">Contraloría del Municipio Páez<br>Del Estado Portuguesa</div>
-                  <div style="font-size: 8.5px;">Dirección de Atención al Ciudadano</div>
-                  <div style="font-weight: bold; font-size: 10px; margin-top: 2px;">PLANILLA DE RECEPCIÓN</div>
-                </div>
-              </td>
-              <td style="width: 35%; padding: 0;">
-                <table style="border: none; margin: 0; width: 100%; height: 100%;">
-                  <tr>
-                    <td colspan="3" style="border: none; border-bottom: 1px solid #444;">
-                      <span class="label">2. Fecha de solicitud:</span>
-                      <div class="center fw-bold" id="lblFecha">23/08/2026</div>
-                    </td>
-                  </tr>
-                  <tr>
-                    <td style="border: none; border-right: 1px solid #444; width: 33%;" class="center">Día</td>
-                    <td style="border: none; border-right: 1px solid #444; width: 33%;" class="center">Mes</td>
-                    <td style="border: none; width: 34%;" class="center">Año</td>
-                  </tr>
-                </table>
-              </td>
-              <td style="width: 15%;">
-                <span class="label">3. Hora:</span>
-                <div class="center fw-bold mt-1">10:30 AM</div>
-              </td>
-            </tr>
-          </table>
-          
-          <table>
-            <tr>
-              <td style="width: 50%;">
-                <span class="label">1. Tipo de Recepción:</span>
-                <div style="display: flex; gap: 30px; margin-top: 4px;">
-                  <div style="display: flex; flex-direction: column; gap: 4px;">
-                    <span class="check-item"><span class="box" id="chkDenuncia"></span> Denuncia</span>
-                    <span class="check-item"><span class="box" id="chkReclamo"></span> Reclamo</span>
-                  </div>
-                  <div style="display: flex; flex-direction: column; gap: 4px;">
-                    <span class="check-item"><span class="box" id="chkQueja"></span> Queja</span>
-                    <span class="check-item"><span class="box" id="chkPeticion"></span> Petición</span>
-                  </div>
-                </div>
-              </td>
-              <td style="width: 50%;">
-                <span class="label">4. Nro. Expediente / Registro:</span>
-                <div class="min-h-15 fw-bold text-danger fs-6" id="lblExpediente">EXP-OAC-2026-001</div>
-              </td>
-            </tr>
-          </table>
-
-          <!-- DATOS DEL CIUDADANO -->
-          <table>
-            <tr><td colspan="3" class="bg-blue">DATOS DEL CIUDADANO (SOLICITANTE)</td></tr>
-            <tr>
-              <td style="width: 40%;">
-                <span class="label">5. Cédula de Identidad/Pasaporte:</span>
-                <div class="check-container">
-                  <span class="check-item"><span class="box checked"></span> V</span>
-                  <span class="check-item"><span class="box"></span> E</span>
-                  <span class="ms-2 fw-bold" id="lblCedula">V-30.345.678</span>
-                </div>
-              </td>
-              <td colspan="2" style="width: 60%;">
-                <span class="label">6. Apellidos y Nombres:</span>
-                <div class="min-h-15 fw-bold" id="lblSolicitante">Maikol Aguilar</div>
-              </td>
-            </tr>
-            <tr>
-              <td style="width: 20%;">
-                <span class="label">7. Sexo:</span>
-                <div class="check-container">
-                  <span class="check-item"><span class="box" id="boxSexoM"></span> M</span>
-                  <span class="check-item"><span class="box" id="boxSexoF"></span> F</span>
-                </div>
-              </td>
-              <td style="width: 20%;">
-                <span class="label">8. Edad:</span>
-                <div class="min-h-15 fw-bold" id="lblEdad">28</div>
-              </td>
-              <td style="width: 60%;">
-                <span class="label">9. Estado Civil:</span>
-                <div class="check-container">
-                  <span class="check-item"><span class="box" id="boxSoltero"></span> Soltero(a)</span>
-                  <span class="check-item"><span class="box" id="boxCasado"></span> Casado(a)</span>
-                  <span class="check-item"><span class="box"></span> Divorciado(a)</span>
-                  <span class="check-item"><span class="box"></span> Viudo(a)</span>
-                </div>
-              </td>
-            </tr>
-            <tr>
-              <td colspan="2">
-                <span class="label">10. Lugar y fecha de nacimiento:</span>
-                <div class="min-h-15" id="lblLugarNac">Acarigua, 12/03/1998</div>
-              </td>
-              <td>
-                <div style="display: flex; width: 100%;">
-                  <div style="width: 50%; border-right: 1px solid #444; padding-right: 4px;">
-                    <span class="label">11. Nivel Educativo:</span>
-                    <span id="lblEducacion">Universitario</span>
-                  </div>
-                  <div style="width: 50%; padding-left: 4px;">
-                    <span class="label">12. Profesión y/u ocupación:</span>
-                    <span id="lblProfesion">Ingeniero</span>
-                  </div>
-                </div>
-              </td>
-            </tr>
-            <tr>
-              <td colspan="3">
-                <span class="label">13. Dirección de habitación:</span>
-                <div class="min-h-15" id="lblDireccion">Urbanización Los Próceres, Calle 4, Acarigua</div>
-              </td>
-            </tr>
-            <tr>
-              <td style="width: 33%;">
-                <span class="label">14. Parroquia:</span>
-                <div class="min-h-15" id="lblParroquia">Acarigua</div>
-              </td>
-              <td style="width: 33%;">
-                <span class="label">15. Municipio:</span>
-                <div class="min-h-15" id="lblMunicipio">Páez</div>
-              </td>
-              <td style="width: 34%;">
-                <span class="label">16. Ciudad:</span>
-                <div class="min-h-15" id="lblCiudad">Acarigua</div>
-              </td>
-            </tr>
-            <tr>
-              <td>
-                <span class="label">17. Correo Electrónico:</span>
-                <div class="min-h-15" id="lblCorreo">maikol.aguilar@email.com</div>
-              </td>
-              <td>
-                <span class="label">18. Telf. Hab.:</span>
-                <div class="min-h-15" id="lblTelfHab">0255-5551234</div>
-              </td>
-              <td>
-                <div style="display: flex; width: 100%;">
-                  <div style="width: 50%; border-right: 1px solid #444; padding-right: 4px;">
-                    <span class="label">19. Telf. Celular:</span>
-                    <span id="lblTelfCel">0412-1234567</span>
-                  </div>
-                  <div style="width: 50%; padding-left: 4px;">
-                    <span class="label">20. Telf. Trabajo:</span>
-                    <span>N/D</span>
-                  </div>
-                </div>
-              </td>
-            </tr>
-          </table>
-
-          <!-- DATOS DE IDENTIFICACIÓN SEÑALADO -->
-          <table>
-            <tr><td colspan="5" class="bg-blue">DATOS DE IDENTIFICACIÓN Y/O UBICACIÓN DEL SEÑALADO(S)</td></tr>
-            <tr>
-              <td colspan="5">
-                <span class="label">21. Tipo del señalado(a):</span>
-                <div class="check-container" style="gap: 15px;">
-                  <span class="check-item"><span class="box checked"></span> Persona Natural</span>
-                  <span class="check-item"><span class="box"></span> Órgano o Ente</span>
-                </div>
-              </td>
-            </tr>
-            <tr>
-              <td colspan="5">
-                <span class="label">22. Ubicación Geográfica del señalado(a):</span>
-                <div class="min-h-15">Dirección de adscripción institucional / Dependencia municipal</div>
-              </td>
-            </tr>
-            <tr>
-              <td style="width: 15%;"><span class="label">23. Cédula (V/E):</span> V-18.234.567</td>
-              <td style="width: 25%;"><span class="label">24. Apellidos y Nombres:</span> Funcionario Responsable Área de Compras</td>
-              <td style="width: 25%;"><span class="label">25. Comuna/Consejo Comunal:</span> N/A</td>
-              <td style="width: 15%;"><span class="label">26. Código SITUR:</span> N/A</td>
-              <td style="width: 20%;"><span class="label">27. R.I.F.:</span> G-20001234-5</td>
-            </tr>
-          </table>
-
-          <!-- DESCRIPCIÓN Y SEÑALAMIENTO -->
-          <table>
-            <tr><td colspan="3" class="bg-blue">DESCRIPCIÓN Y SEÑALAMIENTO:</td></tr>
-            <tr>
-              <td colspan="3">
-                <span class="label">32. Narración circunstanciada de los hechos:</span>
-                <div class="min-h-30 p-2 bg-light rounded text-dark" id="lblDesc" style="font-size: 10px;">Presunta irregularidad en procesos de contratación pública.</div>
-              </td>
-            </tr>
-            <tr>
-              <td colspan="2" style="width: 85%;">
-                <span class="label" style="display:inline-block; margin:0;">33. ¿Esta situación y/o problemática ha sido presentada ante otra instancia?</span>
-              </td>
-              <td style="width: 15%; text-align: center;" class="valign-middle">
-                <div class="check-container" style="justify-content: center; margin:0;">
-                  <span class="check-item"><span class="box"></span> SÍ</span>
-                  <span class="check-item"><span class="box checked"></span> NO</span>
-                </div>
-              </td>
-            </tr>
-            <tr>
-              <td colspan="3">
-                <span class="label">35. Documentos que anexa como prueba de los hechos:</span>
-                <div class="check-container mt-1">
-                  <span class="check-item"><span class="box checked"></span> Copia de C.I. del denunciante</span>
-                  <span class="check-item"><span class="box checked"></span> Carta de exposición de motivo</span>
-                  <span class="check-item"><span class="box"></span> Fotografías</span>
-                </div>
-              </td>
-            </tr>
-          </table>
-
-          <!-- ZONA DE FIRMAS INFERIOR -->
-          <div class="signatures-area">
-            <div class="sig-block">
-              <span>Elaborado por:</span>
-              <div class="sig-line">María L. Pérez</div>
-            </div>
-            <div class="sig-block">
-              <span>Revisado por:</span>
-              <div class="sig-line">Abg. Esther Jiménez</div>
-            </div>
-            <div class="sig-block" style="width: 22%;">
-              <span>Aprobado y autorizado por:</span>
-              <div class="sig-line">Abg. Leonel O. Lucena H.</div>
-            </div>
-            <div class="sig-block">
-              <span style="font-weight: bold;">Resolución<br>Administrativa N°</span>
-              <div style="margin-top: 10px; font-weight: bold;">CMP-013-2024<br>05/03/2024</div>
-            </div>
-          </div>
-
         </div>
 
       </div>
       <div class="modal-footer bg-light">
         <button type="button" class="btn btn-secondary btn-sm" data-bs-dismiss="modal"><i class="fa-solid fa-xmark me-1"></i> Cerrar</button>
-        <button type="button" class="btn btn-primary btn-sm" onclick="window.print()"><i class="fa-solid fa-print me-1"></i> Imprimir Comprobante</button>
+        <button type="button" class="btn btn-primary btn-sm" id="btnDescargarPdf" onclick="descargarComprobantePDF()"><i class="fa-solid fa-download me-1"></i> Descargar Comprobante PDF</button>
       </div>
     </div>
   </div>
@@ -780,6 +798,8 @@
 
 <script src="https://cdnjs.cloudflare.com/ajax/libs/bootstrap/5.3.2/js/bootstrap.bundle.min.js"></script>
 <script>
+  let expedienteActual = 'EXP-OAC-2026-001';
+
   function toggleSidebar() {
     const sidebar = document.getElementById('appSidebar');
     const overlay = document.getElementById('sidebarOverlay');
@@ -788,6 +808,8 @@
   }
 
   function abrirModalDetalles(folio, fecha, solicitante, cedula, tipo, sexo, edad, estadoCivil, lugarNac, educacion, profesion, direccion, parroquia, municipio, ciudad, correo, telfHab, telfCel, desc, expediente) {
+    expedienteActual = expediente;
+
     document.getElementById('lblFecha').innerText = fecha;
     document.getElementById('lblExpediente').innerText = expediente;
     document.getElementById('lblCedula').innerText = cedula;
@@ -805,22 +827,77 @@
     document.getElementById('lblTelfCel').innerText = telfCel;
     document.getElementById('lblDesc').innerText = desc;
 
-    // Checkboxes dinámicos de tipo
     document.getElementById('chkDenuncia').className = 'box ' + (tipo === 'Denuncia' ? 'checked' : '');
     document.getElementById('chkQueja').className = 'box ' + (tipo === 'Queja' ? 'checked' : '');
     document.getElementById('chkReclamo').className = 'box ' + (tipo === 'Reclamo' ? 'checked' : '');
     document.getElementById('chkPeticion').className = 'box ' + (tipo === 'Petición' ? 'checked' : '');
 
-    // Sexo
     document.getElementById('boxSexoM').className = 'box ' + (sexo === 'M' ? 'checked' : '');
     document.getElementById('boxSexoF').className = 'box ' + (sexo === 'F' ? 'checked' : '');
 
-    // Estado civil
     document.getElementById('boxSoltero').className = 'box ' + (estadoCivil.includes('Soltero') ? 'checked' : '');
     document.getElementById('boxCasado').className = 'box ' + (estadoCivil.includes('Casado') ? 'checked' : '');
 
     var myModal = new bootstrap.Modal(document.getElementById('modalDetalles'));
     myModal.show();
+  }
+
+  function descargarComprobantePDF() {
+    const elemento = document.getElementById('areaComprobante');
+    const btnPdf = document.getElementById('btnDescargarPdf');
+    
+    btnPdf.innerHTML = '<i class="fa-solid fa-spinner fa-spin me-1"></i> Generando PDF...';
+    btnPdf.disabled = true;
+
+    const opciones = {
+      margin:       [5, 5, 5, 5],
+      filename:     `Planilla_Recepcion_${expedienteActual}.pdf`,
+      image:        { type: 'jpeg', quality: 0.98 },
+      html2canvas:  { 
+        scale: 2, 
+        useCORS: true, 
+        logging: false,
+        windowWidth: 780 // Forzamos el ancho de renderizado de escritorio para que no se comprima
+      },
+      jsPDF:        { unit: 'mm', format: 'letter', orientation: 'portrait' }
+    };
+
+    html2pdf().from(elemento).set(opciones).save().then(() => {
+      btnPdf.innerHTML = '<i class="fa-solid fa-download me-1"></i> Descargar Comprobante PDF';
+      btnPdf.disabled = false;
+    }).catch(err => {
+      console.error('Error al generar el PDF:', err);
+      btnPdf.innerHTML = '<i class="fa-solid fa-download me-1"></i> Descargar Comprobante PDF';
+      btnPdf.disabled = false;
+    });
+  }function descargarComprobantePDF() {
+    const elemento = document.getElementById('areaComprobante');
+    const btnPdf = document.getElementById('btnDescargarPdf');
+    
+    btnPdf.innerHTML = '<i class="fa-solid fa-spinner fa-spin me-1"></i> Generando PDF...';
+    btnPdf.disabled = true;
+
+    const opciones = {
+      margin:       [5, 5, 5, 5],
+      filename:     `Planilla_Recepcion_${expedienteActual}.pdf`,
+      image:        { type: 'jpeg', quality: 0.98 },
+      html2canvas:  { 
+        scale: 2, 
+        useCORS: true, 
+        logging: false,
+        windowWidth: 780 // Forzamos el ancho de renderizado de escritorio para que no se comprima
+      },
+      jsPDF:        { unit: 'mm', format: 'letter', orientation: 'portrait' }
+    };
+
+    html2pdf().from(elemento).set(opciones).save().then(() => {
+      btnPdf.innerHTML = '<i class="fa-solid fa-download me-1"></i> Descargar Comprobante PDF';
+      btnPdf.disabled = false;
+    }).catch(err => {
+      console.error('Error al generar el PDF:', err);
+      btnPdf.innerHTML = '<i class="fa-solid fa-download me-1"></i> Descargar Comprobante PDF';
+      btnPdf.disabled = false;
+    });
   }
 
   function protocolizarCaso(btn) {

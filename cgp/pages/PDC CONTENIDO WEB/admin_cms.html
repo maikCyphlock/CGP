@@ -14,7 +14,10 @@
       --secondary-color: #0d1b3e;
       --accent-color: #e63946;
       --bg-color: #f4f6fb;
-      --card-border: #e2e8f0;
+      --card-border: #cbd5e1;
+      --futur-border-hover: #1e3a8a;
+      --futur-glow-hover: 0 10px 25px -5px rgba(30, 58, 138, 0.15), 0 0 0 1px rgba(30, 58, 138, 0.3);
+      --futur-accent-blue: #2563eb;
     }
 
     body {
@@ -31,7 +34,7 @@
       position: relative;
     }
 
-    /* Sidebar de Escritorio */
+    /* Sidebar de Escritorio[cite: 3] */
     .sidebar {
       width: 280px;
       background: linear-gradient(180deg, var(--primary-color) 0%, #040917 100%);
@@ -118,26 +121,14 @@
       transition: transform 0.2s;
     }
 
-    .sidebar-menu a:hover {
+    .sidebar-menu a:hover, .sidebar-menu a.active {
       background-color: rgba(255,255,255,0.06);
-      color: white;
-      border-left-color: var(--accent-color);
-    }
-
-    .sidebar-menu a.active {
-      background-color: transparent;
       color: white;
       border-left-color: var(--accent-color);
     }
 
     .sidebar-menu a:hover i {
       transform: scale(1.1);
-    }
-
-    .sidebar-menu a:hover, .sidebar-menu a.active {
-      background-color: rgba(255,255,255,0.06);
-      color: white;
-      border-left-color: var(--accent-color);
     }
 
     .sidebar-footer {
@@ -215,7 +206,7 @@
       background-color: #edf2f7;
     }
 
-    /* Tarjetas y Contenido */
+    /* Estilo de Tarjetas Limpias, Formales y Futuristas */
     .section-title {
       font-family: 'Roboto', sans-serif;
       font-weight: 700;
@@ -233,20 +224,36 @@
     }
 
     .admin-card {
-      background: white;
+      background: #ffffff;
       border-radius: 12px;
       border: 1px solid var(--card-border);
-      box-shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.04), 0 8px 10px -6px rgba(0, 0, 0, 0.04);
+      box-shadow: 0 4px 6px rgba(0, 0, 0, 0.01);
       overflow: hidden;
-      transition: transform 0.2s ease, box-shadow 0.2s ease;
+      margin-bottom: 24px;
+      position: relative;
+      transition: all 0.35s cubic-bezier(0.16, 1, 0.3, 1);
+    }
+
+    /* Línea sutil superior futurista */
+    .admin-card::before {
+      content: '';
+      position: absolute;
+      top: 0;
+      left: 0;
+      right: 0;
+      height: 3px;
+      background: var(--futur-accent-blue);
+      opacity: 0.8;
     }
 
     .admin-card:hover {
-      box-shadow: 0 15px 30px -5px rgba(0, 0, 0, 0.07);
+      transform: translateY(-2px);
+      border-color: var(--futur-border-hover);
+      box-shadow: var(--futur-glow-hover);
     }
 
     .admin-card .card-header {
-      background-color: #fafbfd;
+      background-color: #f8fafc;
       border-bottom: 1px solid var(--card-border);
       padding: 18px 24px;
       font-weight: 700;
@@ -302,7 +309,7 @@
       border-radius: 12px;
     }
 
-    /* Responsive Design / Media Queries */
+    /* Responsive Design / Media Queries[cite: 3] */
     @media (max-width: 992px) {
       .sidebar {
         position: fixed;
@@ -322,7 +329,6 @@
       }
     }
 
-    /* Fondo oscuro para cuando se abre el menú en móviles */
     .sidebar-backdrop {
       display: none;
       position: fixed;
@@ -343,10 +349,9 @@
 
 <div class="admin-wrapper">
   
-  <!-- Backdrop para dispositivos móviles -->
   <div class="sidebar-backdrop" id="sidebarBackdrop" onclick="toggleSidebar()"></div>
 
-  <!-- Sidebar Moderno con Iconos -->
+  <!-- Sidebar[cite: 3] -->
   <aside class="sidebar" id="appSidebar">
     <div class="sidebar-header">
       <img src="../../assets/img/logonuevo.jpeg" alt="Logo Contraloría">
@@ -384,7 +389,7 @@
         </div>
       </div>
 
-      <!-- Menú de Usuario Desplegable -->
+      <!-- Menú de Usuario Desplegable[cite: 3] -->
       <div class="topbar-user dropdown ms-auto">
         <div class="d-flex align-items-center" role="button" data-bs-toggle="dropdown" aria-expanded="false" style="cursor: pointer; gap: 12px;">
           <div class="user-avatar shadow-sm" style="background-color: var(--secondary-color); width: 42px; height: 42px; color: white; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-weight: 700;">M</div>
@@ -416,7 +421,7 @@
       <div class="row g-4">
         <div class="col-lg-8">
           <div class="admin-card">
-            <div class="card-header"><i class="fa-solid fa-pen-nib me-2 text-primary"></i> Redacción de Nueva Noticia</div>
+            <div class="card-header"> Redacción de Nueva Noticia</div>
             <div class="card-body">
               <form>
                 <div class="mb-3">
@@ -438,12 +443,7 @@
                 </div>
                 <div class="mb-3">
                   <label class="form-label">Cuerpo de la Noticia (Texto)</label>
-                  <textarea class="form-control" rows="6" placeholder="Redacte el contenido aquí..."></textarea>
-                </div>
-                <div class="mb-3">
-                  <label class="form-label">Imagen de Portada</label>
-                  <input class="form-control" type="file" id="formFile">
-                  <small class="text-muted d-block mt-1">Formatos recomendados: JPG, PNG. Tamaño máx: 2MB.</small>
+                  <textarea class="form-control" rows="8" placeholder="Redacte el contenido oficial aquí..."></textarea>
                 </div>
                 <div class="text-end mt-4">
                   <button type="button" class="btn btn-outline-secondary me-2 px-4 py-2 rounded-8">Cancelar</button>
@@ -468,7 +468,7 @@
           <!-- Tarjeta de Tráfico -->
           <div class="admin-card mb-4">
             <div class="card-header d-flex justify-content-between align-items-center">
-              <span><i class="fa-solid fa-chart-simple me-2 text-primary"></i> Tráfico de la Página</span>
+              <span> Tráfico de la Página</span>
               <span class="badge bg-primary rounded-pill" style="background-color: var(--secondary-color) !important;">Hoy</span>
             </div>
             <div class="card-body text-center">
@@ -491,7 +491,7 @@
 
           <!-- Noticias Recientes -->
           <div class="admin-card">
-            <div class="card-header"><i class="fa-solid fa-clock-rotate-left me-2 text-primary"></i> Noticias Recientes</div>
+            <div class="card-header"> Noticias Recientes</div>
             <ul class="list-group list-group-flush">
               <li class="list-group-item d-flex justify-content-between align-items-center py-3 border-bottom">
                 <span class="text-truncate pe-2" style="max-width: 180px;">Entrega de Informe...</span>

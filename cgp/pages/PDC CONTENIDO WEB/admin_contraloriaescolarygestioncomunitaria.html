@@ -14,7 +14,10 @@
       --secondary-color: #0d1b3e;
       --accent-color: #e63946;
       --bg-color: #f4f6fb;
-      --card-border: #e2e8f0;
+      --card-border: #cbd5e1;
+      --futur-border-hover: #1e3a8a;
+      --futur-glow-hover: 0 10px 25px -5px rgba(30, 58, 138, 0.15), 0 0 0 1px rgba(30, 58, 138, 0.3);
+      --futur-accent-blue: #2563eb;
     }
 
     body {
@@ -220,21 +223,36 @@
       border-radius: 2px;
     }
 
+    /* Tarjetas del Administrador con Estilo Futurista Elegante */
     .admin-card {
-      background: white;
+      background: #ffffff;
       border-radius: 12px;
       border: 1px solid var(--card-border);
-      box-shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.04), 0 8px 10px -6px rgba(0, 0, 0, 0.04);
+      box-shadow: 0 4px 6px rgba(0, 0, 0, 0.01);
       overflow: hidden;
-      transition: transform 0.2s ease, box-shadow 0.2s ease;
+      transition: all 0.35s cubic-bezier(0.16, 1, 0.3, 1);
+      position: relative;
+    }
+
+    .admin-card::before {
+      content: '';
+      position: absolute;
+      top: 0;
+      left: 0;
+      right: 0;
+      height: 3px;
+      background: var(--futur-accent-blue);
+      opacity: 0.8;
     }
 
     .admin-card:hover {
-      box-shadow: 0 15px 30px -5px rgba(0, 0, 0, 0.07);
+      transform: translateY(-2px);
+      border-color: var(--futur-border-hover);
+      box-shadow: var(--futur-glow-hover);
     }
 
     .admin-card .card-header {
-      background-color: #fafbfd;
+      background-color: #f8fafc;
       border-bottom: 1px solid var(--card-border);
       padding: 18px 24px;
       font-weight: 700;
@@ -253,12 +271,21 @@
       font-size: 0.88rem;
     }
 
-    .form-control, .form-select {
+    .form-control {
       border-radius: 8px;
       border: 1px solid #cbd5e1;
       padding: 11px 16px;
       font-size: 0.95rem;
       transition: all 0.2s;
+    }
+
+    .form-select {
+      border-radius: 8px;
+      border: 1px solid #cbd5e1;
+      padding: 11px 40px 11px 16px;
+      font-size: 0.95rem;
+      transition: all 0.2s;
+      text-overflow: ellipsis;
     }
 
     .form-control:focus, .form-select:focus {
@@ -284,7 +311,6 @@
       box-shadow: 0 6px 15px rgba(13, 27, 62, 0.3);
     }
 
-    /* Responsive Design / Media Queries */
     @media (max-width: 992px) {
       .sidebar {
         position: fixed;
@@ -304,7 +330,6 @@
       }
     }
 
-    /* Fondo oscuro para cuando se abre el menú en móviles */
     .sidebar-backdrop {
       display: none;
       position: fixed;
@@ -325,10 +350,8 @@
 
 <div class="admin-wrapper">
   
-  <!-- Backdrop para dispositivos móviles -->
   <div class="sidebar-backdrop" id="sidebarBackdrop" onclick="toggleSidebar()"></div>
 
-  <!-- Sidebar Moderno con Iconos -->
   <aside class="sidebar" id="appSidebar">
     <div class="sidebar-header">
       <img src="../../assets/img/logonuevo.jpeg" alt="Logo Contraloría">
@@ -353,10 +376,8 @@
     </div>
   </aside>
 
-  <!-- Main Content -->
   <main class="main-content">
     
-    <!-- Topbar -->
     <header class="topbar">
       <div class="d-flex align-items-center gap-3">
         <button class="menu-toggle-btn" id="menuToggle" onclick="toggleSidebar()" aria-label="Abrir menú">
@@ -367,7 +388,6 @@
         </div>
       </div>
 
-      <!-- Menú de Usuario Desplegable -->
       <div class="topbar-user dropdown ms-auto">
         <div class="d-flex align-items-center" role="button" data-bs-toggle="dropdown" aria-expanded="false" style="cursor: pointer; gap: 12px;">
           <div class="user-avatar shadow-sm" style="background-color: var(--secondary-color); width: 42px; height: 42px; color: white; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-weight: 700;">M</div>
@@ -387,7 +407,6 @@
       </div>
     </header>
 
-    <!-- Contenido Principal -->
     <div class="container-fluid py-4 px-3 px-md-4">
       <div class="row mb-4">
         <div class="col-12">
@@ -397,11 +416,10 @@
       </div>
 
       <div class="row g-4">
-        <!-- Formulario de Carga de Informes -->
         <div class="col-lg-8">
           <div class="admin-card">
             <div class="card-header d-flex justify-content-between align-items-center">
-              <span><i class="fa-solid fa-cloud-arrow-up me-2 text-primary"></i> Cargar Nuevo Reporte / Evidencia</span>
+              <span>Cargar Nuevo Reporte / Evidencia</span>
               <span class="badge bg-primary px-3 py-1.5 rounded-pill" style="background-color: var(--secondary-color) !important;">Tipo Informe</span>
             </div>
             <div class="card-body">
@@ -410,7 +428,7 @@
                   <div class="col-md-6 mb-3">
                     <label class="form-label">Módulo / Sección Destino</label>
                     <select class="form-select">
-                      <option value="escolar">Contraloría Escolar ("La Contraloría va a la Escuela")</option>
+                      <option value="escolar">Contraloría Escolar (La Contraloría va a la Escuela)</option>
                       <option value="comunitaria">Gestión Comunitaria y Control Fiscal</option>
                     </select>
                   </div>
@@ -468,11 +486,9 @@
           </div>
         </div>
 
-        <!-- Panel Lateral: Estado de Cargas y Lista de Reportes -->
         <div class="col-lg-4">
-          <!-- Tarjeta Informativa de Resumen -->
           <div class="admin-card mb-4">
-            <div class="card-header"><i class="fa-solid fa-chart-pie me-2 text-primary"></i> Reportes Publicados por Módulo</div>
+            <div class="card-header">Reportes Publicados por Módulo</div>
             <div class="card-body">
               <div class="d-flex justify-content-between align-items-center mb-3">
                 <span class="fw-semibold text-secondary">Contraloría Escolar</span>
@@ -485,11 +501,11 @@
             </div>
           </div>
 
-          <!-- Lista de Reportes Recientes -->
           <div class="admin-card">
+            <!-- Cabecera actualizada con el botón/píldora gris para "Últimos cargados" -->
             <div class="card-header d-flex justify-content-between align-items-center">
-              <span><i class="fa-solid fa-clock-rotate-left me-2 text-primary"></i> Evidencias Recientes</span>
-              <small class="text-muted">Últimos cargados</small>
+              <span>Evidencias Recientes</span>
+              <span class="badge rounded-pill px-3 py-2 text-white" style="background-color: #64748b; font-size: 0.75rem; font-weight: 600; letter-spacing: 0.3px;">Últimos cargados</span>
             </div>
             <div class="card-body p-0">
               <ul class="list-group list-group-flush">
