@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Seguimiento - OAC Contraloría del Municipio Páez</title>
+  <title>Seguimiento de Expedientes - OAC </title>
   <link href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap/5.3.2/css/bootstrap.min.css" rel="stylesheet">
   <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
   
@@ -160,7 +160,7 @@
       color: var(--primary-color);
     }
 
-    /* Estilos Modal de Actualización */
+    /* Estilos Modales */
     .modal-content {
       border: none;
       border-radius: 16px;
@@ -276,27 +276,32 @@
           <form class="row g-3 align-items-end" onsubmit="event.preventDefault();">
             <div class="col-md-4">
               <label class="form-label fw-bold text-muted" style="font-size: 0.85rem;">N° de Expediente</label>
-              <input type="text" class="form-control form-control-sm shadow-none" placeholder="Ej: EXP-OAC-2026-001">
+              <input type="text" id="inputBuscarExp" class="form-control form-control-sm shadow-none" placeholder="Ej: EXP-OAC-2026-045" style="text-transform: uppercase;" oninput="this.value = this.value.toUpperCase()" onkeydown="verificarEnter(event)">
             </div>
             <div class="col-md-4">
               <label class="form-label fw-bold text-muted" style="font-size: 0.85rem;">Estatus Actual</label>
-              <select class="form-select form-select-sm shadow-none">
-                <option selected>Todos los estatus</option>
-                <option value="1">En Proceso</option>
-                <option value="2">Remitido a Dirección</option>
-                <option value="3">Cerrado / Concluido</option>
+              <select id="selectFiltroEstatus" class="form-select form-select-sm shadow-none" onchange="filtrarExpedientes()">
+                <option value="">Todos los estatus</option>
+                <option value="En Proceso">En Proceso</option>
+                <option value="En Evaluación Legal">En Evaluación Legal</option>
+                <option value="Remitido">Remitido a Dirección</option>
+                <option value="Aprobado preliminar">Aprobado preliminar</option>
+                <option value="Cerrado">Cerrado / Concluido</option>
               </select>
             </div>
-            <div class="col-md-4">
-              <button type="button" class="btn btn-sm btn-secondary w-100 fw-bold py-2" style="background-color: var(--primary-color); border: none;">
-                <i class="fa-solid fa-magnifying-glass me-2"></i> Buscar Expediente
+            <div class="col-md-4 d-flex gap-2">
+              <button type="button" class="btn btn-sm btn-secondary w-100 fw-bold py-2" style="background-color: var(--primary-color); border: none;" onclick="filtrarExpedientes()">
+                <i class="fa-solid fa-magnifying-glass me-2"></i> Buscar
+              </button>
+              <button type="button" id="btnRestablecer" class="btn btn-sm btn-outline-secondary w-100 fw-bold py-2 d-none" onclick="restablecerTabla()">
+                <i class="fa-solid fa-rotate-left me-2"></i> Ver todos
               </button>
             </div>
           </form>
         </div>
       </div>
 
-      <!-- Tabla de Seguimiento con 5 opciones, SOLO EJEMPLOS PARA MAQUETA VISUAL -->
+      <!-- Tabla de Seguimiento -->
       <div class="card border-0 shadow-sm rounded-3 overflow-hidden bg-white">
         <div class="card-body p-0">
           <div class="table-responsive">
@@ -310,9 +315,9 @@
                   <th class="fw-bold text-muted border-0 text-center">Gestión</th>
                 </tr>
               </thead>
-              <tbody>
+              <tbody id="tablaExpedientes">
                 <tr id="fila-EXP-OAC-2026-045">
-                  <td class="ps-4 fw-bold" style="color: var(--primary-color);">EXP-OAC-2026-045</td>
+                  <td class="ps-4 fw-bold text-expediente" style="color: var(--primary-color);">EXP-OAC-2026-045</td>
                   <td class="text-dark">Maikol Aguilar (V-30.345.678)</td>
                   <td class="text-secondary fw-semibold fecha-exp">22/08/2026</td>
                   <td><span class="badge border px-2 py-1 estatus-badge" style="background-color: #cce5ff; color: #004085;">En Proceso</span></td>
@@ -323,7 +328,7 @@
                   </td>
                 </tr>
                 <tr id="fila-EXP-OAC-2026-044">
-                  <td class="ps-4 fw-bold" style="color: var(--primary-color);">EXP-OAC-2026-044</td>
+                  <td class="ps-4 fw-bold text-expediente" style="color: var(--primary-color);">EXP-OAC-2026-044</td>
                   <td class="text-dark">Katherine Escalona (V-32.876.543)</td>
                   <td class="text-secondary fw-semibold fecha-exp">20/08/2026</td>
                   <td><span class="badge border px-2 py-1 estatus-badge" style="background-color: #fff3cd; color: #856404;">En Evaluación Legal</span></td>
@@ -334,7 +339,7 @@
                   </td>
                 </tr>
                 <tr id="fila-EXP-OAC-2026-042">
-                  <td class="ps-4 fw-bold" style="color: var(--primary-color);">EXP-OAC-2026-042</td>
+                  <td class="ps-4 fw-bold text-expediente" style="color: var(--primary-color);">EXP-OAC-2026-042</td>
                   <td class="text-dark">Carlos Lopez (V-32.432.112)</td>
                   <td class="text-secondary fw-semibold fecha-exp">15/08/2026</td>
                   <td><span class="badge text-white px-2 py-1 estatus-badge" style="background-color: var(--primary-color);">Remitido</span></td>
@@ -345,7 +350,7 @@
                   </td>
                 </tr>
                 <tr id="fila-EXP-OAC-2026-040">
-                  <td class="ps-4 fw-bold" style="color: var(--primary-color);">EXP-OAC-2026-040</td>
+                  <td class="ps-4 fw-bold text-expediente" style="color: var(--primary-color);">EXP-OAC-2026-040</td>
                   <td class="text-dark">Bill Chirinos (V-31.606.008)</td>
                   <td class="text-secondary fw-semibold fecha-exp">12/08/2026</td>
                   <td><span class="badge border px-2 py-1 estatus-badge" style="background-color: #d4edda; color: #155724;">Aprobado preliminar</span></td>
@@ -356,12 +361,21 @@
                   </td>
                 </tr>
                 <tr id="fila-EXP-OAC-2026-039">
-                  <td class="ps-4 fw-bold" style="color: var(--primary-color);">EXP-OAC-2026-039</td>
+                  <td class="ps-4 fw-bold text-expediente" style="color: var(--primary-color);">EXP-OAC-2026-039</td>
                   <td class="text-dark">Maria Laura Perez (V-31.056.913)</td>
                   <td class="text-secondary fw-semibold fecha-exp">10/08/2026</td>
                   <td><span class="badge text-white px-2 py-1 estatus-badge" style="background-color: #495057;">Cerrado</span></td>
                   <td class="text-center">
-                    <button class="btn btn-sm btn-outline-dark px-3" disabled><i class="fa-solid fa-lock me-1"></i> Bloqueado</button>
+                    <button class="btn btn-sm btn-outline-secondary px-3" data-bs-toggle="modal" data-bs-target="#modalConclusion" onclick="verConclusion('EXP-OAC-2026-039', 'Maria Laura Perez (V-31.056.913)', 'El trámite concluyó satisfactoriamente tras la consignación de los recaudos solicitados, emitiendo constancia de solución al caso planteado por el ciudadano de forma oportuna y transparente.')">
+                      <i class="fa-solid fa-circle-info me-1"></i> Ver Conclusión
+                    </button>
+                  </td>
+                </tr>
+                <!-- Fila de alerta cuando no existe el expediente -->
+                <tr id="filaNoEncontrado" class="d-none">
+                  <td colspan="5" class="text-center py-5 text-muted">
+                    <i class="fa-solid fa-triangle-exclamation fs-3 text-warning mb-2 d-block"></i>
+                    <span class="fw-bold fs-6">No existe ese expediente en el sistema o no coincide con los filtros seleccionados.</span>
                   </td>
                 </tr>
               </tbody>
@@ -379,7 +393,7 @@
     <div class="modal-content">
       <div class="modal-header px-4 py-3">
         <h5 class="modal-title fw-bold" id="modalActualizarLabel">
-          <i class="fa-solid fa-pen-to-square me-2"></i> Actualizar Estatus de Expediente
+           Actualizar Estatus de Expediente
         </h5>
         <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Cerrar"></button>
       </div>
@@ -399,9 +413,9 @@
               <select id="selectNuevoEstatus" class="form-select shadow-none">
                 <option value="En Proceso">En Proceso</option>
                 <option value="En Evaluación Legal">En Evaluación Legal</option>
-                <option value="Remitido a Dirección">Remitido a Dirección</option>
+                <option value="Remitido">Remitido a Dirección</option>
                 <option value="Aprobado preliminar">Aprobado preliminar</option>
-                <option value="Cerrado / Concluido">Cerrado / Concluido</option>
+                <option value="Cerrado">Cerrado / Concluido</option>
               </select>
             </div>
             <div class="col-md-6">
@@ -420,10 +434,41 @@
           <div class="d-flex justify-content-end gap-2 mt-4 pt-3 border-top">
             <button type="button" class="btn btn-light px-4 border" data-bs-dismiss="modal">Cancelar</button>
             <button type="submit" class="btn text-white px-4 fw-bold" style="background-color: var(--primary-color);">
-              <i class="fa-solid fa-floppy-disk me-2"></i> Guardar Cambios
+              Guardar Cambios
             </button>
           </div>
         </form>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- Modal para Conclusión de Expedientes Cerrados con texto justificado -->
+<div class="modal fade" id="modalConclusion" tabindex="-1" aria-labelledby="modalConclusionLabel" aria-hidden="true">
+  <div class="modal-dialog modal-dialog-centered">
+    <div class="modal-content">
+      <div class="modal-header px-4 py-3" style="background: linear-gradient(135deg, #495057, #212529);">
+        <h5 class="modal-title fw-bold text-white" id="modalConclusionLabel">
+          Detalle de Conclusión del Trámite
+        </h5>
+       
+      </div>
+      <div class="modal-body p-4">
+        <div class="mb-3">
+          <label class="form-label fw-bold text-muted small">N° de Expediente</label>
+          <input type="text" id="txtExpedienteConclusion" class="form-control bg-light fw-bold" readonly>
+        </div>
+        <div class="mb-3">
+          <label class="form-label fw-bold text-muted small">Ciudadano Solicitante</label>
+          <input type="text" id="txtSolicitanteConclusion" class="form-control bg-light" readonly>
+        </div>
+        <div class="mb-3">
+          <label class="form-label fw-bold text-muted small">Motivo / Explicación del Cierre</label>
+          <textarea id="txtMotivoConclusion" class="form-control bg-light" style="text-align: justify; resize: none;" rows="4" readonly></textarea>
+        </div>
+        <div class="d-flex justify-content-end mt-4">
+          <button type="button" class="btn btn-secondary px-4 fw-bold" data-bs-dismiss="modal">Cerrar Ventana</button>
+        </div>
       </div>
     </div>
   </div>
@@ -443,20 +488,78 @@
     document.getElementById('txtSolicitante').value = solicitante;
   }
 
+  function verConclusion(expediente, solicitante, motivo) {
+    document.getElementById('txtExpedienteConclusion').value = expediente;
+    document.getElementById('txtSolicitanteConclusion').value = solicitante;
+    document.getElementById('txtMotivoConclusion').value = motivo;
+  }
+
+  function verificarEnter(event) {
+    if (event.key === 'Enter') {
+      event.preventDefault();
+      filtrarExpedientes();
+    }
+  }
+
+  // Función corregida: ahora restablece el filtro visual antes de evaluar para permitir nuevas búsquedas exitosas
+  function filtrarExpedientes() {
+    const textoBusqueda = document.getElementById('inputBuscarExp').value.toLowerCase().trim();
+    const estatusSeleccionado = document.getElementById('selectFiltroEstatus').value.toLowerCase();
+    
+    const filas = document.querySelectorAll('#tablaExpedientes tr:not(#filaNoEncontrado)');
+    let filasVisibles = 0;
+
+    filas.forEach(fila => {
+      // Asegurar que partimos mostrando todas las filas de la tabla para evaluar correctamente
+      fila.style.display = "";
+
+      const textoExp = fila.querySelector('.text-expediente').textContent.toLowerCase();
+      const textoEstatus = fila.querySelector('.estatus-badge').textContent.toLowerCase();
+
+      const coincideTexto = textoExp.includes(textoBusqueda);
+      const coincideEstatus = estatusSeleccionado === "" || textoEstatus.includes(estatusSeleccionado);
+
+      if (coincideTexto && coincideEstatus) {
+        filasVisibles++;
+      } else {
+        fila.style.display = "none";
+      }
+    });
+
+    const filaNoEncontrado = document.getElementById('filaNoEncontrado');
+    if (filasVisibles === 0) {
+      filaNoEncontrado.classList.remove('d-none');
+    } else {
+      filaNoEncontrado.classList.add('d-none');
+    }
+
+    document.getElementById('btnRestablecer').classList.remove('d-none');
+  }
+
+  function restablecerTabla() {
+    document.getElementById('inputBuscarExp').value = '';
+    document.getElementById('selectFiltroEstatus').value = '';
+    
+    const filas = document.querySelectorAll('#tablaExpedientes tr:not(#filaNoEncontrado)');
+    filas.forEach(fila => {
+      fila.style.display = "";
+    });
+
+    document.getElementById('filaNoEncontrado').classList.add('d-none');
+    document.getElementById('btnRestablecer').classList.add('d-none');
+  }
+
   function guardarActualizacion(event) {
-    event.preventDefault(); // Evitar recarga real del formulario
+    event.preventDefault(); 
     
     const expedienteId = document.getElementById('txtExpediente').value;
     const nuevoEstatus = document.getElementById('selectNuevoEstatus').value;
     
-    // Obtener la fila correspondiente en la tabla
     const fila = document.getElementById('fila-' + expedienteId);
     if (fila) {
-      // Actualizar texto y color del badge visualmente
       const badge = fila.querySelector('.estatus-badge');
       badge.textContent = nuevoEstatus;
       
-      // Asignar colores institucionales según el estatus seleccionado
       if (nuevoEstatus === 'En Proceso') {
         badge.style.backgroundColor = '#cce5ff';
         badge.style.color = '#004085';
@@ -474,23 +577,19 @@
         badge.style.color = '#ffffff';
       }
 
-      // Actualizar la fecha de modificación actual
       const hoy = new Date();
       const fechaFormateada = String(hoy.getDate()).padStart(2, '0') + '/' + String(hoy.getMonth() + 1).padStart(2, '0') + '/' + hoy.getFullYear();
       fila.querySelector('.fecha-exp').textContent = fechaFormateada;
     }
 
-    // Cerrar el modal mediante Bootstrap de forma nativa
     const modalElement = document.getElementById('modalActualizar');
     const modalInstance = bootstrap.Modal.getInstance(modalElement);
     modalInstance.hide();
 
-    // Mostrar alerta de éxito visual
     const alerta = document.getElementById('alertaExito');
     alerta.classList.remove('d-none');
     alerta.classList.add('show');
 
-    // Auto-ocultar la alerta a los 4 segundos
     setTimeout(() => {
       alerta.classList.remove('show');
       alerta.classList.add('d-none');

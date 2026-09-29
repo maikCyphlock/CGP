@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Contraloría del Municipio Páez - Carga de Reportes</title>
+  <title>Carga de Reportes - Panel Administrativo</title>
   <link href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap/5.3.2/css/bootstrap.min.css" rel="stylesheet">
   <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.2/css/all.min.css" rel="stylesheet">
   <link href="https://fonts.googleapis.com/css2?family=Open+Sans:wght@400;600&family=Roboto:wght@500;700&display=swap" rel="stylesheet">
@@ -223,7 +223,7 @@
       border-radius: 2px;
     }
 
-    /* Tarjetas del Administrador con Estilo Futurista Elegante */
+    /* Tarjetas del Administrador con Estilo Limpio */
     .admin-card {
       background: #ffffff;
       border-radius: 12px;
@@ -232,17 +232,6 @@
       overflow: hidden;
       transition: all 0.35s cubic-bezier(0.16, 1, 0.3, 1);
       position: relative;
-    }
-
-    .admin-card::before {
-      content: '';
-      position: absolute;
-      top: 0;
-      left: 0;
-      right: 0;
-      height: 3px;
-      background: var(--futur-accent-blue);
-      opacity: 0.8;
     }
 
     .admin-card:hover {
@@ -419,22 +408,24 @@
         <div class="col-lg-8">
           <div class="admin-card">
             <div class="card-header d-flex justify-content-between align-items-center">
-              <span>Cargar Nuevo Reporte / Evidencia</span>
+              <span id="formCardTitle">Cargar Nuevo Reporte / Evidencia</span>
               <span class="badge bg-primary px-3 py-1.5 rounded-pill" style="background-color: var(--secondary-color) !important;">Tipo Informe</span>
             </div>
             <div class="card-body">
-              <form>
+              <form id="reportForm" onsubmit="handleFormSubmit(event)">
+                <input type="hidden" id="editIndex" value="">
+                
                 <div class="row">
                   <div class="col-md-6 mb-3">
                     <label class="form-label">Módulo / Sección Destino</label>
-                    <select class="form-select">
+                    <select class="form-select" id="inputModulo">
                       <option value="escolar">Contraloría Escolar (La Contraloría va a la Escuela)</option>
                       <option value="comunitaria">Gestión Comunitaria y Control Fiscal</option>
                     </select>
                   </div>
                   <div class="col-md-6 mb-3">
                     <label class="form-label">Período de Publicación</label>
-                    <select class="form-select">
+                    <select class="form-select" id="inputPeriodo">
                       <option value="mensual">Mensual</option>
                       <option value="trimestral">Trimestral</option>
                       <option value="semestral">Semestral</option>
@@ -445,41 +436,41 @@
 
                 <div class="mb-3">
                   <label class="form-label">Título de la Actividad / Informe</label>
-                  <input type="text" class="form-control" placeholder="Ej: Elección del Contralor Escolar / Inspección de Obra Comunal">
+                  <input type="text" class="form-control" id="inputTitulo" placeholder="Ej: Elección del Contralor Escolar / Inspección de Obra Comunal" required>
                 </div>
 
                 <div class="row">
                   <div class="col-md-6 mb-3">
                     <label class="form-label">Ubicación / Plantel / Sector</label>
-                    <input type="text" class="form-control" placeholder="Ej: U.E.N. José Antonio Páez / Sector La Goajira">
+                    <input type="text" class="form-control" id="inputUbicacion" placeholder="Ej: U.E.N. José Antonio Páez / Sector La Goajira" required>
                   </div>
                   <div class="col-md-6 mb-3">
                     <label class="form-label">Fecha de Realización</label>
-                    <input type="date" class="form-control">
+                    <input type="date" class="form-control" id="inputFecha" required>
                   </div>
                 </div>
 
                 <div class="mb-3">
                   <label class="form-label">Resumen del Reporte (Descripción)</label>
-                  <textarea class="form-control" rows="3" placeholder="Redacte una síntesis de la jornada, inspección o taller realizado..."></textarea>
+                  <textarea class="form-control" id="inputResumen" rows="3" placeholder="Redacte una síntesis de la jornada, inspección o taller realizado..."></textarea>
                 </div>
 
                 <div class="row">
                   <div class="col-md-6 mb-3">
                     <label class="form-label">Imagen de la Evidencia (Fotografía)</label>
-                    <input class="form-control" type="file" accept="image/*">
+                    <input class="form-control" type="file" id="inputImagen" accept="image/*">
                     <small class="text-muted d-block mt-1">Formatos: JPG, PNG. Tamaño máx: 3MB.</small>
                   </div>
                   <div class="col-md-6 mb-3">
                     <label class="form-label">Documento PDF del Informe (Opcional)</label>
-                    <input class="form-control" type="file" accept=".pdf">
+                    <input class="form-control" type="file" id="inputPdf" accept=".pdf">
                     <small class="text-muted d-block mt-1">Formato: PDF. Tamaño máx: 10MB.</small>
                   </div>
                 </div>
 
                 <div class="d-flex flex-column flex-sm-row justify-content-end gap-2 mt-4">
-                  <button type="button" class="btn btn-outline-secondary px-4 py-2 rounded-8 w-100 w-sm-auto">Limpiar</button>
-                  <button type="submit" class="btn btn-primary-admin w-100 w-sm-auto">Guardar y Publicar Reporte</button>
+                  <button type="button" class="btn btn-outline-secondary px-4 py-2 rounded-8 w-100 w-sm-auto" onclick="resetForm()">Limpiar</button>
+                  <button type="submit" class="btn btn-primary-admin w-100 w-sm-auto" id="submitBtnText">Guardar y Publicar Reporte</button>
                 </div>
               </form>
             </div>
@@ -492,45 +483,23 @@
             <div class="card-body">
               <div class="d-flex justify-content-between align-items-center mb-3">
                 <span class="fw-semibold text-secondary">Contraloría Escolar</span>
-                <span class="badge bg-primary rounded-pill px-3 py-2" style="background-color: var(--secondary-color) !important;">12 Fotos</span>
+                <span class="badge bg-primary rounded-pill px-3 py-2" id="countEscolar" style="background-color: var(--secondary-color) !important;">1 Foto</span>
               </div>
               <div class="d-flex justify-content-between align-items-center">
                 <span class="fw-semibold text-secondary">Gestión Comunitaria</span>
-                <span class="badge bg-secondary rounded-pill px-3 py-2">8 Fotos</span>
+                <span class="badge bg-secondary rounded-pill px-3 py-2" id="countComunitaria">1 Foto</span>
               </div>
             </div>
           </div>
 
           <div class="admin-card">
-            <!-- Cabecera actualizada con el botón/píldora gris para "Últimos cargados" -->
             <div class="card-header d-flex justify-content-between align-items-center">
               <span>Evidencias Recientes</span>
               <span class="badge rounded-pill px-3 py-2 text-white" style="background-color: #64748b; font-size: 0.75rem; font-weight: 600; letter-spacing: 0.3px;">Últimos cargados</span>
             </div>
             <div class="card-body p-0">
-              <ul class="list-group list-group-flush">
-                <li class="list-group-item p-3 border-bottom">
-                  <div class="d-flex justify-content-between align-items-start mb-2">
-                    <strong style="color: var(--secondary-color); font-size: 0.9rem;">Elección Contralor Escolar</strong>
-                    <span class="badge bg-info bg-opacity-10 text-info fw-semibold px-2 py-1" style="font-size: 0.7rem;">Escolar</span>
-                  </div>
-                  <p class="text-muted small mb-3">U.E.N. José Antonio Páez · Feb 2026</p>
-                  <div class="d-flex flex-wrap gap-2">
-                    <button class="btn btn-sm btn-outline-primary py-1 px-2.5" style="font-size: 0.75rem;"><i class="fa-solid fa-pen me-1"></i> Editar</button>
-                    <button class="btn btn-sm btn-outline-danger py-1 px-2.5" style="font-size: 0.75rem;"><i class="fa-solid fa-trash me-1"></i> Eliminar</button>
-                  </div>
-                </li>
-                <li class="list-group-item p-3 border-0">
-                  <div class="d-flex justify-content-between align-items-start mb-2">
-                    <strong style="color: var(--secondary-color); font-size: 0.9rem;">Inspección Obra Comunal</strong>
-                    <span class="badge bg-warning bg-opacity-10 text-warning text-dark fw-semibold px-2 py-1" style="font-size: 0.7rem;">Comunitaria</span>
-                  </div>
-                  <p class="text-muted small mb-3">Sector La Goajira · Ene 2026</p>
-                  <div class="d-flex flex-wrap gap-2">
-                    <button class="btn btn-sm btn-outline-primary py-1 px-2.5" style="font-size: 0.75rem;"><i class="fa-solid fa-pen me-1"></i> Editar</button>
-                    <button class="btn btn-sm btn-outline-danger py-1 px-2.5" style="font-size: 0.75rem;"><i class="fa-solid fa-trash me-1"></i> Eliminar</button>
-                  </div>
-                </li>
+              <ul class="list-group list-group-flush" id="recentList">
+                <!-- Se inyecta dinámicamente mediante JS -->
               </ul>
             </div>
           </div>
@@ -538,6 +507,25 @@
       </div>
     </div>
   </main>
+</div>
+
+<!-- Modal de Confirmación para Eliminar -->
+<div class="modal fade" id="deleteModal" tabindex="-1" aria-labelledby="deleteModalLabel" aria-hidden="true">
+  <div class="modal-dialog modal-dialog-centered">
+    <div class="modal-content border-0 shadow">
+      <div class="modal-header bg-danger text-white">
+        <h5 class="modal-title" id="deleteModalLabel"><i class="fa-solid fa-triangle-exclamation me-2"></i> Confirmar Eliminación</h5>
+        <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Cerrar"></button>
+      </div>
+      <div class="modal-body py-4">
+        <p class="mb-0 text-secondary">¿Estás seguro de que deseas eliminar este reporte de evidencias? Esta acción no se puede deshacer.</p>
+      </div>
+      <div class="modal-footer bg-light border-0">
+        <button type="button" class="btn btn-outline-secondary px-4" data-bs-dismiss="modal">Cancelar</button>
+        <button type="button" class="btn btn-danger px-4" id="confirmDeleteBtn">Sí, Eliminar</button>
+      </div>
+    </div>
+  </div>
 </div>
 
 <script src="https://cdnjs.cloudflare.com/ajax/libs/bootstrap/5.3.2/js/bootstrap.bundle.min.js"></script>
@@ -548,6 +536,194 @@
     sidebar.classList.toggle('show');
     backdrop.classList.toggle('show');
   }
+
+  // Base de datos simulada en memoria para los reportes
+  let reports = [
+    {
+      id: 1,
+      modulo: "escolar",
+      periodo: "trimestral",
+      titulo: "Elección Contralor Escolar",
+      ubicacion: "U.E.N. José Antonio Páez",
+      fecha: "2026-02-15",
+      resumen: "Jornada exitosa de elección y juramentación del contralor escolar.",
+      badgeText: "Escolar",
+      badgeClass: "bg-info bg-opacity-10 text-info",
+      fechaStr: "Feb 2026"
+    },
+    {
+      id: 2,
+      modulo: "comunitaria",
+      periodo: "mensual",
+      titulo: "Inspección Obra Comunal",
+      ubicacion: "Sector La Goajira",
+      fecha: "2026-01-10",
+      resumen: "Visita de control fiscal e inspección a los trabajos comunitarios del sector.",
+      badgeText: "Comunitaria",
+      badgeClass: "bg-warning bg-opacity-10 text-warning text-dark",
+      fechaStr: "Ene 2026"
+    }
+  ];
+
+  let deleteIdTarget = null;
+  const deleteModal = new bootstrap.Modal(document.getElementById('deleteModal'));
+
+  // Renderizar la lista en pantalla
+  function renderReports() {
+    const listContainer = document.getElementById('recentList');
+    listContainer.innerHTML = '';
+
+    if (reports.length === 0) {
+      listContainer.innerHTML = '<li class="list-group-item p-4 text-center text-muted small">No hay reportes recientes cargados.</li>';
+      updateCounters();
+      return;
+    }
+
+    reports.forEach((rep, index) => {
+      const isLast = index === reports.length - 1;
+      const borderClass = isLast ? 'border-0' : 'border-bottom';
+      
+      const li = document.createElement('li');
+      li.className = `list-group-item p-3 ${borderClass}`;
+      li.innerHTML = `
+        <div class="d-flex justify-content-between align-items-start mb-2">
+          <strong style="color: var(--secondary-color); font-size: 0.9rem;">${rep.titulo}</strong>
+          <span class="badge ${rep.badgeClass} fw-semibold px-2 py-1" style="font-size: 0.7rem;">${rep.badgeText}</span>
+        </div>
+        <p class="text-muted small mb-3">${rep.ubicacion} · ${rep.fechaStr}</p>
+        <div class="d-flex flex-wrap gap-2">
+          <button class="btn btn-sm btn-outline-primary py-1 px-2.5" style="font-size: 0.75rem;" onclick="editReport(${rep.id})"><i class="fa-solid fa-pen me-1"></i> Editar</button>
+          <button class="btn btn-sm btn-outline-danger py-1 px-2.5" style="font-size: 0.75rem;" onclick="promptDelete(${rep.id})"><i class="fa-solid fa-trash me-1"></i> Eliminar</button>
+        </div>
+      `;
+      listContainer.appendChild(li);
+    });
+
+    updateCounters();
+  }
+
+  // Actualizar contadores por módulo
+  function updateCounters() {
+    const escolarCount = reports.filter(r => r.modulo === 'escolar').length;
+    const comunitariaCount = reports.filter(r => r.modulo === 'comunitaria').length;
+
+    document.getElementById('countEscolar').textContent = `${escolarCount} Foto${escolarCount !== 1 ? 's' : ''}`;
+    document.getElementById('countComunitaria').textContent = `${comunitariaCount} Foto${comunitariaCount !== 1 ? 's' : ''}`;
+  }
+
+  // Manejar Guardar / Actualizar Formulario
+  function handleFormSubmit(event) {
+    event.preventDefault();
+
+    const editIndex = document.getElementById('editIndex').value;
+    const modulo = document.getElementById('inputModulo').value;
+    const periodo = document.getElementById('inputPeriodo').value;
+    const titulo = document.getElementById('inputTitulo').value;
+    const ubicacion = document.getElementById('inputUbicacion').value;
+    const fecha = document.getElementById('inputFecha').value;
+    const resumen = document.getElementById('inputResumen').value;
+
+    // Formatear la fecha para mostrar en la lista (ej: "Feb 2026")
+    let fechaStr = "Reciente";
+    if (fecha) {
+      const dateObj = new Date(fecha + 'T00:00:00');
+      const months = ["Ene", "Feb", "Mar", "Abr", "May", "Jun", "Jul", "Ago", "Sep", "Oct", "Nov", "Dic"];
+      fechaStr = `${months[dateObj.getMonth()]} ${dateObj.getFullYear()}`;
+    }
+
+    const badgeText = modulo === 'escolar' ? 'Escolar' : 'Comunitaria';
+    const badgeClass = modulo === 'escolar' 
+      ? 'bg-info bg-opacity-10 text-info' 
+      : 'bg-warning bg-opacity-10 text-warning text-dark';
+
+    if (editIndex !== "") {
+      // Modo Edición
+      const idNum = parseInt(editIndex);
+      const reportObj = reports.find(r => r.id === idNum);
+      if (reportObj) {
+        reportObj.modulo = modulo;
+        reportObj.periodo = periodo;
+        reportObj.titulo = titulo;
+        reportObj.ubicacion = ubicacion;
+        reportObj.fecha = fecha;
+        reportObj.resumen = resumen;
+        reportObj.badgeText = badgeText;
+        reportObj.badgeClass = badgeClass;
+        reportObj.fechaStr = fechaStr;
+      }
+      alert('¡Reporte actualizado con éxito!');
+    } else {
+      // Modo Nuevo Registro
+      const newReport = {
+        id: Date.now(),
+        modulo,
+        periodo,
+        titulo,
+        ubicacion,
+        fecha,
+        resumen,
+        badgeText,
+        badgeClass,
+        fechaStr
+      };
+      reports.unshift.push ? reports.unshift(newReport) : reports.push(newReport);
+      alert('¡Reporte guardado y publicado con éxito!');
+    }
+
+    resetForm();
+    renderReports();
+  }
+
+  // Cargar datos en el formulario para editar
+  function editReport(id) {
+    const report = reports.find(r => r.id === id);
+    if (!report) return;
+
+    document.getElementById('editIndex').value = report.id;
+    document.getElementById('inputModulo').value = report.modulo;
+    document.getElementById('inputPeriodo').value = report.periodo;
+    document.getElementById('inputTitulo').value = report.titulo;
+    document.getElementById('inputUbicacion').value = report.ubicacion;
+    document.getElementById('inputFecha').value = report.fecha;
+    document.getElementById('inputResumen').value = report.resumen;
+
+    // Cambiar textos visuales del formulario para indicar edición
+    document.getElementById('formCardTitle').textContent = 'Editar Reporte / Evidencia';
+    document.getElementById('submitBtnText').textContent = 'Actualizar Reporte';
+
+    // Desplazar suavemente hacia arriba para que el usuario vea el formulario
+    window.scrollTo({ top: 0, behavior: 'smooth' });
+  }
+
+  // Limpiar formulario y restablecer estados
+  function resetForm() {
+    document.getElementById('reportForm').reset();
+    document.getElementById('editIndex').value = '';
+    document.getElementById('formCardTitle').textContent = 'Cargar Nuevo Reporte / Evidencia';
+    document.getElementById('submitBtnText').textContent = 'Guardar y Publicar Reporte';
+  }
+
+  // Disparar modal de eliminación
+  function promptDelete(id) {
+    deleteIdTarget = id;
+    deleteModal.show();
+  }
+
+  // Confirmar eliminación
+  document.getElementById('confirmDeleteBtn').addEventListener('click', function() {
+    if (deleteIdTarget !== null) {
+      reports = reports.filter(r => r.id !== deleteIdTarget);
+      deleteModal.hide();
+      renderReports();
+      alert('Reporte eliminado correctamente.');
+      deleteIdTarget = null;
+    }
+  });
+
+  // Inicializar la lista al cargar la página
+  window.addEventListener('DOMContentLoaded', () => {
+    renderReports();
+  });
 </script>
 </body>
 </html>

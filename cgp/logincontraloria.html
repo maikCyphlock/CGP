@@ -8,12 +8,13 @@
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;700;900&family=Inter:wght@300;400;600&display=swap" rel="stylesheet">
   <link href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap/5.3.2/css/bootstrap.min.css" rel="stylesheet">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
   
   <style>
     h1, h2, h3 { 
-      font-family: 'Inter', sans-serif;  /* Montserrat para títulos */
-      text-transform: uppercase; /* Esto le da mucha más fuerza y formalidad */
-      letter-spacing: -0.5px; /* Un toque moderno */
+      font-family: 'Inter', sans-serif;
+      text-transform: uppercase;
+      letter-spacing: -0.5px;
     }
 
     p {
@@ -21,8 +22,8 @@
         line-height: 1.7; 
     }
     body { 
-      font-family: 'Inter', sans-serif; /* Ya con la nueva tipografía */
-      background-color: #0d1b3e;       /* AQUÍ ESTÁ EL CAMBIO AL AZUL */
+      font-family: 'Inter', sans-serif;
+      background-color: #0d1b3e;       
       margin: 0;
       height: 100vh;
       overflow: hidden;
@@ -33,7 +34,6 @@
     }
 
     .login-info {
-      /* Usamos el azul oscuro (rgb: 13, 27, 62) con 93% de opacidad en ambos extremos */
       background: linear-gradient(135deg, rgba(13, 27, 62, 0.93) 0%, rgba(13, 27, 62, 0.93) 100%), 
                   url('../cgp/assets/img/portadahero.jpg'); 
       background-size: cover;
@@ -52,26 +52,11 @@
       z-index: 2;
     }
 
-    .login-logo {
-      width: 80px;
-      height: 80px;
-      border-radius: 15px;
-      box-shadow: 0 4px 15px rgba(0,0,0,0.2);
-      object-fit: cover;
-    }
-
     .login-info h1 {
       font-family: 'Roboto', sans-serif;
       font-weight: 900;
       font-size: 2.5rem;
       margin-bottom: 5px;
-    }
-
-    .login-info h2 {
-      font-family: 'Roboto', sans-serif;
-      font-weight: 300;
-      font-size: 1.5rem;
-      color: #64b5f6;
     }
 
     .login-info p {
@@ -86,28 +71,30 @@
       display: flex;
       align-items: center;
       justify-content: center;
-      background-color:  ghostwhite;
+      background-color: ghostwhite;
     }
 
     @media (max-width: 768px) {
       .login-info { display: none !important; }
       .login-form-container { width: 100%; }
+      body { overflow-y: auto; height: auto; }
+      .login-wrapper { height: auto; min-height: 100vh; }
     }
 
     .form-box {
       background: rgba(255, 255, 255, 0.1); 
       backdrop-filter: blur(15px);          
       border: 1px solid rgba(255, 255, 255, 0.2);
-      padding: 50px 40px;
+      padding: 40px 35px;
       border-radius: 20px;
       box-shadow: 0 20px 50px rgba(0, 0, 0, 0.1);
       color: white;                       
       width: 100%;
       max-width: 450px;
+      transition: all 0.3s ease;
     }
 
     .form-box:hover {
-      transform: translateY(-5px);
       box-shadow: 0 15px 40px rgba(26, 35, 64, 0.15);
     }
 
@@ -140,9 +127,6 @@
       border-radius: 8px !important; 
     }
 
-    .btn-outline-primary i {
-      font-size: 1rem;
-    }
     .form-control:focus, .form-select:focus {
       border-color: #1565c0;
       box-shadow: 0 0 0 0.2rem rgba(21, 101, 192, 0.15);
@@ -153,6 +137,7 @@
       font-size: 0.8rem;
       text-decoration: none;
       font-weight: 600;
+      cursor: pointer;
     }
 
     .forgot-link:hover {
@@ -176,13 +161,6 @@
       transform: translateY(-2px);
     }
 
-    .login-logo-mobile {
-      width: 70px;
-      height: 70px;
-      border-radius: 12px;
-      object-fit: cover;
-    }
-
     @keyframes fadeInLeft {
       from { opacity: 0; transform: translateX(-30px); }
       to { opacity: 1; transform: translateX(0); }
@@ -194,16 +172,7 @@
     }
 
     .login-info { animation: fadeInLeft 0.8s ease-out forwards; }
-    .login-form-container { animation: fadeInRight 0.8s ease-out forwards; 
-    }
-
-    .btn-loading {
-      pointer-events: none;
-      opacity: 0.7;
-    }
-    .spinner-border-sm {
-      margin-right: 8px;
-    }
+    .login-form-container { animation: fadeInRight 0.8s ease-out forwards; }
 
     .info-content h1 {
       background: linear-gradient(to right, #ffffff, #b3e5fc);
@@ -212,8 +181,6 @@
       background-clip: text;
     }
   </style>
-  <!-- Aquí agregué el CDN de Bootstrap Icons para que funcionen tus iconos (bi bi-pencil y bi bi-megaphone) -->
-  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.1/font/bootstrap-icons.css">
 </head> 
 <body>
 
@@ -222,56 +189,80 @@
   <div class="login-info">
     <div class="info-content">
       <h1>Panel de Administración</h1>
-      <p class="mt-4">Acceso restringido exclusivo para personal autorizado de la Contraloría del Municipio Páez. Toda actividad en este portal es monitoreada para garantizar la transparencia y seguridad de los datos.</p>
+      <p class="mt-4">Acceso restringido exclusivo para personal autorizado de la Contraloría del Municipio Páez. Toda actividad en este portal es monitoreada para garantizar la transparencia y seguridad de los datos[cite: 7].</p>
     </div>
   </div>
 
   <!-- Panel Derecho Formulario -->
   <div class="login-form-container">
     <div class="form-box">
-      <div class="text-center d-md-none mb-4">
-  
-      </div>
-      <div class="d-flex align-items-center justify-content-center mb-4 p-3 rounded" style="background-color: #0d1b3e;">
-        <img src="../cgp/assets/img/logo.jpeg" alt="Logo" style="width: 40px; height: 40px; margin-right: 12px; border-radius: 8px; object-fit: cover;">
-        <h3 class="mb-0 text-white" style="font-family: 'Roboto', sans-serif; font-weight: 700;">INICIAR SESIÓN</h3>
-      </div>      
       
-      <!-- INICIO DEL FORMULARIO CORREGIDO -->
-      <form id="formularioLogin">
-        <div class="row g-2">
-          <div class="col-12">
-            <input type="radio" class="btn-check" name="rol" id="rol1" value="editor" checked>
-            <label class="btn btn-outline-primary w-100 py-3 rounded-3 shadow-sm" for="rol1">
-               Gestor de Contenido Web
-            </label>
+      <!-- SECCIÓN 1: FORMULARIO DE INICIO DE SESIÓN -->
+      <div id="seccionLogin">
+        <div class="d-flex align-items-center justify-content-center mb-4 p-3 rounded" style="background-color: #0d1b3e;">
+          <img src="../cgp/assets/img/logo.jpeg" alt="Logo" style="width: 40px; height: 40px; margin-right: 12px; border-radius: 8px; object-fit: cover;">
+          <h3 class="mb-0 text-white" style="font-family: 'Roboto', sans-serif; font-weight: 700; font-size: 1.25rem;">INICIAR SESIÓN</h3>
+        </div>      
+        
+        <form id="formularioLogin">
+          <div class="row g-2">
+            <div class="col-12">
+              <input type="radio" class="btn-check" name="rol" id="rol1" value="editor" checked>
+              <label class="btn btn-outline-primary w-100 py-3 rounded-3 shadow-sm" for="rol1">
+                 Gestor de Contenido Web
+              </label>
+            </div>
+            
+            <div class="col-12">
+              <input type="radio" class="btn-check" name="rol" id="rol2" value="denuncias">
+              <label class="btn btn-outline-primary w-100 py-3 rounded-3 shadow-sm" for="rol2">
+                 Gestor de Módulo de Denuncias
+              </label>
+            </div>
+          </div>
+
+          <div class="mb-3 mt-3">
+            <hr> 
+            <label for="email" class="form-label">Correo electrónico / Usuario</label>
+            <input type="email" class="form-control" id="email" placeholder="usuario@cgr.gob.ve" required>
           </div>
           
-          <div class="col-12">
-            <input type="radio" class="btn-check" name="rol" id="rol2" value="denuncias">
-            <label class="btn btn-outline-primary w-100 py-3 rounded-3 shadow-sm" for="rol2">
-               Gestor de Módulo de Denuncias
-            </label>
+          <div class="mb-4">
+            <label for="password" class="form-label">Contraseña</label>
+            <input type="password" class="form-control" id="password" placeholder="••••••••" required>
+            <div class="text-end mt-2">
+              <a class="forgot-link" onclick="mostrarRecuperacion()">¿Olvidó su clave?</a>
+            </div>
           </div>
+
+          <button type="submit" class="btn btn-login w-100">ACCEDER</button>
+        </form>
+      </div>
+
+      <!-- SECCIÓN 2: FORMULARIO DE RECUPERACIÓN DE CONTRASEÑA (Oculto inicialmente) -->
+      <div id="seccionRecuperar" class="d-none">
+        <div class="d-flex align-items-center justify-content-center mb-4 p-3 rounded" style="background-color: #0d1b3e;">
+          <img src="../cgp/assets/img/logo.jpeg" alt="Logo" style="width: 40px; height: 40px; margin-right: 12px; border-radius: 8px; object-fit: cover;">
+          <h3 class="mb-0 text-white" style="font-family: 'Roboto', sans-serif; font-weight: 700; font-size: 1.1rem;">RECUPERAR CLAVE</h3>
         </div>
 
-        <div class="mb-3 mt-3">
-          <hr> 
-          <label for="email" class="form-label">Correo electrónico / Usuario</label>
-          <input type="email" class="form-control" id="email" placeholder="usuario@cgr.gob.ve" required>
-        </div>
-        
-        <div class="mb-4">
-          <label for="password" class="form-label">Contraseña</label>
-          <input type="password" class="form-control" id="password" placeholder="••••••••" required>
-          <div class="text-end mt-2">
-            <a href="#" class="forgot-link">¿Olvidó su clave?</a>
-          </div>
-        </div>
+        <p class="text-secondary small mb-4" style="color: #495057 !important; text-align: justify;">
+          Ingrese su correo institucional registrado. Le enviaremos un enlace de seguridad para restablecer sus credenciales de acceso al sistema.
+        </p>
 
-        <button type="submit" class="btn btn-login w-100">ACCEDER</button>
-      </form>
-      <!-- FIN DEL FORMULARIO CORREGIDO -->
+        <form id="formularioRecuperar" onsubmit="enviarRecuperacion(event)">
+          <div class="mb-4">
+            <label for="emailRecuperar" class="form-label">Correo Electrónico Institucional</label>
+            <input type="email" class="form-control" id="emailRecuperar" placeholder="nombre.apellido@cgr.gob.ve" required>
+          </div>
+
+          <button type="submit" class="btn btn-login w-100 mb-3">ENVIAR ENLACE</button>
+          
+          <div class="text-center">
+            <a class="forgot-link" onclick="mostrarLogin()"><i class="fa-solid fa-arrow-left me-1"></i> Volver al inicio de sesión</a>
+          </div>
+        </form>
+      </div>
 
     </div>
   </div>
@@ -279,16 +270,30 @@
 
 <script src="https://cdnjs.cloudflare.com/ajax/libs/bootstrap/5.3.2/js/bootstrap.bundle.min.js"></script>
 
-<!-- SCRIPT PARA EL REDIRECCIONAMIENTO -->
 <script>
-    document.getElementById("formularioLogin").addEventListener("submit", function(event) {
-        // Evita que la página intente procesar datos reales al instante
-        event.preventDefault();
+    // Lógica para cambiar entre vistas de Login y Recuperación de Clave
+    function mostrarRecuperacion() {
+        document.getElementById('seccionLogin').classList.add('d-none');
+        document.getElementById('seccionRecuperar').classList.remove('d-none');
+    }
 
-        // Busca cuál de los dos botones está marcado
+    function mostrarLogin() {
+        document.getElementById('seccionRecuperar').classList.add('d-none');
+        document.getElementById('seccionLogin').classList.remove('d-none');
+    }
+
+    function enviarRecuperacion(event) {
+        event.preventDefault();
+        const correo = document.getElementById('emailRecuperar').value;
+        alert("Se ha enviado un enlace de recuperación de contraseña de forma exitosa a: " + correo);
+        mostrarLogin();
+    }
+
+    // Redireccionamiento del Login existente[cite: 7]
+    document.getElementById("formularioLogin").addEventListener("submit", function(event) {
+        event.preventDefault();
         const rolSeleccionado = document.querySelector('input[name="rol"]:checked').value;
 
-        // Redirige usando las rutas exactas
         if (rolSeleccionado === "editor") {
             window.location.href = "pages/PDC CONTENIDO WEB/admin_inicio.html";
         } else if (rolSeleccionado === "denuncias") {

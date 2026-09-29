@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>CMP - Textos de Inicio</title>
+  <title>Textos del Inicio - Panel Administrativo</title>
   <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;500;700&family=Open+Sans:wght@400;600&display=swap" rel="stylesheet">
   <link href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap/5.3.2/css/bootstrap.min.css" rel="stylesheet">
   <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.2/css/all.min.css" rel="stylesheet">
@@ -34,7 +34,7 @@
       position: relative;
     }
 
-    /* Sidebar Moderno[cite: 5] */
+    /* Sidebar Moderno */
     .sidebar {
       width: 280px;
       background: linear-gradient(180deg, var(--primary-color) 0%, #040917 100%);
@@ -223,7 +223,7 @@
       border-radius: 2px;
     }
 
-    /* Tarjetas del Administrador con Estilo Futurista Elegante */
+    /* Tarjetas del Administrador con Estilo Limpio */
     .admin-card {
       background: #ffffff;
       border-radius: 12px;
@@ -233,18 +233,6 @@
       height: 100%;
       position: relative;
       transition: all 0.35s cubic-bezier(0.16, 1, 0.3, 1);
-    }
-
-    /* Línea sutil superior futurista */
-    .admin-card::before {
-      content: '';
-      position: absolute;
-      top: 0;
-      left: 0;
-      right: 0;
-      height: 3px;
-      background: var(--futur-accent-blue);
-      opacity: 0.8;
     }
 
     .admin-card:hover {
@@ -305,7 +293,7 @@
       transform: translateY(-1px);
     }
 
-    /* Caja de Vista Previa Dinámica con Fondo de Imagen[cite: 5] */
+    /* Caja de Vista Previa Dinámica con Fondo de Imagen */
    .live-preview-box {
       background: linear-gradient(135deg, rgba(8, 18, 42, 0.85) 0%, rgba(17, 34, 68, 0.9) 100%), url('../../assets/img/portadahero.jpg') center/cover no-repeat;
       border-radius: 12px;
@@ -348,7 +336,7 @@
       text-shadow: 0 1px 3px rgba(0,0,0,0.3);
     }
 
-    /* Media Queries[cite: 5] */
+    /* Media Queries */
     @media (max-width: 992px) {
       .sidebar {
         position: fixed;
@@ -388,10 +376,10 @@
 
 <div class="admin-wrapper">
   
-  <!-- Backdrop para móviles[cite: 5] -->
+  <!-- Backdrop para móviles -->
   <div class="sidebar-backdrop" id="sidebarBackdrop" onclick="toggleSidebar()"></div>
 
-  <!-- Sidebar Moderno con Iconos[cite: 5] -->
+  <!-- Sidebar Moderno con Iconos -->
   <aside class="sidebar" id="appSidebar">
     <div class="sidebar-header">
       <img src="../../assets/img/logonuevo.jpeg" alt="Logo">
@@ -416,10 +404,10 @@
     </div>
   </aside>
 
-  <!-- Contenido Principal[cite: 5] -->
+  <!-- Contenido Principal -->
   <main class="main-content">
     
-    <!-- Topbar[cite: 5] -->
+    <!-- Topbar -->
     <header class="topbar">
       <div class="d-flex align-items-center gap-3">
         <button class="menu-toggle-btn" id="menuToggle" onclick="toggleSidebar()" aria-label="Abrir menú">
@@ -430,7 +418,7 @@
         </div>
       </div>
 
-      <!-- Menú de Usuario[cite: 5] -->
+      <!-- Menú de Usuario -->
       <div class="topbar-user dropdown ms-auto">
         <div class="d-flex align-items-center" role="button" data-bs-toggle="dropdown" aria-expanded="false" style="cursor: pointer; gap: 12px;">
           <div class="user-avatar shadow-sm" style="background-color: var(--secondary-color); width: 42px; height: 42px; color: white; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-weight: 700;">M</div>
@@ -454,7 +442,7 @@
       <h2 class="section-title">Textos y Banner (Inicio)</h2>
       <div class="title-underline"></div>
 
-      <!-- Vista Previa en Vivo-->
+      <!-- Vista Previa en Vivo -->
       <div class="row mb-4">
         <div class="col-12">
           <div class="admin-card">
