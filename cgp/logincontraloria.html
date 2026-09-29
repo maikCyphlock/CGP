@@ -189,7 +189,7 @@
   <div class="login-info">
     <div class="info-content">
       <h1>Panel de Administración</h1>
-      <p class="mt-4">Acceso restringido exclusivo para personal autorizado de la Contraloría del Municipio Páez. Toda actividad en este portal es monitoreada para garantizar la transparencia y seguridad de los datos[cite: 7].</p>
+      <p class="mt-4">Acceso restringido exclusivo para personal autorizado de la Contraloría del Municipio Páez. Toda actividad en este portal es monitoreada para garantizar la transparencia y seguridad de los datos.</p>
     </div>
   </div>
 
@@ -288,8 +288,7 @@
         alert("Se ha enviado un enlace de recuperación de contraseña de forma exitosa a: " + correo);
         mostrarLogin();
     }
-
-    // Redireccionamiento del Login existente[cite: 7]
+    
     document.getElementById("formularioLogin").addEventListener("submit", function(event) {
         event.preventDefault();
         const rolSeleccionado = document.querySelector('input[name="rol"]:checked').value;
