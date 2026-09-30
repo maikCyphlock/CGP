@@ -1277,3 +1277,52 @@ footer {
     display: block !important;
   }
 }
+
+/* ─── CORRECCIÓN EXCLUSIVA PARA EL MENÚ MÓVIL ─── */
+.menu-btn {
+  display: none;
+  background: transparent;
+  border: none;
+  color: #ffffff;
+  font-size: 32px;
+  cursor: pointer;
+  padding: 0;
+}
+
+@media (max-width: 992px) {
+  .menu-btn {
+    display: block !important;
+  }
+  #navbar {
+    display: none;
+    flex-direction: column;
+    position: absolute;
+    top: 100%;
+    left: 0;
+    width: 100%;
+    background-color: #0f213b;
+    box-shadow: 0 10px 15px rgba(0,0,0,0.3);
+    padding: 20px;
+    z-index: 1000;
+    align-items: flex-start !important;
+  }
+  #navbar.active {
+    display: flex !important;
+  }
+  #navbar a {
+    width: 100%;
+    padding: 10px 12px;
+  }
+  #navbar .dropdown .dropdown-menu {
+    position: static;
+    display: none;
+    box-shadow: none;
+    background: rgba(0,0,0,0.2);
+    padding-left: 15px;
+    border-top: none;
+    width: 100%;
+  }
+  #navbar .dropdown.open .dropdown-menu {
+    display: block !important;
+  }
+}

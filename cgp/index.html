@@ -919,25 +919,44 @@ Acarigua, Municipio Páez, Estado Portuguesa.</p>
   }
 
   displayPagination();
-  document.addEventListener("DOMContentLoaded", function () {
-    const dropdowns = document.querySelectorAll("#navbar .dropdown > a");
 
+  // Control del Menú Hamburguesa y Submenús móviles
+  document.addEventListener("DOMContentLoaded", function () {
+    const menuToggle = document.getElementById("menu-toggle");
+    const navbar = document.getElementById("navbar");
+
+    // 1. Alternar apertura del menú móvil al hacer clic en el botón hamburguesa
+    if (menuToggle && navbar) {
+      menuToggle.addEventListener("click", function () {
+        navbar.classList.toggle("active");
+      });
+    }
+
+    // 2. Control de los dropdowns en pantallas móviles
+    const dropdowns = document.querySelectorAll("#navbar .dropdown > a");
     dropdowns.forEach(function (dropdownToggle) {
       dropdownToggle.addEventListener("click", function (e) {
-        // Comprueba si estamos en la vista móvil (menú hamburguesa activo)
         if (window.innerWidth <= 992) {
-          e.preventDefault(); // Evita que la página salte o navegue de inmediato
+          e.preventDefault();
           const parentDropdown = this.parentElement;
           
-          // Cierra otros dropdowns abiertos para evitar que se encimen
           document.querySelectorAll("#navbar .dropdown").forEach(function(item) {
             if (item !== parentDropdown) {
               item.classList.remove("open");
             }
           });
 
-          // Alterna el estado abierto/cerrado del menú seleccionado
           parentDropdown.classList.toggle("open");
+        }
+      });
+    });
+
+    // 3. Opcional: Cerrar menú móvil al hacer clic en cualquier enlace interno
+    const navLinks = document.querySelectorAll("#navbar a:not(.dropdown > a)");
+    navLinks.forEach(function(link) {
+      link.addEventListener("click", function() {
+        if (window.innerWidth <= 992 && navbar) {
+          navbar.classList.remove("active");
         }
       });
     });
