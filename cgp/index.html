@@ -919,17 +919,28 @@ Acarigua, Municipio Páez, Estado Portuguesa.</p>
   }
 
   displayPagination();
+  document.addEventListener("DOMContentLoaded", function () {
+    const dropdowns = document.querySelectorAll("#navbar .dropdown > a");
 
-  // Menú móvil hamburguesa
-  document.addEventListener('DOMContentLoaded', function() {
-    const menuBtn = document.getElementById('menu-toggle');
-    const navbar = document.getElementById('navbar');
+    dropdowns.forEach(function (dropdownToggle) {
+      dropdownToggle.addEventListener("click", function (e) {
+        // Comprueba si estamos en la vista móvil (menú hamburguesa activo)
+        if (window.innerWidth <= 992) {
+          e.preventDefault(); // Evita que la página salte o navegue de inmediato
+          const parentDropdown = this.parentElement;
+          
+          // Cierra otros dropdowns abiertos para evitar que se encimen
+          document.querySelectorAll("#navbar .dropdown").forEach(function(item) {
+            if (item !== parentDropdown) {
+              item.classList.remove("open");
+            }
+          });
 
-    if (menuBtn && navbar) {
-      menuBtn.addEventListener('click', function() {
-        navbar.classList.toggle('show-menu');
+          // Alterna el estado abierto/cerrado del menú seleccionado
+          parentDropdown.classList.toggle("open");
+        }
       });
-    }
+    });
   });
 </script>
 </body>

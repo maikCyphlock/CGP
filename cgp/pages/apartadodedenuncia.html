@@ -165,6 +165,7 @@
       text-transform: uppercase;
     }
 
+
     @media (max-width: 576px) {
       .print-row {
         flex-direction: column;
@@ -328,11 +329,6 @@
         <div style="text-align: center; margin-bottom: 20px; display: flex; justify-content: center; gap: 15px; flex-wrap: wrap;">
           <button class="btn-submit" style="font-size: 1.1rem; padding: 12px 32px; background: #022139; border: 1px solid #4d7f99;" onclick="mostrarConsultaTramite()">
             Estado de Trámite
-            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"
-              stroke-linecap="round" stroke-linejoin="round" style="margin-left: 8px;">
-              <circle cx="11" cy="11" r="8"></circle>
-              <line x1="21" y1="21" x2="16.65" y2="16.65"></line>
-            </svg>
           </button>
           
           <button class="btn-submit" style="font-size: 1.1rem; padding: 12px 32px; background: #1565c0;" onclick="iniciarFlujo('general')">
@@ -532,7 +528,7 @@
             <span style="font-size:0.78rem;color:#888;">
               Los campos <span style="color:#1565c0;font-weight:700;">*</span> son obligatorios.
             </span>
-            <button class="btn-submit" id="btn-sig-paso1" style="background: #1565c0;" onclick="siguientePaso(1)">
+            <button class="btn-submit" id="btn-sig-paso1" style="background: #1565c0;" onclick="mostrarModalConfirmacion(1)">
               Continuar
               <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
                 <line x1="5" y1="12" x2="19" y2="12" />
@@ -819,7 +815,7 @@
               </svg>
               Anterior
             </button>
-            <button class="btn-submit" id="btn-sig-paso2" style="background: #1565c0;" onclick="siguientePaso(2)">
+            <button class="btn-submit" id="btn-sig-paso2" style="background: #1565c0;" onclick="mostrarModalConfirmacion(2)">
               Continuar
               <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
                 <line x1="5" y1="12" x2="19" y2="12" />
@@ -886,6 +882,7 @@
                 </div>
               </div>
 
+              <!-- BLOQUE NUEVO: AGREGADO DESPUÉS DE LOS DATOS DEL SEÑALADO, SOLO SI ES CONSULTA POPULAR NACIONAL -->
               <div id="bloque-proyecto-consulta" style="display:none;">
                 <div class="form-section">
                   <div class="form-section-title">
@@ -899,9 +896,9 @@
                     <div class="col-md-6">
                       <div class="form-group">
                         <label class="form-label">
-                          Denominación del Proyecto <span class="required" style="color:#1565c0;">*</span>
+                          Nombre del Proyecto <span class="required" style="color:#1565c0;">*</span>
                         </label>
-                        <input type="text" id="proy-nombre" class="form-control" placeholder="Nombre oficial">
+                        <input type="text" id="proy-nombre" class="form-control" placeholder="Nombre oficial del proyecto">
                         <span class="error-msg" id="proy-nombre-err">Ingrese el nombre del proyecto.</span>
                       </div>
                     </div>
@@ -911,22 +908,22 @@
                           Fecha de Aprobación <span class="required" style="color:#1565c0;">*</span>
                         </label>
                         <input type="date" id="proy-fecha" class="form-control">
-                        <span class="error-msg" id="proy-fecha-err">Seleccione la fecha.</span>
+                        <span class="error-msg" id="proy-fecha-err">Seleccione la fecha de aprobación.</span>
                       </div>
                     </div>
                     <div class="col-md-3">
                       <div class="form-group">
                         <label class="form-label">
-                          Monto Estimado (Bs) <span class="required" style="color:#1565c0;">*</span>
+                          Monto Estimado del Proyecto <span class="required" style="color:#1565c0;">*</span>
                         </label>
                         <input type="text" id="proy-monto" class="form-control" placeholder="Ej. 500000">
-                        <span class="error-msg" id="proy-monto-err">Ingrese un monto válido.</span>
+                        <span class="error-msg" id="proy-monto-err">Ingrese un monto estimado válido.</span>
                       </div>
                     </div>
                     <div class="col-md-6">
                       <div class="form-group">
                         <label class="form-label">Ente Financiador <span class="required" style="color:#1565c0;">*</span></label>
-                        <input type="text" id="proy-financiador" class="form-control" placeholder="Nombre del ente">
+                        <input type="text" id="proy-financiador" class="form-control" placeholder="Nombre del ente financiador">
                         <span class="error-msg" id="proy-financiador-err">Ingrese el ente financiador.</span>
                       </div>
                     </div>
@@ -957,7 +954,7 @@
               </svg>
               Anterior
             </button>
-            <button class="btn-submit" id="btn-sig-paso3" style="background: #1565c0;" onclick="siguientePaso(3)">
+            <button class="btn-submit" id="btn-sig-paso3" style="background: #1565c0;" onclick="mostrarModalConfirmacion(3)">
               Continuar
               <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
                 <line x1="5" y1="12" x2="19" y2="12" />
@@ -1053,7 +1050,7 @@
               </svg>
               Anterior
             </button>
-            <button class="btn-submit" id="btn-sig-paso4" style="background: #1565c0;" onclick="siguientePaso(4)">
+            <button class="btn-submit" id="btn-sig-paso4" style="background: #1565c0;" onclick="mostrarModalConfirmacion(4)">
               Continuar
               <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
                 <line x1="5" y1="12" x2="19" y2="12" />
@@ -1118,7 +1115,7 @@
               </svg>
               Anterior
             </button>
-            <button class="btn-submit" id="btn-sig-paso5" style="background: #1565c0;" onclick="siguientePaso(5)">
+            <button class="btn-submit" id="btn-sig-paso5" style="background: #1565c0;" onclick="mostrarModalConfirmacion(5)">
               Revisar solicitud
               <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
                 <line x1="5" y1="12" x2="19" y2="12" />
@@ -1166,6 +1163,19 @@
                     <div class="resumen-item">
                       <div class="resumen-etiqueta">Contexto</div>
                       <div class="resumen-valor" id="res-contexto" style="font-weight:600; color:#1565c0;">—</div>
+                    </div>
+                  </div>
+                  <!-- RESUMEN NUEVO: CAMPOS DE PROYECTO CONSULTA POPULAR -->
+                  <div class="col-12" id="resumen-bloque-proyecto" style="display:none;">
+                    <div class="resumen-item" style="background:#f0f4f8; border-left:3px solid #1565c0; padding:10px;">
+                      <div class="resumen-etiqueta" style="font-weight:bold; color:#1565c0; margin-bottom:6px;">Detalles del Proyecto (Consulta Popular Nacional)</div>
+                      <div style="font-size:0.85rem; color:#333; line-height:1.5;">
+                        <div><strong>Nombre del Proyecto:</strong> <span id="res-proy-nombre">—</span></div>
+                        <div><strong>Fecha de Aprobación:</strong> <span id="res-proy-fecha">—</span></div>
+                        <div><strong>Monto Estimado:</strong> Bs. <span id="res-proy-monto">—</span></div>
+                        <div><strong>Ente Financiador:</strong> <span id="res-proy-financiador">—</span></div>
+                        <div><strong>Código SITUR:</strong> <span id="res-proy-situr">—</span></div>
+                      </div>
                     </div>
                   </div>
                   <div class="col-md-6">
@@ -1372,9 +1382,9 @@
               
               <!-- Sub-sección dinámica Proyecto -->
               <div id="print-seccion-proyecto" style="display:none; margin-top: 15px; border-top: 1px dashed #dce3ec; padding-top:10px;">
-                 <h6 style="font-weight:bold; color:#1a2340; margin-bottom:10px;">Datos del Proyecto (Consulta Popular)</h6>
+                 <h6 style="font-weight:bold; color:#1a2340; margin-bottom:10px;">Datos del Proyecto (Consulta Popular Nacional)</h6>
                  <div class="print-row">
-                   <div class="print-label">Denominación del Proyecto:</div>
+                   <div class="print-label">Nombre del Proyecto:</div>
                    <div class="print-val" id="print-proy-nombre">—</div>
                  </div>
                  <div class="print-row">
@@ -1438,6 +1448,29 @@
     </div><!-- /denuncias-inner -->
   </section>
 
+  <!-- MODAL FLOTANTE DE CONFIRMACIÓN DE DATOS (Bootstrap Custom) -->
+  <div class="modal fade" id="modalConfirmacionPaso" tabindex="-1" aria-labelledby="modalConfirmacionLabel" aria-hidden="true" data-bs-backdrop="static" data-bs-keyboard="false">
+    <div class="modal-dialog modal-dialog-centered">
+      <div class="modal-content" style="border: none; border-radius: 8px; box-shadow: 0 10px 25px rgba(0,0,0,0.15);">
+        <div class="modal-header" style="background: #0f2340; color: #fff; border-top-left-radius: 8px; border-top-right-radius: 8px; padding: 15px 20px;">
+          <h5 class="modal-title" id="modalConfirmacionLabel" style="font-size: 1.05rem; font-weight: bold; display: flex; align-items: center; gap: 8px;">
+            Confirmación de Datos Ingresados
+          </h5>
+          <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Close"></button>
+        </div>
+        <div class="modal-body" style="padding: 25px 20px; background: #fdfdfd; color: #333;">
+          <p id="modal-texto-pregunta" style="font-size: 0.95rem; margin-bottom: 0; text-align: justify; line-height: 1.5;">
+            ¿Verificó correctamente los datos ingresados en este paso antes de continuar al siguiente nivel?
+          </p>
+        </div>
+        <div class="modal-footer" style="background: #f7f9fd; border-bottom-left-radius: 8px; border-bottom-right-radius: 8px; padding: 12px 20px; border-top: 1px solid #eef1f7;">
+          <button type="button" class="btn btn-outline-secondary" data-bs-dismiss="modal" style="font-size: 0.88rem; padding: 6px 16px; border-color: #b0bec5; color: #455a64;">Revisar nuevamente</button>
+          <button type="button" class="btn btn-primary" id="btn-confirmar-modal" onclick="ejecutarPasoSiguiente()" style="background: #1565c0; border-color: #1565c0; font-size: 0.88rem; padding: 6px 20px; font-weight: 600;">Sí, todo es correcto</button>
+        </div>
+      </div>
+    </div>
+  </div>
+
   <footer>
     <div class="footer-inner">
       <div class="row g-4 pb-4" style="border-bottom: 1px solid rgba(255,255,255,0.1); margin-bottom: 24px;">
@@ -1455,9 +1488,134 @@
     </div>
   </footer>
 
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/bootstrap/5.3.2/js/bootstrap.bundle.min.js"></script>
   <script src="../assets/js/wizard.js"></script>
   
   <script>
+    let pasoPendienteValidacion = 1;
+    let instanciaModal = null;
+
+    document.addEventListener("DOMContentLoaded", function() {
+      const elementoModal = document.getElementById('modalConfirmacionPaso');
+      if (elementoModal) {
+        instanciaModal = new bootstrap.Modal(elementoModal);
+      }
+    });
+
+    function mostrarModalConfirmacion(pasoActual) {
+      // Validar primero si el paso actual pasa sus filtros nativos antes de mostrar la ventana flotante
+      if (pasoActual === 1) {
+        const radioSeleccionado = document.querySelector('input[name="tipo_tramite"]:checked');
+        if (radioSeleccionado && radioSeleccionado.value === 'denuncia') {
+          const consultaRadio = document.querySelector('input[name="es_consulta"]:checked');
+          if (!consultaRadio) {
+            document.getElementById('es-consulta-err').classList.add('visible');
+            return;
+          } else {
+            document.getElementById('es-consulta-err').classList.remove('visible');
+          }
+        }
+      }
+
+      // Validación específica de campos del proyecto en el paso 3 si es consulta popular
+      if (pasoActual === 3) {
+        const radioSeleccionado = document.querySelector('input[name="tipo_tramite"]:checked');
+        const tipo = radioSeleccionado ? radioSeleccionado.value : '';
+        if (tipo === 'denuncia') {
+          const consultaRadio = document.querySelector('input[name="es_consulta"]:checked');
+          if (consultaRadio && consultaRadio.value === 'si') {
+            let hayErrorProyecto = false;
+            const pNombre = document.getElementById('proy-nombre');
+            const pFecha = document.getElementById('proy-fecha');
+            const pMonto = document.getElementById('proy-monto');
+            const pFinan = document.getElementById('proy-financiador');
+
+            if (!pNombre.value.trim()) {
+              document.getElementById('proy-nombre-err').classList.add('visible');
+              hayErrorProyecto = true;
+            } else {
+              document.getElementById('proy-nombre-err').classList.remove('visible');
+            }
+
+            if (!pFecha.value) {
+              document.getElementById('proy-fecha-err').classList.add('visible');
+              hayErrorProyecto = true;
+            } else {
+              document.getElementById('proy-fecha-err').classList.remove('visible');
+            }
+
+            if (!pMonto.value.trim()) {
+              document.getElementById('proy-monto-err').classList.add('visible');
+              hayErrorProyecto = true;
+            } else {
+              document.getElementById('proy-monto-err').classList.remove('visible');
+            }
+
+            if (!pFinan.value.trim()) {
+              document.getElementById('proy-financiador-err').classList.add('visible');
+              hayErrorProyecto = true;
+            } else {
+              document.getElementById('proy-financiador-err').classList.remove('visible');
+            }
+
+            if (hayErrorProyecto) return;
+          }
+        }
+      }
+
+      pasoPendienteValidacion = pasoActual;
+      
+      // Personalizar el mensaje según el paso de la línea de tiempo
+      const nombresPasos = ["Tipo de Trámite", "Datos del Ciudadano", "Datos del Señalado", "Descripción de los Hechos", "Documentos y Evidencias"];
+      document.getElementById('modal-texto-pregunta').innerHTML = `¿Confirma que ha revisado correctamente los datos correspondientes al <strong>Paso ${pasoActual} (${nombresPasos[pasoActual - 1]})</strong> y desea avanzar al siguiente nivel?`;
+      
+      if (instanciaModal) {
+        instanciaModal.show();
+      }
+    }
+
+    function ejecutarPasoSiguiente() {
+      if (instanciaModal) {
+        instanciaModal.hide();
+      }
+
+      const radioSeleccionado = document.querySelector('input[name="tipo_tramite"]:checked');
+      const tipo = radioSeleccionado ? radioSeleccionado.value : '';
+
+      if (pasoPendienteValidacion === 3 && (tipo === 'reclamo' || tipo === 'peticion' || typeMatch(tipo))) {
+        document.getElementById('err-paso3').style.display = 'none';
+        document.getElementById('paso-3').style.display = 'none';
+        document.getElementById('paso-4').style.display = 'block';
+        actualizarBarraProgreso(4);
+        actualizarAvisoContexto();
+        window.scrollTo({ top: 0, behavior: 'smooth' });
+        return;
+      }
+
+      if (pasoPendienteValidacion === 5 && tipo === 'sugerencia') {
+        document.getElementById('err-paso5').style.display = 'none';
+        document.getElementById('paso-5').style.display = 'none';
+        document.getElementById('paso-6').style.display = 'block';
+        actualizarBarraProgreso(6);
+        actualizarResumenFinal();
+        window.scrollTo({ top: 0, behavior: 'smooth' });
+        return;
+      }
+
+      if (typeof originalSiguientePaso === 'function') {
+        originalSiguientePaso(pasoPendienteValidacion);
+      }
+      
+      if (pasoPendienteValidacion === 3) {
+        actualizarAvisoContexto();
+      }
+      if (pasoPendienteValidacion === 5) {
+        actualizarResumenFinal();
+      }
+      
+      window.scrollTo({ top: 0, behavior: 'smooth' });
+    }
+
     function mostrarConsultaTramite() {
       document.getElementById('vista-seleccion').style.display = 'none';
       document.getElementById('vista-estado-tramite').style.display = 'block';
@@ -1481,7 +1639,6 @@
 
       containerRes.style.display = 'block';
       
-      // Simulación de respuesta según el código ingresado o general
       document.getElementById('res-est-codigo').textContent = codigo;
       
       if (codigo === 'OAC-2026-0001' || codigo.includes('0001')) {
@@ -1535,51 +1692,26 @@
       }
     }
 
-    const originalSiguientePaso = window.siguientePaso;
-    window.siguientePaso = function(pasoActual) {
-      if (pasoActual === 1) {
-        const radioSeleccionado = document.querySelector('input[name="tipo_tramite"]:checked');
-        if (radioSeleccionado && radioSeleccionado.value === 'denuncia') {
-          const consultaRadio = document.querySelector('input[name="es_consulta"]:checked');
-          if (!consultaRadio) {
-            document.getElementById('es-consulta-err').classList.add('visible');
-            return;
-          } else {
-            document.getElementById('es-consulta-err').classList.remove('visible');
-          }
+    // Listener para mostrar/ocultar el bloque de proyecto en el Paso 3 basado en la respuesta de consulta popular
+    document.addEventListener('change', function(e) {
+      if (e.target && e.target.name === 'es_consulta') {
+        const bloqueProyecto = document.getElementById('bloque-proyecto-consulta');
+        if (e.target.value === 'si') {
+          if (bloqueProyecto) bloqueProyecto.style.display = 'block';
+        } else {
+          if (bloqueProyecto) bloqueProyecto.style.display = 'none';
         }
       }
+    });
 
-      const radioSeleccionado = document.querySelector('input[name="tipo_tramite"]:checked');
-      const tipo = radioSeleccionado ? radioSeleccionado.value : '';
-
-      if (pasoActual === 3 && (tipo === 'reclamo' || tipo === 'peticion' || typeMatch(tipo))) {
-        document.getElementById('err-paso3').style.display = 'none';
-        document.getElementById('paso-3').style.display = 'none';
-        document.getElementById('paso-4').style.display = 'block';
-        actualizarBarraProgreso(4);
-        actualizarAvisoContexto();
-        return;
-      }
-
-      if (pasoActual === 5 && tipo === 'sugerencia') {
-        document.getElementById('err-paso5').style.display = 'none';
-        document.getElementById('paso-5').style.display = 'none';
-        document.getElementById('paso-6').style.display = 'block';
-        actualizarBarraProgreso(6);
-        actualizarResumenFinal();
-        return;
-      }
-
-      if (typeof originalSiguientePaso === 'function') {
-        originalSiguientePaso(pasoActual);
-      }
-      
-      if (pasoActual === 3) {
-        actualizarAvisoContexto();
-      }
-      if (pasoActual === 5) {
-        actualizarResumenFinal();
+    const originalSiguientePasadummy = window.siguientePaso;
+    // Se preserva la lógica interna original de siguientePaso del wizard externo si existe
+    const originalSiguientePaso = typeof originalSiguientePasadummy === 'function' ? originalSiguientePasadummy : function(p) {
+      document.getElementById('paso-' + p).style.display = 'none';
+      let siguiente = p + 1;
+      if (document.getElementById('paso-' + siguiente)) {
+        document.getElementById('paso-' + siguiente).style.display = 'block';
+        actualizarBarraProgreso(siguiente);
       }
     };
 
@@ -1607,19 +1739,30 @@
       const radioSeleccionado = document.querySelector('input[name="tipo_tramite"]:checked');
       const bloqueResumenContexto = document.getElementById('resumen-bloque-contexto');
       const textoResumenContexto = document.getElementById('res-contexto');
+      const bloqueResumenProyecto = document.getElementById('resumen-bloque-proyecto');
 
-      // 1. Validar Contexto de Consulta
       if (radioSeleccionado && radioSeleccionado.value === 'denuncia') {
         const consultaRadio = document.querySelector('input[name="es_consulta"]:checked');
         if (consultaRadio) {
           bloqueResumenContexto.style.display = 'block';
           textoResumenContexto.textContent = consultaRadio.value === 'si' ? 'Proyecto de Consulta Popular Nacional' : 'Organismo / Otra Institución';
+
+          if (consultaRadio.value === 'si') {
+            bloqueResumenProyecto.style.display = 'block';
+            document.getElementById('res-proy-nombre').textContent = document.getElementById('proy-nombre').value || 'No indicó';
+            document.getElementById('res-proy-fecha').textContent = document.getElementById('proy-fecha').value || 'No indicó';
+            document.getElementById('res-proy-monto').textContent = document.getElementById('proy-monto').value || '0.00';
+            document.getElementById('res-proy-financiador').textContent = document.getElementById('proy-financiador').value || 'No indicó';
+            document.getElementById('res-proy-situr').textContent = document.getElementById('proy-situr').value || 'No indicó';
+          } else {
+            bloqueResumenProyecto.style.display = 'none';
+          }
         }
       } else {
         bloqueResumenContexto.style.display = 'none';
+        if (bloqueResumenProyecto) bloqueResumenProyecto.style.display = 'none';
       }
 
-      // 2. Poblar datos básicos para que no queden en blanco en el Paso 6
       const tipoTramite = radioSeleccionado ? radioSeleccionado.value.toUpperCase() : 'NO DEFINIDO';
       document.getElementById('res-tipo-tramite').textContent = tipoTramite;
       document.getElementById('res-fecha').textContent = new Date().toLocaleDateString();
@@ -1629,7 +1772,6 @@
       document.getElementById('res-telf').textContent = document.getElementById('cit-telf-cel-num').value;
       document.getElementById('res-hechos').textContent = document.getElementById('narracion').value || 'Sin descripción';
 
-      // 3. Poblar Ubicación Absoluta (Ciudad/Estado, Municipio, Parroquia)
       const parr = document.getElementById('cit-parroquia').value || 'No especificó';
       const mun = document.getElementById('cit-municipio').value || 'Páez';
       const ciu = document.getElementById('cit-ciudad').value || 'Acarigua/Portuguesa';
@@ -1640,7 +1782,6 @@
          contenedorUbicacion.innerHTML = `<strong>Ciudad/Estado:</strong> ${ciu} <br><strong>Municipio:</strong> ${mun} <br><strong>Parroquia:</strong> ${parr} <br><strong>Dirección:</strong> ${dir}`;
       }
 
-      // 4. Mapeo y Maqueta Visual de Evidencias Cargadas
       const inputsEvidencias = document.querySelectorAll('input[type="file"]');
       let listaArchivosHtml = '';
       let totalArchivos = 0;
@@ -1672,9 +1813,7 @@
       }
     }
 
-    // Función que recoge ABSOLUTAMENTE TODOS los datos ingresados
     window.enviarSolicitud = function() {
-      // 1. Datos del Trámite y Contexto
       const radioSeleccionado = document.querySelector('input[name="tipo_tramite"]:checked');
       const tipoTramite = radioSeleccionado ? radioSeleccionado.value : '';
       if (radioSeleccionado) {
@@ -1691,7 +1830,6 @@
         }
       }
       
-      // 2. Datos del Solicitante Completos
       const pNombre = document.getElementById('cit-primer-nombre').value || '';
       const sNombre = document.getElementById('cit-segundo-nombre').value || '';
       const pApellido = document.getElementById('cit-primer-apellido').value || '';
@@ -1729,7 +1867,6 @@
       const ciu = document.getElementById('cit-ciudad').value || 'Acarigua/Portuguesa';
       document.getElementById('print-direccion').textContent = `${dir}, Parroquia ${parr}. Municipio ${mun} (${ciu})`;
 
-      // 3. Señalados / Proyecto
       const seccionSenalado = document.getElementById('print-seccion-senalado');
       if (tipoTramite === 'denuncia' || tipoTramite === 'queja') {
         seccionSenalado.style.display = 'block';
@@ -1760,7 +1897,6 @@
         seccionSenalado.style.display = 'none';
       }
 
-      // 4. Información de los Hechos
       document.getElementById('print-hechos').textContent = document.getElementById('narracion').value || '';
       
       const instaRadio = document.querySelector('input[name="otra_instancia"]:checked');
@@ -1777,7 +1913,6 @@
 
       document.getElementById('print-fecha').textContent = new Date().toLocaleDateString();
 
-      // 5. Corrección de Evidencias (Buscando la etiqueta lógica)
       const inputsEvidencias = document.querySelectorAll('input[type="file"]');
       let listaArchivosHtml = '';
       let totalArchivos = 0;
