@@ -414,10 +414,10 @@ var PLANTILLAS_SENALADO = {
         camposObligatorios:
             '<div class="row g-3">' +
             '  <div class="col-md-6"><div class="form-group">' +
-            '    <label class="form-label">Apellidos y Nombres <span class="required">*</span></label>' +
+            '    <label class="form-label">Apellidos y Nombres <span class="required" style="color:#1565c0;">*</span></label>' +
             '    <input type="text" class="form-control campo-dinamico-req" data-campo="pn-nombres" placeholder="Apellido Apellido, Nombre Nombre"></div></div>' +
             '  <div class="col-md-6"><div class="form-group">' +
-            '    <label class="form-label">Dirección o Lugar donde Ejerce la Función <span class="required">*</span></label>' +
+            '    <label class="form-label">Dirección o Lugar donde Ejerce la Función <span class="required" style="color:#1565c0;">*</span></label>' +
             '    <input type="text" class="form-control campo-dinamico-req" data-campo="pn-direccion" placeholder="Dirección, cargo u oficina que ocupa"></div></div>' +
             '</div>',
         camposOpcionales:
@@ -439,7 +439,7 @@ var PLANTILLAS_SENALADO = {
         camposObligatorios:
             '<div class="row g-3">' +
             '  <div class="col-12"><div class="form-group">' +
-            '    <label class="form-label">Razón Social / Denominación <span class="required">*</span></label>' +
+            '    <label class="form-label">Razón Social / Denominación <span class="required" style="color:#1565c0;">*</span></label>' +
             '    <input type="text" class="form-control campo-dinamico-req" data-campo="pj-razon" list="dl-instancias" placeholder="Nombre de la empresa"></div></div>' +
             '</div>',
         camposOpcionales:
@@ -466,10 +466,10 @@ var PLANTILLAS_SENALADO = {
         camposObligatorios:
             '<div class="row g-3">' +
             '  <div class="col-md-8"><div class="form-group">' +
-            '    <label class="form-label">Nombre del Órgano o Ente <span class="required">*</span></label>' +
+            '    <label class="form-label">Nombre del Órgano o Ente <span class="required" style="color:#1565c0;">*</span></label>' +
             '    <input type="text" class="form-control campo-dinamico-req" data-campo="oe-nombre" list="dl-instancias" placeholder="Ej. Alcaldía del Municipio Páez"></div></div>' +
             '  <div class="col-md-4"><div class="form-group">' +
-            '    <label class="form-label">Dirección o Sede <span class="required">*</span></label>' +
+            '    <label class="form-label">Dirección o Sede <span class="required" style="color:#1565c0;">*</span></label>' +
             '    <input type="text" class="form-control campo-dinamico-req" data-campo="oe-direccion" placeholder="Dirección de la sede"></div></div>' +
             '</div>',
         camposOpcionales:
@@ -490,15 +490,15 @@ var PLANTILLAS_SENALADO = {
         camposObligatorios:
             '<div class="row g-3">' +
             '  <div class="col-md-6"><div class="form-group">' +
-            '    <label class="form-label">Nombre de la Comuna <span class="required">*</span></label>' +
+            '    <label class="form-label">Nombre de la Comuna <span class="required" style="color:#1565c0;">*</span></label>' +
             '    <input type="text" class="form-control campo-dinamico-req" data-campo="cm-nombre" list="dl-instancias" placeholder="Nombre oficial de la comuna"></div></div>' +
             '  <div class="col-md-3"><div class="form-group">' +
-            '    <label class="form-label">Parroquia <span class="required">*</span></label>' +
+            '    <label class="form-label">Parroquia <span class="required" style="color:#1565c0;">*</span></label>' +
             '    <select class="form-select campo-dinamico-req" data-campo="cm-parroquia">' +
             construirOpcionesParroquia() +
             '    </select></div></div>' +
             '  <div class="col-md-3"><div class="form-group">' +
-            '    <label class="form-label">Municipio <span class="required">*</span></label>' +
+            '    <label class="form-label">Municipio <span class="required" style="color:#1565c0;">*</span></label>' +
             '    <input type="text" class="form-control campo-dinamico-req" data-campo="cm-municipio" value="Páez"></div></div>' +
             '</div>',
         camposOpcionales:
@@ -519,10 +519,10 @@ var PLANTILLAS_SENALADO = {
         camposObligatorios:
             '<div class="row g-3">' +
             '  <div class="col-md-8"><div class="form-group">' +
-            '    <label class="form-label">Nombre del Consejo Comunal <span class="required">*</span></label>' +
+            '    <label class="form-label">Nombre del Consejo Comunal <span class="required" style="color:#1565c0;">*</span></label>' +
             '    <input type="text" class="form-control campo-dinamico-req" data-campo="cc-nombre" list="dl-instancias" placeholder="Nombre oficial del consejo comunal"></div></div>' +
             '  <div class="col-md-4"><div class="form-group">' +
-            '    <label class="form-label">Parroquia <span class="required">*</span></label>' +
+            '    <label class="form-label">Parroquia <span class="required" style="color:#1565c0;">*</span></label>' +
             '    <select class="form-select campo-dinamico-req" data-campo="cc-parroquia">' +
             construirOpcionesParroquia() +
             '    </select></div></div>' +
@@ -548,13 +548,13 @@ var PLANTILLAS_SENALADO = {
         camposObligatorios:
             '<div class="row g-3">' +
             '  <div class="col-md-4"><div class="form-group">' +
-            '    <label class="form-label">Nombres y Apellidos <span class="required">*</span></label>' +
+            '    <label class="form-label">Nombres y Apellidos <span class="required" style="color:#1565c0;">*</span></label>' +
             '    <input type="text" class="form-control campo-dinamico-req" data-campo="jp-nombres" placeholder="Nombre completo"></div></div>' +
             '  <div class="col-md-4"><div class="form-group">' +
-            '    <label class="form-label">Circuito Judicial de Paz <span class="required">*</span></label>' +
+            '    <label class="form-label">Circuito Judicial de Paz <span class="required" style="color:#1565c0;">*</span></label>' +
             '    <input type="text" class="form-control campo-dinamico-req" data-campo="jp-circuito" placeholder="Circuito al que pertenece"></div></div>' +
             '  <div class="col-md-4"><div class="form-group">' +
-            '    <label class="form-label">Parroquia de Actuación <span class="required">*</span></label>' +
+            '    <label class="form-label">Parroquia de Actuación <span class="required" style="color:#1565c0;">*</span></label>' +
             '    <select class="form-select campo-dinamico-req" data-campo="jp-parroquia">' +
             construirOpcionesParroquia() +
             '    </select></div></div>' +
@@ -578,10 +578,10 @@ var PLANTILLAS_SENALADO = {
         camposObligatorios:
             '<div class="row g-3">' +
             '  <div class="col-md-4"><div class="form-group">' +
-            '    <label class="form-label">Especifique el Tipo <span class="required">*</span></label>' +
+            '    <label class="form-label">Especifique el Tipo <span class="required" style="color:#1565c0;">*</span></label>' +
             '    <input type="text" class="form-control campo-dinamico-req" data-campo="ot-tipo" placeholder="Ej. Cooperativa, Sindicato, Fundación..."></div></div>' +
             '  <div class="col-md-8"><div class="form-group">' +
-            '    <label class="form-label">Nombre o Denominación <span class="required">*</span></label>' +
+            '    <label class="form-label">Nombre o Denominación <span class="required" style="color:#1565c0;">*</span></label>' +
             '    <input type="text" class="form-control campo-dinamico-req" data-campo="ot-nombre" list="dl-instancias" placeholder="Nombre completo o razón social"></div></div>' +
             '</div>',
         camposOpcionales:
@@ -1226,7 +1226,7 @@ function agregarSenalado() {
         '  </button>' +
         '</div>' +
         '<div class="form-group">' +
-        '  <label class="form-label">Tipo de Señalado <span class="required">*</span></label>' +
+        '  <label class="form-label">Tipo de Señalado <span class="required" style="color:#1565c0;">*</span></label>' +
         '  <div class="check-group" style="flex-wrap:wrap;gap:10px 20px;margin-top:6px;">' +
         construirCheckboxesTipoSenalado(idTarjeta) +
         '  </div>' +
