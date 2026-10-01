@@ -757,6 +757,7 @@
                       </select>
                       <input type="tel" id="cit-telf-hab-num" class="form-control" placeholder="1234567" maxlength="7">
                     </div>
+                    <span class="error-msg" id="cit-telf-hab-err">Complete el código de área y los 7 dígitos.</span>
                   </div>
                 </div>
                 <div class="col-md-3">
@@ -1005,10 +1006,10 @@
                 </label>
                 <textarea id="narracion" class="form-textarea"
                   placeholder="Describa detalladamente su trámite..."
-                  oninput="actualizarContadorNarracion(this)" style="min-height:140px;"></textarea>
+                  maxlength="3500" oninput="actualizarContadorNarracion(this)" style="min-height:140px;"></textarea>
                 <div style="display:flex;justify-content:space-between;align-items:center;margin-top:4px;">
                   <span class="error-msg" id="narracion-err" style="display:inline;">La narración debe tener al menos 50 caracteres.</span>
-                  <span class="contador-chars" id="narracion-contador">0 / 3000 caracteres</span>
+                  <span class="contador-chars" id="narracion-contador">0 / 3500 caracteres</span>
                 </div>
               </div>
 
@@ -1096,6 +1097,14 @@
                   Cargue los documentos uno por uno, en el orden que se muestra a continuación.
                 </p>
 
+                <div class="nota-info" style="margin-bottom:16px;">
+                  Formatos admitidos: imágenes, video, audio, PDF y Word, con un máximo de 10 MB por archivo.
+                  Los documentos marcados como <strong>Obligatorio</strong> deben adjuntarse para continuar.
+                </div>
+                <div class="nota-info" style="margin-bottom:16px;">
+                  Recuerde consignar físicamente las evidencias originales ante la sede de la Contraloría.
+                </div>
+
                 <div id="evidencias-secuencia"></div>
               </div>
             </div>
@@ -1145,7 +1154,11 @@
                 </svg>
                 Resumen de su Solicitud
               </div>
-              <div style="background:#f7f9fd;border:1px solid #dde3ee;border-radius:6px;padding:8px;">
+              <div class="revision-card">
+                <div class="revision-card-header">
+                  <span class="revision-card-titulo">1. Tipo de Trámite</span>
+                  <button type="button" class="btn-revision-editar" onclick="editarDesdeRevision(1)"><svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="M12 20h9"/><path d="M16.5 3.5a2.1 2.1 0 0 1 3 3L7 19l-4 1 1-4z"/></svg> Editar</button>
+                </div>
                 <div class="row g-2">
                   <div class="col-md-6">
                     <div class="resumen-item">
@@ -1165,19 +1178,14 @@
                       <div class="resumen-valor" id="res-contexto" style="font-weight:600; color:#1565c0;">—</div>
                     </div>
                   </div>
-                  <!-- RESUMEN NUEVO: CAMPOS DE PROYECTO CONSULTA POPULAR -->
-                  <div class="col-12" id="resumen-bloque-proyecto" style="display:none;">
-                    <div class="resumen-item" style="background:#f0f4f8; border-left:3px solid #1565c0; padding:10px;">
-                      <div class="resumen-etiqueta" style="font-weight:bold; color:#1565c0; margin-bottom:6px;">Detalles del Proyecto (Consulta Popular Nacional)</div>
-                      <div style="font-size:0.85rem; color:#333; line-height:1.5;">
-                        <div><strong>Nombre del Proyecto:</strong> <span id="res-proy-nombre">—</span></div>
-                        <div><strong>Fecha de Aprobación:</strong> <span id="res-proy-fecha">—</span></div>
-                        <div><strong>Monto Estimado:</strong> Bs. <span id="res-proy-monto">—</span></div>
-                        <div><strong>Ente Financiador:</strong> <span id="res-proy-financiador">—</span></div>
-                        <div><strong>Código SITUR:</strong> <span id="res-proy-situr">—</span></div>
-                      </div>
-                    </div>
-                  </div>
+                </div>
+              </div>
+              <div class="revision-card">
+                <div class="revision-card-header">
+                  <span class="revision-card-titulo">2. Datos del Solicitante</span>
+                  <button type="button" class="btn-revision-editar" onclick="editarDesdeRevision(2)"><svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="M12 20h9"/><path d="M16.5 3.5a2.1 2.1 0 0 1 3 3L7 19l-4 1 1-4z"/></svg> Editar</button>
+                </div>
+                <div class="row g-2">
                   <div class="col-md-6">
                     <div class="resumen-item">
                       <div class="resumen-etiqueta">Solicitante</div>
@@ -1204,23 +1212,64 @@
                   </div>
                   <div class="col-12">
                     <div class="resumen-item">
-                      <div class="resumen-etiqueta">Señalado / Instancia</div>
-                      <div class="resumen-valor" id="res-senalado">—</div>
+                      <div class="resumen-etiqueta">Ubicación Completa (Estado, Municipio, Parroquia)</div>
+                      <div class="resumen-valor" id="res-ubicacion" style="font-weight:600; color:#1a2340;">—</div>
                     </div>
                   </div>
+                </div>
+              </div>
+              <div class="revision-card" id="rev-card-senalado">
+                <div class="revision-card-header">
+                  <span class="revision-card-titulo">3. Identificación del Señalado</span>
+                  <button type="button" class="btn-revision-editar" onclick="editarDesdeRevision(3)"><svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="M12 20h9"/><path d="M16.5 3.5a2.1 2.1 0 0 1 3 3L7 19l-4 1 1-4z"/></svg> Editar</button>
+                </div>
+                <div class="row g-2">
+                  <div class="col-12">
+                    <div class="resumen-item">
+                      <div class="resumen-etiqueta">Señalado(s) / Instancia</div>
+                      <div class="resumen-valor" id="res-senalado" style="white-space:pre-line;">—</div>
+                    </div>
+                  </div>
+                  <div class="col-12">
+                    <div class="resumen-item">
+                      <div class="resumen-etiqueta">Ubicación del Señalado</div>
+                      <div class="resumen-valor" id="res-sen-ubicacion">—</div>
+                    </div>
+                  </div>
+                  <div class="col-12" id="res-bloque-proyecto" style="display:none;">
+                    <div class="resumen-item">
+                      <div class="resumen-etiqueta">Proyecto de la Consulta Popular</div>
+                      <div class="resumen-valor" id="res-proyecto" style="white-space:pre-line;">—</div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+              <div class="revision-card">
+                <div class="revision-card-header">
+                  <span class="revision-card-titulo">4. Descripción de los Hechos</span>
+                  <button type="button" class="btn-revision-editar" onclick="editarDesdeRevision(4)"><svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="M12 20h9"/><path d="M16.5 3.5a2.1 2.1 0 0 1 3 3L7 19l-4 1 1-4z"/></svg> Editar</button>
+                </div>
+                <div class="row g-2">
                   <div class="col-12">
                     <div class="resumen-item">
                       <div class="resumen-etiqueta">Resumen de los Hechos</div>
                       <div class="resumen-valor" id="res-hechos" style="font-size:0.8rem;line-height:1.6;">—</div>
                     </div>
                   </div>
-                  <!-- NUEVOS CAMPOS: Ubicación Exacta y Evidencias Visuales -->
                   <div class="col-12">
                     <div class="resumen-item">
-                      <div class="resumen-etiqueta">Ubicación Completa (Estado, Municipio, Parroquia)</div>
-                      <div class="resumen-valor" id="res-ubicacion" style="font-weight:600; color:#1a2340;">—</div>
+                      <div class="resumen-etiqueta">¿Presentado ante otra instancia?</div>
+                      <div class="resumen-valor" id="res-otra-instancia">—</div>
                     </div>
                   </div>
+                </div>
+              </div>
+              <div class="revision-card" id="rev-card-evidencias">
+                <div class="revision-card-header">
+                  <span class="revision-card-titulo">5. Documentos y Evidencias</span>
+                  <button type="button" class="btn-revision-editar" onclick="editarDesdeRevision(5)"><svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="M12 20h9"/><path d="M16.5 3.5a2.1 2.1 0 0 1 3 3L7 19l-4 1 1-4z"/></svg> Editar</button>
+                </div>
+                <div class="row g-2">
                   <div class="col-12">
                     <div class="resumen-item">
                       <div class="resumen-etiqueta">Documentos y Evidencias Cargadas</div>
@@ -1704,14 +1753,37 @@
       }
     });
 
-    const originalSiguientePasadummy = window.siguientePaso;
-    // Se preserva la lógica interna original de siguientePaso del wizard externo si existe
-    const originalSiguientePaso = typeof originalSiguientePasadummy === 'function' ? originalSiguientePasadummy : function(p) {
-      document.getElementById('paso-' + p).style.display = 'none';
-      let siguiente = p + 1;
-      if (document.getElementById('paso-' + siguiente)) {
-        document.getElementById('paso-' + siguiente).style.display = 'block';
-        actualizarBarraProgreso(siguiente);
+      const radioSeleccionado = document.querySelector('input[name="tipo_tramite"]:checked');
+      const tipo = radioSeleccionado ? radioSeleccionado.value : '';
+
+      if (pasoActual === 3 && (tipo === 'reclamo' || tipo === 'peticion' || typeMatch(tipo))) {
+        document.getElementById('err-paso3').style.display = 'none';
+        document.getElementById('paso-3').style.display = 'none';
+        document.getElementById('paso-4').style.display = 'block';
+        actualizarBarraProgreso(4);
+        actualizarAvisoContexto();
+        return;
+      }
+
+      if (pasoActual === 5 && tipo === 'sugerencia') {
+        document.getElementById('err-paso5').style.display = 'none';
+        document.getElementById('paso-5').style.display = 'none';
+        document.getElementById('paso-6').style.display = 'block';
+        actualizarBarraProgreso(6);
+        poblarResumen();
+        actualizarResumenFinal();
+        return;
+      }
+
+      if (typeof originalSiguientePaso === 'function') {
+        originalSiguientePaso(pasoActual);
+      }
+      
+      if (pasoActual === 3) {
+        actualizarAvisoContexto();
+      }
+      if (pasoActual === 5) {
+        actualizarResumenFinal();
       }
     };
 
@@ -1782,34 +1854,16 @@
          contenedorUbicacion.innerHTML = `<strong>Ciudad/Estado:</strong> ${ciu} <br><strong>Municipio:</strong> ${mun} <br><strong>Parroquia:</strong> ${parr} <br><strong>Dirección:</strong> ${dir}`;
       }
 
-      const inputsEvidencias = document.querySelectorAll('input[type="file"]');
-      let listaArchivosHtml = '';
-      let totalArchivos = 0;
-
-      inputsEvidencias.forEach(input => {
-        if (input.files && input.files.length > 0) {
-          let tipoDocumento = "Anexo";
-          const parentGroup = input.closest('.form-group') || input.parentElement;
-          if (parentGroup) {
-              const labelElem = parentGroup.querySelector('label') || parentGroup.querySelector('.form-label');
-              if (labelElem && labelElem.innerText.trim() !== '') {
-                  tipoDocumento = labelElem.innerText.replace(/\*/g, '').trim();
-              }
-          }
-          for (let i = 0; i < input.files.length; i++) {
-            totalArchivos++;
-            listaArchivosHtml += `<div style="margin-bottom:4px;">✅ <strong>${tipoDocumento}:</strong> <span style="color:#555;">${input.files[i].name}</span></div>`;
-          }
-        }
-      });
-
+      // 4. Evidencias cargadas (desde la secuencia por documentos)
+      const evCargadas = obtenerEvidenciasCargadas();
       const contenedorResEvidencias = document.getElementById('res-evidencias');
       if (contenedorResEvidencias) {
-          if (totalArchivos > 0) {
-            contenedorResEvidencias.innerHTML = `<div style="color:#2e7d32;font-weight:bold;margin-bottom:8px;">Se anexaron ${totalArchivos} documento(s) listos para enviar:</div>` + listaArchivosHtml;
-          } else {
-            contenedorResEvidencias.innerHTML = '<div style="color:#c62828; font-weight:600;">⚠️ No se anexaron evidencias ni documentos en el sistema.</div>';
-          }
+        if (evCargadas.total > 0) {
+          contenedorResEvidencias.innerHTML = `<div style="color:#1565c0;font-weight:bold;margin-bottom:8px;">Se anexaron ${evCargadas.total} archivo(s):</div>` +
+            evCargadas.items.map(it => `<div style="margin-bottom:4px;">✅ <strong>${escaparHtml(it.doc)}:</strong> <span style="color:#555;">${escaparHtml(it.nombre)}</span></div>`).join('');
+        } else {
+          contenedorResEvidencias.innerHTML = '<div style="color:#c62828; font-weight:600;">⚠️ No se anexaron evidencias ni documentos.</div>';
+        }
       }
     }
 
@@ -1913,27 +1967,10 @@
 
       document.getElementById('print-fecha').textContent = new Date().toLocaleDateString();
 
-      const inputsEvidencias = document.querySelectorAll('input[type="file"]');
-      let listaArchivosHtml = '';
-      let totalArchivos = 0;
-
-      inputsEvidencias.forEach(input => {
-        if (input.files && input.files.length > 0) {
-          let tipoDocumento = "Documento/Anexo";
-          const parentGroup = input.closest('.form-group') || input.parentElement;
-          if (parentGroup) {
-              const labelElem = parentGroup.querySelector('label') || parentGroup.querySelector('.form-label');
-              if (labelElem && labelElem.innerText.trim() !== '') {
-                  tipoDocumento = labelElem.innerText.replace(/\*/g, '').trim();
-              }
-          }
-
-          for (let i = 0; i < input.files.length; i++) {
-            totalArchivos++;
-            listaArchivosHtml += `• <strong>${tipoDocumento}:</strong> ${input.files[i].name}<br>`;
-          }
-        }
-      });
+      // 5. Evidencias (desde la secuencia por documentos)
+      const evCargadas = obtenerEvidenciasCargadas();
+      const totalArchivos = evCargadas.total;
+      const listaArchivosHtml = evCargadas.items.map(it => `• <strong>${escaparHtml(it.doc)}:</strong> ${escaparHtml(it.nombre)}<br>`).join('');
 
       const contenedorEvidenciasPrint = document.getElementById('print-evidencias');
       if (totalArchivos > 0) {
