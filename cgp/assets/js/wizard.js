@@ -112,7 +112,7 @@ function autorrellenarSiVacio(id, valor) {
  * Calcula la Edad (campo de solo lectura) a partir de la Fecha de
  * Nacimiento seleccionada.
  */
-function calcularEdad() {
+function recalcularEdadDesdeCampo() {
     var fechaInput = document.getElementById('cit-fecha-nac');
     var edadInput = document.getElementById('cit-edad');
     var valor = fechaInput.value;
@@ -159,7 +159,7 @@ function autocompletarCiudadano() {
     if (selSexo && !selSexo.value && registro.sexo) selSexo.value = registro.sexo;
     var inputFecha = document.getElementById('cit-fecha-nac');
     if (inputFecha && !inputFecha.value && registro.fechaNac) inputFecha.value = registro.fechaNac;
-    calcularEdad();
+    recalcularEdadDesdeCampo();
     var selEcivil = document.getElementById('cit-ecivil');
     if (selEcivil && !selEcivil.value && registro.ecivil) selEcivil.value = registro.ecivil;
     var selEdu = document.getElementById('cit-edu');
@@ -1025,7 +1025,9 @@ function validarPaso(numeroPaso) {
             }
         });
         if (primerFalta !== -1) {
-            evidenciaEditando = primerFalta;
+            // Si aún no se llegaba a ese documento, pasa a ser el actual; si ya se había pasado, se abre para editarlo
+            if (primerFalta >= evidenciaIndiceActual) { evidenciaIndiceActual = primerFalta; evidenciaEditando = null; }
+            else evidenciaEditando = primerFalta;
             renderSecuenciaEvidencias();
         }
     }
@@ -1667,16 +1669,7 @@ function poblarResumen() {
         narracion.length > 200 ? narracion.substring(0, 200) + '...' : narracion || '—';
 
     // Señalados (todos), ubicación y proyecto
-    var lineas = [];
-    document.querySelectorAll('#lista-senalados .senalado-card').forEach(function (t) {
-        var m = t.querySelector('[data-campo="tipo-senalado"]:checked');
-        var op = m ? TIPOS_SENALADO_OPCIONES.find(function (x) { return x.valor === m.value; }) : null;
-        var nombre = valorCampoSenalado(t, 'pn-nombres') || valorCampoSenalado(t, 'pj-razon') ||
-            valorCampoSenalado(t, 'oe-nombre') || valorCampoSenalado(t, 'cm-nombre') ||
-            valorCampoSenalado(t, 'cc-nombre') || valorCampoSenalado(t, 'jp-nombres') ||
-            valorCampoSenalado(t, 'ot-nombre');
-        if (op || nombre) lineas.push((op ? op.etiqueta : 'Señalado') + (nombre ? ': ' + nombre : ''));
-    });
+    var lineas = obtenerLineasSenalados();
     document.getElementById('res-senalado').textContent = lineas.length ? lineas.join('\n') : '—';
     document.getElementById('res-sen-ubicacion').textContent =
         document.getElementById('sen-ubicacion').value.trim() || '—';
@@ -1738,10 +1731,10 @@ function enviarSolicitud() {
 
     // Mostrar en pantalla de confirmación
     document.getElementById('nro-expediente-display').textContent = nroExpediente;
-    document.getElementById('conf-correo').textContent =
-        document.getElementById('cit-correo').value || '—';
-    document.getElementById('conf-fecha').textContent =
-        new Date().toLocaleString('es-VE');
+    var confCorreo = document.getElementById('conf-correo');
+    if (confCorreo) confCorreo.textContent = document.getElementById('cit-correo').value || '—';
+    var confFecha = document.getElementById('conf-fecha');
+    if (confFecha) confFecha.textContent = new Date().toLocaleString('es-VE');
 
     // Ocultar wizard, mostrar confirmación
     document.getElementById('barra-progreso').style.display = 'none';
@@ -1749,7 +1742,8 @@ function enviarSolicitud() {
         var paso = document.getElementById('paso-' + i);
         if (paso) paso.style.display = 'none';
     }
-    document.querySelector('.form-back-btn').style.display = 'none';
+    var btnVolver = document.querySelector('#vista-wizard > .form-back-btn');
+    if (btnVolver) btnVolver.style.display = 'none';
     document.getElementById('vista-confirmacion').style.display = 'block';
 
     document.getElementById('denuncias').scrollIntoView({ behavior: 'smooth', block: 'start' });
@@ -1834,7 +1828,8 @@ function nuevaSolicitud() {
     document.getElementById('narracion-contador').className = 'contador-chars';
 
     // Mostrar de nuevo el botón volver
-    document.querySelector('.form-back-btn').style.display = '';
+    var btnVolverNuevo = document.querySelector('#vista-wizard > .form-back-btn');
+    if (btnVolverNuevo) btnVolverNuevo.style.display = '';
 
     // Ocultar confirmación
     document.getElementById('vista-confirmacion').style.display = 'none';
@@ -1856,17 +1851,23 @@ var RE_RIF = /^[JGVECjgvec]-?\d{8,9}-?\d?$/;
 var RE_DOC_SENALADO = /^\d{5,10}$/;
 
 function msgMinimo(n) {
-    return function (v) { return v.length < n ? 'Debe tener al menos ' + n + ' caracteres.' : ''; };
+    return function (v, final) {
+        return (final && v.length < n) ? 'Debe tener al menos ' + n + ' caracteres.' : '';
+    };
 }
 
-/** Reglas por id de campo. req: obligatorio; check(v): devuelve mensaje si hay error. */
+/**
+ * Reglas por id de campo. req: obligatorio; check(v, final): devuelve un mensaje si hay error.
+ * "final" es true al salir del campo o al cambiar el valor: ahí se exige que esté completo.
+ * Mientras se escribe solo se avisan los caracteres que no corresponden (p. ej. letras en la cédula).
+ */
 var REGLAS_VIVO = {
     'cit-tipo-doc': { req: true },
     'cit-nro-doc': {
         req: true,
-        check: function (v) {
+        check: function (v, final) {
             if (/\D/.test(v)) return 'Solo se permiten números, sin letras, puntos ni guiones.';
-            if (v.length < 5) return 'El documento debe tener entre 5 y 10 dígitos.';
+            if (final && v.length < 5) return 'El documento debe tener entre 5 y 10 dígitos.';
             return '';
         }
     },
@@ -1885,7 +1886,9 @@ var REGLAS_VIVO = {
     'cit-ecivil': { req: true },
     'cit-correo': {
         req: true,
-        check: function (v) {
+        check: function (v, final) {
+            if (/\s/.test(v)) return 'El correo no puede contener espacios.';
+            if (!final) return '';
             if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(v)) return 'Ingrese un correo válido. Ej.: nombre@gmail.com';
             if (!validarDominioCorreo(v)) return 'Dominio no reconocido. Use gmail.com, hotmail.com, outlook.com, yahoo.com u otro dominio institucional (.gob.ve).';
             return '';
@@ -1893,23 +1896,25 @@ var REGLAS_VIVO = {
     },
     'cit-correo2': {
         req: true,
-        check: function (v) {
-            var c1 = document.getElementById('cit-correo').value.trim();
-            return v !== c1 ? 'Los correos no coinciden.' : '';
+        check: function (v, final) {
+            if (!final) return '';
+            return v !== document.getElementById('cit-correo').value.trim() ? 'Los correos no coinciden.' : '';
         }
     },
     'cit-telf-cel-num': {
         req: true,
-        check: function (v) {
+        check: function (v, final) {
             if (/\D/.test(v)) return 'Solo se permiten números (7 dígitos).';
+            if (!final) return '';
             if (v.length !== 7) return 'El número debe tener 7 dígitos.';
             if (!document.getElementById('cit-telf-cel-cod').value) return 'Seleccione el código de operadora.';
             return '';
         }
     },
     'cit-telf-hab-num': {
-        check: function (v) {
+        check: function (v, final) {
             if (/\D/.test(v)) return 'Solo se permiten números (7 dígitos).';
+            if (!final) return '';
             if (v.length !== 7) return 'El número debe tener 7 dígitos.';
             if (!document.getElementById('cit-telf-hab-cod').value) return 'Seleccione el código de área.';
             return '';
@@ -1922,23 +1927,38 @@ var REGLAS_VIVO = {
     'proy-fecha': { req: true },
     'proy-monto': {
         req: true,
-        check: function (v) {
-            return /^\d+([.,]\d{1,2})?$/.test(v) ? '' : 'Ingrese un monto válido. Ej.: 500000 o 1250,50';
+        check: function (v, final) {
+            if (/[^\d.,]/.test(v)) return 'Solo se permiten números. Ej.: 500000 o 1250,50';
+            if (final && !/^\d+([.,]\d{1,2})?$/.test(v)) return 'Ingrese un monto válido. Ej.: 500000 o 1250,50';
+            return '';
         }
     },
     'proy-financiador': { req: true, check: msgMinimo(3) },
+    'narracion': {
+        req: true,
+        check: function (v, final) {
+            return (final && v.length < 50) ? 'La narración debe tener al menos 50 caracteres.' : '';
+        }
+    },
     'cual-instancia': { req: true, check: msgMinimo(3) }
 };
 
 /** Campos opcionales del señalado: solo se validan si se llenan. */
 var REGLAS_SENALADO_OPCIONAL = {
-    'pn-nro-doc': function (v) { return RE_DOC_SENALADO.test(v) ? '' : 'Solo números (entre 5 y 10 dígitos).'; },
-    'jp-nro-doc': function (v) { return RE_DOC_SENALADO.test(v) ? '' : 'Solo números (entre 5 y 10 dígitos).'; },
-    'pj-rif': function (v) { return RE_RIF.test(v) ? '' : 'Formato de R.I.F. no válido. Ej.: J-12345678-9'; },
-    'oe-rif': function (v) { return RE_RIF.test(v) ? '' : 'Formato de R.I.F. no válido. Ej.: G-20001628-0'; },
-    'cc-rif': function (v) { return RE_RIF.test(v) ? '' : 'Formato de R.I.F. no válido. Ej.: J-12345678-9'; },
-    'ot-documento': function (v) {
-        return (RE_DOC_SENALADO.test(v) || RE_RIF.test(v)) ? '' : 'Ingrese una cédula (solo números) o un R.I.F. válido. Ej.: J-12345678-9';
+    'pn-nro-doc': function (v, final) {
+        if (/\D/.test(v)) return 'Solo se permiten números (entre 5 y 10 dígitos).';
+        return (final && !RE_DOC_SENALADO.test(v)) ? 'Debe tener entre 5 y 10 dígitos.' : '';
+    },
+    'jp-nro-doc': function (v, final) {
+        if (/\D/.test(v)) return 'Solo se permiten números (entre 5 y 10 dígitos).';
+        return (final && !RE_DOC_SENALADO.test(v)) ? 'Debe tener entre 5 y 10 dígitos.' : '';
+    },
+    'pj-rif': function (v, final) { return (final && !RE_RIF.test(v)) ? 'Formato de R.I.F. no válido. Ej.: J-12345678-9' : ''; },
+    'oe-rif': function (v, final) { return (final && !RE_RIF.test(v)) ? 'Formato de R.I.F. no válido. Ej.: G-20001628-0' : ''; },
+    'cc-rif': function (v, final) { return (final && !RE_RIF.test(v)) ? 'Formato de R.I.F. no válido. Ej.: J-12345678-9' : ''; },
+    'ot-documento': function (v, final) {
+        return (final && !(RE_DOC_SENALADO.test(v) || RE_RIF.test(v)))
+            ? 'Ingrese una cédula (solo números) o un R.I.F. válido. Ej.: J-12345678-9' : '';
     }
 };
 
@@ -1946,7 +1966,7 @@ var REGLAS_SENALADO_OPCIONAL = {
 function mensajeCampoOpcionalSenalado(campo) {
     var regla = REGLAS_SENALADO_OPCIONAL[campo.dataset.campo];
     var v = (campo.value || '').trim();
-    return (regla && v) ? regla(v) : '';
+    return (regla && v) ? regla(v, true) : '';
 }
 
 /** Localiza (o crea) el aviso de error de un campo. */
@@ -1984,7 +2004,7 @@ function mostrarEstadoVivo(campo, mensaje) {
     }
 }
 
-/** Evalúa un campo y actualiza su aviso. alSalir: true al perder el foco o cambiar. */
+/** Evalúa un campo y actualiza su aviso. alSalir: true al perder el foco o cambiar el valor. */
 function validarCampoVivo(campo, alSalir) {
     var v = (campo.value || '').trim();
     var dinamico = campo.closest && campo.closest('#lista-senalados');
@@ -1992,10 +2012,10 @@ function validarCampoVivo(campo, alSalir) {
     if (dinamico) {
         var opcional = REGLAS_SENALADO_OPCIONAL[campo.dataset.campo];
         if (opcional) {
-            mostrarEstadoVivo(campo, v ? (opcional(v) || null) : null);
+            mostrarEstadoVivo(campo, v ? (opcional(v, alSalir) || null) : null);
         } else if (campo.classList.contains('campo-dinamico-req')) {
             if (v === '') mostrarEstadoVivo(campo, alSalir ? 'Este campo es obligatorio.' : null);
-            else mostrarEstadoVivo(campo, v.length < 3 ? 'Debe tener al menos 3 caracteres.' : null);
+            else mostrarEstadoVivo(campo, (alSalir && v.length < 3) ? 'Debe tener al menos 3 caracteres.' : null);
         }
         return;
     }
@@ -2006,7 +2026,7 @@ function validarCampoVivo(campo, alSalir) {
         mostrarEstadoVivo(campo, (regla.req && alSalir) ? '' : null);
         return;
     }
-    var msg = regla.check ? regla.check(v) : '';
+    var msg = regla.check ? regla.check(v, alSalir) : '';
     mostrarEstadoVivo(campo, msg ? msg : null);
 }
 
@@ -2030,6 +2050,21 @@ function validarCampoVivo(campo, alSalir) {
     });
 });
 
+
+/** Una línea por señalado: "Tipo: Nombre". */
+function obtenerLineasSenalados() {
+    var lineas = [];
+    document.querySelectorAll('#lista-senalados .senalado-card').forEach(function (t) {
+        var m = t.querySelector('[data-campo="tipo-senalado"]:checked');
+        var op = m ? TIPOS_SENALADO_OPCIONES.find(function (x) { return x.valor === m.value; }) : null;
+        var nombre = valorCampoSenalado(t, 'pn-nombres') || valorCampoSenalado(t, 'pj-razon') ||
+            valorCampoSenalado(t, 'oe-nombre') || valorCampoSenalado(t, 'cm-nombre') ||
+            valorCampoSenalado(t, 'cc-nombre') || valorCampoSenalado(t, 'jp-nombres') ||
+            valorCampoSenalado(t, 'ot-nombre');
+        if (op || nombre) lineas.push((op ? op.etiqueta : 'Señalado') + (nombre ? ': ' + nombre : ''));
+    });
+    return lineas;
+}
 
 /* ═══════════════════════════════════════════════════════════
    UTILIDADES DE REVISIÓN Y EVIDENCIAS CARGADAS
