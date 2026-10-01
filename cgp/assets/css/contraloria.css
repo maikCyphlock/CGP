@@ -1272,6 +1272,7 @@ footer {
     padding-left: 15px !important;
   }
 
+  
   /* CORRECCIÓN: Muestra el submenú cuando se le añade la clase .open (al hacer clic) */
   #navbar .dropdown.open .dropdown-menu {
     display: block !important;
@@ -1325,4 +1326,45 @@ footer {
   #navbar .dropdown.open .dropdown-menu {
     display: block !important;
   }
+}
+
+/* ─── MENÚ MÓVIL / DESPLEGABLE MODERNO ─── */
+
+/* Aseguramos que el contenedor del menú tenga una transición suave al abrirse/cerrarse */
+.nav-links, .menu-desplegable { /* Ajusta al selector real de tu contenedor de enlaces en el CSS */
+  transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+/* Estilo moderno para cada opción de la lista (Inicio, Institución, etc.) */
+.nav-links li, .menu-desplegable a, .nav-links a {
+  position: relative;
+  transition: all 0.3s ease-in-out;
+  border-radius: 6px;
+  margin: 4px 12px;
+  padding: 10px 16px;
+}
+
+/* Efecto hover elegante al pasar el cursor */
+.nav-links li:hover, .menu-desplegable a:hover, .nav-links a:hover {
+  background-color: rgba(255, 255, 255, 0.08); /* Sutil brillo translúcido */
+  transform: translateX(6px); /* Pequeño desplazamiento a la derecha tipo app moderna */
+  color: #64b5f6 !important; /* Color de acento institucional para el texto */
+}
+
+/* Una línea indicadora sutil que aparece a la izquierda al hacer hover */
+.nav-links li::before, .menu-desplegable a::before {
+  content: '';
+  position: absolute;
+  left: 0;
+  top: 50%;
+  transform: translateY(-50%) scaleY(0);
+  width: 3px;
+  height: 60%;
+  background-color: #64b5f6;
+  border-radius: 0 4px 4px 0;
+  transition: transform 0.3s ease-in-out;
+}
+
+.nav-links li:hover::before, .menu-desplegable a:hover::before {
+  transform: translateY(-50%) scaleY(1);
 }
