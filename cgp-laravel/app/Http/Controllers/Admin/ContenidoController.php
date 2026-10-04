@@ -5,6 +5,7 @@ namespace App\Http\Controllers\Admin;
 use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Storage;
 use Illuminate\Support\Str;
 
 /** Contenido de la página web (noticias, misión, visión…) con historial de versiones. */
@@ -21,6 +22,14 @@ class ContenidoController extends Controller
         ]);
     }
 
+    /** Imagen de un contenido, también borradores (solo para quien administra el CMS). */
+    public function imagen(string $archivo)
+    {
+        abort_unless(Storage::exists("cms/$archivo"), 404);
+
+        return Storage::response("cms/$archivo");
+    }
+
     public function create()
     {
         return view('admin.contenido', ['item' => null, 'tipos' => $this->tipos(), 'versiones' => collect()]);
@@ -32,7 +41,7 @@ class ContenidoController extends Controller
         $id = (string) Str::uuid();
 
         DB::table('cms_content')->insert([
-            'id' => $id, 'author_id' => $request->user()->id,
+            'id' => $id, 'author_id' => $request->user()->id, 'image_path' => $this->guardarImagen($request),
             'published_at' => $d['published'] ? now() : null,
         ] + $d);
 
@@ -54,19 +63,32 @@ class ContenidoController extends Controller
     public function update(Request $request, string $id)
     {
         $d = $this->validar($request);
+        $nueva = $this->guardarImagen($request);
+        $anterior = null;
 
-        DB::transaction(function () use ($id, $d, $request) {
+        DB::transaction(function () use ($id, $d, $request, $nueva, &$anterior) {
             $actual = DB::table('cms_content')->where('id', $id)->lockForUpdate()->first() ?? abort(404);
+
+            // Imagen: la nueva reemplaza a la actual; "quitar" la elimina.
+            $imagen = $nueva ?? ($request->boolean('quitar_imagen') ? null : $actual->image_path);
+            if ($imagen !== $actual->image_path) {
+                $anterior = $actual->image_path;
+            }
 
             // Se guarda la versión anterior antes de sobrescribir.
             DB::table('cms_content_version')->insert([
                 'content_id' => $id, 'title' => $actual->title, 'body' => $actual->body, 'modified_by' => $request->user()->id,
             ]);
             DB::table('cms_content')->where('id', $id)->update($d + [
+                'image_path' => $imagen,
                 'published_at' => ! $actual->published && $d['published'] ? now() : $actual->published_at,
                 'unpublished_at' => $actual->published && ! $d['published'] ? now() : $actual->unpublished_at,
             ]);
         });
+
+        if ($anterior) {
+            Storage::delete("cms/$anterior");
+        }
 
         return redirect()->route('admin.contenidos.edit', $id)->with('ok', 'Contenido actualizado.');
     }
@@ -77,12 +99,24 @@ class ContenidoController extends Controller
             'content_type_id' => 'required|exists:cms_content_type,id',
             'title' => 'required|string|max:200',
             'body' => 'required|string|max:50000',
+            'imagen' => 'nullable|file|mimes:jpg,jpeg,png,webp|max:4096', // sin SVG: puede llevar scripts
         ], [
             'required' => 'Falta el campo :attribute.',
-            'max' => 'El campo :attribute es demasiado largo.',
+            'title.max' => 'El título es demasiado largo.',
+            'body.max' => 'El contenido es demasiado largo.',
+            'imagen.max' => 'La imagen pesa más de 4 MB.',
+            'imagen.mimes' => 'La imagen debe ser JPG, PNG o WebP.',
+            'imagen.uploaded' => 'La imagen no se pudo subir (máximo 4 MB).',
         ], ['content_type_id' => 'tipo de contenido', 'title' => 'título', 'body' => 'contenido']);
+        unset($d['imagen']);
 
         return $d + ['published' => $request->boolean('published')];
+    }
+
+    /** Guarda la imagen en disco (no en la base de datos) y devuelve solo el nombre del archivo. */
+    private function guardarImagen(Request $request): ?string
+    {
+        return $request->file('imagen') ? basename($request->file('imagen')->store('cms')) : null;
     }
 
     private function tipos()

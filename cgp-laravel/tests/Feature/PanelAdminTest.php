@@ -285,4 +285,69 @@ class PanelAdminTest extends TestCase
         $this->get("/admin/contenidos/$id")->assertOk()->assertSee('Primera noticia');
         $this->get('/admin/contenidos/no-es-uuid')->assertNotFound();
     }
+
+    public function test_portada_muestra_solo_contenido_publicado(): void
+    {
+        $u = $this->usuario();
+        $fila = fn (string $tipo, string $titulo, string $cuerpo, bool $pub) => DB::table('cms_content')->insert([
+            'content_type_id' => DB::table('cms_content_type')->where('code', $tipo)->value('id'),
+            'title' => $titulo, 'body' => $cuerpo, 'published' => $pub, 'author_id' => $u->id, 'published_at' => $pub ? now() : null,
+        ]);
+
+        $this->get('/')->assertOk()->assertSee('Juramentación del nuevo Contralor'); // sin CMS: texto fijo
+
+        $fila('NEWS', 'Noticia del CMS', 'Cuerpo **nuevo** <script>alert(1)</script> [web](javascript:alert(1))', true);
+        $fila('NEWS', 'Borrador secreto', 'x', false);
+        $fila('MISSION', 'Misión', 'Misión desde el CMS', true);
+
+        $this->get('/')->assertOk()
+            ->assertSee('Noticia del CMS')->assertSee('<strong>nuevo</strong>', false)->assertDontSee('<script>alert', false)->assertDontSee('href="javascript:', false)
+            ->assertSee('Misión desde el CMS')
+            ->assertDontSee('Borrador secreto')->assertDontSee('Juramentación del nuevo Contralor')
+            ->assertSee('A cinco años ejerceremos'); // visión sin publicar: texto fijo
+    }
+
+    public function test_imagenes_del_cms(): void
+    {
+        \Illuminate\Support\Facades\Storage::fake();
+        $this->actingAs($this->usuario());
+        $tipo = DB::table('cms_content_type')->where('code', 'NEWS')->value('id');
+        $base = ['content_type_id' => $tipo, 'title' => 'Con foto', 'body' => 'Texto', 'published' => 1];
+        // PNG real de 1x1 relleno hasta el peso pedido (el servidor valida el contenido, no la extensión).
+        $png = base64_decode('iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAYAAAAfFcSJAAAADUlEQVR42mP8z8BQDwAEhQGAhKmMIQAAAABJRU5ErkJggg==');
+        $foto = fn ($n, $kb = 100) => \Illuminate\Http\UploadedFile::fake()->createWithContent($n, str_pad($png, $kb * 1024, "\0"));
+
+        // Rechazos: más de 4 MB y tipos que no son JPG/PNG/WebP (SVG puede llevar scripts).
+        $this->post('/admin/contenidos', $base + ['imagen' => $foto('grande.jpg', 4097)])->assertSessionHasErrors('imagen');
+        $this->post('/admin/contenidos', $base + ['imagen' => \Illuminate\Http\UploadedFile::fake()->create('x.svg', 1, 'image/svg+xml')])->assertSessionHasErrors('imagen');
+        $this->post('/admin/contenidos', $base + ['imagen' => \Illuminate\Http\UploadedFile::fake()->create('x.pdf', 1, 'application/pdf')])->assertSessionHasErrors('imagen');
+        $this->assertSame(0, DB::table('cms_content')->count());
+
+        // Exactamente 4 MB entra; la base guarda solo el nombre y el archivo queda en disco.
+        $this->post('/admin/contenidos', $base + ['imagen' => $foto('ok.jpg', 4096)])->assertSessionHasNoErrors();
+        $c = DB::table('cms_content')->first();
+        $this->assertMatchesRegularExpression('/^[A-Za-z0-9]{20,60}\.(jpe?g|png|webp)$/', $c->image_path);
+        \Illuminate\Support\Facades\Storage::assertExists("cms/{$c->image_path}");
+
+        // Publicada: la ve el público y la portada la usa. Se sirve solo si está publicada.
+        $this->get("/media/cms/{$c->image_path}")->assertOk();
+        $this->get('/')->assertSee("/media/cms/{$c->image_path}", false);
+
+        // Reemplazar borra la anterior; quitar también.
+        $this->post("/admin/contenidos/{$c->id}", $base + ['imagen' => $foto('otra.png')])->assertSessionHasNoErrors();
+        $c2 = DB::table('cms_content')->first();
+        $this->assertNotSame($c->image_path, $c2->image_path);
+        \Illuminate\Support\Facades\Storage::assertMissing("cms/{$c->image_path}");
+        $this->post("/admin/contenidos/{$c->id}", $base + ['quitar_imagen' => 1])->assertSessionHasNoErrors();
+        $this->assertNull(DB::table('cms_content')->value('image_path'));
+        \Illuminate\Support\Facades\Storage::assertMissing("cms/{$c2->image_path}");
+
+        // Sin cambios de imagen, se conserva; en borrador el público no la ve.
+        $this->post("/admin/contenidos/{$c->id}", $base + ['imagen' => $foto('tres.webp')]);
+        $nombre = DB::table('cms_content')->value('image_path');
+        $this->post("/admin/contenidos/{$c->id}", ['published' => 0] + $base);
+        $this->assertSame($nombre, DB::table('cms_content')->value('image_path'));
+        $this->get("/media/cms/$nombre")->assertNotFound();
+        $this->get("/admin/contenidos/imagen/$nombre")->assertOk(); // el admin sí la ve
+    }
 }

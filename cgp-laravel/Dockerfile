@@ -13,6 +13,9 @@ RUN apt-get update && apt-get install -y \
 # Instalar extensiones de PHP necesarias para Postgres y Laravel
 RUN docker-php-ext-install pdo pdo_pgsql pgsql gd
 
+# Subidas: evidencias del formulario (10 MB c/u) e imágenes del CMS (4 MB)
+RUN printf 'upload_max_filesize=12M\npost_max_size=64M\n' > /usr/local/etc/php/conf.d/uploads.ini
+
 # Configurar directorio de trabajo
 WORKDIR /var/www/html
 
