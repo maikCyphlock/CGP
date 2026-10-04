@@ -3,6 +3,13 @@
 @section('title', 'Contraloría del Municipio Páez – Estado Portuguesa')
 
 @section('content')
+  <style>
+    .mv-texto, .mv-texto p { font-size: 0.9rem; line-height: 1.75; opacity: 0.9; }
+    .mv-texto p { margin-bottom: 0.6rem; }
+    .noticia-texto { font-size: 0.82rem; color: #666; line-height: 1.6; }
+    .noticia-texto p { margin-bottom: 0.6rem; }
+    .noticia-texto ul, .noticia-texto ol { padding-left: 1.2rem; }
+  </style>
   <!-- seccion de inicio como portada, el declarar puse el original de la contraloria general, hay que preguntar si es ese-->
   <section id="hero" style="background-image: url('{{ asset('assets/img/portadita.jpeg') }}'); background-size: cover; background-position: center;">
     <!-- el primer texto q se vera como portada (hero) -->
@@ -225,9 +232,9 @@
         <div class="col-md-6">
           <div class="mv-card-blue h-100">
             <h3>Misión</h3>
-            <p>"Nuestro compromiso es apalancar el desarrollo continuado y sostenible del municipio Páez del estado Portuguesa potenciando una función de gobierno óptima, transparente y de calidad en el uso de los recursos financieros y bienes del municipio, fomentando sinergias positivas creadoras de valor que propendan a la total observancia del marco jurídico positivo Venezolano."</p>
+            <div class="mv-texto">@if ($mision){!! $mision->html !!}@else"Nuestro compromiso es apalancar el desarrollo continuado y sostenible del municipio Páez del estado Portuguesa potenciando una función de gobierno óptima, transparente y de calidad en el uso de los recursos financieros y bienes del municipio, fomentando sinergias positivas creadoras de valor que propendan a la total observancia del marco jurídico positivo Venezolano."@endif</div>
             <h3 style="font-size:1.3rem; margin-top:24px;">Visión</h3>
-            <p>"A cinco años ejerceremos la rectoría total de la función contralora en el municipio Páez del estado Portuguesa, siendo referentes a nivel estadal y nacional. Visualizamos en cinco años una estructura funcional y normativa eficaz, eficiente, efectiva, pertinente y oportuna, que interactúa exitosamente a lo interno de la Alcaldía y Cámara del municipio Páez del estado Portuguesa y a lo externo con los diferentes estamentos del poder comunal en la búsqueda de la prestación de un servicio contralor sostenible y de calidad."</p>
+            <div class="mv-texto">@if ($vision){!! $vision->html !!}@else"A cinco años ejerceremos la rectoría total de la función contralora en el municipio Páez del estado Portuguesa, siendo referentes a nivel estadal y nacional. Visualizamos en cinco años una estructura funcional y normativa eficaz, eficiente, efectiva, pertinente y oportuna, que interactúa exitosamente a lo interno de la Alcaldía y Cámara del municipio Páez del estado Portuguesa y a lo externo con los diferentes estamentos del poder comunal en la búsqueda de la prestación de un servicio contralor sostenible y de calidad."@endif</div>
           </div>
         </div>
         <div class="caja-ubicacion col-md-6">
@@ -305,6 +312,23 @@
       <h2 class="section-title-center">Noticias</h2>
       <div class="title-underline"></div>
 
+      @if ($noticias->isNotEmpty())
+      <div class="row g-4 mt-2">
+        @foreach ($noticias as $n)
+        <div class="col-md-4">
+          <div class="noticia-card h-100">
+            <div class="noticia-top"></div>
+            @if ($n->image_path)<img src="{{ route('media.cms', $n->image_path) }}" alt="" loading="lazy" style="width:100%;aspect-ratio:16/9;object-fit:cover;display:block">@endif
+            <div class="noticia-body">
+              <div class="noticia-fecha">{{ \Illuminate\Support\Carbon::parse($n->published_at)->locale('es')->translatedFormat('j \\d\\e F, Y') }}</div>
+              <h5>{{ $n->title }}</h5>
+              <div class="noticia-texto">{!! $n->html !!}</div>
+            </div>
+          </div>
+        </div>
+        @endforeach
+      </div>
+      @else
       <div class="row g-4 mt-2">
         <div class="col-md-4">
           <div class="noticia-card h-100">
@@ -337,6 +361,7 @@
           </div>
         </div>
       </div>
+      @endif
     </div>
   </section>
 

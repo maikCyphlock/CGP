@@ -1,3 +1,4 @@
+
 :root {
   --clr-primary:        #1a3a6b;   /* deep navy */
   --clr-primary-mid:    #1e4d8c;   /* mid blue  */
@@ -80,7 +81,14 @@ img { max-width: 100%; display: block; }
   justify-content: space-between;
   gap: 16px;
 }
-
+.hero-title {
+  font-family: 'Open Sans', sans-serif;
+  font-size: clamp(1.8rem, 4vw, 2.9rem);
+  font-weight: 900;
+  color: #ffffff !important; /* para forzarlo porque se veia azul porque en contraloria.css el color del titulo es azul */
+  line-height: 1.2;
+  margin-bottom: 14px;
+}
 .logo-link {
   display: flex;
   align-items: center;
@@ -623,6 +631,7 @@ footer {
 .social-row {
   display: flex;
   gap: 10px;
+  margin-bottom: 30px;
 }
 
 .social-link {

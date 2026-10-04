@@ -365,7 +365,7 @@ CREATE TABLE case_file (
 
     -- Narración principal
     narrative           TEXT         NOT NULL
-                            CHECK (char_length(narrative) BETWEEN 50 AND 3000),
+                            CHECK (char_length(narrative) BETWEEN 50 AND 3500),
     incident_date       DATE         NOT NULL CHECK (incident_date <= CURRENT_DATE),
     incident_location   VARCHAR(250),
 

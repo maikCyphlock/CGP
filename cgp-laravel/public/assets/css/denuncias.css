@@ -90,6 +90,28 @@
 .aviso-anonimato strong   { color: #5a3f00; }
 
 
+/* ─── AVISO DE MENOR DE EDAD (bloqueante) ─── */
+
+.aviso-menor-edad {
+  background: #fff0f0;
+  border: 1px solid #e8aaaa;
+  border-left: 5px solid #c1121f;
+  border-radius: 6px;
+  padding: 16px 22px;
+  display: flex;
+  align-items: flex-start;
+  gap: 14px;
+  margin: 4px 0 14px;
+  font-size: 0.88rem;
+  color: #7a1010;
+  line-height: 1.65;
+  animation: deslizarEntrada 0.2s ease;
+}
+
+.aviso-menor-edad .av-icon { flex-shrink: 0; margin-top: 2px; color: #c1121f; }
+.aviso-menor-edad strong   { color: #5a0000; }
+
+
 /* ─── SECCIÓN PRINCIPAL ─── */
 
 #denuncias {
@@ -207,12 +229,12 @@
 
 /* Paso completado */
 .paso-item.completado .paso-num {
-  border-color: #2e7d32;
-  background: #2e7d32;
+  border-color: #0023d4d6;
+  background: #0023d4d6;
   color: #ffffff;
 }
 
-.paso-item.completado .paso-etiqueta { color: #2e7d32; }
+.paso-item.completado .paso-etiqueta { color: #0023d4d6; }
 
 
 /* ─── TARJETAS DE SELECCIÓN ─── */
@@ -524,6 +546,7 @@
 .form-textarea {
   resize: vertical;
   min-height: 120px;
+  max-height: 420px;
   line-height: 1.6;
 }
 
@@ -537,7 +560,8 @@
 }
 
 /* Inline de celda de tabla (señalados) */
-.tabla-senalados td input {
+.tabla-senalados td input,
+.tabla-senalados td select {
   border: 1px solid #cdd5e0;
   border-radius: 4px;
   padding: 6px 8px;
@@ -549,7 +573,8 @@
   box-sizing: border-box;
 }
 
-.tabla-senalados td input:focus {
+.tabla-senalados td input:focus,
+.tabla-senalados td select:focus {
   outline: none;
   border-color: #1565c0;
 }
@@ -568,6 +593,15 @@
 }
 
 .error-msg.visible { display: block; }
+
+/* ─── MENSAJE DE AUTORRELLENO ─── */
+
+.autofill-msg {
+  font-size: 0.75rem;
+  color: #1565c0;
+  margin-top: 5px;
+  display: none;
+}
 
 /* Banner de error en la cabecera del paso */
 .banner-error {
@@ -702,6 +736,268 @@
 }
 
 
+/* ─── TABLA DE DATOS DEMOGRÁFICOS (Nivel Educativo / Profesión / Ocupación) ─── */
+
+.tabla-demografica {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 0.82rem;
+  background: #ffffff;
+  border: 1px solid #dde3ee;
+  border-radius: 6px;
+  overflow: hidden;
+}
+
+.tabla-demografica thead tr {
+  background: #f2f5fb;
+}
+
+.tabla-demografica th {
+  color: #4d5b78;
+  padding: 9px 12px;
+  text-align: left;
+  font-size: 0.68rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+  border-bottom: 1px solid #dde3ee;
+}
+
+.tabla-demografica td {
+  padding: 10px 12px;
+  vertical-align: top;
+}
+
+.tabla-demografica td .form-control,
+.tabla-demografica td .form-select {
+  margin-bottom: 0;
+}
+
+
+/* ─── BLOQUES DINÁMICOS DE SEÑALADO ─── */
+
+.bloque-senalado-dinamico {
+  background: #f7f9fd;
+  border: 1px solid #dde3ee;
+  border-radius: 6px;
+  padding: 18px 20px 4px;
+  margin-top: 16px;
+  animation: deslizarEntrada 0.2s ease;
+}
+
+.bloque-senalado-dinamico .form-section-title {
+  margin-bottom: 14px;
+  font-size: 0.68rem;
+}
+
+.senalado-card {
+  background: #f7f9fd;
+  border: 1px solid #dde3ee;
+  border-radius: 6px;
+  padding: 16px 18px;
+  margin-top: 12px;
+  animation: deslizarEntrada 0.2s ease;
+}
+
+.senalado-card:first-child { margin-top: 0; }
+
+.senalado-card-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 12px;
+}
+
+.senalado-card-numero {
+  font-size: 0.7rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+  color: #4d5b78;
+}
+
+.senalado-card-campos {
+  margin-top: 14px;
+}
+
+.senalado-card-campos:empty {
+  margin-top: 0;
+}
+
+/* Enlace "+ Agregar... (opcional)" que despliega los campos opcionales */
+.btn-campos-opcionales {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  background: none;
+  border: none;
+  color: #1565c0;
+  font-size: 0.78rem;
+  font-weight: 700;
+  cursor: pointer;
+  padding: 4px 0;
+  margin-top: 16px;
+  transition: color 0.15s;
+}
+
+.btn-campos-opcionales svg { transition: transform 0.2s; flex-shrink: 0; }
+.btn-campos-opcionales:hover { color: #0d3f7a; text-decoration: underline; }
+.btn-campos-opcionales.expandido svg { transform: rotate(45deg); }
+
+.senalado-campos-opcionales {
+  margin-top: 14px;
+  padding-top: 14px;
+  border-top: 1px dashed #dde3ee;
+  animation: deslizarEntrada 0.2s ease;
+}
+
+
+/* ─── SECUENCIA DE EVIDENCIAS (carga por partes) ─── */
+
+.evidencia-item {
+  border: 1.5px solid #e1e6ee;
+  border-radius: 6px;
+  background: #ffffff;
+  margin-bottom: 14px;
+  overflow: hidden;
+  transition: border-color 0.2s, box-shadow 0.2s;
+}
+
+.evidencia-item:last-child { margin-bottom: 0; }
+
+.evidencia-item.activo {
+  border-color: #1565c0;
+  box-shadow: 0 0 0 3px rgba(21, 101, 192, 0.08);
+}
+
+.evidencia-item.completado { background: #fafbfd; }
+.evidencia-item.pendiente  { opacity: 0.62; }
+
+/* Cabecera: número, nombre, marca y estado — todo en una sola línea */
+.evidencia-item-header {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 12px 16px;
+  min-width: 0;
+}
+
+.evidencia-num {
+  flex-shrink: 0;
+  width: 24px;
+  height: 24px;
+  border-radius: 50%;
+  background: #e6ecf5;
+  color: #4d5b78;
+  font-size: 0.72rem;
+  font-weight: 700;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.evidencia-item.activo .evidencia-num     { background: #1a4b8c; color: #ffffff; }
+.evidencia-item.completado .evidencia-num { background: #002fff; color: #ffffff; }
+
+.evidencia-item-titulo {
+  font-size: 0.84rem;
+  font-weight: 600;
+  color: #1a2340;
+  flex: 1;
+  min-width: 0;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.evidencia-item-tag {
+  flex-shrink: 0;
+  font-size: 0.66rem;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  color: #6b7a94;
+  background: #eef1f7;
+  border-radius: 20px;
+  padding: 3px 9px;
+}
+
+.evidencia-item-tag.obligatorio { background: #e3f2fd; color: #1565c0; }
+
+.evidencia-item-estado {
+  flex-shrink: 0;
+  font-size: 0.74rem;
+  color: #6b7a94;
+  white-space: nowrap;
+}
+
+.evidencia-item.activo .evidencia-item-estado     { color: #1565c0; font-weight: 600; }
+.evidencia-item.completado .evidencia-item-estado { color: #444745; font-weight: 600; }
+
+/* Cuerpo: zona de carga, lista de archivos y acciones */
+.evidencia-item-cuerpo {
+  padding: 0 16px 16px;
+  border-top: 1px solid #eef1f7;
+  padding-top: 16px;
+}
+
+.evidencia-item-cuerpo .file-list  { margin-top: 12px; }
+.evidencia-item-cuerpo .file-list:empty { margin-top: 0; }
+
+/* Separación clara entre los archivos cargados y los botones */
+.evidencia-item-acciones {
+  display: flex;
+  justify-content: flex-end;
+  gap: 10px;
+  flex-wrap: wrap;
+  margin-top: 20px;
+  padding-top: 16px;
+  border-top: 1px dashed #dde3ee;
+}
+
+
+/* ─── BOTONES DE ACCIÓN PEQUEÑOS (secuencia de evidencias) ─── */
+
+.btn-evidencia {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  font-family: 'Open Sans', sans-serif;
+  font-weight: 700;
+  font-size: 0.78rem;
+  padding: 8px 16px;
+  border-radius: 6px;
+  cursor: pointer;
+  border: 1.5px solid transparent;
+  transition: background 0.2s, transform 0.15s;
+}
+
+.btn-evidencia:disabled { opacity: 0.55; cursor: not-allowed; }
+.btn-evidencia-primary { background: #1a4b8c; color: #ffffff; }
+.btn-evidencia-primary:hover { background: #163a6e; }
+
+.btn-evidencia-outline {
+  background: #ffffff;
+  color: #1565c0;
+  border-color: #cdd5e0;
+}
+.btn-evidencia-outline:hover { background: #eef4ff; }
+
+.btn-evidencia-link {
+  flex-shrink: 0;
+  background: none;
+  border: none;
+  color: #1565c0;
+  font-size: 0.75rem;
+  font-weight: 600;
+  cursor: pointer;
+  text-decoration: underline;
+  padding: 0;
+  white-space: nowrap;
+}
+.btn-evidencia-link:hover { color: #0d3f7a; }
+
+
 /* ─── ZONA DE CARGA DE ARCHIVOS ─── */
 
 .file-drop {
@@ -826,11 +1122,11 @@
 
 /* Botón PDF */
 .btn-pdf {
-  background: #2e7d32 !important;
+  background: #0023d4d6 !important;
 }
 
 .btn-pdf:hover {
-  background: #236347 !important;
+  background: #0023d4d6!important;
 }
 
 
@@ -1057,3 +1353,65 @@
     size: A4 portrait;
   }
 }
+
+/* ─── NOTA INFORMATIVA (mismo formato que el aviso de competencia territorial) ─── */
+
+.nota-info {
+  background: #f2f4f8;
+  color: #5a6474;
+  border: 1.5px solid #e1e6ee;
+  border-radius: 5px;
+  padding: 8px 10px;
+  font-size: 0.72rem;
+  line-height: 1.35;
+  box-sizing: border-box;
+}
+
+
+/* ─── TARJETAS DE REVISIÓN (con botón Editar) ─── */
+
+.revision-card {
+  background: #f7f9fd;
+  border: 1px solid #dde3ee;
+  border-radius: 6px;
+  padding: 14px 16px 16px;
+  margin-bottom: 14px;
+}
+
+.revision-card:last-child { margin-bottom: 0; }
+
+.revision-card-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  margin-bottom: 12px;
+}
+
+.revision-card-titulo {
+  font-size: 0.7rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.12em;
+  color: #1565c0;
+}
+
+.btn-revision-editar {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  background: #ffffff;
+  color: #1565c0;
+  border: 1.5px solid #cdd5e0;
+  border-radius: 6px;
+  padding: 6px 14px;
+  font-family: 'Open Sans', sans-serif;
+  font-size: 0.76rem;
+  font-weight: 700;
+  cursor: pointer;
+  transition: background 0.2s, border-color 0.2s;
+}
+
+.btn-revision-editar:hover { background: #eef4ff; border-color: #1565c0; }
+
+@media print { .btn-revision-editar, .wizard-nav-edicion { display: none !important; } }
