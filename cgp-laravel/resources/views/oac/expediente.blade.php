@@ -1,4 +1,4 @@
-@extends('layouts.admin')
+@extends('layouts.panel')
 
 @section('titulo', 'Expediente '.$e->case_number)
 
@@ -11,7 +11,7 @@
 @endphp
 
 <div class="d-flex flex-wrap justify-content-between align-items-center gap-2 mb-3">
-  <a href="{{ url()->previous() !== url()->current() ? url()->previous() : route('admin.expedientes.index') }}" class="btn btn-sm btn-outline-secondary"><i class="fa-solid fa-arrow-left me-1"></i> Volver</a>
+  <a href="{{ url()->previous() !== url()->current() ? url()->previous() : route('oac.expedientes.index') }}" class="btn btn-sm btn-outline-secondary"><i class="fa-solid fa-arrow-left me-1"></i> Volver</a>
   <div class="d-flex gap-2 align-items-center">
     <span class="badge badge-estatus fs-6 st-{{ $actual->code }}">{{ $actual->name }}</span>
     <a href="{{ route('denuncias.planilla', $e->tracking_code) }}" target="_blank" class="btn btn-sm btn-outline-dark"><i class="fa-solid fa-file-pdf me-1"></i> Planilla PDF</a>
@@ -93,7 +93,7 @@
           <div class="mb-2">@foreach ($documentos as $d) <span class="badge bg-light text-dark border me-1">{{ $d }}</span> @endforeach</div>
         @endif
         @forelse ($archivos as $a)
-          <a href="{{ route('admin.expedientes.archivo', [$e, $a->id]) }}" class="d-block"><i class="fa-solid fa-paperclip me-1"></i>{{ $a->original_name }} <span class="text-muted small">({{ number_format($a->size_bytes / 1024, 0, ',', '.') }} KB)</span></a>
+          <a href="{{ route('oac.expedientes.archivo', [$e, $a->id]) }}" class="d-block"><i class="fa-solid fa-paperclip me-1"></i>{{ $a->original_name }} <span class="text-muted small">({{ number_format($a->size_bytes / 1024, 0, ',', '.') }} KB)</span></a>
         @empty
           <span class="text-muted">El ciudadano no adjuntó archivos.</span>
         @endforelse
@@ -106,7 +106,7 @@
     <div class="card border-0 shadow-sm mb-4" style="border-top: 4px solid var(--brand) !important;">
       <div class="card-header bg-white fw-bold text-primary-cgp">Registrar actuación</div>
       <div class="card-body">
-        <form method="POST" action="{{ route('admin.expedientes.actuar', $e) }}">
+        <form method="POST" action="{{ route('oac.expedientes.actuar', $e) }}">
           @csrf
           <input type="hidden" name="desde" value="{{ $actual->code }}">
           <label class="form-label fw-semibold small">¿Qué desea hacer?</label>
@@ -144,7 +144,7 @@
     <div class="card border-0 shadow-sm mb-4">
       <div class="card-header bg-white fw-bold text-primary-cgp">Clasificación</div>
       <div class="card-body">
-        <form method="POST" action="{{ route('admin.expedientes.clasificar', $e) }}">
+        <form method="POST" action="{{ route('oac.expedientes.clasificar', $e) }}">
           @csrf
           <label class="form-label fw-semibold small">Tipo de irregularidad</label>
           <select name="irregularity_type_id" class="form-select mb-3">

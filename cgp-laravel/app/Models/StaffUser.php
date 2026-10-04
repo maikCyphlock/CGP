@@ -58,6 +58,24 @@ class StaffUser extends Authenticatable
         return (bool) ($this->privilegios[$modulo]->{"can_$accion"} ?? false);
     }
 
+    /** Módulos del sistema (cada uno con su URL) y los privilegios que dan entrada a ellos. */
+    const MODULOS = [
+        'oac' => ['CASES', 'CLASSIFY', 'CATALOGS'],
+        'admin' => ['USERS', 'ACCESS', 'STATS', 'CMS', 'REPORTS'],
+    ];
+
+    /** ¿Puede entrar al módulo `oac` o `admin`? Basta con leer alguna de sus secciones. */
+    public function accede(string $modulo): bool
+    {
+        foreach (self::MODULOS[$modulo] as $codigo) {
+            if ($this->puede($codigo)) {
+                return true;
+            }
+        }
+
+        return false;
+    }
+
     public function getNombreAttribute(): string
     {
         return "{$this->first_name} {$this->last_name}";

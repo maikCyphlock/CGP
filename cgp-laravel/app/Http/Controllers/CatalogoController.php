@@ -1,8 +1,7 @@
 <?php
 
-namespace App\Http\Controllers\Admin;
+namespace App\Http\Controllers;
 
-use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Validation\Rule;
@@ -37,19 +36,25 @@ class CatalogoController extends Controller
         ]],
     ];
 
-    public function index()
+    /** Qué listas administra cada módulo: la OAC las suyas; Administración, los cargos del personal. */
+    const POR_MODULO = [
+        'oac' => ['tipos-tramite', 'irregularidades', 'unidades-derivacion', 'tipos-senalado', 'documentos-fisicos'],
+        'admin' => ['cargos'],
+    ];
+
+    public function index(Request $request)
     {
-        return view('admin.catalogos', [
-            'catalogos' => collect(self::CATALOGOS)->map(fn ($c) => $c + ['total' => DB::table($c['tabla'])->count()]),
+        return view('panel.catalogos', [
+            'catalogos' => collect(self::CATALOGOS)->only(self::POR_MODULO[$request->segment(1)])->map(fn ($c) => $c + ['total' => DB::table($c['tabla'])->count()]),
         ]);
     }
 
     public function show(Request $request, string $slug)
     {
-        $c = $this->config($slug);
+        $c = $this->config($request, $slug);
         $editar = $request->query('editar');
 
-        return view('admin.catalogo', [
+        return view('panel.catalogo', [
             'slug' => $slug,
             'c' => $c,
             'filas' => DB::table($c['tabla'])->orderByDesc('active')->orderBy('id')->get(),
@@ -59,15 +64,15 @@ class CatalogoController extends Controller
 
     public function store(Request $request, string $slug)
     {
-        $c = $this->config($slug);
+        $c = $this->config($request, $slug);
         DB::table($c['tabla'])->insert($this->datos($request, $c, null) + ['active' => true]);
 
-        return redirect()->route('admin.catalogos.show', $slug)->with('ok', 'Registro creado.');
+        return redirect()->route($request->segment(1).'.catalogos.show', $slug)->with('ok', 'Registro creado.');
     }
 
     public function update(Request $request, string $slug, int $id)
     {
-        $c = $this->config($slug);
+        $c = $this->config($request, $slug);
         abort_unless(DB::table($c['tabla'])->where('id', $id)->exists(), 404);
 
         $datos = $this->datos($request, $c, $id) + ['active' => $request->boolean('active')];
@@ -83,12 +88,14 @@ class CatalogoController extends Controller
             return back()->withInput()->withErrors(['active' => 'No se puede guardar: '.($e->errorInfo[2] ?? 'el registro está en uso.')]);
         }
 
-        return redirect()->route('admin.catalogos.show', $slug)->with('ok', 'Registro actualizado.');
+        return redirect()->route($request->segment(1).'.catalogos.show', $slug)->with('ok', 'Registro actualizado.');
     }
 
-    private function config(string $slug): array
+    private function config(Request $request, string $slug): array
     {
-        return self::CATALOGOS[$slug] ?? abort(404);
+        abort_unless(in_array($slug, self::POR_MODULO[$request->segment(1)] ?? []), 404);
+
+        return self::CATALOGOS[$slug];
     }
 
     /** Valida con las reglas de cada campo y devuelve la fila lista para guardar. */

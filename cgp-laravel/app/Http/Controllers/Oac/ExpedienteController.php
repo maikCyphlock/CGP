@@ -1,6 +1,6 @@
 <?php
 
-namespace App\Http\Controllers\Admin;
+namespace App\Http\Controllers\Oac;
 
 use App\Http\Controllers\Controller;
 use App\Models\CaseFile;
@@ -31,12 +31,12 @@ class ExpedienteController extends Controller
     public function inicio(Request $request)
     {
         if (! $request->user()->puede('CASES')) {
-            return view('admin.inicio', ['kpi' => null, 'movimientos' => collect()]);
+            return view('oac.inicio', ['kpi' => null, 'movimientos' => collect()]);
         }
 
         $id = $this->estatus()->pluck('id', 'code');
 
-        return view('admin.inicio', [
+        return view('oac.inicio', [
             'kpi' => [
                 'mes' => CaseFile::where('created_at', '>=', now()->startOfMonth())->count(),
                 'recibidos' => CaseFile::where('status_id', $id['RECEIVED'])->count(),
@@ -76,7 +76,7 @@ class ExpedienteController extends Controller
             ->paginate(20)
             ->withQueryString();
 
-        return view('admin.expedientes', [
+        return view('oac.expedientes', [
             'expedientes' => $expedientes,
             'estatus' => $estatus->keyBy('id'),
             'tipos' => DB::table('claim_type')->orderBy('id')->get(),
@@ -91,7 +91,7 @@ class ExpedienteController extends Controller
         $estatus = $this->estatus()->keyBy('id');
         $actual = $estatus[$expediente->status_id];
 
-        return view('admin.expediente', [
+        return view('oac.expediente', [
             'e' => $expediente,
             'c' => $expediente->citizen,
             'actual' => $actual,
@@ -190,7 +190,7 @@ class ExpedienteController extends Controller
 
         return isset($mensaje['error'])
             ? back()->withErrors(['estatus' => $mensaje['error']])
-            : redirect()->route('admin.expedientes.show', $expediente)->with('ok', $mensaje['ok']);
+            : redirect()->route('oac.expedientes.show', $expediente)->with('ok', $mensaje['ok']);
     }
 
     /** Tipifica la irregularidad y guarda las notas del analista (módulo CLASSIFY). */
@@ -213,7 +213,7 @@ class ExpedienteController extends Controller
             ]);
         });
 
-        return redirect()->route('admin.expedientes.show', $expediente)->with('ok', 'Clasificación guardada.');
+        return redirect()->route('oac.expedientes.show', $expediente)->with('ok', 'Clasificación guardada.');
     }
 
     public function archivo(CaseFile $expediente, string $archivo)

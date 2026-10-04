@@ -12,8 +12,13 @@ return Application::configure(basePath: dirname(__DIR__))
         health: '/up',
     )
     ->withMiddleware(function (Middleware $middleware): void {
-        $middleware->alias(['permiso' => \App\Http\Middleware\RequierePrivilegio::class]);
-        $middleware->redirectUsersTo(fn () => route('admin.inicio'));
+        $middleware->alias([
+            'permiso' => \App\Http\Middleware\RequierePrivilegio::class,
+            'modulo' => \App\Http\Middleware\AccesoModulo::class,
+        ]);
+        // Cada módulo tiene su propio login y su propio inicio.
+        $middleware->redirectGuestsTo(fn (Request $r) => route($r->is('oac', 'oac/*') ? 'oac.login' : 'admin.login'));
+        $middleware->redirectUsersTo(fn (Request $r) => route($r->is('oac', 'oac/*') ? 'oac.inicio' : 'admin.inicio'));
     })
     ->withExceptions(function (Exceptions $exceptions): void {
         $exceptions->shouldRenderJsonWhen(

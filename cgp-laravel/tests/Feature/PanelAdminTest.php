@@ -58,8 +58,8 @@ class PanelAdminTest extends TestCase
 
     private function actuar(CaseFile $e, array $datos)
     {
-        return $this->from(route('admin.expedientes.show', $e))
-            ->post(route('admin.expedientes.actuar', $e), $datos + ['nota' => 'Revisado por la OAC.']);
+        return $this->from(route('oac.expedientes.show', $e))
+            ->post(route('oac.expedientes.actuar', $e), $datos + ['nota' => 'Revisado por la OAC.']);
     }
 
     public function test_invitado_va_al_login(): void
@@ -104,10 +104,10 @@ class PanelAdminTest extends TestCase
         $e = $this->expediente();
         $this->actingAs($u);
 
-        $this->get('/admin/expedientes?estado=RECEIVED')->assertOk()->assertSee($e->case_number);
-        $this->get('/admin/expedientes?q=Díaz')->assertOk()->assertSee($e->case_number);
-        $this->get('/admin/expedientes?estado=HACK')->assertSessionHasErrors('estado');
-        $this->get(route('admin.expedientes.show', $e))->assertOk()->assertSee('Ana Díaz');
+        $this->get('/oac/expedientes?estado=RECEIVED')->assertOk()->assertSee($e->case_number);
+        $this->get('/oac/expedientes?q=Díaz')->assertOk()->assertSee($e->case_number);
+        $this->get('/oac/expedientes?estado=HACK')->assertSessionHasErrors('estado');
+        $this->get(route('oac.expedientes.show', $e))->assertOk()->assertSee('Ana Díaz');
 
         // Salto no permitido: de Recibido no se puede archivar.
         $this->actuar($e, ['desde' => 'RECEIVED', 'estatus' => 'ARCHIVED'])->assertSessionHasErrors('estatus');
@@ -138,7 +138,7 @@ class PanelAdminTest extends TestCase
             ['STATUS_CHANGE', 'STATUS_CHANGE', 'NOTE', 'STATUS_CHANGE'],
             DB::table('case_action')->where('case_file_id', $e->id)->orderBy('id')->pluck('action_type')->all(),
         );
-        $this->get('/admin')->assertOk()->assertSee($e->case_number);
+        $this->get('/oac')->assertOk()->assertSee($e->case_number);
     }
 
     public function test_sin_permiso_se_bloquea_y_se_registra(): void
@@ -147,15 +147,15 @@ class PanelAdminTest extends TestCase
         $e = $this->expediente();
         $this->actingAs($solo);
 
-        $this->get('/admin/expedientes')->assertOk();
+        $this->get('/oac/expedientes')->assertOk();
         $this->get('/admin/usuarios')->assertForbidden();
-        $this->get('/admin/catalogos')->assertForbidden();
+        $this->get('/oac/catalogos')->assertForbidden();
         $this->get('/admin/contenidos')->assertForbidden();
         // Solo lectura: no puede registrar actuaciones ni clasificar.
         $this->actuar($e, ['desde' => 'RECEIVED', 'estatus' => 'IN_REVIEW'])->assertForbidden();
-        $this->post(route('admin.expedientes.clasificar', $e), [])->assertForbidden();
+        $this->post(route('oac.expedientes.clasificar', $e), [])->assertForbidden();
         $this->assertSame(5, DB::table('unauthorized_access_log')->where('user_id', $solo->id)->count());
-        $this->get('/admin')->assertOk()->assertDontSee('Usuarios y Accesos');
+        $this->get('/oac')->assertOk()->assertDontSee('Usuarios y accesos');
     }
 
     public function test_derivar_exige_permiso_de_clasificacion(): void
@@ -164,7 +164,7 @@ class PanelAdminTest extends TestCase
         $this->actingAs($this->usuario([], ['CASES' => 'write']));
         $this->actuar($e, ['desde' => 'RECEIVED', 'estatus' => 'IN_REVIEW'])->assertSessionHas('ok');
         $this->actuar($e, ['desde' => 'IN_REVIEW', 'estatus' => 'REFERRED', 'referral_unit_id' => DB::table('referral_unit')->value('id')])->assertForbidden();
-        $this->get(route('admin.expedientes.show', $e))->assertOk()->assertDontSee('Derivar a otra unidad');
+        $this->get(route('oac.expedientes.show', $e))->assertOk()->assertDontSee('Derivar a otra unidad');
     }
 
     public function test_clasificacion_y_oficio(): void
@@ -174,8 +174,8 @@ class PanelAdminTest extends TestCase
         DB::table('irregularity_type')->insert(['code' => 'T1', 'name' => 'Irregularidad de prueba']);
         $tipo = DB::table('irregularity_type')->where('code', 'T1')->value('id');
 
-        $this->post(route('admin.expedientes.clasificar', $e), ['irregularity_type_id' => 9999])->assertSessionHasErrors('irregularity_type_id');
-        $this->post(route('admin.expedientes.clasificar', $e), ['irregularity_type_id' => $tipo, 'analyst_notes' => 'Revisar obra'])->assertSessionHas('ok');
+        $this->post(route('oac.expedientes.clasificar', $e), ['irregularity_type_id' => 9999])->assertSessionHasErrors('irregularity_type_id');
+        $this->post(route('oac.expedientes.clasificar', $e), ['irregularity_type_id' => $tipo, 'analyst_notes' => 'Revisar obra'])->assertSessionHas('ok');
         $this->assertSame($tipo, $e->fresh()->irregularity_type_id);
 
         $this->actuar($e, ['desde' => 'RECEIVED', 'estatus' => 'IN_REVIEW']);
@@ -186,8 +186,8 @@ class PanelAdminTest extends TestCase
 
         // Cerrado: ya no se clasifica.
         $this->actuar($e, ['desde' => 'REFERRED', 'estatus' => 'ARCHIVED']);
-        $this->post(route('admin.expedientes.clasificar', $e), ['analyst_notes' => 'tarde'])->assertStatus(422);
-        $this->get(route('admin.expedientes.show', $e))->assertOk()->assertSee('Irregularidad de prueba');
+        $this->post(route('oac.expedientes.clasificar', $e), ['analyst_notes' => 'tarde'])->assertStatus(422);
+        $this->get(route('oac.expedientes.show', $e))->assertOk()->assertSee('Irregularidad de prueba');
     }
 
     public function test_usuarios_y_permisos_con_auditoria(): void
@@ -241,24 +241,27 @@ class PanelAdminTest extends TestCase
     public function test_catalogos(): void
     {
         $this->actingAs($this->usuario());
-        $this->get('/admin/catalogos')->assertOk()->assertSee('Tipos de trámite');
-        $this->get('/admin/catalogos/no-existe')->assertNotFound();
-        $this->get('/admin/catalogos/case-status')->assertNotFound();
+        $this->get('/oac/catalogos')->assertOk()->assertSee('Tipos de trámite')->assertDontSee('Cargos del personal');
+        $this->get('/admin/catalogos')->assertOk()->assertSee('Cargos del personal')->assertDontSee('Tipos de trámite');
+        $this->get('/admin/catalogos/irregularidades')->assertNotFound(); // cada módulo ve solo sus listas
+        $this->get('/oac/catalogos/cargos')->assertNotFound();
+        $this->get('/oac/catalogos/no-existe')->assertNotFound();
+        $this->get('/oac/catalogos/case-status')->assertNotFound();
 
-        $this->post('/admin/catalogos/irregularidades', ['code' => 'minuscula', 'name' => 'X'])->assertSessionHasErrors('code');
-        $this->post('/admin/catalogos/irregularidades', ['code' => 'MALVERSACION', 'name' => 'Malversación', 'legal_basis' => 'Art. 91'])->assertSessionHas('ok');
-        $this->post('/admin/catalogos/irregularidades', ['code' => 'MALVERSACION', 'name' => 'Otra'])->assertSessionHasErrors('code');
+        $this->post('/oac/catalogos/irregularidades', ['code' => 'minuscula', 'name' => 'X'])->assertSessionHasErrors('code');
+        $this->post('/oac/catalogos/irregularidades', ['code' => 'MALVERSACION', 'name' => 'Malversación', 'legal_basis' => 'Art. 91'])->assertSessionHas('ok');
+        $this->post('/oac/catalogos/irregularidades', ['code' => 'MALVERSACION', 'name' => 'Otra'])->assertSessionHasErrors('code');
 
         $id = DB::table('irregularity_type')->where('code', 'MALVERSACION')->value('id');
         // El código no cambia; el resto sí; se puede desactivar.
-        $this->post("/admin/catalogos/irregularidades/$id", ['code' => 'OTRO', 'name' => 'Malversación de fondos', 'active' => 0])->assertSessionHasErrors('code');
-        $this->post("/admin/catalogos/irregularidades/$id", ['name' => 'Malversación de fondos', 'active' => 0])->assertSessionHas('ok');
+        $this->post("/oac/catalogos/irregularidades/$id", ['code' => 'OTRO', 'name' => 'Malversación de fondos', 'active' => 0])->assertSessionHasErrors('code');
+        $this->post("/oac/catalogos/irregularidades/$id", ['name' => 'Malversación de fondos', 'active' => 0])->assertSessionHas('ok');
         $fila = DB::table('irregularity_type')->find($id);
         $this->assertSame(['MALVERSACION', 'Malversación de fondos', false], [$fila->code, $fila->name, (bool) $fila->active]);
 
         // JSON inválido en tipos de señalado.
-        $this->post('/admin/catalogos/tipos-senalado', ['code' => 'NUEVO', 'name' => 'Nuevo', 'field_schema' => '{no'])->assertSessionHasErrors('field_schema');
-        $this->post('/admin/catalogos/tipos-senalado', ['code' => 'NUEVO', 'name' => 'Nuevo', 'field_schema' => '"texto"'])->assertStatus(422);
+        $this->post('/oac/catalogos/tipos-senalado', ['code' => 'NUEVO', 'name' => 'Nuevo', 'field_schema' => '{no'])->assertSessionHasErrors('field_schema');
+        $this->post('/oac/catalogos/tipos-senalado', ['code' => 'NUEVO', 'name' => 'Nuevo', 'field_schema' => '"texto"'])->assertStatus(422);
 
         // No se puede desactivar un cargo con personal activo.
         $cargo = DB::table('job_position')->value('id');
@@ -349,5 +352,99 @@ class PanelAdminTest extends TestCase
         $this->assertSame($nombre, DB::table('cms_content')->value('image_path'));
         $this->get("/media/cms/$nombre")->assertNotFound();
         $this->get("/admin/contenidos/imagen/$nombre")->assertOk(); // el admin sí la ve
+    }
+
+    public function test_modulos_separados_oac_y_admin(): void
+    {
+        $oac = $this->usuario([], ['CASES' => 'write']);
+        $adm = $this->usuario([], ['USERS' => 'read', 'STATS' => 'read']);
+
+        // Cada módulo tiene su login; sin sesión, cada URL manda a su propio login.
+        auth()->logout();
+        $this->get('/oac')->assertRedirect('/oac/login');
+        $this->get('/oac/expedientes')->assertRedirect('/oac/login');
+        $this->get('/admin/monitoreo')->assertRedirect('/admin/login');
+        $this->get('/oac/login')->assertOk()->assertSee('Oficina de Atención al Ciudadano');
+        $this->get('/admin/login')->assertOk()->assertSee('Administración del Sistema');
+
+        // Personal de la OAC: entra a /oac, no a /admin (y queda registrado).
+        $this->actingAs($oac);
+        $this->get('/oac')->assertOk()->assertDontSee('Monitoreo');
+        $this->get('/admin')->assertForbidden();
+        $this->get('/admin/monitoreo')->assertForbidden();
+        $this->assertSame(2, DB::table('unauthorized_access_log')->where('user_id', $oac->id)->count());
+
+        // Administración: entra a /admin, no a /oac.
+        $this->app['auth']->forgetGuards();
+        $this->actingAs($adm);
+        $this->get('/admin')->assertOk()->assertSee('Monitoreo')->assertDontSee('Página web');
+        $this->get('/oac')->assertForbidden();
+        $this->get('/oac/expedientes')->assertForbidden();
+
+        // Un usuario con ambos ve el enlace para cambiar de módulo.
+        $this->app['auth']->forgetGuards();
+        $this->actingAs($this->usuario());
+        $this->get('/oac')->assertOk()->assertSee('Cambiar de módulo');
+        $this->get('/admin')->assertOk()->assertSee('Cambiar de módulo');
+    }
+
+    public function test_login_por_modulo_y_registro_de_ingresos(): void
+    {
+        $oac = $this->usuario([], ['CASES' => 'read']);
+        $adm = $this->usuario([], ['USERS' => 'read']);
+
+        // Cada quien es llevado al módulo que le corresponde.
+        $this->post('/oac/login', ['email' => $oac->email, 'password' => 'clave-segura'])->assertRedirect('/oac');
+        $this->post('/oac/logout')->assertRedirect('/oac/login');
+        $this->post('/oac/login', ['email' => $adm->email, 'password' => 'clave-segura'])->assertRedirect('/admin'); // no es de la OAC: se le lleva a Administración
+        $this->post('/admin/logout')->assertRedirect('/admin/login');
+
+        // Quien no tiene ningún módulo no queda dentro.
+        $nadie = $this->usuario([], []);
+        $this->post('/admin/login', ['email' => $nadie->email, 'password' => 'clave-segura'])->assertSessionHasErrors('email');
+        $this->assertGuest();
+
+        // Queda historial de ingresos (el cierre se enlaza por la cookie de sesión, que estas pruebas no envían;
+        // sí se cierra en el mismo request, como el de quien no tiene ningún módulo), y los fallos se registran.
+        $this->assertSame(3, DB::table('session_log')->count());
+        $this->assertSame(1, DB::table('session_log')->whereNotNull('closed_at')->count());
+        $this->post('/admin/login', ['email' => $adm->email, 'password' => 'mala']);
+        $this->assertSame(1, DB::table('unauthorized_access_log')->where('user_id', $adm->id)->where('endpoint', 'like', 'LOGIN FALLIDO%')->count());
+    }
+
+    public function test_monitoreo(): void
+    {
+        $admin = $this->usuario();
+        $otro = $this->usuario(['locked_until' => now()->addMinutes(10), 'first_name' => 'Bloqueado', 'last_name' => 'Pérez']);
+
+        // Sin STATS no se ve el monitoreo.
+        $this->actingAs($this->usuario([], ['USERS' => 'read']))->get('/admin/monitoreo')->assertForbidden();
+        $this->app['auth']->forgetGuards();
+        $this->actingAs($admin);
+
+        foreach (['sesiones', 'bloqueos', 'denegados', 'permisos', 'historial', 'raro'] as $ver) {
+            $this->get("/admin/monitoreo?ver=$ver")->assertOk();
+        }
+        $this->get('/admin/monitoreo?ver=bloqueos')->assertSee('Bloqueado Pérez');
+
+        // Desbloquear deja constancia en la auditoría de accesos.
+        $this->post("/admin/monitoreo/usuarios/{$otro->id}/desbloquear")->assertSessionHas('ok');
+        $this->assertNull($otro->fresh()->locked_until);
+        $this->assertSame(1, DB::table('access_audit_log')->where('affected_user_id', $otro->id)->where('admin_id', $admin->id)->count());
+        $this->get('/admin/monitoreo?ver=permisos')->assertSee('Cuenta desbloqueada');
+
+        // Cerrar una sesión ajena la elimina; la propia no.
+        $ajena = $this->usuario();
+        DB::table('sessions')->insert(['id' => 'ajena123', 'user_id' => $ajena->id, 'ip_address' => '10.0.0.5', 'user_agent' => 'Mozilla Firefox/120.0 Linux', 'payload' => '', 'last_activity' => time()]);
+        $this->get('/admin/monitoreo?ver=sesiones')->assertSee('10.0.0.5')->assertSee('Firefox Linux');
+        $this->post('/admin/monitoreo/sesiones/ajena123/cerrar')->assertSessionHas('ok');
+        $this->assertSame(0, DB::table('sessions')->where('id', 'ajena123')->count());
+        $this->post('/admin/monitoreo/sesiones/no-existe/cerrar')->assertNotFound();
+
+        // Solo lectura de STATS: ve, pero no puede cerrar sesiones ni desbloquear.
+        $this->app['auth']->forgetGuards();
+        $this->actingAs($this->usuario([], ['STATS' => 'read', 'USERS' => 'read']));
+        $this->get('/admin/monitoreo')->assertOk();
+        $this->post("/admin/monitoreo/usuarios/{$otro->id}/desbloquear")->assertForbidden();
     }
 }

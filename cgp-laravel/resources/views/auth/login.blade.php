@@ -3,7 +3,14 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Iniciar Sesión · Contraloría del Municipio Páez</title>
+  @php
+    $esOac = $mod === 'oac';
+    $titulo = $esOac ? 'Oficina de Atención al Ciudadano' : 'Administración del Sistema';
+    $texto = $esOac
+      ? 'Acceso para el personal de la OAC: recepción, clasificación y seguimiento de denuncias, quejas y reclamos.'
+      : 'Acceso para contralores y recursos humanos: control de accesos, usuarios, contenido del portal y monitoreo del sistema.';
+  @endphp
+  <title>{{ $titulo }} · Contraloría del Municipio Páez</title>
   <link href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap/5.3.2/css/bootstrap.min.css" rel="stylesheet">
   <style>
     body { font-family: 'Segoe UI', Roboto, Arial, sans-serif; background-color: #0d1b3e; margin: 0; min-height: 100vh; }
@@ -24,8 +31,8 @@
 <div class="login-wrapper">
   <div class="login-info">
     <div class="info-content">
-      <h1>Panel de Administración</h1>
-      <p class="mt-4">Acceso restringido exclusivo para personal autorizado de la Contraloría del Municipio Páez. Toda actividad en este portal es monitoreada para garantizar la transparencia y seguridad de los datos.</p>
+      <h1>{{ $titulo }}</h1>
+      <p class="mt-4">{{ $texto }} Acceso restringido a personal autorizado de la Contraloría del Municipio Páez. Toda actividad es monitoreada para garantizar la transparencia y seguridad de los datos.</p>
     </div>
   </div>
 
@@ -33,14 +40,14 @@
     <div class="form-box">
       <div class="d-flex align-items-center justify-content-center mb-4 p-3 rounded" style="background-color: #0d1b3e;">
         <img src="{{ asset('assets/img/logo.jpeg') }}" alt="Logo" style="width: 40px; height: 40px; margin-right: 12px; border-radius: 8px; object-fit: cover;">
-        <h3 class="mb-0 text-white fw-bold">INICIAR SESIÓN</h3>
+        <h3 class="mb-0 text-white fw-bold">{{ $esOac ? 'OAC · INICIAR SESIÓN' : 'ADMINISTRACIÓN' }}</h3>
       </div>
 
       @if ($errors->any())
         <div class="alert alert-danger py-2" role="alert">{{ $errors->first() }}</div>
       @endif
 
-      <form method="POST" action="{{ url('/admin/login') }}" onsubmit="this.querySelector('button').disabled = true">
+      <form method="POST" action="{{ route($mod.'.login') }}" onsubmit="this.querySelector('button').disabled = true">
         @csrf
         <div class="mb-3">
           <label for="email" class="form-label">Correo electrónico</label>
@@ -53,6 +60,10 @@
         </div>
         <button type="submit" class="btn btn-login w-100">ACCEDER</button>
       </form>
+      <p class="text-center small text-muted mt-4 mb-0">
+        @if ($esOac) ¿Es administrador del sistema? <a href="{{ route('admin.login') }}">Ir a Administración</a>
+        @else ¿Trabaja en la OAC? <a href="{{ route('oac.login') }}">Ir a la Oficina de Atención al Ciudadano</a> @endif
+      </p>
     </div>
   </div>
 </div>

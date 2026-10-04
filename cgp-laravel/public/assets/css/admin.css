@@ -166,3 +166,6 @@ body { font-family: var(--font); background: var(--surface); color: var(--ink); 
 
 .list-group-item { border-color: var(--border); }
 .pagination { --bs-pagination-active-bg: var(--brand); --bs-pagination-active-border-color: var(--brand); --bs-pagination-color: var(--brand); }
+
+/* Administración se distingue de la OAC por el color del menú, para no confundir de módulo. */
+.mod-admin { --brand: #1d3b3a; --brand-hover: #2a5250; --brand-tint: #e9f1f0; }

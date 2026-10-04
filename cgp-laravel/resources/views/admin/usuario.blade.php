@@ -1,4 +1,4 @@
-@extends('layouts.admin')
+@extends('layouts.panel')
 
 @section('titulo', $u->first_name.' '.$u->last_name)
 
@@ -40,7 +40,9 @@
           <table class="table align-middle mb-0" style="font-size: .9rem;">
             <thead class="table-light"><tr><th class="ps-4">Módulo</th><th class="text-center">Ver</th><th class="text-center">Editar</th><th class="text-center">Eliminar</th></tr></thead>
             <tbody>
-              @foreach ($modulos as $m)
+              @foreach (['oac' => 'Atención al Ciudadano · /oac', 'admin' => 'Administración · /admin'] as $grupo => $tituloGrupo)
+              <tr><td colspan="4" class="ps-4 small fw-bold text-uppercase text-muted bg-light">{{ $tituloGrupo }}</td></tr>
+              @foreach ($modulos->whereIn('code', \App\Models\StaffUser::MODULOS[$grupo]) as $m)
                 @php($p = $permisos[$m->id] ?? null)
                 <tr>
                   <td class="ps-4">{{ $m->name }}</td>
@@ -48,6 +50,7 @@
                     <td class="text-center"><input type="checkbox" class="form-check-input perm" data-nivel="{{ $accion }}" name="p[{{ $m->id }}][{{ $accion }}]" value="1" @checked($p?->$col) @disabled(! $puedePermisos)></td>
                   @endforeach
                 </tr>
+              @endforeach
               @endforeach
             </tbody>
           </table>

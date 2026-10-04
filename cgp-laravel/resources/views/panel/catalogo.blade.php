@@ -1,16 +1,16 @@
-@extends('layouts.admin')
+@extends('layouts.panel')
 
 @section('titulo', $c['titulo'])
 
 @section('contenido')
 @php($puedeEscribir = auth()->user()->puede('CATALOGS', 'write'))
-<a href="{{ route('admin.catalogos.index') }}" class="btn btn-sm btn-outline-secondary mb-3"><i class="fa-solid fa-arrow-left me-1"></i> Catálogos</a>
+<a href="{{ route($mod.'.catalogos.index') }}" class="btn btn-sm btn-outline-secondary mb-3"><i class="fa-solid fa-arrow-left me-1"></i> Catálogos</a>
 
 @if ($puedeEscribir)
 <div class="card border-0 shadow-sm mb-4">
   <div class="card-header bg-white fw-bold text-primary-cgp">{{ $fila ? 'Editar registro' : 'Nuevo registro' }}</div>
   <form method="POST" class="card-body row g-3"
-        action="{{ $fila ? route('admin.catalogos.update', [$slug, $fila->id]) : route('admin.catalogos.store', $slug) }}">
+        action="{{ $fila ? route($mod.'.catalogos.update', [$slug, $fila->id]) : route($mod.'.catalogos.store', $slug) }}">
     @csrf
     @foreach ($c['campos'] as [$campo, $etiqueta, $tipo, $extra])
       @php($valor = old($campo, $fila->$campo ?? ($tipo === 'json' ? '[]' : '')))
@@ -39,7 +39,7 @@
     @endif
     <div class="col-12 d-flex gap-2">
       <button type="submit" class="btn btn-cgp fw-bold">{{ $fila ? 'Guardar cambios' : 'Agregar' }}</button>
-      @if ($fila) <a href="{{ route('admin.catalogos.show', $slug) }}" class="btn btn-outline-secondary">Cancelar</a> @endif
+      @if ($fila) <a href="{{ route($mod.'.catalogos.show', $slug) }}" class="btn btn-outline-secondary">Cancelar</a> @endif
     </div>
   </form>
 </div>
@@ -61,7 +61,7 @@
               @endif
             @endforeach
             <td><span class="badge {{ $f->active ? 'bg-success' : 'bg-secondary' }}">{{ $f->active ? 'Activo' : 'Inactivo' }}</span></td>
-            <td class="text-end pe-4">@if ($puedeEscribir)<a href="{{ route('admin.catalogos.show', ['slug' => $slug, 'editar' => $f->id]) }}" class="btn btn-sm btn-outline-dark">Editar</a>@endif</td>
+            <td class="text-end pe-4">@if ($puedeEscribir)<a href="{{ route($mod.'.catalogos.show', ['slug' => $slug, 'editar' => $f->id]) }}" class="btn btn-sm btn-outline-dark">Editar</a>@endif</td>
           </tr>
         @endforeach
       </tbody>

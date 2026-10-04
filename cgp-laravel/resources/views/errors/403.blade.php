@@ -1,4 +1,4 @@
-@extends('layouts.admin')
+@extends('layouts.panel')
 
 @section('titulo', 'Acceso denegado')
 
@@ -7,6 +7,7 @@
   <div class="display-4 text-danger mb-3"><i class="fa-solid fa-lock"></i></div>
   <h4 class="fw-bold text-primary-cgp">No tiene permiso para esta sección</h4>
   <p class="text-muted mb-4">Este intento quedó registrado. Si lo necesita para su trabajo, solicite el acceso al administrador del sistema.</p>
-  <div><a href="{{ route('admin.inicio') }}" class="btn btn-cgp">Volver al panel</a></div>
+  @php($m = request()->is('oac', 'oac/*') ? 'oac' : 'admin')
+  <div><a href="{{ route($m.'.inicio') }}" class="btn btn-cgp">Volver al inicio</a></div>
 </div>
 @endsection
