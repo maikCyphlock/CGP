@@ -96,6 +96,7 @@ return [
             'prefix' => '',
             'prefix_indexes' => true,
             'search_path' => 'public',
+            'timezone' => 'America/Caracas', // misma zona que la app: las fechas sin offset se leen igual en ambos lados
             'sslmode' => env('DB_SSLMODE', 'prefer'),
         ],
 
