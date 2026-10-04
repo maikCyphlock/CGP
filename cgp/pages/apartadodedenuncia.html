@@ -13,14 +13,218 @@
     rel="stylesheet">
 
   <link href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap/5.3.2/css/bootstrap.min.css" rel="stylesheet">
+  
+  <!-- Flatpickr CSS para calendarios modernos y accesibles para adultos mayores -->
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/flatpickr/dist/flatpickr.min.css">
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/flatpickr/dist/themes/material_blue.css">
+
   <link rel="stylesheet" href="../assets/css/denuncias.css">
   <link rel="stylesheet" href="../assets/css/contraloria.css">
 
   <style>
     /* Estilos adicionales para justificar textos institucionales */
-    p, .aviso-anonimato div, .tramite-card-desc, .resumen-valor {
-      text-align: justify;
+    p, .aviso-anonimato div, .tramite-card-desc, .resumen-valor, 
+    .form-body, .wizard-paso, .print-card-box, .print-row, .print-val, .print-label,
+    .nota-info, .aviso-menor-edad div, div[style*="background:#cdcdcd"], span[style*="font-size:0.82rem"],
+    .form-section-title, .form-label, .modal-body p {
+      text-align: justify !important;
     }
+
+    /* Centrar específicamente el subtítulo de consideraciones previas */
+    .section-subtitle-center {
+      text-align: center !important;
+    }
+
+    /* Estilo amigable, moderno y grande para el calendario institucional (Adultos Mayores) tipo panel lateral */
+    .flatpickr-calendar {
+      font-size: 16px !important;
+      border-radius: 12px !important;
+      box-shadow: 0 10px 30px rgba(0, 0, 0, 0.15) !important;
+      padding: 15px !important;
+      background: #ffffff !important;
+      border: 1px solid #dce3ec !important;
+    }
+    .flatpickr-months {
+      padding: 5px 0 15px 0 !important;
+    }
+    .flatpickr-month {
+      background: transparent !important;
+      color: #1565c0 !important;
+      font-weight: 700 !important;
+      font-size: 1.1rem !important;
+    }
+    .flatpickr-current-month {
+      font-size: 110% !important;
+      font-weight: bold !important;
+      color: #0f2340 !important;
+    }
+    .flatpickr-prev-month, .flatpickr-next-month {
+      padding: 10px !important;
+      transition: background 0.2s;
+      border-radius: 50%;
+    }
+    .flatpickr-prev-month:hover, .flatpickr-next-month:hover {
+      background: #e3f2fd !important;
+    }
+    .flatpickr-prev-month svg, .flatpickr-next-month svg {
+      fill: #1565c0 !important;
+      width: 18px;
+      height: 18px;
+    }
+    .flatpickr-weekdays {
+      margin-top: 5px !important;
+    }
+    span.flatpickr-weekday {
+      color: #4a5568 !important;
+      font-weight: 700 !important;
+      font-size: 0.9rem !important;
+    }
+    .flatpickr-day {
+      height: 44px !important;
+      line-height: 44px !important;
+      max-width: 44px !important;
+      font-weight: 600 !important;
+      font-size: 1rem !important;
+      border-radius: 8px !important;
+      color: #2d3748 !important;
+      margin: 2px !important;
+    }
+    .flatpickr-day:hover {
+      background: #e3f2fd !important;
+      border-color: #1565c0 !important;
+    }
+    .flatpickr-day.selected, .flatpickr-day.selected:hover {
+      background: #1565c0 !important;
+      border-color: #1565c0 !important;
+      color: #ffffff !important;
+      font-weight: bold !important;
+    }
+    .flatpickr-day.today {
+      border: 2px solid #1565c0 !important;
+      background: transparent;
+      color: #1565c0 !important;
+    }
+
+    /* Estilo guía amigable para adultos mayores en el campo de fecha */
+    .ayuda-calendario-texto {
+      font-size: 0.78rem;
+      color: #0d47a1;
+      background: #e3f2fd;
+      border-left: 3px solid #1565c0;
+      padding: 6px 10px;
+      margin-top: 6px;
+      border-radius: 4px;
+      line-height: 1.4;
+      display: flex;
+      align-items: center;
+      gap: 6px;
+    }
+
+   /* Adaptación responsiva para los botones de navegación de pasos */
+    @media (max-width: 768px) {
+      .wizard-nav {
+        display: flex !important;
+        flex-direction: row !important;
+        justify-content: space-between !important;
+        align-items: center !important;
+        gap: 10px !important;
+      }
+      .wizard-nav .btn-submit,
+      .wizard-nav button {
+        flex: 1 !important;
+        width: auto !important;
+        margin: 0 !important;
+        display: flex !important;             
+        justify-content: center !important;    
+        align-items: center !important;         
+        text-align: center !important;          
+        padding: 10px 8px !important;         
+        font-size: 0.82rem !important;          
+        white-space: nowrap !important;
+      }
+    }
+
+    /* Adaptación responsiva para Datos Demográficos Complementarios: una columna encima de otra */
+    @media (max-width: 768px) {
+      .tabla-demografica, .tabla-demografica thead, .tabla-demografica tbody, .tabla-demografica tr, .tabla-demografica th, .tabla-demografica td {
+        display: block !important;
+        width: 100% !important;
+      }
+      .tabla-demografica thead {
+        display: none !important; 
+      }
+      .tabla-demografica tr {
+        margin-bottom: 15px !important;
+        border: 1px solid #dce3ec !important;
+        border-radius: 6px !important;
+        padding: 10px !important;
+        background: #fdfdfd !important;
+      }
+      .tabla-demografica td {
+        padding: 6px 0 !important;
+        border: none !important;
+      }
+      .tabla-demografica td::before {
+        content: attr(data-label);
+        font-weight: bold;
+        color: #1565c0;
+        display: block;
+        margin-bottom: 3px;
+        font-size: 0.82rem;
+      }
+    }
+
+    @media (max-width: 768px) {
+      .modal-footer, 
+      .swal2-actions, 
+      div:has(> .btn-secondary, > .btn-submit) { 
+        display: flex !important;
+        flex-direction: row !important; 
+        justify-content: center !important;
+        align-items: center !important;
+        gap: 10px !important; 
+        width: 100% !important;
+      }
+
+      .modal-footer button,
+      .swal2-actions button {
+        flex: 1 !important;
+        width: auto !important;
+        margin: 0 !important;
+        font-size: 0.85rem !important;
+        padding: 10px 8px !important;
+        text-align: center !important;
+      }
+    }
+
+    /* Corrección específica para el botón "Editar" en pantallas pequeñas */
+@media (max-width: 768px) {
+  .card-header button,
+  .card-header .btn-edit,
+  .section-header button,
+  button[onclick*="editar"],
+  a[onclick*="editar"] {
+    white-space: nowrap !important;
+    font-size: 0.75rem !important;
+    padding: 4px 8px !important;
+  }
+}
+
+    /* Corrección responsiva general */
+    @media (max-width: 768px) {
+      .evidencia-item, .archivo-fila, div[style*="display: flex"] {
+        flex-direction: column !important;
+        align-items: stretch !important;
+      }
+      .evidencia-label, .print-label, .print-val {
+        width: 100% !important;
+      }
+      span, div, label, p {
+        word-break: break-word !important;
+        overflow-wrap: break-word !important;
+      }  
+    }
+
     #header {
       position: relative !important;
       top: auto !important;
@@ -298,9 +502,9 @@
           <div class="aviso-anonimato" style="background-color: #e3f2fd; border-left: 4px solid #1565c0; color: #0d47a1; max-width: 800px; margin: 0 auto 20px auto;">
           <span class="av-icon" style="color: #1565c0;">
             <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" style="vertical-align: middle; margin-right: 8px;">
-    <circle cx="12" cy="12" r="10"></circle>
-    <line x1="4.93" y1="4.93" x2="19.07" y2="19.07"></line>
-  </svg>
+              <circle cx="12" cy="12" r="10"></circle>
+              <line x1="4.93" y1="4.93" x2="19.07" y2="19.07"></line>
+            </svg>
           </span>
           <div>
             <strong>Este sistema no admite denuncias anónimas.</strong>
@@ -325,19 +529,21 @@
           </div>
         </div>
 
-        <div style="text-align: center; margin-bottom: 20px; display: flex; justify-content: center; gap: 15px; flex-wrap: wrap;">
-          <button class="btn-submit" style="font-size: 1.1rem; padding: 12px 32px; background: #022139; border: 1px solid #4d7f99;" onclick="mostrarConsultaTramite()">
+       <div style="text-align: center; margin-bottom: 20px; display: flex; justify-content: center; align-items: center; gap: 15px; flex-wrap: wrap;">
+          
+          <button class="btn-submit" style="font-size: 1.1rem; padding: 12px 32px; background: #022139; border: 1px solid #4d7f99; display: flex; justify-content: center; align-items: center; text-align: center;" onclick="mostrarConsultaTramite()">
             Estado de Trámite
           </button>
           
-          <button class="btn-submit" style="font-size: 1.1rem; padding: 12px 32px; background: #1565c0;" onclick="iniciarFlujo('general')">
-            Continuar
+          <button class="btn-submit" style="font-size: 1.1rem; padding: 12px 32px; background: #1565c0; display: flex; justify-content: center; align-items: center; text-align: center;" onclick="iniciarFlujo('general')">
+            <span>Continuar</span>
             <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"
               stroke-linecap="round" stroke-linejoin="round" style="margin-left: 8px;">
               <line x1="5" y1="12" x2="19" y2="12" />
               <polyline points="12 5 19 12 12 19" />
             </svg>
           </button>
+
         </div>
       </div><!-- /vista-seleccion -->
 
@@ -411,12 +617,6 @@
             </div>
             <div id="bloque-tipo-tramite">
               <div class="form-section-title">
-                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"
-                  stroke-linecap="round" stroke-linejoin="round">
-                  <circle cx="12" cy="12" r="10" />
-                  <line x1="12" y1="8" x2="12" y2="12" />
-                  <line x1="12" y1="16" x2="12.01" y2="16" />
-                </svg>
                 Seleccione el Tipo de Trámite <span style="color:#1565c0;margin-left:3px;">*</span>
               </div>
               <div class="tipo-tramite-grid" id="tipo-tramite-grid">
@@ -590,27 +790,29 @@
                 <div class="col-md-3">
                   <div class="form-group">
                     <label class="form-label">Primer Nombre <span class="required" style="color:#1565c0;">*</span></label>
-                    <input type="text" id="cit-primer-nombre" class="form-control" placeholder="Ej. José">
+                    <input type="text" id="cit-primer-nombre" class="form-control auto-acentos" placeholder="Ej. María">
                     <span class="error-msg" id="cit-primer-nombre-err">Ingrese su primer nombre.</span>
                   </div>
                 </div>
                 <div class="col-md-3">
                   <div class="form-group">
                     <label class="form-label">Segundo Nombre</label>
-                    <input type="text" id="cit-segundo-nombre" class="form-control" placeholder="Ej. Antonio">
+                    <input type="text" id="cit-segundo-nombre" class="form-control auto-acentos" placeholder="Ej. José">
+                    <span class="error-msg" id="cit-segundo-nombre-err">El nombre no puede contener números.</span>
                   </div>
                 </div>
                 <div class="col-md-3">
                   <div class="form-group">
                     <label class="form-label">Primer Apellido <span class="required" style="color:#1565c0;">*</span></label>
-                    <input type="text" id="cit-primer-apellido" class="form-control" placeholder="Ej. Pérez">
+                    <input type="text" id="cit-primer-apellido" class="form-control auto-acentos" placeholder="Ej. Pérez">
                     <span class="error-msg" id="cit-primer-apellido-err">Ingrese su primer apellido.</span>
                   </div>
                 </div>
                 <div class="col-md-3">
                   <div class="form-group">
                     <label class="form-label">Segundo Apellido</label>
-                    <input type="text" id="cit-segundo-apellido" class="form-control" placeholder="Ej. Rodríguez">
+                    <input type="text" id="cit-segundo-apellido" class="form-control auto-acentos" placeholder="Ej. Rodríguez">
+                    <span class="error-msg" id="cit-segundo-apellido-err">El apellido no puede contener números.</span>
                   </div>
                 </div>
                 <div class="col-md-2">
@@ -627,8 +829,11 @@
                 <div class="col-md-3">
                   <div class="form-group">
                     <label class="form-label">Fecha de Nacimiento <span class="required" style="color:#1565c0;">*</span></label>
-                    <input type="date" id="cit-fecha-nac" class="form-control" onchange="actualizarEdadComputada(this)">
-                    <span class="error-msg" id="cit-fecha-nac-err">Seleccione su fecha de nacimiento.</span>
+                    <input type="text" id="cit-fecha-nac" class="form-control calendario-moderno" placeholder="Seleccione fecha" onchange="actualizarEdadComputada(this)">
+                    <div class="ayuda-calendario-texto">
+                      <span><strong>Ayuda:</strong> Haga clic para abrir el calendario. Puede deslizar la rueda del ratón lentamente o usar las flechas laterales para cambiar de mes y año fácilmente.</span>
+                    </div>
+                    <span class="error-msg" id="cit-fecha-nac-err">La fecha ingresada no entra en el rango permitido para hacer una denuncia.</span>
                   </div>
                 </div>
                 <div class="col-md-2">
@@ -682,7 +887,7 @@
                     </thead>
                     <tbody>
                       <tr>
-                        <td>
+                        <td data-label="Nivel Educativo">
                           <select id="cit-edu" class="form-select">
                             <option value="">-- Seleccione --</option>
                             <option>Primaria</option>
@@ -692,11 +897,13 @@
                             <option>Postgrado</option>
                           </select>
                         </td>
-                        <td>
-                          <input type="text" id="cit-profesion" class="form-control" placeholder="Ej. Docente">
+                        <td data-label="Profesión">
+                          <input type="text" id="cit-profesion" class="form-control auto-acentos" placeholder="Ej. Docente">
+                          <span class="error-msg" id="cit-profesion-err">La profesión no puede contener números.</span>
                         </td>
-                        <td>
-                          <input type="text" id="cit-ocupacion" class="form-control" placeholder="Ej. Comerciante">
+                        <td data-label="Ocupación">
+                          <input type="text" id="cit-ocupacion" class="form-control auto-acentos" placeholder="Ej. Comerciante">
+                          <span class="error-msg" id="cit-ocupacion-err">La ocupación no puede contener números.</span>
                         </td>
                       </tr>
                     </tbody>
@@ -717,7 +924,7 @@
                 <div class="col-md-4">
                   <div class="form-group">
                     <label class="form-label">Correo Electrónico <span class="required" style="color:#1565c0;">*</span></label>
-                    <input type="email" id="cit-correo" class="form-control" placeholder="ejemplo@gmail.com">
+                    <input type="email" id="cit-correo" class="form-control" placeholder="ejemplo@gmail.com" oninput="document.getElementById('cit-correo2').value = this.value; document.getElementById('cit-correo2').dispatchEvent(new Event('input'));">
                     <span class="error-msg" id="cit-correo-err">Ingrese un correo válido.</span>
                   </div>
                 </div>
@@ -737,6 +944,7 @@
                         <option value="0412">0412</option>
                         <option value="0414">0414</option>
                         <option value="0416">0416</option>
+                        <option value="0426">0422</option>
                         <option value="0424">0424</option>
                         <option value="0426">0426</option>
                       </select>
@@ -799,7 +1007,7 @@
                 <div class="col-12">
                   <div class="form-group">
                     <label class="form-label">Dirección de Habitación <span class="required" style="color:#1565c0;">*</span></label>
-                    <input type="text" id="cit-direccion" class="form-control"
+                    <input type="text" id="cit-direccion" class="form-control auto-acentos"
                       placeholder="Calle, Avenida, Urbanización...">
                     <span class="error-msg" id="cit-direccion-err">Ingrese su dirección completa.</span>
                   </div>
@@ -876,7 +1084,7 @@
                   <label class="form-label">
                     Ubicación Geográfica del Señalado <span class="required" style="color:#1565c0;">*</span>
                   </label>
-                  <input type="text" id="sen-ubicacion" class="form-control"
+                  <input type="text" id="sen-ubicacion" class="form-control auto-capitalizar-inicial"
                     placeholder="Dirección, Parroquia, Consejo Comunal...">
                   <span class="error-msg" id="sen-ubicacion-err">Ingrese la ubicación del señalado.</span>
                 </div>
@@ -897,7 +1105,7 @@
                         <label class="form-label">
                           Nombre del Proyecto <span class="required" style="color:#1565c0;">*</span>
                         </label>
-                        <input type="text" id="proy-nombre" class="form-control" placeholder="Nombre oficial del proyecto">
+                        <input type="text" id="proy-nombre" class="form-control auto-acentos" placeholder="Nombre oficial del proyecto">
                         <span class="error-msg" id="proy-nombre-err">Ingrese el nombre del proyecto.</span>
                       </div>
                     </div>
@@ -906,30 +1114,36 @@
                         <label class="form-label">
                           Fecha de Aprobación <span class="required" style="color:#1565c0;">*</span>
                         </label>
-                        <input type="date" id="proy-fecha" class="form-control">
+                        <input type="text" id="proy-fecha" class="form-control calendario-moderno" placeholder="Seleccione fecha">
+                        <div class="ayuda-calendario-texto">
+                          <span><strong>Ayuda:</strong> Puede usar el scroll o las flechas para buscar el mes de aprobación.</span>
+                        </div>
                         <span class="error-msg" id="proy-fecha-err">Seleccione la fecha de aprobación.</span>
                       </div>
                     </div>
                     <div class="col-md-3">
                       <div class="form-group">
                         <label class="form-label">
-                          Monto Estimado del Proyecto <span class="required" style="color:#1565c0;">*</span>
+                          Monto Estimado (Bs.) <span class="required" style="color:#1565c0;">*</span>
                         </label>
-                        <input type="text" id="proy-monto" class="form-control" placeholder="Ej. 500000">
-                        <span class="error-msg" id="proy-monto-err">Ingrese un monto estimado válido.</span>
+                        <div class="input-group">
+                          <span class="input-group-text" style="background:#f2f4f8; font-weight:bold; color:#1a2340;">Bs.</span>
+                          <input type="text" id="proy-monto" class="form-control monto-venezuela" placeholder="Ej. 465.748,43">
+                        </div>
+                        <span class="error-msg" id="proy-monto-err">Ingrese un monto válido. Ej.: 500.000,00 o 1.250,50</span>
                       </div>
                     </div>
                     <div class="col-md-6">
                       <div class="form-group">
                         <label class="form-label">Ente Financiador <span class="required" style="color:#1565c0;">*</span></label>
-                        <input type="text" id="proy-financiador" class="form-control" placeholder="Nombre del ente financiador">
+                        <input type="text" id="proy-financiador" class="form-control auto-acentos" placeholder="Nombre del ente financiador">
                         <span class="error-msg" id="proy-financiador-err">Ingrese el ente financiador.</span>
                       </div>
                     </div>
                     <div class="col-md-3">
                       <div class="form-group">
                         <label class="form-label">Código SITUR</label>
-                        <input type="text" id="proy-situr" class="form-control mayusculas" placeholder="SITUR"
+                        <input type="text" id="proy-situr" class="form-control mayusculas" placeholder="Ej. SITUR-POR-001234"
                           oninput="this.value=this.value.toUpperCase()">
                       </div>
                     </div>
@@ -1002,7 +1216,7 @@
                 <label class="form-label">
                   Narración Circunstanciada / Descripción del Requerimiento <span class="required" style="color:#1565c0;">*</span>
                 </label>
-                <textarea id="narracion" class="form-textarea"
+                <textarea id="narracion" class="form-textarea auto-acentos"
                   placeholder="Describa detalladamente su trámite..."
                   maxlength="3500" oninput="actualizarContadorNarracion(this)" style="min-height:140px;"></textarea>
                 <div style="display:flex;justify-content:space-between;align-items:center;margin-top:4px;">
@@ -1033,7 +1247,7 @@
                 <label class="form-label">
                   ¿Ante cuál instancia? <span class="required" style="color:#1565c0;">*</span>
                 </label>
-                <input type="text" id="cual-instancia" class="form-control"
+                <input type="text" id="cual-instancia" class="form-control auto-acentos"
                   placeholder="Nombre de la institución">
                 <span class="error-msg" id="cual-instancia-err">Especifique la instancia.</span>
               </div>
@@ -1310,18 +1524,9 @@
             </button>
             <div style="display:flex;gap:12px;flex-wrap:wrap;">
               <button class="btn-submit btn-pdf" id="btn-guardar-pdf" onclick="generarPDF()" style="display:none;background: #1565c0;">
-                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
-                  <polyline points="8 17 12 21 16 17" />
-                  <line x1="12" y1="12" x2="12" y2="21" />
-                  <path d="M20.88 18.09A5 5 0 0 0 18 9h-1.26A8 8 0 1 0 3 16.29" />
-                </svg>
                 Guardar como PDF
               </button>
               <button class="btn-submit" id="btn-enviar-solicitud" style="background: #1565c0;" onclick="enviarSolicitud()">
-                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
-                  <line x1="22" y1="2" x2="11" y2="13" />
-                  <polygon points="22 2 15 22 11 13 2 9 22 2" />
-                </svg>
                 Enviar Solicitud
               </button>
             </div>
@@ -1474,11 +1679,6 @@
 
             <div style="display:flex;gap:12px;justify-content:center;flex-wrap:wrap; margin-top: 25px;">
               <button class="btn-submit btn-outline-inst" onclick="window.print()">
-                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
-                  <polyline points="6 9 6 2 18 2 18 9" />
-                  <path d="M6 18H4a2 2 0 0 1-2-2v-5a2 2 0 0 1 2-2h16a2 2 0 0 1 2 2v5a2 2 0 0 1-2 2h-2" />
-                  <rect x="6" y="14" width="12" height="8" />
-                </svg>
                 Imprimir Planilla Completa
               </button>
               <button class="btn-submit" style="background: #1565c0;" onclick="location.reload()">
@@ -1536,6 +1736,11 @@
   </footer>
 
   <script src="https://cdnjs.cloudflare.com/ajax/libs/bootstrap/5.3.2/js/bootstrap.bundle.min.js"></script>
+  
+  <!-- Flatpickr JS para calendarios modernos y español -->
+  <script src="https://cdn.jsdelivr.net/npm/flatpickr"></script>
+  <script src="https://cdn.jsdelivr.net/npm/flatpickr/dist/l10n/es.js"></script>
+
   <script src="../assets/js/wizard.js"></script>
   
   <script>
@@ -1544,16 +1749,325 @@
 
     const NOMBRES_PASOS = ["Tipo de Trámite", "Datos del Ciudadano", "Datos del Señalado", "Descripción de los Hechos", "Documentos y Evidencias"];
 
+    function capitalizarInicialesPalabras(texto) {
+      if (!texto) return texto;
+      return texto.replace(/(^|\s)([a-zà-ÿ])/g, function(match, espacio, letra) {
+        return espacio + letra.toUpperCase();
+      });
+    }
+
+    function aplicarAcentosAutomaticos(texto) {
+      if (!texto) return texto;
+      const mapaTildes = {
+        'maria': 'María',
+        'jose': 'José',
+        'jesus': 'Jesús',
+        'angel': 'Ángel',
+        'ramon': 'Ramón',
+        'cesar': 'César',
+        'victor': 'Víctor',
+        'oscar': 'Óscar',
+        'ivan': 'Iván',
+        'raul': 'Raúl',
+        'perez': 'Pérez',
+        'gomez': 'Gómez',
+        'lopez': 'López',
+        'gonzalez': 'González',
+        'hernandez': 'Hernández',
+        'martinez': 'Martínez',
+        'rodriguez': 'Rodríguez',
+        'sanchez': 'Sánchez',
+        'suarez': 'Suárez',
+        'avila': 'Ávila',
+        'baez': 'Báez',
+        'colon': 'Colón',
+        'fernandez': 'Fernández',
+        'gimenez': 'Giménez',
+        'gutierrez': 'Gutiérrez',
+        'jimenez': 'Jiménez',
+        'mendez': 'Méndez',
+        'paez': 'Páez',
+        'ramirez': 'Ramírez',
+        'valdez': 'Valdés',
+        'vasquez': 'Vásquez',
+        'velasquez': 'Velásquez',
+        'informacion': 'información',
+        'institucion': 'institución',
+        'actuacion': 'actuación',
+        'denuncia': 'denuncia',
+        'situacion': 'situación',
+        'tramite': 'trámite',
+        'codigo': 'código',
+        'numero': 'número',
+        'medico': 'médico',
+        'publico': 'público',
+        'credito': 'crédito',
+        'periodo': 'período',
+        'articulo': 'artículo',
+        'parroquia': 'parroquia',
+        'municipio': 'municipio'
+      };
+
+      return texto.replace(/\b([a-zA-ZÀ-ÿ]+)\b/g, function(match) {
+        const lower = match.toLowerCase();
+        if (mapaTildes[lower]) {
+          const reemplazo = mapaTildes[lower];
+          return match[0] === match[0].toUpperCase() ? reemplazo : reemplazo.toLowerCase();
+        }
+        return match.charAt(0).toUpperCase() + match.slice(1).toLowerCase();
+      });
+    }
+
+    document.addEventListener("DOMContentLoaded", function() {
+  const campoNarracion = document.getElementById("narracion");
+
+  if (campoNarracion) {
+    campoNarracion.addEventListener("input", function(e) {
+      let texto = e.target.value;
+      if (!texto) return;
+
+      let cursor = e.target.selectionStart;
+
+      // 1. Convertimos todo el texto a minúsculas para que el usuario escriba de forma natural
+      let textoMin = texto.toLowerCase();
+
+      // 2. Solo ponemos en MAYÚSCULA la primera letra del texto absoluto o después de un punto, punto y coma o salto de línea.
+      // El resto de las palabras se quedan en minúsculas.
+      let textoFormateado = textoMin.replace(/(^\s*|[.;]\s+|\n+\s*)([a-zà-ÿñ])/g, function(match, separador, letra) {
+        return separador + letra.toUpperCase();
+      });
+
+      e.target.value = textoFormateado;
+      
+      try {
+        e.target.setSelectionRange(cursor, cursor);
+      } catch (err) {}
+    });
+  }
+});
+
+ function formatearMontoVenezuela(input) {
+  let valor = input.value.replace(/[^\d,\.]/g, '');
+  parts = valor.split(',');
+  let entera = parts[0].replace(/\./g, '');
+  let decimales = parts.length > 1 ? ',' + parts[1].slice(0, 2) : '';
+  
+  if (!entera && !decimales) {
+    input.value = '';
+    return;
+  }
+
+  // Formatear la parte entera con separadores de miles (puntos)
+  let numeroEntero = parseInt(entera, 10);
+  if (isNaN(numeroEntero)) {
+    input.value = '';
+    return;
+  }
+  
+  let parteEnteraFormateada = numeroEntero.toLocaleString('es-VE', { maximumFractionDigits: 0 });
+  
+  input.value = parteEnteraFormateada + decimales;
+}
     document.addEventListener('DOMContentLoaded', function () {
       const elementoModal = document.getElementById('modalConfirmacionPaso');
       if (elementoModal && window.bootstrap) {
         instanciaModal = new bootstrap.Modal(elementoModal);
       }
+
+      // Inicialización de calendarios Flatpickr modernos con scroll suave y control de tiempo de espera (debounce)
+      if (typeof flatpickr !== 'undefined') {
+        const configCalendario = {
+          locale: "es",
+          dateFormat: "Y-m-d",
+          altInput: true,
+          altFormat: "d/m/Y",
+          allowInput: true,
+          maxDate: "today",
+          monthSelectorType: "static",
+          yearDropdown: true,
+          yearRange: [1920, 2015],
+          scrollMonths: true,
+          onReady: function(selectedDates, dateStr, instance) {
+            let ultimoCambio = 0;
+            const retrasoSuave = 250; // Milisegundos de pausa para hacer el scroll suave y no muy rápido
+
+            instance.calendarContainer.addEventListener("wheel", function(e) {
+              e.preventDefault();
+              const ahora = Date.now();
+              if (ahora - ultimoCambio > retrasoSuave) {
+                if (e.deltaY > 0) {
+                  instance.changeMonth(1);
+                } else {
+                  instance.changeMonth(-1);
+                }
+                ultimoCambio = ahora;
+              }
+            }, { passive: false });
+          }
+        };
+
+        flatpickr(".calendario-moderno", configCalendario);
+      }
+
+      const inputMonto = document.getElementById('proy-monto');
+      if (inputMonto) {
+        inputMonto.addEventListener('input', function() {
+          formatearMontoVenezuela(this);
+        });
+      }
+
+      configurarValidacionesTiempoReal();
+
+      const listaSenalados = document.getElementById('lista-senalados');
+      if (listaSenalados) {
+        const observer = new MutationObserver(function() {
+          configurarValidacionesTiempoReal();
+        });
+        observer.observe(listaSenalados, { childList: true, subtree: true });
+      }
     });
 
-    /* ── Confirmación al avanzar: primero se valida el paso y, si está correcto, se pide confirmar ── */
+    function configurarValidacionesTiempoReal() {
+      const camposSoloTexto = [
+        { id: 'cit-primer-nombre', errId: 'cit-primer-nombre-err', req: true, msgReq: 'Ingrese su primer nombre.', msgNum: 'El nombre no puede contener números.' },
+        { id: 'cit-segundo-nombre', errId: 'cit-segundo-nombre-err', req: false, msgNum: 'El nombre no puede contener números.' },
+        { id: 'cit-primer-apellido', errId: 'cit-primer-apellido-err', req: true, msgReq: 'Ingrese su primer apellido.', msgNum: 'El apellido no puede contener números.' },
+        { id: 'cit-segundo-apellido', errId: 'cit-segundo-apellido-err', req: false, msgNum: 'El apellido no puede contener números.' },
+        { id: 'cit-profesion', errId: 'cit-profesion-err', req: false, msgNum: 'La profesión no puede contener números.' },
+        { id: 'cit-ocupacion', errId: 'cit-ocupacion-err', req: false, msgNum: 'La ocupación no puede contener números.' }
+      ];
+
+      document.querySelectorAll('input[id^="sen-pnombre-"], input[id^="sen-snombre-"], input[id^="sen-papellido-"], input[id^="sen-sapellido-"]').forEach(input => {
+        const errSpan = input.parentNode.querySelector('.error-msg');
+        let errId = errSpan ? errSpan.id : null;
+        if (!errId) {
+          errId = input.id + '-err-auto';
+          if (errSpan) errSpan.id = errId;
+        }
+        const esReq = input.id.includes('pnombre') || input.id.includes('papellido');
+        if (!camposSoloTexto.some(c => c.id === input.id)) {
+          camposSoloTexto.push({
+            id: input.id,
+            errId: errId,
+            req: esReq,
+            msgReq: 'Campo obligatorio.',
+            msgNum: 'No se permiten números en este campo.'
+          });
+        }
+      });
+
+      camposSoloTexto.forEach(item => {
+        const input = document.getElementById(item.id);
+        if (!input || input.dataset.validaInit) return;
+        input.dataset.validaInit = "true";
+
+        input.addEventListener('input', function () {
+          if (/\d/.test(this.value)) {
+            this.value = this.value.replace(/\d/g, '');
+          }
+          this.value = capitalizarInicialesPalabras(aplicarAcentosAutomaticos(this.value));
+
+          const errEl = document.getElementById(item.errId);
+          if (errEl) {
+            const val = this.value.trim();
+            if (item.req && val === '') {
+              errEl.textContent = item.msgReq;
+              errEl.classList.add('visible');
+            } else {
+              errEl.classList.remove('visible');
+            }
+          }
+        });
+      });
+
+      const inputsCapitalizarInicial = document.querySelectorAll('.auto-capitalizar-inicial');
+      inputsCapitalizarInicial.forEach(input => {
+        if (input.dataset.capInit) return;
+        input.dataset.capInit = "true";
+
+        input.addEventListener('input', function() {
+          const pos = this.selectionStart;
+          this.value = capitalizarInicialesPalabras(this.value);
+          try { this.setSelectionRange(pos, pos); } catch (e) {}
+        });
+      });
+
+      const inputsAutoAcentos = document.querySelectorAll('.auto-acentos');
+      inputsAutoAcentos.forEach(input => {
+        if (input.dataset.acentosInit) return;
+        input.dataset.acentosInit = "true";
+
+        input.addEventListener('input', function () {
+          const pos = this.selectionStart;
+          this.value = aplicarAcentosAutomaticos(this.value);
+          try { this.setSelectionRange(pos, pos); } catch (e) {}
+        });
+      });
+
+      const configuracionesTiempoReal = [
+        { id: 'cit-tipo-doc', errId: 'cit-tipo-doc-err', validar: el => el.value !== '' },
+        { id: 'cit-nro-doc', errId: 'cit-nro-doc-err', validar: el => /^\d{5,10}$/.test(el.value.trim()) },
+        { id: 'cit-sexo', errId: 'cit-sexo-err', validar: el => el.value !== '' },
+        { id: 'cit-fecha-nac', errId: 'cit-fecha-nac-err', validar: el => el.value !== '' },
+        { id: 'cit-ecivil', errId: 'cit-ecivil-err', validar: el => el.value !== '' },
+        { id: 'cit-parroquia', errId: 'cit-parroquia-err', validar: el => el.value !== '' },
+        { id: 'cit-direccion', errId: 'cit-direccion-err', validar: el => el.value.trim().length >= 5 },
+        { id: 'cit-correo', errId: 'cit-correo-err', validar: el => /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(el.value.trim()) },
+        {
+          id: 'cit-correo2',
+          errId: 'cit-correo2-err',
+          validar: el => {
+            const c1 = document.getElementById('cit-correo').value.trim();
+            const c2 = el.value.trim();
+            return c2 !== '' && c1 === c2;
+          }
+        },
+        {
+          id: 'cit-telf-cel-num',
+          errId: 'cit-telf-cel-err',
+          validar: () => {
+            const cod = document.getElementById('cit-telf-cel-cod').value;
+            const num = document.getElementById('cit-telf-cel-num').value.trim();
+            return cod !== '' && /^\d{7}$/.test(num);
+          }
+        },
+        {
+          id: 'cit-telf-cel-cod',
+          errId: 'cit-telf-cel-err',
+          validar: () => {
+            const cod = document.getElementById('cit-telf-cel-cod').value;
+            const num = document.getElementById('cit-telf-cel-num').value.trim();
+            return cod !== '' && /^\d{7}$/.test(num);
+          }
+        },
+        { id: 'sen-ubicacion', errId: 'sen-ubicacion-err', validar: el => el.value.trim() !== '' },
+        { id: 'proy-nombre', errId: 'proy-nombre-err', validar: el => el.value.trim() !== '' },
+        { id: 'proy-fecha', errId: 'proy-fecha-err', validar: el => el.value !== '' },
+        { id: 'proy-monto', errId: 'proy-monto-err', validar: el => /^(\d{1,3}(\.\d{3})*|\d+)(,\d+)?$/.test(el.value.trim()) },
+        { id: 'proy-financiador', errId: 'proy-financiador-err', validar: el => el.value.trim() !== '' },
+        { id: 'cual-instancia', errId: 'cual-instancia-err', validar: el => el.value.trim() !== '' }
+      ];
+
+      configuracionesTiempoReal.forEach(item => {
+        const el = document.getElementById(item.id);
+        if (!el || el.dataset.validaTRInit) return;
+        el.dataset.validaTRInit = "true";
+
+        const evento = (el.tagName === 'SELECT' || el.classList.contains('calendario-moderno')) ? 'change' : 'input';
+        el.addEventListener(evento, function () {
+          const errEl = document.getElementById(item.errId);
+          if (errEl) {
+            if (item.validar(el)) {
+              errEl.classList.remove('visible');
+            } else {
+              errEl.classList.add('visible');
+            }
+          }
+        });
+      });
+    }
+
     function mostrarModalConfirmacion(paso) {
-      // Los pasos que no aplican al tipo de trámite se saltan sin validar
       const aplica = (paso === 3 || paso === 5) ? pasoAplica(paso) : true;
       if (aplica && !validarPaso(paso)) return;
 
@@ -1562,14 +2076,13 @@
         `¿Confirma que ha revisado correctamente los datos correspondientes al <strong>Paso ${paso} (${NOMBRES_PASOS[paso - 1]})</strong> y desea avanzar al siguiente nivel?`;
 
       if (instanciaModal) instanciaModal.show();
-      else ejecutarPasoSiguiente();   // si el modal no cargó, no se bloquea el avance
+      else ejecutarPasoSiguiente();
     }
 
     function ejecutarPasoSiguiente() {
       if (instanciaModal) instanciaModal.hide();
       const paso = pasoPendienteValidacion;
 
-      // Paso 3 no aplica (reclamo, petición, sugerencia): se pasa directo a los hechos
       if (paso === 3 && !pasoAplica(3)) {
         limpiarErroresPaso(3);
         pasoActual = 4;
@@ -1577,7 +2090,6 @@
         actualizarAvisoContexto();
         return;
       }
-      // Paso 5 no aplica (sugerencia): se pasa directo a la revisión
       if (paso === 5 && !pasoAplica(5)) {
         limpiarErroresPaso(5);
         poblarResumen();
@@ -1587,14 +2099,13 @@
         return;
       }
 
-      siguientePaso(paso);   // valida y avanza (wizard.js)
+      siguientePaso(paso);
       if (pasoActual === paso + 1) {
         if (paso === 3) actualizarAvisoContexto();
         if (paso === 5) actualizarResumenFinal();
       }
     }
 
-    /* ── Consulta del estado de un trámite ── */
     function mostrarConsultaTramite() {
       document.getElementById('vista-seleccion').style.display = 'none';
       document.getElementById('vista-estado-tramite').style.display = 'block';
@@ -1635,7 +2146,6 @@
       }
     }
 
-    /* ── Cambio del tipo de trámite ── */
     function onTipoTramiteChange(radio) {
       const tipo = radio.value;
       const bloqueConsulta = document.getElementById('bloque-consulta-popular');
@@ -1647,7 +2157,6 @@
       const textoNotaEvidencia = document.getElementById('texto-nota-evidencia');
       const camposRequeridosCiudadano = document.querySelectorAll('#paso-2 .required');
 
-      // Limpia el aviso y el borde rojo de la selección
       document.getElementById('tipo-tramite-err').classList.remove('visible');
       document.querySelectorAll('.tramite-card').forEach(c => c.style.borderColor = '');
 
@@ -1700,7 +2209,6 @@
       }
     }
 
-    /* ── Resumen de la revisión (los señalados y el proyecto los llena poblarResumen en wizard.js) ── */
     function actualizarResumenFinal() {
       const radioSeleccionado = document.querySelector('input[name="tipo_tramite"]:checked');
       const bloqueResumenContexto = document.getElementById('resumen-bloque-contexto');
@@ -1736,22 +2244,19 @@
         contenedorUbicacion.innerHTML = `<strong>Ciudad/Estado:</strong> ${ciu} <br><strong>Municipio:</strong> ${mun} <br><strong>Parroquia:</strong> ${parr} <br><strong>Dirección:</strong> ${dir}`;
       }
 
-      // Evidencias cargadas (desde la secuencia por documentos)
       const evCargadas = obtenerEvidenciasCargadas();
       const contenedorResEvidencias = document.getElementById('res-evidencias');
       if (contenedorResEvidencias) {
         if (evCargadas.total > 0) {
           contenedorResEvidencias.innerHTML = `<div style="color:#1565c0;font-weight:bold;margin-bottom:8px;">Se anexaron ${evCargadas.total} archivo(s):</div>` +
-            evCargadas.items.map(it => `<div style="margin-bottom:4px;">✅ <strong>${escaparHtml(it.doc)}:</strong> <span style="color:#555;">${escaparHtml(it.nombre)}</span></div>`).join('');
+            evCargadas.items.map(it => `<div style="margin-bottom:4px;"> <strong>${escaparHtml(it.doc)}:</strong> <span style="color:#555;">${escaparHtml(it.nombre)}</span></div>`).join('');
         } else {
           contenedorResEvidencias.innerHTML = '<div style="color:#c62828; font-weight:600;">⚠️ No se anexaron evidencias ni documentos.</div>';
         }
       }
     }
 
-    /* ── Envío: recoge todos los datos y muestra la planilla ── */
     window.enviarSolicitud = function () {
-      // Declaración jurada obligatoria
       const acepta = document.getElementById('acepta-declaracion');
       const errDecl = document.getElementById('acepta-decl-err');
       if (!acepta.checked) {
@@ -1809,7 +2314,6 @@
       const ciu = document.getElementById('cit-ciudad').value || 'Acarigua/Portuguesa';
       document.getElementById('print-direccion').textContent = `${dir}, Parroquia ${parr}. Municipio ${mun} (${ciu})`;
 
-      // Señalados / Proyecto
       const seccionSenalado = document.getElementById('print-seccion-senalado');
       if (pasoAplica(3)) {
         seccionSenalado.style.display = 'block';
@@ -1825,7 +2329,7 @@
           seccionProyecto.style.display = 'block';
           document.getElementById('print-proy-nombre').textContent = document.getElementById('proy-nombre').value || 'No indicó';
           document.getElementById('print-proy-fecha').textContent = document.getElementById('proy-fecha').value || 'No indicó';
-          document.getElementById('print-proy-monto').textContent = document.getElementById('proy-monto').value || '0.00';
+          document.getElementById('print-proy-monto').textContent = document.getElementById('proy-monto').value || '0,00';
           document.getElementById('print-proy-financiador').textContent = document.getElementById('proy-financiador').value || 'No indicó';
           document.getElementById('print-proy-situr').textContent = document.getElementById('proy-situr').value || 'No indicó';
         } else {
@@ -1835,7 +2339,6 @@
         seccionSenalado.style.display = 'none';
       }
 
-      // Hechos
       document.getElementById('print-hechos').textContent = document.getElementById('narracion').value || '';
       const instaRadio = document.querySelector('input[name="otra_instancia"]:checked');
       if (instaRadio) {
@@ -1847,7 +2350,6 @@
       }
       document.getElementById('print-fecha').textContent = new Date().toLocaleDateString();
 
-      // Evidencias
       const evCargadas = obtenerEvidenciasCargadas();
       const contenedorEvidenciasPrint = document.getElementById('print-evidencias');
       if (evCargadas.total > 0) {
@@ -1867,5 +2369,4 @@
     };
   </script>
 </body>
-
 </html>

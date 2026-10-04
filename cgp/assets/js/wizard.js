@@ -368,7 +368,7 @@ function construirOpcionesParroquia(conPlaceholder) {
 /* ═══════════════════════════════════════════════════════════
    CÓDIGOS TELEFÓNICOS DE VENEZUELA
    ═══════════════════════════════════════════════════════════ */
-var CODIGOS_MOVILES = ['0412', '0414', '0416', '0424', '0426'];
+var CODIGOS_MOVILES = ['0412', '0414', '0416', '0424', '0426', '0422'];
 
 /** Códigos de área de telefonía fija, Portuguesa primero (Municipio Páez) */
 var CODIGOS_FIJOS = [
@@ -986,10 +986,12 @@ function validarPaso(numeroPaso) {
                 errores.push('Fecha de Aprobación del Proyecto');
                 marcarError('proy-fecha', 'proy-fecha-err');
             }
-            if (!/^\d+([.,]\d{1,2})?$/.test(document.getElementById('proy-monto').value.trim())) {
-                errores.push('Monto del Proyecto');
-                marcarError('proy-monto', 'proy-monto-err');
-            }
+           // Nueva validación flexible que permite separadores de miles (puntos) y decimales (comas o puntos)
+const valorMonto = document.getElementById('proy-monto').value.trim().replace(/\./g, '').replace(',', '.');
+if (isNaN(valorMonto) || valorMonto === '' || Number(valorMonto) <= 0) {
+    errores.push('Monto del Proyecto');
+    marcarError('proy-monto', 'proy-monto-err');
+}
             if (document.getElementById('proy-financiador').value.trim().length < 3) {
                 errores.push('Ente Financiador');
                 marcarError('proy-financiador', 'proy-financiador-err');
@@ -1058,13 +1060,15 @@ function validarPaso(numeroPaso) {
  * @param {string} campoId - ID del campo de entrada
  * @param {string} errId   - ID del span de error
  */
-function marcarError(campoId, errId) {
+function marcarError(campoId, errorId) {
     var campo = document.getElementById(campoId);
-    var err = document.getElementById(errId);
-    if (campo) campo.classList.add('invalid');
-    if (err) {
-        if (err.dataset.orig) err.textContent = err.dataset.orig;
-        err.classList.add('visible');
+    var errorEl = document.getElementById(errorId);
+    
+    if (campo) {
+        campo.classList.add('is-invalid');
+    }
+    if (errorEl) {
+        errorEl.style.display = 'block';
     }
 }
 
@@ -1926,13 +1930,20 @@ var REGLAS_VIVO = {
     'proy-nombre': { req: true, check: msgMinimo(4) },
     'proy-fecha': { req: true },
     'proy-monto': {
-        req: true,
-        check: function (v, final) {
-            if (/[^\d.,]/.test(v)) return 'Solo se permiten números. Ej.: 500000 o 1250,50';
-            if (final && !/^\d+([.,]\d{1,2})?$/.test(v)) return 'Ingrese un monto válido. Ej.: 500000 o 1250,50';
-            return '';
+    req: true,
+    check: function (v, final) {
+        if (/[^\d.,]/.test(v)) return 'Solo se permiten números. Ej.: 500.000 o 1250,50';
+
+        if (final) {
+            const valorLimpio = v.replace(/\./g, '').replace(',', '.');
+        
+            if (isNaN(valorLimpio) || Number(valorLimpio) <= 0) {
+                return 'Ingrese un monto válido. Ej.: 500.000 o 1250,50';
+            }
         }
-    },
+        return '';
+    }
+},
     'proy-financiador': { req: true, check: msgMinimo(3) },
     'narracion': {
         req: true,
