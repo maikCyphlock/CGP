@@ -329,11 +329,6 @@
         <div style="text-align: center; margin-bottom: 20px; display: flex; justify-content: center; gap: 15px; flex-wrap: wrap;">
           <button class="btn-submit" style="font-size: 1.1rem; padding: 12px 32px; background: #022139; border: 1px solid #4d7f99;" onclick="mostrarConsultaTramite()">
             Estado de Trámite
-            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"
-              stroke-linecap="round" stroke-linejoin="round" style="margin-left: 8px;">
-              <circle cx="11" cy="11" r="8"></circle>
-              <line x1="21" y1="21" x2="16.65" y2="16.65"></line>
-            </svg>
           </button>
           
           <button class="btn-submit" style="font-size: 1.1rem; padding: 12px 32px; background: #1565c0;" onclick="iniciarFlujo('general')">
@@ -533,7 +528,7 @@
             <span style="font-size:0.78rem;color:#888;">
               Los campos <span style="color:#1565c0;font-weight:700;">*</span> son obligatorios.
             </span>
-            <button class="btn-submit" id="btn-sig-paso1" style="background: #1565c0;" onclick="siguientePaso(1)">
+            <button class="btn-submit" id="btn-sig-paso1" style="background: #1565c0;" onclick="mostrarModalConfirmacion(1)">
               Continuar
               <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
                 <line x1="5" y1="12" x2="19" y2="12" />
@@ -766,6 +761,7 @@
                       </select>
                       <input type="tel" id="cit-telf-hab-num" class="form-control" placeholder="1234567" maxlength="7">
                     </div>
+                    <span class="error-msg" id="cit-telf-hab-err">Complete el código de área y los 7 dígitos.</span>
                   </div>
                 </div>
                 <div class="col-md-4">
@@ -833,7 +829,7 @@
               </svg>
               Anterior
             </button>
-            <button class="btn-submit" id="btn-sig-paso2" style="background: #1565c0;" onclick="siguientePaso(2)">
+            <button class="btn-submit" id="btn-sig-paso2" style="background: #1565c0;" onclick="mostrarModalConfirmacion(2)">
               Continuar
               <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
                 <line x1="5" y1="12" x2="19" y2="12" />
@@ -913,9 +909,9 @@
                     <div class="col-md-6">
                       <div class="form-group">
                         <label class="form-label">
-                          Denominación del Proyecto <span class="required" style="color:#1565c0;">*</span>
+                          Nombre del Proyecto <span class="required" style="color:#1565c0;">*</span>
                         </label>
-                        <input type="text" id="proy-nombre" class="form-control" placeholder="Nombre oficial">
+                        <input type="text" id="proy-nombre" class="form-control" placeholder="Nombre oficial del proyecto">
                         <span class="error-msg" id="proy-nombre-err">Ingrese el nombre del proyecto.</span>
                       </div>
                     </div>
@@ -925,22 +921,22 @@
                           Fecha de Aprobación <span class="required" style="color:#1565c0;">*</span>
                         </label>
                         <input type="date" id="proy-fecha" class="form-control">
-                        <span class="error-msg" id="proy-fecha-err">Seleccione la fecha.</span>
+                        <span class="error-msg" id="proy-fecha-err">Seleccione la fecha de aprobación.</span>
                       </div>
                     </div>
                     <div class="col-md-3">
                       <div class="form-group">
                         <label class="form-label">
-                          Monto Estimado (Bs) <span class="required" style="color:#1565c0;">*</span>
+                          Monto Estimado del Proyecto <span class="required" style="color:#1565c0;">*</span>
                         </label>
                         <input type="text" id="proy-monto" class="form-control" placeholder="Ej. 500000">
-                        <span class="error-msg" id="proy-monto-err">Ingrese un monto válido.</span>
+                        <span class="error-msg" id="proy-monto-err">Ingrese un monto estimado válido.</span>
                       </div>
                     </div>
                     <div class="col-md-6">
                       <div class="form-group">
                         <label class="form-label">Ente Financiador <span class="required" style="color:#1565c0;">*</span></label>
-                        <input type="text" id="proy-financiador" class="form-control" placeholder="Nombre del ente">
+                        <input type="text" id="proy-financiador" class="form-control" placeholder="Nombre del ente financiador">
                         <span class="error-msg" id="proy-financiador-err">Ingrese el ente financiador.</span>
                       </div>
                     </div>
@@ -971,7 +967,7 @@
               </svg>
               Anterior
             </button>
-            <button class="btn-submit" id="btn-sig-paso3" style="background: #1565c0;" onclick="siguientePaso(3)">
+            <button class="btn-submit" id="btn-sig-paso3" style="background: #1565c0;" onclick="mostrarModalConfirmacion(3)">
               Continuar
               <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
                 <line x1="5" y1="12" x2="19" y2="12" />
@@ -1022,10 +1018,10 @@
                 </label>
                 <textarea id="narracion" class="form-textarea"
                   placeholder="Describa detalladamente su trámite..."
-                  oninput="actualizarContadorNarracion(this)" style="min-height:140px;"></textarea>
+                  maxlength="3500" oninput="actualizarContadorNarracion(this)" style="min-height:140px;"></textarea>
                 <div style="display:flex;justify-content:space-between;align-items:center;margin-top:4px;">
-                  <span class="error-msg" id="narracion-err" style="display:inline;">La narración debe tener al menos 50 caracteres.</span>
-                  <span class="contador-chars" id="narracion-contador">0 / 3000 caracteres</span>
+                  <span class="error-msg" id="narracion-err">La narración debe tener al menos 50 caracteres.</span>
+                  <span class="contador-chars" id="narracion-contador">0 / 3500 caracteres</span>
                 </div>
               </div>
 
@@ -1067,7 +1063,7 @@
               </svg>
               Anterior
             </button>
-            <button class="btn-submit" id="btn-sig-paso4" style="background: #1565c0;" onclick="siguientePaso(4)">
+            <button class="btn-submit" id="btn-sig-paso4" style="background: #1565c0;" onclick="mostrarModalConfirmacion(4)">
               Continuar
               <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
                 <line x1="5" y1="12" x2="19" y2="12" />
@@ -1113,6 +1109,14 @@
                   Cargue los documentos uno por uno, en el orden que se muestra a continuación.
                 </p>
 
+                <div class="nota-info" style="margin-bottom:16px;">
+                  Formatos admitidos: imágenes, video, audio, PDF y Word, con un máximo de 10 MB por archivo.
+                  Los documentos marcados como <strong>Obligatorio</strong> deben adjuntarse para continuar.
+                </div>
+                <div class="nota-info" style="margin-bottom:16px;">
+                  Recuerde consignar físicamente las evidencias originales ante la sede de la Contraloría.
+                </div>
+
                 <div id="evidencias-secuencia"></div>
               </div>
             </div>
@@ -1132,7 +1136,7 @@
               </svg>
               Anterior
             </button>
-            <button class="btn-submit" id="btn-sig-paso5" style="background: #1565c0;" onclick="siguientePaso(5)">
+            <button class="btn-submit" id="btn-sig-paso5" style="background: #1565c0;" onclick="mostrarModalConfirmacion(5)">
               Revisar solicitud
               <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
                 <line x1="5" y1="12" x2="19" y2="12" />
@@ -1162,7 +1166,11 @@
                 </svg>
                 Resumen de su Solicitud
               </div>
-              <div style="background:#f7f9fd;border:1px solid #dde3ee;border-radius:6px;padding:8px;">
+              <div class="revision-card">
+                <div class="revision-card-header">
+                  <span class="revision-card-titulo">1. Tipo de Trámite</span>
+                  <button type="button" class="btn-revision-editar" onclick="editarDesdeRevision(1)"><svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="M12 20h9"/><path d="M16.5 3.5a2.1 2.1 0 0 1 3 3L7 19l-4 1 1-4z"/></svg> Editar</button>
+                </div>
                 <div class="row g-2">
                   <div class="col-md-6">
                     <div class="resumen-item">
@@ -1182,6 +1190,14 @@
                       <div class="resumen-valor" id="res-contexto" style="font-weight:600; color:#1565c0;">—</div>
                     </div>
                   </div>
+                </div>
+              </div>
+              <div class="revision-card">
+                <div class="revision-card-header">
+                  <span class="revision-card-titulo">2. Datos del Solicitante</span>
+                  <button type="button" class="btn-revision-editar" onclick="editarDesdeRevision(2)"><svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="M12 20h9"/><path d="M16.5 3.5a2.1 2.1 0 0 1 3 3L7 19l-4 1 1-4z"/></svg> Editar</button>
+                </div>
+                <div class="row g-2">
                   <div class="col-md-6">
                     <div class="resumen-item">
                       <div class="resumen-etiqueta">Solicitante</div>
@@ -1208,23 +1224,64 @@
                   </div>
                   <div class="col-12">
                     <div class="resumen-item">
-                      <div class="resumen-etiqueta">Señalado / Instancia</div>
-                      <div class="resumen-valor" id="res-senalado">—</div>
+                      <div class="resumen-etiqueta">Ubicación Completa (Estado, Municipio, Parroquia)</div>
+                      <div class="resumen-valor" id="res-ubicacion" style="font-weight:600; color:#1a2340;">—</div>
                     </div>
                   </div>
+                </div>
+              </div>
+              <div class="revision-card" id="rev-card-senalado">
+                <div class="revision-card-header">
+                  <span class="revision-card-titulo">3. Identificación del Señalado</span>
+                  <button type="button" class="btn-revision-editar" onclick="editarDesdeRevision(3)"><svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="M12 20h9"/><path d="M16.5 3.5a2.1 2.1 0 0 1 3 3L7 19l-4 1 1-4z"/></svg> Editar</button>
+                </div>
+                <div class="row g-2">
+                  <div class="col-12">
+                    <div class="resumen-item">
+                      <div class="resumen-etiqueta">Señalado(s) / Instancia</div>
+                      <div class="resumen-valor" id="res-senalado" style="white-space:pre-line;">—</div>
+                    </div>
+                  </div>
+                  <div class="col-12">
+                    <div class="resumen-item">
+                      <div class="resumen-etiqueta">Ubicación del Señalado</div>
+                      <div class="resumen-valor" id="res-sen-ubicacion">—</div>
+                    </div>
+                  </div>
+                  <div class="col-12" id="res-bloque-proyecto" style="display:none;">
+                    <div class="resumen-item">
+                      <div class="resumen-etiqueta">Proyecto de la Consulta Popular</div>
+                      <div class="resumen-valor" id="res-proyecto" style="white-space:pre-line;">—</div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+              <div class="revision-card">
+                <div class="revision-card-header">
+                  <span class="revision-card-titulo">4. Descripción de los Hechos</span>
+                  <button type="button" class="btn-revision-editar" onclick="editarDesdeRevision(4)"><svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="M12 20h9"/><path d="M16.5 3.5a2.1 2.1 0 0 1 3 3L7 19l-4 1 1-4z"/></svg> Editar</button>
+                </div>
+                <div class="row g-2">
                   <div class="col-12">
                     <div class="resumen-item">
                       <div class="resumen-etiqueta">Resumen de los Hechos</div>
                       <div class="resumen-valor" id="res-hechos" style="font-size:0.8rem;line-height:1.6;">—</div>
                     </div>
                   </div>
-                  <!-- NUEVOS CAMPOS: Ubicación Exacta y Evidencias Visuales -->
                   <div class="col-12">
                     <div class="resumen-item">
-                      <div class="resumen-etiqueta">Ubicación Completa (Estado, Municipio, Parroquia)</div>
-                      <div class="resumen-valor" id="res-ubicacion" style="font-weight:600; color:#1a2340;">—</div>
+                      <div class="resumen-etiqueta">¿Presentado ante otra instancia?</div>
+                      <div class="resumen-valor" id="res-otra-instancia">—</div>
                     </div>
                   </div>
+                </div>
+              </div>
+              <div class="revision-card" id="rev-card-evidencias">
+                <div class="revision-card-header">
+                  <span class="revision-card-titulo">5. Documentos y Evidencias</span>
+                  <button type="button" class="btn-revision-editar" onclick="editarDesdeRevision(5)"><svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="M12 20h9"/><path d="M16.5 3.5a2.1 2.1 0 0 1 3 3L7 19l-4 1 1-4z"/></svg> Editar</button>
+                </div>
+                <div class="row g-2">
                   <div class="col-12">
                     <div class="resumen-item">
                       <div class="resumen-etiqueta">Documentos y Evidencias Cargadas</div>
@@ -1386,9 +1443,9 @@
               
               <!-- Sub-sección dinámica Proyecto -->
               <div id="print-seccion-proyecto" style="display:none; margin-top: 15px; border-top: 1px dashed #dce3ec; padding-top:10px;">
-                 <h6 style="font-weight:bold; color:#1a2340; margin-bottom:10px;">Datos del Proyecto (Consulta Popular)</h6>
+                 <h6 style="font-weight:bold; color:#1a2340; margin-bottom:10px;">Datos del Proyecto (Consulta Popular Nacional)</h6>
                  <div class="print-row">
-                   <div class="print-label">Denominación del Proyecto:</div>
+                   <div class="print-label">Nombre del Proyecto:</div>
                    <div class="print-val" id="print-proy-nombre">—</div>
                  </div>
                  <div class="print-row">
@@ -1452,6 +1509,29 @@
     </div><!-- /denuncias-inner -->
   </section>
 
+  <!-- MODAL FLOTANTE DE CONFIRMACIÓN DE DATOS (Bootstrap Custom) -->
+  <div class="modal fade" id="modalConfirmacionPaso" tabindex="-1" aria-labelledby="modalConfirmacionLabel" aria-hidden="true" data-bs-backdrop="static" data-bs-keyboard="false">
+    <div class="modal-dialog modal-dialog-centered">
+      <div class="modal-content" style="border: none; border-radius: 8px; box-shadow: 0 10px 25px rgba(0,0,0,0.15);">
+        <div class="modal-header" style="background: #0f2340; color: #fff; border-top-left-radius: 8px; border-top-right-radius: 8px; padding: 15px 20px;">
+          <h5 class="modal-title" id="modalConfirmacionLabel" style="font-size: 1.05rem; font-weight: bold; display: flex; align-items: center; gap: 8px;">
+            Confirmación de Datos Ingresados
+          </h5>
+          <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Close"></button>
+        </div>
+        <div class="modal-body" style="padding: 25px 20px; background: #fdfdfd; color: #333;">
+          <p id="modal-texto-pregunta" style="font-size: 0.95rem; margin-bottom: 0; text-align: justify; line-height: 1.5;">
+            ¿Verificó correctamente los datos ingresados en este paso antes de continuar al siguiente nivel?
+          </p>
+        </div>
+        <div class="modal-footer" style="background: #f7f9fd; border-bottom-left-radius: 8px; border-bottom-right-radius: 8px; padding: 12px 20px; border-top: 1px solid #eef1f7;">
+          <button type="button" class="btn btn-outline-secondary" data-bs-dismiss="modal" style="font-size: 0.88rem; padding: 6px 16px; border-color: #b0bec5; color: #455a64;">Revisar nuevamente</button>
+          <button type="button" class="btn btn-primary" id="btn-confirmar-modal" onclick="ejecutarPasoSiguiente()" style="background: #1565c0; border-color: #1565c0; font-size: 0.88rem; padding: 6px 20px; font-weight: 600;">Sí, todo es correcto</button>
+        </div>
+      </div>
+    </div>
+  </div>
+
   <footer>
     <div class="footer-inner">
       <div class="row g-4 pb-4" style="border-bottom: 1px solid rgba(255,255,255,0.1); margin-bottom: 24px;">
@@ -1469,9 +1549,66 @@
     </div>
   </footer>
 
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/bootstrap/5.3.2/js/bootstrap.bundle.min.js"></script>
   <script src="{{ asset('assets') }}/js/wizard.js"></script>
   
   <script>
+    let pasoPendienteValidacion = 1;
+    let instanciaModal = null;
+
+    const NOMBRES_PASOS = ["Tipo de Trámite", "Datos del Ciudadano", "Datos del Señalado", "Descripción de los Hechos", "Documentos y Evidencias"];
+
+    document.addEventListener('DOMContentLoaded', function () {
+      const elementoModal = document.getElementById('modalConfirmacionPaso');
+      if (elementoModal && window.bootstrap) {
+        instanciaModal = new bootstrap.Modal(elementoModal);
+      }
+    });
+
+    /* ── Confirmación al avanzar: primero se valida el paso y, si está correcto, se pide confirmar ── */
+    function mostrarModalConfirmacion(paso) {
+      // Los pasos que no aplican al tipo de trámite se saltan sin validar
+      const aplica = (paso === 3 || paso === 5) ? pasoAplica(paso) : true;
+      if (aplica && !validarPaso(paso)) return;
+
+      pasoPendienteValidacion = paso;
+      document.getElementById('modal-texto-pregunta').innerHTML =
+        `¿Confirma que ha revisado correctamente los datos correspondientes al <strong>Paso ${paso} (${NOMBRES_PASOS[paso - 1]})</strong> y desea avanzar al siguiente nivel?`;
+
+      if (instanciaModal) instanciaModal.show();
+      else ejecutarPasoSiguiente();   // si el modal no cargó, no se bloquea el avance
+    }
+
+    function ejecutarPasoSiguiente() {
+      if (instanciaModal) instanciaModal.hide();
+      const paso = pasoPendienteValidacion;
+
+      // Paso 3 no aplica (reclamo, petición, sugerencia): se pasa directo a los hechos
+      if (paso === 3 && !pasoAplica(3)) {
+        limpiarErroresPaso(3);
+        pasoActual = 4;
+        mostrarPaso(4);
+        actualizarAvisoContexto();
+        return;
+      }
+      // Paso 5 no aplica (sugerencia): se pasa directo a la revisión
+      if (paso === 5 && !pasoAplica(5)) {
+        limpiarErroresPaso(5);
+        poblarResumen();
+        actualizarResumenFinal();
+        pasoActual = 6;
+        mostrarPaso(6);
+        return;
+      }
+
+      siguientePaso(paso);   // valida y avanza (wizard.js)
+      if (pasoActual === paso + 1) {
+        if (paso === 3) actualizarAvisoContexto();
+        if (paso === 5) actualizarResumenFinal();
+      }
+    }
+
+    /* ── Consulta del estado de un trámite ── */
     function mostrarConsultaTramite() {
       document.getElementById('vista-seleccion').style.display = 'none';
       document.getElementById('vista-estado-tramite').style.display = 'block';
@@ -1482,22 +1619,23 @@
       document.getElementById('vista-seleccion').style.display = 'block';
       document.getElementById('resultado-estado-container').style.display = 'none';
       document.getElementById('input-codigo-consulta').value = '';
+      document.getElementById('err-codigo-consulta').classList.remove('visible');
     }
 
     function consultarEstadoTramite() {
       const codigo = document.getElementById('input-codigo-consulta').value.trim().toUpperCase();
       const containerRes = document.getElementById('resultado-estado-container');
-      
+      const err = document.getElementById('err-codigo-consulta');
+
       if (!codigo) {
-        alert('Por favor ingrese un código para consultar.');
+        err.classList.add('visible');
+        containerRes.style.display = 'none';
         return;
       }
-
+      err.classList.remove('visible');
       containerRes.style.display = 'block';
-      
-      // Simulación de respuesta según el código ingresado o general
       document.getElementById('res-est-codigo').textContent = codigo;
-      
+
       if (codigo === 'OAC-2026-0001' || codigo.includes('0001')) {
         document.getElementById('res-est-tipo').textContent = 'Denuncia';
         document.getElementById('res-est-fecha').textContent = '26/03/2026';
@@ -1511,9 +1649,11 @@
       }
     }
 
+    /* ── Cambio del tipo de trámite ── */
     function onTipoTramiteChange(radio) {
       const tipo = radio.value;
       const bloqueConsulta = document.getElementById('bloque-consulta-popular');
+      const bloqueProyecto = document.getElementById('bloque-proyecto-consulta');
       const contSenaladoWrapper = document.getElementById('contenido-senalado-wrapper');
       const contSenaladoNoAplica = document.getElementById('senalado-no-aplica');
       const contEvidenciaWrapper = document.getElementById('contenido-evidencia-wrapper');
@@ -1521,108 +1661,65 @@
       const textoNotaEvidencia = document.getElementById('texto-nota-evidencia');
       const camposRequeridosCiudadano = document.querySelectorAll('#paso-2 .required');
 
+      // Limpia el aviso y el borde rojo de la selección
+      document.getElementById('tipo-tramite-err').classList.remove('visible');
+      document.querySelectorAll('.tramite-card').forEach(c => c.style.borderColor = '');
+
       bloqueConsulta.style.display = 'none';
+      bloqueProyecto.style.display = 'none';
       contSenaladoWrapper.style.display = 'block';
-      if(contSenaladoNoAplica) contSenaladoNoAplica.style.display = 'none';
+      if (contSenaladoNoAplica) contSenaladoNoAplica.style.display = 'none';
       contEvidenciaWrapper.style.display = 'block';
-      if(contEvidenciaNoAplica) contEvidenciaNoAplica.style.display = 'none';
+      if (contEvidenciaNoAplica) contEvidenciaNoAplica.style.display = 'none';
       camposRequeridosCiudadano.forEach(el => el.style.display = 'inline');
 
       if (tipo === 'denuncia') {
         bloqueConsulta.style.display = 'block';
+        const consulta = document.querySelector('input[name="es_consulta"]:checked');
+        if (consulta && consulta.value === 'si') bloqueProyecto.style.display = 'block';
         textoNotaEvidencia.innerHTML = 'Cargue los documentos uno por uno, en el orden que se muestra a continuación. <strong>Para las denuncias, adjuntar evidencias probatorias es de carácter obligatorio.</strong>';
-      } 
+      }
       else if (tipo === 'queja') {
-        textoNotaEvidencia.innerHTML = 'Cargue los documentos que considere pertinentes. Para las quejas, adjuntar evidencia es <strong>opcional</strong>.';
-      } 
+        textoNotaEvidencia.innerHTML = 'Cargue los documentos uno por uno, en el orden que se muestra a continuación. <strong>Para las quejas, la copia de la C.I. del denunciante y la carta de exposición de motivo son obligatorias;</strong> los demás documentos puede omitirlos según su criterio.';
+      }
       else if (tipo === 'reclamo' || tipo === 'peticion') {
         contSenaladoWrapper.style.display = 'none';
-        if(contSenaladoNoAplica) contSenaladoNoAplica.style.display = 'block';
-        textoNotaEvidencia.innerHTML = 'Cargue los anexos, identificaciones o documentos que acompañen su solicitud. (Opcional)';
-      } 
+        if (contSenaladoNoAplica) contSenaladoNoAplica.style.display = 'block';
+        textoNotaEvidencia.innerHTML = 'Cargue los anexos, identificaciones o documentos que acompañen su solicitud.';
+      }
       else if (tipo === 'sugerencia') {
         contSenaladoWrapper.style.display = 'none';
-        if(contSenaladoNoAplica) contSenaladoNoAplica.style.display = 'block';
+        if (contSenaladoNoAplica) contSenaladoNoAplica.style.display = 'block';
         contEvidenciaWrapper.style.display = 'none';
-        if(contEvidenciaNoAplica) contEvidenciaNoAplica.style.display = 'none';
+        if (contEvidenciaNoAplica) contEvidenciaNoAplica.style.display = 'block';
         camposRequeridosCiudadano.forEach(el => el.style.display = 'none');
       }
     }
-
-    const originalSiguientePaso = window.siguientePaso;
-    window.siguientePaso = function(pasoActual) {
-      if (pasoActual === 1) {
-        const radioSeleccionado = document.querySelector('input[name="tipo_tramite"]:checked');
-        if (radioSeleccionado && radioSeleccionado.value === 'denuncia') {
-          const consultaRadio = document.querySelector('input[name="es_consulta"]:checked');
-          if (!consultaRadio) {
-            document.getElementById('es-consulta-err').classList.add('visible');
-            return;
-          } else {
-            document.getElementById('es-consulta-err').classList.remove('visible');
-          }
-        }
-      }
-
-      const radioSeleccionado = document.querySelector('input[name="tipo_tramite"]:checked');
-      const tipo = radioSeleccionado ? radioSeleccionado.value : '';
-
-      if (pasoActual === 3 && (tipo === 'reclamo' || tipo === 'peticion' || typeMatch(tipo))) {
-        document.getElementById('err-paso3').style.display = 'none';
-        document.getElementById('paso-3').style.display = 'none';
-        document.getElementById('paso-4').style.display = 'block';
-        actualizarBarraProgreso(4);
-        actualizarAvisoContexto();
-        return;
-      }
-
-      if (pasoActual === 5 && tipo === 'sugerencia') {
-        document.getElementById('err-paso5').style.display = 'none';
-        document.getElementById('paso-5').style.display = 'none';
-        document.getElementById('paso-6').style.display = 'block';
-        actualizarBarraProgreso(6);
-        actualizarResumenFinal();
-        return;
-      }
-
-      if (typeof originalSiguientePaso === 'function') {
-        originalSiguientePaso(pasoActual);
-      }
-      
-      if (pasoActual === 3) {
-        actualizarAvisoContexto();
-      }
-      if (pasoActual === 5) {
-        actualizarResumenFinal();
-      }
-    };
 
     function actualizarAvisoContexto() {
       const radioSeleccionado = document.querySelector('input[name="tipo_tramite"]:checked');
       const banner = document.getElementById('banner-contexto-aviso');
       const textoBadge = document.getElementById('texto-contexto-badge');
-      
+
       if (radioSeleccionado && radioSeleccionado.value === 'denuncia') {
         const consultaRadio = document.querySelector('input[name="es_consulta"]:checked');
         if (consultaRadio) {
           banner.style.display = 'block';
-          if (consultaRadio.value === 'si') {
-            textoBadge.textContent = 'Relacionado con Proyecto de Consulta Popular Nacional';
-          } else {
-            textoBadge.textContent = 'Relacionado con Organismos e Institutos';
-          }
+          textoBadge.textContent = consultaRadio.value === 'si'
+            ? 'Relacionado con Proyecto de Consulta Popular Nacional'
+            : 'Relacionado con Organismos e Institutos';
         }
       } else {
         banner.style.display = 'none';
       }
     }
 
+    /* ── Resumen de la revisión (los señalados y el proyecto los llena poblarResumen en wizard.js) ── */
     function actualizarResumenFinal() {
       const radioSeleccionado = document.querySelector('input[name="tipo_tramite"]:checked');
       const bloqueResumenContexto = document.getElementById('resumen-bloque-contexto');
       const textoResumenContexto = document.getElementById('res-contexto');
 
-      // 1. Validar Contexto de Consulta
       if (radioSeleccionado && radioSeleccionado.value === 'denuncia') {
         const consultaRadio = document.querySelector('input[name="es_consulta"]:checked');
         if (consultaRadio) {
@@ -1633,56 +1730,36 @@
         bloqueResumenContexto.style.display = 'none';
       }
 
-      // 2. Poblar datos básicos para que no queden en blanco en el Paso 6
       const tipoTramite = radioSeleccionado ? radioSeleccionado.value.toUpperCase() : 'NO DEFINIDO';
       document.getElementById('res-tipo-tramite').textContent = tipoTramite;
       document.getElementById('res-fecha').textContent = new Date().toLocaleDateString();
-      document.getElementById('res-nombres').textContent = `${document.getElementById('cit-primer-nombre').value} ${document.getElementById('cit-primer-apellido').value}`;
-      document.getElementById('res-cedula').textContent = document.getElementById('cit-nro-doc').value;
+      document.getElementById('res-nombres').textContent = obtenerNombreCompletoCiudadano();
+      document.getElementById('res-cedula').textContent = `${document.getElementById('cit-tipo-doc').value} ${document.getElementById('cit-nro-doc').value}`.trim();
       document.getElementById('res-correo').textContent = document.getElementById('cit-correo').value;
-      document.getElementById('res-telf').textContent = document.getElementById('cit-telf-cel-num').value;
+      const codTel = document.getElementById('cit-telf-cel-cod').value;
+      const numTel = document.getElementById('cit-telf-cel-num').value;
+      document.getElementById('res-telf').textContent = (codTel && numTel) ? `${codTel}-${numTel}` : numTel;
       document.getElementById('res-hechos').textContent = document.getElementById('narracion').value || 'Sin descripción';
 
-      // 3. Poblar Ubicación Absoluta (Ciudad/Estado, Municipio, Parroquia)
       const parr = document.getElementById('cit-parroquia').value || 'No especificó';
       const mun = document.getElementById('cit-municipio').value || 'Páez';
       const ciu = document.getElementById('cit-ciudad').value || 'Acarigua/Portuguesa';
-      const dir = document.getElementById('cit-direccion').value || '';
-      
+      const dir = escaparHtml(document.getElementById('cit-direccion').value || '');
       const contenedorUbicacion = document.getElementById('res-ubicacion');
       if (contenedorUbicacion) {
-         contenedorUbicacion.innerHTML = `<strong>Ciudad/Estado:</strong> ${ciu} <br><strong>Municipio:</strong> ${mun} <br><strong>Parroquia:</strong> ${parr} <br><strong>Dirección:</strong> ${dir}`;
+        contenedorUbicacion.innerHTML = `<strong>Ciudad/Estado:</strong> ${ciu} <br><strong>Municipio:</strong> ${mun} <br><strong>Parroquia:</strong> ${parr} <br><strong>Dirección:</strong> ${dir}`;
       }
 
-      // 4. Mapeo y Maqueta Visual de Evidencias Cargadas
-      const inputsEvidencias = document.querySelectorAll('input[type="file"]');
-      let listaArchivosHtml = '';
-      let totalArchivos = 0;
-
-      inputsEvidencias.forEach(input => {
-        if (input.files && input.files.length > 0) {
-          let tipoDocumento = "Anexo";
-          const parentGroup = input.closest('.form-group') || input.parentElement;
-          if (parentGroup) {
-              const labelElem = parentGroup.querySelector('label') || parentGroup.querySelector('.form-label');
-              if (labelElem && labelElem.innerText.trim() !== '') {
-                  tipoDocumento = labelElem.innerText.replace(/\*/g, '').trim();
-              }
-          }
-          for (let i = 0; i < input.files.length; i++) {
-            totalArchivos++;
-            listaArchivosHtml += `<div style="margin-bottom:4px;">✅ <strong>${tipoDocumento}:</strong> <span style="color:#555;">${input.files[i].name}</span></div>`;
-          }
-        }
-      });
-
+      // Evidencias cargadas (desde la secuencia por documentos)
+      const evCargadas = obtenerEvidenciasCargadas();
       const contenedorResEvidencias = document.getElementById('res-evidencias');
       if (contenedorResEvidencias) {
-          if (totalArchivos > 0) {
-            contenedorResEvidencias.innerHTML = `<div style="color:#2e7d32;font-weight:bold;margin-bottom:8px;">Se anexaron ${totalArchivos} documento(s) listos para enviar:</div>` + listaArchivosHtml;
-          } else {
-            contenedorResEvidencias.innerHTML = '<div style="color:#c62828; font-weight:600;">⚠️ No se anexaron evidencias ni documentos en el sistema.</div>';
-          }
+        if (evCargadas.total > 0) {
+          contenedorResEvidencias.innerHTML = `<div style="color:#1565c0;font-weight:bold;margin-bottom:8px;">Se anexaron ${evCargadas.total} archivo(s):</div>` +
+            evCargadas.items.map(it => `<div style="margin-bottom:4px;">✅ <strong>${escaparHtml(it.doc)}:</strong> <span style="color:#555;">${escaparHtml(it.nombre)}</span></div>`).join('');
+        } else {
+          contenedorResEvidencias.innerHTML = '<div style="color:#c62828; font-weight:600;">⚠️ No se anexaron evidencias ni documentos.</div>';
+        }
       }
     }
 
@@ -1696,6 +1773,7 @@
         acepta.scrollIntoView({ behavior: 'smooth', block: 'center' });
         return;
       }
+      document.getElementById('acepta-decl-err')?.classList.remove('visible');
 
       const val = id => (document.getElementById(id)?.value || '').trim();
       const radio = name => document.querySelector(`input[name="${name}"]:checked`)?.value || '';
@@ -1767,6 +1845,7 @@
         }
         document.getElementById('nro-expediente-display').textContent = json.case_number;
         document.getElementById('btn-descargar-planilla').href = json.planilla_url;
+        if (typeof guardarSenaladosEnPadron === 'function') guardarSenaladosEnPadron();
         mostrarConfirmacion();
       } catch (e) {
         alert('No se pudo conectar con el servidor. Intente de nuevo.');
@@ -1781,7 +1860,6 @@
       const tipoTramite = radioSeleccionado ? radioSeleccionado.value : '';
       if (radioSeleccionado) {
         document.getElementById('print-tipo-tramite').textContent = tipoTramite.toUpperCase();
-        
         if (tipoTramite === 'denuncia') {
           const consultaRadio = document.querySelector('input[name="es_consulta"]:checked');
           if (consultaRadio) {
@@ -1792,13 +1870,8 @@
           document.getElementById('print-fila-contexto').style.display = 'none';
         }
       }
-      
-      // 2. Datos del Solicitante Completos
-      const pNombre = document.getElementById('cit-primer-nombre').value || '';
-      const sNombre = document.getElementById('cit-segundo-nombre').value || '';
-      const pApellido = document.getElementById('cit-primer-apellido').value || '';
-      const sApellido = document.getElementById('cit-segundo-apellido').value || '';
-      document.getElementById('print-nombres').textContent = `${pNombre} ${sNombre} ${pApellido} ${sApellido}`.replace(/\s+/g, ' ').trim();
+
+      document.getElementById('print-nombres').textContent = obtenerNombreCompletoCiudadano();
 
       const tDoc = document.getElementById('cit-tipo-doc').options[document.getElementById('cit-tipo-doc').selectedIndex]?.text || '';
       const nDoc = document.getElementById('cit-nro-doc').value || '';
@@ -1806,21 +1879,17 @@
 
       const sexoSelect = document.getElementById('cit-sexo');
       document.getElementById('print-sexo').textContent = sexoSelect.options[sexoSelect.selectedIndex]?.text || 'No indicó';
-      
       document.getElementById('print-fecha-nac').textContent = document.getElementById('cit-fecha-nac').value || 'No indicó';
-      document.getElementById('print-edad').textContent = document.getElementById('cit-edad').value || '--';
+      document.getElementById('print-edad').textContent = (document.getElementById('cit-edad').value || '--').replace(' años', '');
       document.getElementById('print-ecivil').textContent = document.getElementById('cit-ecivil').value || 'No indicó';
-
       document.getElementById('print-edu').textContent = document.getElementById('cit-edu').value || 'No especificó';
       document.getElementById('print-profesion').textContent = document.getElementById('cit-profesion').value || 'No indicó';
       document.getElementById('print-ocupacion').textContent = document.getElementById('cit-ocupacion').value || 'No indicó';
-
       document.getElementById('print-correo').textContent = document.getElementById('cit-correo').value || '';
-      
+
       const codTelf = document.getElementById('cit-telf-cel-cod').value || '';
       const numTelf = document.getElementById('cit-telf-cel-num').value || '';
       document.getElementById('print-telf-cel').textContent = codTelf && numTelf ? `${codTelf}-${numTelf}` : 'No posee';
-
       const codHab = document.getElementById('cit-telf-hab-cod').value || '';
       const numHab = document.getElementById('cit-telf-hab-num').value || '';
       document.getElementById('print-telf-hab').textContent = codHab && numHab ? `${codHab}-${numHab}` : 'No posee';
@@ -1831,19 +1900,14 @@
       const ciu = document.getElementById('cit-ciudad').value || 'Acarigua/Portuguesa';
       document.getElementById('print-direccion').textContent = `${dir}, Parroquia ${parr}. Municipio ${mun} (${ciu})`;
 
-      // 3. Señalados / Proyecto
+      // Señalados / Proyecto
       const seccionSenalado = document.getElementById('print-seccion-senalado');
-      if (tipoTramite === 'denuncia' || tipoTramite === 'queja') {
+      if (pasoAplica(3)) {
         seccionSenalado.style.display = 'block';
-        
-        let textoSenalados = '';
-        const inputsSenalados = document.querySelectorAll('#lista-senalados input[type="text"], #lista-senalados select');
-        if(inputsSenalados.length > 0) {
-            inputsSenalados.forEach(inp => { if(inp.value) textoSenalados += `${inp.value} | `; });
-        } else {
-            textoSenalados = "Registro dinámico guardado en sistema.";
-        }
-        document.getElementById('print-senalados-lista').textContent = textoSenalados.replace(/\|\s*$/, '');
+        const lineas = obtenerLineasSenalados();
+        const elSen = document.getElementById('print-senalados-lista');
+        elSen.style.whiteSpace = 'pre-line';
+        elSen.textContent = lineas.length ? lineas.join('\n') : 'No indicó';
         document.getElementById('print-sen-ubicacion').textContent = document.getElementById('sen-ubicacion').value || 'No indicó';
 
         const consultaRadio = document.querySelector('input[name="es_consulta"]:checked');
@@ -1862,82 +1926,36 @@
         seccionSenalado.style.display = 'none';
       }
 
-      // 4. Información de los Hechos
+      // Hechos
       document.getElementById('print-hechos').textContent = document.getElementById('narracion').value || '';
-      
       const instaRadio = document.querySelector('input[name="otra_instancia"]:checked');
       if (instaRadio) {
-        if (instaRadio.value === 'si') {
-            const instNombre = document.getElementById('cual-instancia').value || 'Instancia no especificada';
-            document.getElementById('print-otra-instancia').textContent = `Presentado previamente en: ${instNombre}`;
-        } else {
-            document.getElementById('print-otra-instancia').textContent = 'Trámite originario (No se ha presentado en otra instancia)';
-        }
+        document.getElementById('print-otra-instancia').textContent = instaRadio.value === 'si'
+          ? `Presentado previamente en: ${document.getElementById('cual-instancia').value || 'Instancia no especificada'}`
+          : 'Trámite originario (No se ha presentado en otra instancia)';
       } else {
         document.getElementById('print-otra-instancia').textContent = 'No indicó';
       }
-
       document.getElementById('print-fecha').textContent = new Date().toLocaleDateString();
 
-      // 5. Corrección de Evidencias (Buscando la etiqueta lógica)
-      const inputsEvidencias = document.querySelectorAll('input[type="file"]');
-      let listaArchivosHtml = '';
-      let totalArchivos = 0;
-
-      inputsEvidencias.forEach(input => {
-        if (input.files && input.files.length > 0) {
-          let tipoDocumento = "Documento/Anexo";
-          const parentGroup = input.closest('.form-group') || input.parentElement;
-          if (parentGroup) {
-              const labelElem = parentGroup.querySelector('label') || parentGroup.querySelector('.form-label');
-              if (labelElem && labelElem.innerText.trim() !== '') {
-                  tipoDocumento = labelElem.innerText.replace(/\*/g, '').trim();
-              }
-          }
-
-          for (let i = 0; i < input.files.length; i++) {
-            totalArchivos++;
-            listaArchivosHtml += `• <strong>${tipoDocumento}:</strong> ${input.files[i].name}<br>`;
-          }
-        }
-      });
-
+      // Evidencias
+      const evCargadas = obtenerEvidenciasCargadas();
       const contenedorEvidenciasPrint = document.getElementById('print-evidencias');
-      if (totalArchivos > 0) {
-        contenedorEvidenciasPrint.innerHTML = `<p style="margin-bottom:8px;">Se cargaron ${totalArchivos} evidencia(s) exitosamente:</p> ${listaArchivosHtml}`;
+      if (evCargadas.total > 0) {
+        contenedorEvidenciasPrint.innerHTML = `<p style="margin-bottom:8px;">Se cargaron ${evCargadas.total} evidencia(s) exitosamente:</p>` +
+          evCargadas.items.map(it => `• <strong>${escaparHtml(it.doc)}:</strong> ${escaparHtml(it.nombre)}<br>`).join('');
       } else {
         contenedorEvidenciasPrint.textContent = 'El ciudadano no cargó documentos probatorios o anexos para este trámite.';
       }
 
-      const paso6 = document.getElementById('paso-6');
-      const vistaConfirmacion = document.getElementById('vista-confirmacion');
-      const barraProgreso = document.getElementById('barra-progreso');
-
-      if (paso6) paso6.style.display = 'none';
-      if (vistaConfirmacion) vistaConfirmacion.style.display = 'block';
-      if (barraProgreso) barraProgreso.style.display = 'none';
+      document.getElementById('paso-6').style.display = 'none';
+      document.getElementById('vista-confirmacion').style.display = 'block';
+      document.getElementById('barra-progreso').style.display = 'none';
+      const volver = document.querySelector('#vista-wizard > .form-back-btn');
+      if (volver) volver.style.display = 'none';
 
       window.scrollTo({ top: 0, behavior: 'smooth' });
     };
-
-    function typeMatch(t) {
-      return t === 'reclamo' || t === 'peticion' || t === 'sugerencia';
-    }
-
-    function actualizarBarraProgreso(pasoDestino) {
-      const items = document.querySelectorAll('.paso-item');
-      items.forEach((item, index) => {
-        if (index < pasoDestino - 1) {
-          item.classList.add('completado');
-          item.classList.remove('activo');
-        } else if (index === pasoDestino - 1) {
-          item.classList.add('activo');
-          item.classList.remove('completado');
-        } else {
-          item.classList.remove('activo', 'completado');
-        }
-      });
-    }
   </script>
 </body>
 

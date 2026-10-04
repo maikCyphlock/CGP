@@ -88,7 +88,7 @@ class DenunciaController extends Controller
             'proyecto.monto' => 'exclude_unless:es_consulta,true|required|numeric|gt:0',
             'proyecto.financiador' => 'exclude_unless:es_consulta,true|required|string|min:3|max:200',
             'proyecto.situr' => 'nullable|string|max:40',
-            'narracion' => 'required|string|min:50|max:3000',
+            'narracion' => 'required|string|min:50|max:3500',
             'otra_instancia' => 'boolean',
             'cual_instancia' => 'required_if:otra_instancia,true|nullable|string|max:200',
             'acepta_declaracion' => 'accepted',

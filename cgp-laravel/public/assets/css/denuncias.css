@@ -546,6 +546,7 @@
 .form-textarea {
   resize: vertical;
   min-height: 120px;
+  max-height: 420px;
   line-height: 1.6;
 }
 
@@ -921,6 +922,8 @@
   padding: 3px 9px;
 }
 
+.evidencia-item-tag.obligatorio { background: #e3f2fd; color: #1565c0; }
+
 .evidencia-item-estado {
   flex-shrink: 0;
   font-size: 0.74rem;
@@ -969,6 +972,7 @@
   transition: background 0.2s, transform 0.15s;
 }
 
+.btn-evidencia:disabled { opacity: 0.55; cursor: not-allowed; }
 .btn-evidencia-primary { background: #1a4b8c; color: #ffffff; }
 .btn-evidencia-primary:hover { background: #163a6e; }
 
@@ -1349,3 +1353,65 @@
     size: A4 portrait;
   }
 }
+
+/* ─── NOTA INFORMATIVA (mismo formato que el aviso de competencia territorial) ─── */
+
+.nota-info {
+  background: #f2f4f8;
+  color: #5a6474;
+  border: 1.5px solid #e1e6ee;
+  border-radius: 5px;
+  padding: 8px 10px;
+  font-size: 0.72rem;
+  line-height: 1.35;
+  box-sizing: border-box;
+}
+
+
+/* ─── TARJETAS DE REVISIÓN (con botón Editar) ─── */
+
+.revision-card {
+  background: #f7f9fd;
+  border: 1px solid #dde3ee;
+  border-radius: 6px;
+  padding: 14px 16px 16px;
+  margin-bottom: 14px;
+}
+
+.revision-card:last-child { margin-bottom: 0; }
+
+.revision-card-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  margin-bottom: 12px;
+}
+
+.revision-card-titulo {
+  font-size: 0.7rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.12em;
+  color: #1565c0;
+}
+
+.btn-revision-editar {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  background: #ffffff;
+  color: #1565c0;
+  border: 1.5px solid #cdd5e0;
+  border-radius: 6px;
+  padding: 6px 14px;
+  font-family: 'Open Sans', sans-serif;
+  font-size: 0.76rem;
+  font-weight: 700;
+  cursor: pointer;
+  transition: background 0.2s, border-color 0.2s;
+}
+
+.btn-revision-editar:hover { background: #eef4ff; border-color: #1565c0; }
+
+@media print { .btn-revision-editar, .wizard-nav-edicion { display: none !important; } }

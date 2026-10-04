@@ -112,7 +112,7 @@ function autorrellenarSiVacio(id, valor) {
  * Calcula la Edad (campo de solo lectura) a partir de la Fecha de
  * Nacimiento seleccionada.
  */
-function calcularEdad() {
+function recalcularEdadDesdeCampo() {
     var fechaInput = document.getElementById('cit-fecha-nac');
     var edadInput = document.getElementById('cit-edad');
     var valor = fechaInput.value;
@@ -159,7 +159,7 @@ function autocompletarCiudadano() {
     if (selSexo && !selSexo.value && registro.sexo) selSexo.value = registro.sexo;
     var inputFecha = document.getElementById('cit-fecha-nac');
     if (inputFecha && !inputFecha.value && registro.fechaNac) inputFecha.value = registro.fechaNac;
-    calcularEdad();
+    recalcularEdadDesdeCampo();
     var selEcivil = document.getElementById('cit-ecivil');
     if (selEcivil && !selEcivil.value && registro.ecivil) selEcivil.value = registro.ecivil;
     var selEdu = document.getElementById('cit-edu');
@@ -414,10 +414,10 @@ var PLANTILLAS_SENALADO = {
         camposObligatorios:
             '<div class="row g-3">' +
             '  <div class="col-md-6"><div class="form-group">' +
-            '    <label class="form-label">Apellidos y Nombres <span class="required">*</span></label>' +
+            '    <label class="form-label">Apellidos y Nombres <span class="required" style="color:#1565c0;">*</span></label>' +
             '    <input type="text" class="form-control campo-dinamico-req" data-campo="pn-nombres" placeholder="Apellido Apellido, Nombre Nombre"></div></div>' +
             '  <div class="col-md-6"><div class="form-group">' +
-            '    <label class="form-label">Dirección o Lugar donde Ejerce la Función <span class="required">*</span></label>' +
+            '    <label class="form-label">Dirección o Lugar donde Ejerce la Función <span class="required" style="color:#1565c0;">*</span></label>' +
             '    <input type="text" class="form-control campo-dinamico-req" data-campo="pn-direccion" placeholder="Dirección, cargo u oficina que ocupa"></div></div>' +
             '</div>',
         camposOpcionales:
@@ -439,7 +439,7 @@ var PLANTILLAS_SENALADO = {
         camposObligatorios:
             '<div class="row g-3">' +
             '  <div class="col-12"><div class="form-group">' +
-            '    <label class="form-label">Razón Social / Denominación <span class="required">*</span></label>' +
+            '    <label class="form-label">Razón Social / Denominación <span class="required" style="color:#1565c0;">*</span></label>' +
             '    <input type="text" class="form-control campo-dinamico-req" data-campo="pj-razon" list="dl-instancias" placeholder="Nombre de la empresa"></div></div>' +
             '</div>',
         camposOpcionales:
@@ -466,10 +466,10 @@ var PLANTILLAS_SENALADO = {
         camposObligatorios:
             '<div class="row g-3">' +
             '  <div class="col-md-8"><div class="form-group">' +
-            '    <label class="form-label">Nombre del Órgano o Ente <span class="required">*</span></label>' +
+            '    <label class="form-label">Nombre del Órgano o Ente <span class="required" style="color:#1565c0;">*</span></label>' +
             '    <input type="text" class="form-control campo-dinamico-req" data-campo="oe-nombre" list="dl-instancias" placeholder="Ej. Alcaldía del Municipio Páez"></div></div>' +
             '  <div class="col-md-4"><div class="form-group">' +
-            '    <label class="form-label">Dirección o Sede <span class="required">*</span></label>' +
+            '    <label class="form-label">Dirección o Sede <span class="required" style="color:#1565c0;">*</span></label>' +
             '    <input type="text" class="form-control campo-dinamico-req" data-campo="oe-direccion" placeholder="Dirección de la sede"></div></div>' +
             '</div>',
         camposOpcionales:
@@ -490,15 +490,15 @@ var PLANTILLAS_SENALADO = {
         camposObligatorios:
             '<div class="row g-3">' +
             '  <div class="col-md-6"><div class="form-group">' +
-            '    <label class="form-label">Nombre de la Comuna <span class="required">*</span></label>' +
+            '    <label class="form-label">Nombre de la Comuna <span class="required" style="color:#1565c0;">*</span></label>' +
             '    <input type="text" class="form-control campo-dinamico-req" data-campo="cm-nombre" list="dl-instancias" placeholder="Nombre oficial de la comuna"></div></div>' +
             '  <div class="col-md-3"><div class="form-group">' +
-            '    <label class="form-label">Parroquia <span class="required">*</span></label>' +
+            '    <label class="form-label">Parroquia <span class="required" style="color:#1565c0;">*</span></label>' +
             '    <select class="form-select campo-dinamico-req" data-campo="cm-parroquia">' +
             construirOpcionesParroquia() +
             '    </select></div></div>' +
             '  <div class="col-md-3"><div class="form-group">' +
-            '    <label class="form-label">Municipio <span class="required">*</span></label>' +
+            '    <label class="form-label">Municipio <span class="required" style="color:#1565c0;">*</span></label>' +
             '    <input type="text" class="form-control campo-dinamico-req" data-campo="cm-municipio" value="Páez"></div></div>' +
             '</div>',
         camposOpcionales:
@@ -519,10 +519,10 @@ var PLANTILLAS_SENALADO = {
         camposObligatorios:
             '<div class="row g-3">' +
             '  <div class="col-md-8"><div class="form-group">' +
-            '    <label class="form-label">Nombre del Consejo Comunal <span class="required">*</span></label>' +
+            '    <label class="form-label">Nombre del Consejo Comunal <span class="required" style="color:#1565c0;">*</span></label>' +
             '    <input type="text" class="form-control campo-dinamico-req" data-campo="cc-nombre" list="dl-instancias" placeholder="Nombre oficial del consejo comunal"></div></div>' +
             '  <div class="col-md-4"><div class="form-group">' +
-            '    <label class="form-label">Parroquia <span class="required">*</span></label>' +
+            '    <label class="form-label">Parroquia <span class="required" style="color:#1565c0;">*</span></label>' +
             '    <select class="form-select campo-dinamico-req" data-campo="cc-parroquia">' +
             construirOpcionesParroquia() +
             '    </select></div></div>' +
@@ -548,13 +548,13 @@ var PLANTILLAS_SENALADO = {
         camposObligatorios:
             '<div class="row g-3">' +
             '  <div class="col-md-4"><div class="form-group">' +
-            '    <label class="form-label">Nombres y Apellidos <span class="required">*</span></label>' +
+            '    <label class="form-label">Nombres y Apellidos <span class="required" style="color:#1565c0;">*</span></label>' +
             '    <input type="text" class="form-control campo-dinamico-req" data-campo="jp-nombres" placeholder="Nombre completo"></div></div>' +
             '  <div class="col-md-4"><div class="form-group">' +
-            '    <label class="form-label">Circuito Judicial de Paz <span class="required">*</span></label>' +
+            '    <label class="form-label">Circuito Judicial de Paz <span class="required" style="color:#1565c0;">*</span></label>' +
             '    <input type="text" class="form-control campo-dinamico-req" data-campo="jp-circuito" placeholder="Circuito al que pertenece"></div></div>' +
             '  <div class="col-md-4"><div class="form-group">' +
-            '    <label class="form-label">Parroquia de Actuación <span class="required">*</span></label>' +
+            '    <label class="form-label">Parroquia de Actuación <span class="required" style="color:#1565c0;">*</span></label>' +
             '    <select class="form-select campo-dinamico-req" data-campo="jp-parroquia">' +
             construirOpcionesParroquia() +
             '    </select></div></div>' +
@@ -578,10 +578,10 @@ var PLANTILLAS_SENALADO = {
         camposObligatorios:
             '<div class="row g-3">' +
             '  <div class="col-md-4"><div class="form-group">' +
-            '    <label class="form-label">Especifique el Tipo <span class="required">*</span></label>' +
+            '    <label class="form-label">Especifique el Tipo <span class="required" style="color:#1565c0;">*</span></label>' +
             '    <input type="text" class="form-control campo-dinamico-req" data-campo="ot-tipo" placeholder="Ej. Cooperativa, Sindicato, Fundación..."></div></div>' +
             '  <div class="col-md-8"><div class="form-group">' +
-            '    <label class="form-label">Nombre o Denominación <span class="required">*</span></label>' +
+            '    <label class="form-label">Nombre o Denominación <span class="required" style="color:#1565c0;">*</span></label>' +
             '    <input type="text" class="form-control campo-dinamico-req" data-campo="ot-nombre" list="dl-instancias" placeholder="Nombre completo o razón social"></div></div>' +
             '</div>',
         camposOpcionales:
@@ -685,6 +685,7 @@ function iniciarFlujo(tipo) {
 
     // Iniciar la secuencia de evidencias (subida de documentos por partes)
     evidenciaIndiceActual = 0;
+    evidenciaEditando = null;
     archivosPorDocumento = {};
     renderSecuenciaEvidencias();
 
@@ -804,6 +805,7 @@ function volverSeleccion() {
 
     tipoFormulario = '';
     pasoActual = 1;
+    salirModoEdicionRevision();
     limpiarTodosLosErrores();
 
     document.getElementById('denuncias').scrollIntoView({ behavior: 'smooth', block: 'start' });
@@ -1014,6 +1016,22 @@ function validarPaso(numeroPaso) {
         }
     }
 
+    if (numeroPaso === 5) {
+        var primerFalta = -1;
+        EVIDENCIAS_ITEMS.forEach(function (it, idx) {
+            if (!it.opcional && !(archivosPorDocumento[it.valor] || []).length) {
+                errores.push(it.etiqueta + ' (obligatorio)');
+                if (primerFalta === -1) primerFalta = idx;
+            }
+        });
+        if (primerFalta !== -1) {
+            // Si aún no se llegaba a ese documento, pasa a ser el actual; si ya se había pasado, se abre para editarlo
+            if (primerFalta >= evidenciaIndiceActual) { evidenciaIndiceActual = primerFalta; evidenciaEditando = null; }
+            else evidenciaEditando = primerFalta;
+            renderSecuenciaEvidencias();
+        }
+    }
+
     // Si hay errores, mostrar el banner y hacer scroll al primer error
     if (errores.length > 0) {
         mostrarBannerError(numeroPaso, errores);
@@ -1044,7 +1062,10 @@ function marcarError(campoId, errId) {
     var campo = document.getElementById(campoId);
     var err = document.getElementById(errId);
     if (campo) campo.classList.add('invalid');
-    if (err) err.classList.add('visible');
+    if (err) {
+        if (err.dataset.orig) err.textContent = err.dataset.orig;
+        err.classList.add('visible');
+    }
 }
 
 
@@ -1226,7 +1247,7 @@ function agregarSenalado() {
         '  </button>' +
         '</div>' +
         '<div class="form-group">' +
-        '  <label class="form-label">Tipo de Señalado <span class="required">*</span></label>' +
+        '  <label class="form-label">Tipo de Señalado <span class="required" style="color:#1565c0;">*</span></label>' +
         '  <div class="check-group" style="flex-wrap:wrap;gap:10px 20px;margin-top:6px;">' +
         construirCheckboxesTipoSenalado(idTarjeta) +
         '  </div>' +
@@ -1313,6 +1334,15 @@ function validarBloquesSenaladoDinamicos() {
         }
     });
 
+    // Campos opcionales (documento / R.I.F.): solo se validan si fueron llenados
+    document.querySelectorAll('#lista-senalados [data-campo]').forEach(function (campo) {
+        var msg = mensajeCampoOpcionalSenalado(campo);
+        if (msg) {
+            campo.classList.add('invalid');
+            errores.push(msg);
+        }
+    });
+
     return errores;
 }
 
@@ -1352,20 +1382,31 @@ function obtenerEtiquetaPrimerSenalado() {
 
 /** Documentos de evidencia, en el orden en que se solicitan. */
 var EVIDENCIAS_ITEMS = [
-    // Documentos requeridos
-    { valor: 'ci_denunciante', etiqueta: 'Copia C.I. del denunciante', opcional: false },
-    { valor: 'carta_exposicion', etiqueta: 'Carta de exposición de motivo', opcional: false },
+    // Documentos obligatorios
+    { valor: 'ci_denunciante', etiqueta: 'Copia C.I. del denunciante', opcional: false,
+      nota: 'Adjunte una copia legible de su cédula de identidad (ambas caras) o de su pasaporte vigente.' },
+    { valor: 'carta_exposicion', etiqueta: 'Carta de exposición de motivo', opcional: false,
+      nota: 'Carta firmada en la que expone los motivos de su trámite. Puede adjuntarla en PDF, Word o imagen.' },
     // Documentos que el denunciante puede omitir
-    { valor: 'ci_testigo', etiqueta: 'Copia C.I. del testigo', opcional: true },
-    { valor: 'fotografias', etiqueta: 'Fotografías', opcional: true },
-    { valor: 'video', etiqueta: 'Video', opcional: true },
-    { valor: 'grabacion_voz', etiqueta: 'Grabación de voz', opcional: true },
-    { valor: 'testimonio_escrito', etiqueta: 'Testimonio escrito con firma y huella', opcional: true },
-    { valor: 'otros_docs', etiqueta: 'Otros documentos', opcional: true }
+    { valor: 'ci_testigo', etiqueta: 'Copia C.I. del testigo', opcional: true,
+      nota: 'Solo si existe un testigo de los hechos. Copia legible de su cédula de identidad.' },
+    { valor: 'fotografias', etiqueta: 'Fotografías', opcional: true,
+      nota: 'Formatos de imagen (JPG, PNG). Procure que muestren con claridad los hechos denunciados.' },
+    { valor: 'video', etiqueta: 'Video', opcional: true,
+      nota: 'Formatos de video comunes (MP4). Máximo 10 MB por archivo.' },
+    { valor: 'grabacion_voz', etiqueta: 'Grabación de voz', opcional: true,
+      nota: 'Formatos de audio (MP3, WAV). Máximo 10 MB por archivo.' },
+    { valor: 'testimonio_escrito', etiqueta: 'Testimonio escrito con firma y huella', opcional: true,
+      nota: 'Documento firmado y con huella dactilar del declarante, escaneado o fotografiado.' },
+    { valor: 'otros_docs', etiqueta: 'Otros documentos', opcional: true,
+      nota: 'Cualquier otro anexo que respalde su trámite (PDF, Word o imagen).' }
 ];
 
 /** Índice (0-based) del documento actualmente activo en la secuencia. */
 var evidenciaIndiceActual = 0;
+
+/** Índice del documento que se está editando (null si no se edita ninguno). */
+var evidenciaEditando = null;
 
 /** Archivos adjuntados por cada tipo de documento: { valor: File[] } */
 var archivosPorDocumento = {};
@@ -1384,48 +1425,77 @@ function construirChipArchivoDocumento(valorDoc, indice, archivo) {
 }
 
 /**
- * Dibuja la secuencia completa de documentos de evidencia dentro de
- * #evidencias-secuencia, según el índice del documento activo:
- * anteriores → completados/omitidos; actual → con zona de carga;
- * siguientes → bloqueados, a la espera de su turno.
+ * Dibuja la secuencia de documentos de evidencia en #evidencias-secuencia.
+ * El avance (evidenciaIndiceActual) es independiente de la edición
+ * (evidenciaEditando): al editar un documento ya cargado, los
+ * siguientes conservan su estado y no hay que volver a omitirlos.
  */
 function renderSecuenciaEvidencias() {
     var contenedor = document.getElementById('evidencias-secuencia');
     if (!contenedor) return;
+    var editando = evidenciaEditando;
 
     var html = EVIDENCIAS_ITEMS.map(function (item, i) {
         var archivos = archivosPorDocumento[item.valor] || [];
-        var estado = i < evidenciaIndiceActual ? 'completado' : (i === evidenciaIndiceActual ? 'activo' : 'pendiente');
+        var estado;
+        if (editando !== null) {
+            estado = (i === editando) ? 'activo' : (i < evidenciaIndiceActual ? 'completado' : 'pendiente');
+        } else {
+            estado = i < evidenciaIndiceActual ? 'completado' : (i === evidenciaIndiceActual ? 'activo' : 'pendiente');
+        }
+        var faltaObligatorio = !item.opcional && archivos.length === 0;
 
         var numContenido = estado === 'completado'
             ? '<svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg>'
             : String(i + 1);
 
-        var etiquetaEstado = estado === 'completado'
-            ? (archivos.length ? archivos.length + ' archivo(s)' : 'Omitido')
-            : (estado === 'activo' ? 'Documento actual' : 'Pendiente');
+        var etiquetaEstado;
+        if (estado === 'completado') {
+            etiquetaEstado = archivos.length ? archivos.length + ' archivo(s)'
+                : (faltaObligatorio ? '<span style="color:#c1121f;">Falta adjuntar</span>' : 'Omitido');
+        } else {
+            etiquetaEstado = (estado === 'activo') ? (editando !== null ? 'Editando' : 'Documento actual') : 'Pendiente';
+        }
 
-        var enlaceEditar = estado === 'completado'
+        var enlaceEditar = (estado === 'completado' && editando === null)
             ? '<button type="button" class="btn-evidencia-link" onclick="editarDocumentoEvidencia(' + i + ')">Editar</button>'
             : '';
 
-        var marcaOpcional = item.opcional
+        var marca = item.opcional
             ? '<span class="evidencia-item-tag">Puede omitirlo</span>'
-            : '';
+            : '<span class="evidencia-item-tag obligatorio">Obligatorio</span>';
 
         var cabecera =
             '<div class="evidencia-item-header">' +
             '<span class="evidencia-num">' + numContenido + '</span>' +
             '<span class="evidencia-item-titulo">' + item.etiqueta + '</span>' +
-            marcaOpcional +
+            marca +
             '<span class="evidencia-item-estado">' + etiquetaEstado + '</span>' +
             enlaceEditar +
             '</div>';
 
         var cuerpo = '';
         if (estado === 'activo') {
+            var acciones;
+            if (editando !== null) {
+                acciones = '<button type="button" class="btn-evidencia btn-evidencia-primary" ' + (faltaObligatorio ? 'disabled ' : '') +
+                    'onclick="guardarEdicionEvidencia()">' + (faltaObligatorio ? 'Adjunte el documento para guardar' : 'Guardar cambios') + '</button>';
+            } else {
+                acciones = (evidenciaIndiceActual > 0
+                    ? '<button type="button" class="btn-evidencia btn-evidencia-outline" onclick="retrocederDocumentoEvidencia()">Atrás</button>'
+                    : '');
+                if (archivos.length) {
+                    acciones += '<button type="button" class="btn-evidencia btn-evidencia-primary" onclick="avanzarDocumentoEvidencia(\'' + item.valor + '\')">Siguiente documento</button>';
+                } else if (item.opcional) {
+                    acciones += '<button type="button" class="btn-evidencia btn-evidencia-outline" onclick="avanzarDocumentoEvidencia(\'' + item.valor + '\')">Omitir este documento</button>';
+                } else {
+                    acciones += '<button type="button" class="btn-evidencia btn-evidencia-outline" disabled>Adjunte el documento para continuar</button>';
+                }
+            }
+
             cuerpo =
                 '<div class="evidencia-item-cuerpo">' +
+                '<div class="nota-info" style="margin-bottom:12px;">' + item.nota + '</div>' +
                 '<div class="file-drop" onclick="document.getElementById(\'archivo-input-' + item.valor + '\').click()" ' +
                 'ondragover="event.preventDefault();this.style.borderColor=\'#1565c0\'" ' +
                 'ondragleave="this.style.borderColor=\'\'" ' +
@@ -1443,26 +1513,17 @@ function renderSecuenciaEvidencias() {
                 '<div class="file-list" id="archivos-lista-' + item.valor + '">' +
                 archivos.map(function (archivo, idx) { return construirChipArchivoDocumento(item.valor, idx, archivo); }).join('') +
                 '</div>' +
-                '<div class="evidencia-item-acciones">' +
-                (evidenciaIndiceActual > 0
-                    ? '<button type="button" class="btn-evidencia btn-evidencia-outline" onclick="retrocederDocumentoEvidencia()">Atrás</button>'
-                    : '') +
-                '<button type="button" class="btn-evidencia ' + (archivos.length ? 'btn-evidencia-primary' : 'btn-evidencia-outline') + '" ' +
-                'onclick="avanzarDocumentoEvidencia(\'' + item.valor + '\')">' +
-                (archivos.length ? 'Siguiente documento' : (item.opcional ? 'Omitir este documento' : 'Continuar sin adjuntar')) +
-                '</button>' +
-                '</div>' +
+                '<div class="evidencia-item-acciones">' + acciones + '</div>' +
                 '</div>';
         }
 
         return '<div class="evidencia-item ' + estado + '">' + cabecera + cuerpo + '</div>';
     }).join('');
 
-    if (evidenciaIndiceActual >= EVIDENCIAS_ITEMS.length) {
-        html += '<p style="font-size:0.8rem;color:#2e9e56;font-weight:600;margin-top:14px;">' +
+    if (editando === null && evidenciaIndiceActual >= EVIDENCIAS_ITEMS.length) {
+        html += '<p style="font-size:0.8rem;color:#1565c0;font-weight:600;margin-top:14px;">' +
             '✓ Revisó todos los documentos. Puede continuar, o pulsar "Editar" en cualquiera para modificarlo.</p>';
     }
-
     contenedor.innerHTML = html;
 }
 
@@ -1509,22 +1570,29 @@ function eliminarArchivoDocumento(valorDoc, indice) {
     renderSecuenciaEvidencias();
 }
 
-/** Avanza al siguiente documento de la secuencia (o la da por completa). */
+/** Avanza al siguiente documento de la secuencia (o cierra la edición). */
 function avanzarDocumentoEvidencia(valorDoc) {
     var indice = EVIDENCIAS_ITEMS.findIndex(function (it) { return it.valor === valorDoc; });
-    if (indice === evidenciaIndiceActual) evidenciaIndiceActual = indice + 1;
+    if (evidenciaEditando !== null) evidenciaEditando = null;
+    else if (indice === evidenciaIndiceActual) evidenciaIndiceActual = indice + 1;
     renderSecuenciaEvidencias();
 }
 
-/** Retrocede al documento anterior de la secuencia. */
+/** "Atrás": abre el documento anterior para editarlo sin perder el avance. */
 function retrocederDocumentoEvidencia() {
-    if (evidenciaIndiceActual > 0) evidenciaIndiceActual--;
+    if (evidenciaIndiceActual > 0) evidenciaEditando = evidenciaIndiceActual - 1;
     renderSecuenciaEvidencias();
 }
 
-/** Reabre un documento ya completado (u omitido) para editarlo. */
+/** Abre un documento ya completado (u omitido) para editarlo; los demás conservan su estado. */
 function editarDocumentoEvidencia(indice) {
-    evidenciaIndiceActual = indice;
+    evidenciaEditando = indice;
+    renderSecuenciaEvidencias();
+}
+
+/** Guarda los cambios del documento editado y regresa al punto donde se estaba. */
+function guardarEdicionEvidencia() {
+    evidenciaEditando = null;
     renderSecuenciaEvidencias();
 }
 
@@ -1540,7 +1608,7 @@ function editarDocumentoEvidencia(indice) {
  */
 function actualizarContadorNarracion(textarea) {
     var n = textarea.value.length;
-    var MAX = 3000;
+    var MAX = 3500;
     var contador = document.getElementById('narracion-contador');
     contador.textContent = n + ' / ' + MAX + ' caracteres';
     contador.className = 'contador-chars' + (n > MAX ? ' excedido' : n > MAX * 0.85 ? ' advertencia' : '');
@@ -1594,12 +1662,39 @@ function poblarResumen() {
         (telfCod && telfNum) ? (telfCod + '-' + telfNum) : '—';
 
     // Señalado: identificación principal de la primera tarjeta de la lista
-    document.getElementById('res-senalado').textContent = obtenerEtiquetaPrimerSenalado();
 
     // Narración (primeros 200 caracteres con elipsis)
     var narracion = document.getElementById('narracion').value.trim();
     document.getElementById('res-hechos').textContent =
         narracion.length > 200 ? narracion.substring(0, 200) + '...' : narracion || '—';
+
+    // Señalados (todos), ubicación y proyecto
+    var lineas = obtenerLineasSenalados();
+    document.getElementById('res-senalado').textContent = lineas.length ? lineas.join('\n') : '—';
+    document.getElementById('res-sen-ubicacion').textContent =
+        document.getElementById('sen-ubicacion').value.trim() || '—';
+
+    var esConsulta = document.querySelector('input[name="es_consulta"]:checked');
+    var bloqueProy = document.getElementById('res-bloque-proyecto');
+    if (tipoTramiteEl && tipoTramiteEl.value === 'denuncia' && esConsulta && esConsulta.value === 'si') {
+        bloqueProy.style.display = '';
+        document.getElementById('res-proyecto').textContent =
+            'Denominación: ' + (document.getElementById('proy-nombre').value.trim() || '—') + '\n' +
+            'Fecha de aprobación: ' + (document.getElementById('proy-fecha').value || '—') + '\n' +
+            'Monto: Bs. ' + (document.getElementById('proy-monto').value.trim() || '—') + '\n' +
+            'Ente financiador: ' + (document.getElementById('proy-financiador').value.trim() || '—') +
+            (document.getElementById('proy-situr').value.trim() ? '\nCódigo SITUR: ' + document.getElementById('proy-situr').value.trim() : '');
+    } else {
+        bloqueProy.style.display = 'none';
+    }
+
+    var otra = document.querySelector('input[name="otra_instancia"]:checked');
+    document.getElementById('res-otra-instancia').textContent = !otra ? '—'
+        : (otra.value === 'si' ? 'Sí — ' + (document.getElementById('cual-instancia').value.trim() || 'instancia no especificada') : 'No');
+
+    // Las tarjetas de señalado y evidencias solo aplican a ciertos trámites
+    document.getElementById('rev-card-senalado').style.display = pasoAplica(3) ? '' : 'none';
+    document.getElementById('rev-card-evidencias').style.display = pasoAplica(5) ? '' : 'none';
 
     // Mostrar botón de PDF
     document.getElementById('btn-guardar-pdf').style.display = 'inline-flex';
@@ -1636,10 +1731,10 @@ function enviarSolicitud() {
 
     // Mostrar en pantalla de confirmación
     document.getElementById('nro-expediente-display').textContent = nroExpediente;
-    document.getElementById('conf-correo').textContent =
-        document.getElementById('cit-correo').value || '—';
-    document.getElementById('conf-fecha').textContent =
-        new Date().toLocaleString('es-VE');
+    var confCorreo = document.getElementById('conf-correo');
+    if (confCorreo) confCorreo.textContent = document.getElementById('cit-correo').value || '—';
+    var confFecha = document.getElementById('conf-fecha');
+    if (confFecha) confFecha.textContent = new Date().toLocaleString('es-VE');
 
     // Ocultar wizard, mostrar confirmación
     document.getElementById('barra-progreso').style.display = 'none';
@@ -1647,7 +1742,8 @@ function enviarSolicitud() {
         var paso = document.getElementById('paso-' + i);
         if (paso) paso.style.display = 'none';
     }
-    document.querySelector('.form-back-btn').style.display = 'none';
+    var btnVolver = document.querySelector('#vista-wizard > .form-back-btn');
+    if (btnVolver) btnVolver.style.display = 'none';
     document.getElementById('vista-confirmacion').style.display = 'block';
 
     document.getElementById('denuncias').scrollIntoView({ behavior: 'smooth', block: 'start' });
@@ -1723,15 +1819,17 @@ function nuevaSolicitud() {
 
     // Reiniciar la secuencia de evidencias (subida de documentos por partes)
     evidenciaIndiceActual = 0;
+    evidenciaEditando = null;
     archivosPorDocumento = {};
     renderSecuenciaEvidencias();
 
     // Resetear contador de narración
-    document.getElementById('narracion-contador').textContent = '0 / 3000 caracteres';
+    document.getElementById('narracion-contador').textContent = '0 / 3500 caracteres';
     document.getElementById('narracion-contador').className = 'contador-chars';
 
     // Mostrar de nuevo el botón volver
-    document.querySelector('.form-back-btn').style.display = '';
+    var btnVolverNuevo = document.querySelector('#vista-wizard > .form-back-btn');
+    if (btnVolverNuevo) btnVolverNuevo.style.display = '';
 
     // Ocultar confirmación
     document.getElementById('vista-confirmacion').style.display = 'none';
@@ -1739,6 +1837,327 @@ function nuevaSolicitud() {
     // Volver a la selección
     volverSeleccion();
 }
+
+
+/* ═══════════════════════════════════════════════════════════
+   VALIDACIÓN EN TIEMPO REAL
+   Muestra los mismos avisos que ya existen al pulsar "Continuar",
+   pero de inmediato: mientras se escribe (solo si hay un error de
+   formato) y al salir del campo (también si está vacío y es
+   obligatorio). Se aplica a todos los pasos del formulario.
+   ═══════════════════════════════════════════════════════════ */
+
+var RE_RIF = /^[JGVECjgvec]-?\d{8,9}-?\d?$/;
+var RE_DOC_SENALADO = /^\d{5,10}$/;
+
+function msgMinimo(n) {
+    return function (v, final) {
+        return (final && v.length < n) ? 'Debe tener al menos ' + n + ' caracteres.' : '';
+    };
+}
+
+/**
+ * Reglas por id de campo. req: obligatorio; check(v, final): devuelve un mensaje si hay error.
+ * "final" es true al salir del campo o al cambiar el valor: ahí se exige que esté completo.
+ * Mientras se escribe solo se avisan los caracteres que no corresponden (p. ej. letras en la cédula).
+ */
+var REGLAS_VIVO = {
+    'cit-tipo-doc': { req: true },
+    'cit-nro-doc': {
+        req: true,
+        check: function (v, final) {
+            if (/\D/.test(v)) return 'Solo se permiten números, sin letras, puntos ni guiones.';
+            if (final && v.length < 5) return 'El documento debe tener entre 5 y 10 dígitos.';
+            return '';
+        }
+    },
+    'cit-primer-nombre': { req: true, check: msgMinimo(2) },
+    'cit-primer-apellido': { req: true, check: msgMinimo(2) },
+    'cit-sexo': { req: true },
+    'cit-fecha-nac': {
+        req: true,
+        check: function (v) {
+            var edad = calcularEdad(v);
+            if (edad === null || edad < 1 || edad > 120) return 'La fecha de nacimiento no es válida.';
+            if (edad < 18) return 'Debe ser mayor de edad (18 años cumplidos).';
+            return '';
+        }
+    },
+    'cit-ecivil': { req: true },
+    'cit-correo': {
+        req: true,
+        check: function (v, final) {
+            if (/\s/.test(v)) return 'El correo no puede contener espacios.';
+            if (!final) return '';
+            if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(v)) return 'Ingrese un correo válido. Ej.: nombre@gmail.com';
+            if (!validarDominioCorreo(v)) return 'Dominio no reconocido. Use gmail.com, hotmail.com, outlook.com, yahoo.com u otro dominio institucional (.gob.ve).';
+            return '';
+        }
+    },
+    'cit-correo2': {
+        req: true,
+        check: function (v, final) {
+            if (!final) return '';
+            return v !== document.getElementById('cit-correo').value.trim() ? 'Los correos no coinciden.' : '';
+        }
+    },
+    'cit-telf-cel-num': {
+        req: true,
+        check: function (v, final) {
+            if (/\D/.test(v)) return 'Solo se permiten números (7 dígitos).';
+            if (!final) return '';
+            if (v.length !== 7) return 'El número debe tener 7 dígitos.';
+            if (!document.getElementById('cit-telf-cel-cod').value) return 'Seleccione el código de operadora.';
+            return '';
+        }
+    },
+    'cit-telf-hab-num': {
+        check: function (v, final) {
+            if (/\D/.test(v)) return 'Solo se permiten números (7 dígitos).';
+            if (!final) return '';
+            if (v.length !== 7) return 'El número debe tener 7 dígitos.';
+            if (!document.getElementById('cit-telf-hab-cod').value) return 'Seleccione el código de área.';
+            return '';
+        }
+    },
+    'cit-parroquia': { req: true },
+    'cit-direccion': { req: true, check: msgMinimo(10) },
+    'sen-ubicacion': { req: true, check: msgMinimo(5) },
+    'proy-nombre': { req: true, check: msgMinimo(4) },
+    'proy-fecha': { req: true },
+    'proy-monto': {
+        req: true,
+        check: function (v, final) {
+            if (/[^\d.,]/.test(v)) return 'Solo se permiten números. Ej.: 500000 o 1250,50';
+            if (final && !/^\d+([.,]\d{1,2})?$/.test(v)) return 'Ingrese un monto válido. Ej.: 500000 o 1250,50';
+            return '';
+        }
+    },
+    'proy-financiador': { req: true, check: msgMinimo(3) },
+    'narracion': {
+        req: true,
+        check: function (v, final) {
+            return (final && v.length < 50) ? 'La narración debe tener al menos 50 caracteres.' : '';
+        }
+    },
+    'cual-instancia': { req: true, check: msgMinimo(3) }
+};
+
+/** Campos opcionales del señalado: solo se validan si se llenan. */
+var REGLAS_SENALADO_OPCIONAL = {
+    'pn-nro-doc': function (v, final) {
+        if (/\D/.test(v)) return 'Solo se permiten números (entre 5 y 10 dígitos).';
+        return (final && !RE_DOC_SENALADO.test(v)) ? 'Debe tener entre 5 y 10 dígitos.' : '';
+    },
+    'jp-nro-doc': function (v, final) {
+        if (/\D/.test(v)) return 'Solo se permiten números (entre 5 y 10 dígitos).';
+        return (final && !RE_DOC_SENALADO.test(v)) ? 'Debe tener entre 5 y 10 dígitos.' : '';
+    },
+    'pj-rif': function (v, final) { return (final && !RE_RIF.test(v)) ? 'Formato de R.I.F. no válido. Ej.: J-12345678-9' : ''; },
+    'oe-rif': function (v, final) { return (final && !RE_RIF.test(v)) ? 'Formato de R.I.F. no válido. Ej.: G-20001628-0' : ''; },
+    'cc-rif': function (v, final) { return (final && !RE_RIF.test(v)) ? 'Formato de R.I.F. no válido. Ej.: J-12345678-9' : ''; },
+    'ot-documento': function (v, final) {
+        return (final && !(RE_DOC_SENALADO.test(v) || RE_RIF.test(v)))
+            ? 'Ingrese una cédula (solo números) o un R.I.F. válido. Ej.: J-12345678-9' : '';
+    }
+};
+
+/** Devuelve el mensaje de error de un campo opcional del señalado lleno, o ''. */
+function mensajeCampoOpcionalSenalado(campo) {
+    var regla = REGLAS_SENALADO_OPCIONAL[campo.dataset.campo];
+    var v = (campo.value || '').trim();
+    return (regla && v) ? regla(v, true) : '';
+}
+
+/** Localiza (o crea) el aviso de error de un campo. */
+function obtenerAvisoVivo(campo) {
+    var mapa = { 'cit-telf-cel-num': 'cit-telf-cel-err', 'cit-telf-hab-num': 'cit-telf-hab-err' };
+    if (campo.id) {
+        var err = document.getElementById(mapa[campo.id] || (campo.id + '-err'));
+        if (err) return err;
+    }
+    var grupo = campo.closest('.form-group');
+    if (!grupo) return null;
+    var vivo = grupo.querySelector('.error-msg[data-vivo]');
+    if (!vivo) {
+        vivo = document.createElement('span');
+        vivo.className = 'error-msg';
+        vivo.setAttribute('data-vivo', '1');
+        grupo.appendChild(vivo);
+    }
+    return vivo;
+}
+
+/** Muestra u oculta el aviso de un campo. mensaje: null = válido; '' = mensaje por defecto. */
+function mostrarEstadoVivo(campo, mensaje) {
+    var err = obtenerAvisoVivo(campo);
+    if (err && err.dataset.orig === undefined) err.dataset.orig = err.textContent;
+    if (mensaje === null) {
+        campo.classList.remove('invalid');
+        if (err) err.classList.remove('visible');
+        return;
+    }
+    campo.classList.add('invalid');
+    if (err) {
+        err.textContent = mensaje || err.dataset.orig || 'Revise este campo.';
+        err.classList.add('visible');
+    }
+}
+
+/** Evalúa un campo y actualiza su aviso. alSalir: true al perder el foco o cambiar el valor. */
+function validarCampoVivo(campo, alSalir) {
+    var v = (campo.value || '').trim();
+    var dinamico = campo.closest && campo.closest('#lista-senalados');
+
+    if (dinamico) {
+        var opcional = REGLAS_SENALADO_OPCIONAL[campo.dataset.campo];
+        if (opcional) {
+            mostrarEstadoVivo(campo, v ? (opcional(v, alSalir) || null) : null);
+        } else if (campo.classList.contains('campo-dinamico-req')) {
+            if (v === '') mostrarEstadoVivo(campo, alSalir ? 'Este campo es obligatorio.' : null);
+            else mostrarEstadoVivo(campo, (alSalir && v.length < 3) ? 'Debe tener al menos 3 caracteres.' : null);
+        }
+        return;
+    }
+
+    var regla = REGLAS_VIVO[campo.id];
+    if (!regla) return;
+    if (v === '') {
+        mostrarEstadoVivo(campo, (regla.req && alSalir) ? '' : null);
+        return;
+    }
+    var msg = regla.check ? regla.check(v, alSalir) : '';
+    mostrarEstadoVivo(campo, msg ? msg : null);
+}
+
+['input', 'change', 'focusout'].forEach(function (tipoEvento) {
+    document.addEventListener(tipoEvento, function (e) {
+        var el = e.target;
+        if (!el || !el.closest || !el.closest('#vista-wizard')) return;
+        var alSalir = tipoEvento !== 'input';
+
+        // Los selectores de código revalidan el número de teléfono asociado
+        if (el.id === 'cit-telf-cel-cod') el = document.getElementById('cit-telf-cel-num');
+        if (el.id === 'cit-telf-hab-cod') el = document.getElementById('cit-telf-hab-num');
+
+        validarCampoVivo(el, alSalir || el !== e.target);
+
+        // Dependencias entre campos
+        if (el.id === 'cit-correo') {
+            var c2 = document.getElementById('cit-correo2');
+            if (c2 && c2.value.trim()) validarCampoVivo(c2, true);
+        }
+    });
+});
+
+
+/** Una línea por señalado: "Tipo: Nombre". */
+function obtenerLineasSenalados() {
+    var lineas = [];
+    document.querySelectorAll('#lista-senalados .senalado-card').forEach(function (t) {
+        var m = t.querySelector('[data-campo="tipo-senalado"]:checked');
+        var op = m ? TIPOS_SENALADO_OPCIONES.find(function (x) { return x.valor === m.value; }) : null;
+        var nombre = valorCampoSenalado(t, 'pn-nombres') || valorCampoSenalado(t, 'pj-razon') ||
+            valorCampoSenalado(t, 'oe-nombre') || valorCampoSenalado(t, 'cm-nombre') ||
+            valorCampoSenalado(t, 'cc-nombre') || valorCampoSenalado(t, 'jp-nombres') ||
+            valorCampoSenalado(t, 'ot-nombre');
+        if (op || nombre) lineas.push((op ? op.etiqueta : 'Señalado') + (nombre ? ': ' + nombre : ''));
+    });
+    return lineas;
+}
+
+/* ═══════════════════════════════════════════════════════════
+   UTILIDADES DE REVISIÓN Y EVIDENCIAS CARGADAS
+   ═══════════════════════════════════════════════════════════ */
+
+function escaparHtml(texto) {
+    return String(texto).replace(/[&<>"']/g, function (c) {
+        return { '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c];
+    });
+}
+
+/** Lista todos los archivos cargados, con el nombre del documento al que pertenecen. */
+function obtenerEvidenciasCargadas() {
+    var items = [];
+    EVIDENCIAS_ITEMS.forEach(function (it) {
+        (archivosPorDocumento[it.valor] || []).forEach(function (a) {
+            items.push({ doc: it.etiqueta, nombre: a.name });
+        });
+    });
+    return { total: items.length, items: items };
+}
+
+/** Indica si un paso aplica según el tipo de trámite elegido. */
+function pasoAplica(n) {
+    var r = document.querySelector('input[name="tipo_tramite"]:checked');
+    var tipo = r ? r.value : '';
+    if (n === 3) return tipo === 'denuncia' || tipo === 'queja';
+    if (n === 5) return tipo !== 'sugerencia';
+    return true;
+}
+
+/* ═══════════════════════════════════════════════════════════
+   EDICIÓN DESDE LA REVISIÓN
+   "Editar" lleva al apartado elegido; al terminar, "Listo" valida
+   y devuelve a la revisión con el resumen actualizado.
+   ═══════════════════════════════════════════════════════════ */
+
+var modoEdicionRevision = false;
+
+function salirModoEdicionRevision() {
+    modoEdicionRevision = false;
+    document.querySelectorAll('.wizard-nav-edicion').forEach(function (e) { e.remove(); });
+    document.querySelectorAll('#vista-wizard .wizard-nav').forEach(function (n) { n.style.display = ''; });
+}
+
+function editarDesdeRevision(paso) {
+    salirModoEdicionRevision();
+    modoEdicionRevision = true;
+    pasoActual = paso;
+
+    var pasoEl = document.getElementById('paso-' + paso);
+    var navOriginal = pasoEl.querySelector('.wizard-nav');
+    if (navOriginal) navOriginal.style.display = 'none';
+
+    var barra = document.createElement('div');
+    barra.className = 'wizard-nav wizard-nav-edicion';
+    barra.style.justifyContent = 'space-between';
+    barra.innerHTML =
+        '<div class="nota-info" style="flex:1;min-width:220px;">Está corrigiendo este apartado desde la revisión. ' +
+        'Al terminar, pulse <strong>Listo</strong> para volver al resumen.</div>' +
+        '<button type="button" class="btn-submit" style="background:#1565c0;" onclick="finalizarEdicionRevision()">' +
+        '<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg>' +
+        ' Listo</button>';
+    pasoEl.appendChild(barra);
+
+    mostrarPaso(paso);
+    if (paso === 4 && typeof actualizarAvisoContexto === 'function') actualizarAvisoContexto();
+}
+
+function finalizarEdicionRevision() {
+    var paso = pasoActual;
+    if (!validarPaso(paso)) return;
+
+    // Si el cambio afecta a otros apartados (p. ej. otro tipo de trámite), se revisan también
+    for (var n = 2; n <= 5; n++) {
+        if (n === paso || !pasoAplica(n)) continue;
+        if (!validarPaso(n)) { editarDesdeRevision(n); return; }
+    }
+
+    salirModoEdicionRevision();
+    poblarResumen();
+    if (typeof actualizarResumenFinal === 'function') actualizarResumenFinal();
+    pasoActual = 6;
+    mostrarPaso(6);
+}
+
+/* Al indicar que la denuncia es sobre un proyecto de consulta popular, se muestran sus datos */
+document.addEventListener('change', function (e) {
+    if (e.target && e.target.name === 'es_consulta') {
+        var bloque = document.getElementById('bloque-proyecto-consulta');
+        if (bloque) bloque.style.display = (e.target.value === 'si') ? 'block' : 'none';
+    }
+});
 
 
 /* ═══════════════════════════════════════════════════════════
