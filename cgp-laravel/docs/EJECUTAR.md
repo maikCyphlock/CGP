@@ -1,6 +1,6 @@
 # Cómo ejecutar cgp-laravel (paso a paso)
 
-> Esta guía es para Linux/macOS. ¿Usas **Windows**? Ve a [`EJECUTAR_WINDOWS.md`](EJECUTAR_WINDOWS.md) (con o sin WSL, con o sin Docker).
+> Esta guía es para Linux/macOS. ¿Usas **Windows**? Ve a [`EJECUTAR_WINDOWS.md`](EJECUTAR_WINDOWS.md) (Docker sin WSL, solo terminal).
 
 Sistema web de la Contraloría del Municipio Páez: portal público, formulario de denuncias y dos paneles internos (`/oac` y `/admin`).
 
