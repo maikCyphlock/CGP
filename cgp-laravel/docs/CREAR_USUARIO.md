@@ -13,77 +13,52 @@ Hay un problema de "el huevo y la gallina": para crear usuarios desde el panel h
 
 ## 1. Crear el primer administrador (por consola)
 
-### 1.1 Abre Tinker
+### 1.1 Ejecuta el comando
 
 Desde `cgp-laravel/`. Con Docker (Opción A):
 
 ```bash
-docker compose exec app php artisan tinker
+docker compose exec app php artisan cgp:admin
 ```
 
 Con PHP local (Opción B):
 
 ```bash
-php artisan tinker
+php artisan cgp:admin
 ```
 
-Aparece un prompt `>`. Es una consola de PHP con todo Laravel cargado.
+### 1.2 Responde las preguntas
 
-### 1.2 Pega el bloque (cambia los datos entre comillas)
+| Pregunta | Reglas |
+|---|---|
+| Nombres / Apellidos | Hasta 80 caracteres cada uno |
+| Cédula | Solo números, máx. 12 caracteres, única |
+| Correo | Es el usuario de login. Se guarda en minúsculas; único |
+| Contraseña / Repita la contraseña | Mínimo 8 caracteres; no se ve al escribir |
 
-Edita **antes de pegar** los 5 valores marcados con `←`. Cada línea es una instrucción completa, así que puedes pegar todo de una vez.
+El comando:
 
-```php
-use App\Models\StaffUser; use Illuminate\Support\Facades\DB;
-$cargo = DB::table('job_position')->where('title', 'Administrador del sistema')->value('id') ?? DB::table('job_position')->insertGetId(['title' => 'Administrador del sistema', 'description' => 'Acceso total al sistema']);
-$u = StaffUser::create(['job_position_id' => $cargo, 'id_doc_type_id' => DB::table('id_document_type')->where('code', 'V')->value('id'), 'id_doc_number' => '12345678', 'first_name' => 'Nombre', 'last_name' => 'Apellido', 'email' => 'admin@cgp.test', 'password_hash' => 'CambiaEstaClave123']);
-DB::statement('INSERT INTO staff_privilege (user_id, module_id, can_read, can_write, can_delete, granted_by) SELECT ?, id, TRUE, TRUE, TRUE, ? FROM app_module', [$u->id, $u->id]);
-echo "Listo: {$u->email}\n";
-```
+1. Crea el cargo **Administrador del sistema** si no existe (todo usuario necesita un cargo).
+2. Crea el usuario con cédula tipo `V` (venezolana).
+3. Le da **lectura, escritura y borrado en los 8 módulos** (expedientes, clasificación, usuarios, accesos, estadísticas, página web, catálogos y reportes). Con eso entra a `/oac` y a `/admin`.
 
-Los valores a cambiar, todos en la línea que empieza por `$u = StaffUser::create(`:
+Termina con `Listo. Ya puede entrar con tu@correo`. Si hay un error, lo muestra y no crea nada: corrige y vuelve a ejecutarlo.
 
-| Campo | Valor de ejemplo | Reglas |
-|---|---|---|
-| `id_doc_number` | `'12345678'` | Cédula, máx. 12 caracteres, única |
-| `first_name` | `'Nombre'` ← | Nombres |
-| `last_name` | `'Apellido'` ← | Apellidos |
-| `email` | `'admin@cgp.test'` ← | **En minúsculas**; es el usuario de login; único |
-| `password_hash` | `'CambiaEstaClave123'` ← | Mínimo 8 caracteres. Escribe la clave **en claro**: Laravel la cifra sola (bcrypt) al guardar |
+### 1.3 Errores típicos
 
-Qué hace cada línea:
-
-1. Importa las clases.
-2. Busca el cargo "Administrador del sistema"; si no existe, lo crea. (Todo usuario necesita un cargo.)
-3. Crea el usuario con cédula tipo `V` (venezolana). Para extranjero cambia `'V'` por `'E'`.
-4. Le da **lectura, escritura y borrado en los 8 módulos**: expedientes, clasificación, usuarios, accesos, estadísticas, página web, catálogos y reportes. Con eso entra tanto a `/oac` como a `/admin`.
-5. Imprime confirmación.
-
-Si todo salió bien, la última línea muestra `Listo: admin@cgp.test`.
-
-### 1.3 Sal de Tinker
-
-```
-exit
-```
-
-(o `Ctrl+D`).
+| Mensaje | Qué hacer |
+|---|---|
+| `Ya existe un usuario con ese correo` / `con esa cédula` | Usa otro, o resetea la clave del existente (sección 4) |
+| `Las contraseñas no coinciden` | Vuelve a ejecutar y escríbela igual las dos veces |
+| `The password field must be at least 8 characters` | Usa 8 o más caracteres |
+| `relation "staff_user" does not exist` | Sin esquema: aplica las migraciones ([`EJECUTAR.md`](EJECUTAR.md), A.6) |
+| `Command "cgp:admin" is not defined` | Código desactualizado: `git pull` y `php artisan optimize:clear` |
 
 ### 1.4 Inicia sesión
 
-Abre <http://localhost:8001/admin/login> (Opción B: <http://127.0.0.1:8000/admin/login>) e ingresa el correo y la clave del paso 1.2.
+Abre <http://localhost:8001/admin/login> (Opción B: <http://127.0.0.1:8000/admin/login>) e ingresa el correo y la clave que escribiste.
 
 Entras al panel de Administración. Desde ahí puedes pasar a la OAC en <http://localhost:8001/oac/login> (la sesión es la misma cuenta).
-
-### 1.5 Errores típicos al crearlo
-
-| Mensaje | Qué pasó | Qué hacer |
-|---|---|---|
-| `duplicate key value violates unique constraint` | Ya existe ese correo o esa cédula | Usa otros, o resetea la clave del existente (sección 4) |
-| `value too long for type character varying` | Cédula de más de 12 caracteres | Acórtala |
-| `relation "staff_user" does not exist` | Sin esquema | Aplica las migraciones ([`EJECUTAR.md`](EJECUTAR.md), A.6) |
-| Se creó el usuario pero no entra a ningún panel | Falló la línea de privilegios | Ver sección 3 |
-| Pegar en Tinker se corta a medias | La terminal rompió el pegado | Pega línea por línea |
 
 ---
 

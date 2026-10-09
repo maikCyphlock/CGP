@@ -88,33 +88,22 @@ La primera vez tarda varios minutos. Al final de `migrate` verás una lista de l
 
 ## Paso 7. Crea tu usuario administrador
 
-Pega esto para entrar a la consola del sistema:
-
 ```powershell
-docker compose exec app php artisan tinker
+docker compose exec app php artisan cgp:admin
 ```
 
-Aparece un `>`. **Antes de pegar el siguiente bloque**, cámbiale tus datos en un Bloc de notas:
-- `Nombre` y `Apellido`: los tuyos.
-- `12345678`: tu cédula.
-- `admin@cgp.test`: tu correo, **en minúsculas**. Con este correo vas a entrar.
-- `CambiaEstaClave123`: tu contraseña (mínimo 8 caracteres).
+El sistema te hace 6 preguntas. **Escribe la respuesta y presiona Enter** después de cada una:
 
-Mantén las comillas `'` tal como están. Luego copia el bloque ya editado y pégalo:
+| Pregunta | Qué escribir |
+|---|---|
+| Nombres | Tu nombre |
+| Apellidos | Tu apellido |
+| Cédula | Solo números, sin puntos |
+| Correo | Tu correo. Con él vas a entrar al sistema |
+| Contraseña | Mínimo 8 caracteres. **No se ve mientras escribes**, es normal |
+| Repita la contraseña | La misma de arriba |
 
-```php
-use App\Models\StaffUser; use Illuminate\Support\Facades\DB;
-$cargo = DB::table('job_position')->where('title', 'Administrador del sistema')->value('id') ?? DB::table('job_position')->insertGetId(['title' => 'Administrador del sistema', 'description' => 'Acceso total al sistema']);
-$u = StaffUser::create(['job_position_id' => $cargo, 'id_doc_type_id' => DB::table('id_document_type')->where('code', 'V')->value('id'), 'id_doc_number' => '12345678', 'first_name' => 'Nombre', 'last_name' => 'Apellido', 'email' => 'admin@cgp.test', 'password_hash' => 'CambiaEstaClave123']);
-DB::statement('INSERT INTO staff_privilege (user_id, module_id, can_read, can_write, can_delete, granted_by) SELECT ?, id, TRUE, TRUE, TRUE, ? FROM app_module', [$u->id, $u->id]);
-echo "Listo: {$u->email}\n";
-```
-
-Debe aparecer `Listo:` con tu correo. Si aparece un error, ve a [`CREAR_USUARIO.md`](CREAR_USUARIO.md), sección 1.5. Para salir de la consola escribe:
-
-```
-exit
-```
+Al final debe aparecer **"Listo. Ya puede entrar con..."**. Si aparece un error en rojo (por ejemplo, "Ya existe un usuario con ese correo"), léelo, y vuelve a ejecutar el mismo comando.
 
 ## Paso 8. ¡Listo! Entra al sistema
 

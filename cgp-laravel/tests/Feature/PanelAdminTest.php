@@ -447,4 +447,19 @@ class PanelAdminTest extends TestCase
         $this->get('/admin/monitoreo')->assertOk();
         $this->post("/admin/monitoreo/usuarios/{$otro->id}/desbloquear")->assertForbidden();
     }
+
+    public function test_comando_crea_administrador_con_acceso_total(): void
+    {
+        $this->artisan('cgp:admin')
+            ->expectsQuestion('Nombres', 'Ana')
+            ->expectsQuestion('Apellidos', 'Pérez')
+            ->expectsQuestion('Cédula (solo números)', '12345678')
+            ->expectsQuestion('Correo', 'Ana@CGP.test')
+            ->expectsQuestion('Contraseña (mínimo 8 caracteres)', 'clave-segura')
+            ->expectsQuestion('Repita la contraseña', 'clave-segura')
+            ->assertSuccessful();
+
+        $u = StaffUser::where('email', 'ana@cgp.test')->firstOrFail();
+        $this->assertTrue($u->accede('oac') && $u->accede('admin'));
+    }
 }
