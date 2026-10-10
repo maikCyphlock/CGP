@@ -3,8 +3,8 @@
   Instala y enciende cgp-laravel en Windows con Docker Desktop (motor Hyper-V, sin WSL).
 
 .DESCRIPTION
-  Un solo script: activa Hyper-V, instala Git y Docker Desktop, descarga el proyecto,
-  lo configura, lo enciende y crea un usuario administrador por defecto.
+  Un solo script: activa Hyper-V, instala Git y Docker Desktop, descarga el proyecto y
+  luego llama a levantar-docker.ps1 (configura, enciende y crea el administrador).
   Se puede ejecutar varias veces: salta lo que ya esta hecho.
 
 .PARAMETER Carpeta  Donde se descarga el proyecto.        (por defecto: $HOME\proyectos)
@@ -77,7 +77,7 @@ function Esperar($texto, $segundos, [scriptblock]$listo) {
 
 try {
     # --- 1. Docker ---
-    Paso '1/6  Docker'
+    Paso '1/3  Docker'
     ActualizarPath
     if ((Silencioso docker info) -ne 0) {
         if (-not (Get-Command docker -ErrorAction SilentlyContinue)) {
@@ -108,7 +108,7 @@ try {
     else { Write-Host 'Docker ya esta funcionando.' }
 
     # --- 2. Proyecto ---
-    Paso '2/6  Proyecto'
+    Paso '2/3  Proyecto'
     if (Test-Path "$PSScriptRoot\docker-compose.yml") { $dir = $PSScriptRoot }
     else {
         if (-not (Get-Command git -ErrorAction SilentlyContinue)) {
@@ -130,53 +130,10 @@ try {
     Set-Location $dir
     Write-Host "Carpeta: $dir"
 
-    # --- 3. Configuracion ---
-    Paso '3/6  Configuracion'
-    if (-not (Test-Path .env)) { Copy-Item .env.example .env }
-    $env_ = [IO.File]::ReadAllText("$dir\.env")
-    $env_ = $env_ -replace '(?m)^APP_URL=.*$', "APP_URL=http://localhost:$Puerto"
-    if ($env_ -match '(?m)^APP_PORT=') { $env_ = $env_ -replace '(?m)^APP_PORT=.*$', "APP_PORT=$Puerto" }
-    else { $env_ = $env_.TrimEnd() + "`nAPP_PORT=$Puerto`n" }
-    [IO.File]::WriteAllText("$dir\.env", $env_, (New-Object Text.UTF8Encoding $false))   # UTF-8 sin BOM
-
-    if (-not (Test-Path vendor\autoload.php)) {
-        Write-Host 'Instalando dependencias PHP (tarda unos minutos)...'
-        Ejecutar docker run --rm -v "${dir}:/app" -w /app composer:2 install --no-interaction --prefer-dist --ignore-platform-reqs
-    }
-
-    # --- 4. Encender ---
-    Paso '4/6  Encendiendo el sistema (la primera vez tarda varios minutos)'
-    Ejecutar docker compose up -d --build
-    if (-not (Esperar 'Esperando la base de datos' 180 { (Silencioso docker compose exec -T db pg_isready -U cgp -d cgp) -eq 0 })) {
-        throw 'La base de datos no arranco. Mira el motivo con: docker compose logs db'
-    }
-
-    # --- 5. Base de datos y administrador ---
-    Paso '5/6  Base de datos y usuario administrador'
-    if ([IO.File]::ReadAllText("$dir\.env") -notmatch '(?m)^APP_KEY=\S') { Ejecutar docker compose exec -T app php artisan key:generate --force }
-    Ejecutar docker compose exec -T app php artisan migrate --force
-    Ejecutar docker compose exec -T app php artisan cgp:admin --defecto --correo $Correo --clave $Clave
-
-    # --- 6. Listo ---
-    Paso '6/6  Listo'
-    $url = "http://localhost:$Puerto"
-    Write-Host @"
-
-  El sistema esta funcionando.
-
-  Administracion : $url/admin/login
-  Oficina (OAC)  : $url/oac/login
-  Pagina publica : $url/
-
-  Usuario : $Correo
-  Clave   : $Clave
-
-  Para apagarlo : docker compose stop      (dentro de $dir)
-  Para prenderlo: docker compose start     (con Docker Desktop abierto)
-
-"@ -ForegroundColor Green
-    if ($Clave -eq 'admin') { Write-Host '  Aviso: esta clave es solo para pruebas. Si el sistema es real, cambia el usuario (ver docs\CREAR_USUARIO.md).' -ForegroundColor Yellow }
-    Start-Process "$url/admin/login"
+    # --- 3. Encender (comandos de Docker) ---
+    Paso '3/3  Encendiendo el sistema'
+    & "$dir\levantar-docker.ps1" -Puerto $Puerto -Correo $Correo -Clave $Clave
+    Start-Process "http://localhost:$Puerto/admin/login"
 }
 catch {
     Write-Host "`nERROR: $($_.Exception.Message)" -ForegroundColor Red

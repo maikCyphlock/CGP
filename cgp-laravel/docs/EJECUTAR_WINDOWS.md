@@ -48,6 +48,22 @@ Entra con ese usuario y esa clave.
 
 ---
 
+## ¿Ya tienes Docker Desktop encendido? Usa el script corto
+
+[`levantar-docker.ps1`](../levantar-docker.ps1) **no instala nada**: solo ejecuta los comandos de Docker (crea el `.env`, instala `vendor/`, levanta los contenedores, migra y crea el administrador). Úsalo si ya tienes Docker y el proyecto descargado.
+
+1. Abre **Docker Desktop** y espera a que diga *Engine running*.
+2. En PowerShell, dentro de la carpeta `cgp-laravel`:
+
+   ```powershell
+   Set-ExecutionPolicy -Scope Process Bypass -Force
+   .\levantar-docker.ps1
+   ```
+
+Acepta los mismos parámetros `-Puerto`, `-Correo` y `-Clave`. Es lo mismo que hace el script completo desde el paso en que arranca Docker, y se puede repetir sin problema.
+
+---
+
 ## Cambiar valores (opcional)
 
 Todo se puede personalizar con parámetros. Ejemplo (en el Paso 2, cambia la última línea):
