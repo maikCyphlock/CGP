@@ -10,26 +10,41 @@ use Illuminate\Validation\Rules\Password;
 
 class CrearAdmin extends Command
 {
-    protected $signature = 'cgp:admin';
+    protected $signature = 'cgp:admin
+        {--defecto : No pregunta nada: usa admin@admin.com / admin salvo lo que den --correo y --clave}
+        {--correo= : Correo del administrador}
+        {--clave= : Contraseña del administrador}';
 
     protected $description = 'Crea un usuario administrador con acceso total (OAC y Administración)';
 
     public function handle(): int
     {
-        $d = [
-            'first_name' => trim($this->ask('Nombres')),
-            'last_name' => trim($this->ask('Apellidos')),
-            'id_doc_number' => trim($this->ask('Cédula (solo números)')),
-            'email' => mb_strtolower(trim($this->ask('Correo'))),
-            'password' => (string) $this->secret('Contraseña (mínimo 8 caracteres)'),
-        ];
+        $def = $this->option('defecto');
+        $correo = mb_strtolower(trim($this->option('correo') ?: ($def ? 'admin@admin.com' : $this->ask('Correo'))));
 
-        $v = Validator::make($d + ['repetida' => (string) $this->secret('Repita la contraseña')], [
+        // Con --defecto el comando se puede repetir sin error (lo usa el instalador).
+        if ($def && StaffUser::withoutGlobalScopes()->where('email', $correo)->exists()) {
+            $this->info("Ya existe el usuario $correo; no se cambió nada.");
+
+            return self::SUCCESS;
+        }
+
+        $d = [
+            'first_name' => $def ? 'Administrador' : trim($this->ask('Nombres')),
+            'last_name' => $def ? 'Sistema' : trim($this->ask('Apellidos')),
+            'id_doc_number' => $def ? '00000001' : trim($this->ask('Cédula (solo números)')),
+            'email' => $correo,
+            'password' => (string) ($this->option('clave') ?: ($def ? 'admin' : $this->secret('Contraseña (mínimo 8 caracteres)'))),
+        ];
+        $repetida = $def || $this->option('clave') ? $d['password'] : (string) $this->secret('Repita la contraseña');
+
+        // La clave por defecto (admin) es corta a propósito: solo se exige el mínimo cuando la escribe una persona.
+        $v = Validator::make($d + ['repetida' => $repetida], [
             'first_name' => 'required|max:80',
             'last_name' => 'required|max:80',
             'id_doc_number' => 'required|max:12|unique:staff_user,id_doc_number',
             'email' => 'required|email|max:150|unique:staff_user,email',
-            'password' => ['required', 'same:repetida', Password::min(8)],
+            'password' => ['required', 'same:repetida', $def ? 'min:1' : Password::min(8)],
         ], [
             'required' => 'Falta el campo :attribute.',
             'unique' => 'Ya existe un usuario con ese :attribute.',

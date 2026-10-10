@@ -13,6 +13,8 @@ Hay un problema de "el huevo y la gallina": para crear usuarios desde el panel h
 
 ## 1. Crear el primer administrador (por consola)
 
+> En Windows, el script de [`EJECUTAR_WINDOWS.md`](EJECUTAR_WINDOWS.md) ya crea el administrador `admin@admin.com` / `admin`. Para otro correo o clave: `php artisan cgp:admin --defecto --correo tu@correo --clave TuClave`, o sin opciones para que pregunte.
+
 ### 1.1 Ejecuta el comando
 
 Desde `cgp-laravel/`. Con Docker (Opción A):

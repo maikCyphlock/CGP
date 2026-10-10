@@ -1,156 +1,99 @@
-# Instalar el sistema en Windows (guía fácil)
+# Instalar el sistema en Windows (un solo script)
 
-Solo tienes que **copiar cada bloque gris, pegarlo en la ventana azul de PowerShell y presionar Enter**. Espera a que termine antes de pasar al siguiente.
+Un único script de PowerShell hace **todo**: activa Hyper-V, instala Git y Docker Desktop (sin WSL), descarga el sistema, lo configura, lo enciende y crea un usuario administrador.
 
-**Antes de empezar, necesitas:**
-- Windows 10 u 11 versión **Pro**, **Enterprise** o **Education** (no *Home*).
-- Conexión a internet y unos 30 minutos la primera vez.
-
-> ¿No sabes tu versión? Haz el paso 1 y mira el resultado de la primera línea: si dice *Home*, esta guía no sirve para tu equipo.
+**Necesitas:**
+- Windows 10 u 11 **Pro, Enterprise o Education** (no *Home*).
+- Internet y unos 30 minutos la primera vez.
 
 ---
 
-## Paso 1. Abre PowerShell como administrador
+## Paso 1. Abre PowerShell
 
-1. Presiona la tecla **Windows** del teclado.
-2. Escribe `PowerShell`.
-3. Clic derecho sobre **Windows PowerShell** → **Ejecutar como administrador** → **Sí**.
+Tecla **Windows** → escribe `PowerShell` → **Enter**. (No hace falta que sea administrador: el script lo pide solo.)
 
-Se abre una ventana azul. Pega esto:
+## Paso 2. Pega esto y presiona Enter
 
-```powershell
-(Get-CimInstance Win32_OperatingSystem).Caption
-```
-
-Debe aparecer algo como *Microsoft Windows 11 Pro*. Si dice *Home*, no sigas.
-
-*(Para pegar en PowerShell: clic derecho dentro de la ventana.)*
-
-## Paso 2. Prepara Windows y reinicia
+Pega con **clic derecho** dentro de la ventana:
 
 ```powershell
-Enable-WindowsOptionalFeature -Online -FeatureName Microsoft-Hyper-V -All -NoRestart
-Restart-Computer
+Set-ExecutionPolicy -Scope Process Bypass -Force
+irm https://raw.githubusercontent.com/maikCyphlock/CGP/main/cgp-laravel/instalar-windows.ps1 -OutFile $HOME\instalar-cgp.ps1
+& $HOME\instalar-cgp.ps1
 ```
 
-El equipo se reinicia solo. Cuando vuelva, repite el **Paso 1** (abrir PowerShell como administrador).
+Aparece una ventana pidiendo permisos de administrador: pulsa **Sí**. Se abre una ventana azul que va mostrando los pasos.
 
-## Paso 3. Instala los programas
+## Paso 3. Si pide reiniciar, reinicia y repite
 
-```powershell
-winget install -e --id Git.Git --accept-package-agreements --accept-source-agreements
-Invoke-WebRequest "https://desktop.docker.com/win/main/amd64/Docker%20Desktop%20Installer.exe" -OutFile "$env:TEMP\DockerInstaller.exe"
-Start-Process "$env:TEMP\DockerInstaller.exe" -Wait -ArgumentList "install","--quiet","--accept-license","--backend=hyper-v","--always-run-service"
-net localgroup docker-users $env:USERNAME /add
+La primera vez Windows necesita reiniciarse para activar Hyper-V. El script avisa: responde `S`. Cuando la computadora vuelva, **repite el Paso 1 y el Paso 2**. El script salta lo que ya está hecho y sigue donde se quedó.
+
+## Paso 4. Espera el mensaje verde
+
+Al terminar, el script abre el navegador y muestra:
+
+```
+Administracion : http://localhost:8001/admin/login
+Oficina (OAC)  : http://localhost:8001/oac/login
+
+Usuario : admin@admin.com
+Clave   : admin
 ```
 
-Tarda varios minutos y no muestra mucho: es normal. Cuando vuelva a aparecer la línea para escribir, ejecuta:
+Entra con ese usuario y esa clave.
 
-```powershell
-logoff
-```
-
-Tu sesión de Windows se cierra. **Vuelve a entrar** con tu usuario y contraseña.
-
-## Paso 4. Enciende Docker
-
-Abre PowerShell normal (esta vez **no** hace falta administrador) y pega:
-
-```powershell
-Start-Process "C:\Program Files\Docker\Docker\Docker Desktop.exe"
-while (-not (docker info 2>$null)) { Start-Sleep 5 }
-```
-
-Espera hasta que vuelva a aparecer la línea para escribir (1 o 2 minutos). Es la señal de que Docker ya está listo.
-
-## Paso 5. Descarga el sistema
-
-```powershell
-mkdir $HOME\proyectos
-cd $HOME\proyectos
-git clone https://github.com/maikCyphlock/CGP.git
-cd CGP\cgp-laravel
-copy .env.example .env
-docker run --rm -v "${PWD}:/app" -w /app composer:2 install --no-interaction --prefer-dist --ignore-platform-reqs
-```
-
-> Si `git` no se reconoce, cierra PowerShell, ábrelo de nuevo y repite desde la línea `mkdir`.
-
-## Paso 6. Enciende el sistema
-
-```powershell
-docker compose up -d --build
-docker compose exec app php artisan key:generate
-docker compose exec app php artisan migrate
-```
-
-La primera vez tarda varios minutos. Al final de `migrate` verás una lista de líneas con la palabra **DONE**. Eso significa que todo salió bien.
-
-## Paso 7. Crea tu usuario administrador
-
-```powershell
-docker compose exec app php artisan cgp:admin
-```
-
-El sistema te hace 6 preguntas. **Escribe la respuesta y presiona Enter** después de cada una:
-
-| Pregunta | Qué escribir |
-|---|---|
-| Nombres | Tu nombre |
-| Apellidos | Tu apellido |
-| Cédula | Solo números, sin puntos |
-| Correo | Tu correo. Con él vas a entrar al sistema |
-| Contraseña | Mínimo 8 caracteres. **No se ve mientras escribes**, es normal |
-| Repita la contraseña | La misma de arriba |
-
-Al final debe aparecer **"Listo. Ya puede entrar con..."**. Si aparece un error en rojo (por ejemplo, "Ya existe un usuario con ese correo"), léelo, y vuelve a ejecutar el mismo comando.
-
-## Paso 8. ¡Listo! Entra al sistema
-
-Abre el navegador y entra a:
-
-- **Administración:** <http://localhost:8001/admin/login>
-- **Oficina de Atención al Ciudadano:** <http://localhost:8001/oac/login>
-- **Página pública:** <http://localhost:8001/>
-
-Entra con el correo y la contraseña del paso 7.
+> **El usuario se llama `admin@admin.com`** (no solo `admin`): el sistema pide que el usuario sea un correo.
+>
+> ⚠ La clave `admin` es solo para pruebas. Si el sistema es real, crea tu propio administrador (ver [`CREAR_USUARIO.md`](CREAR_USUARIO.md)) y desactiva el de prueba.
 
 ---
 
-## Después: apagar y encender
+## Cambiar valores (opcional)
 
-Cada vez que reinicies la computadora:
+Todo se puede personalizar con parámetros. Ejemplo (en el Paso 2, cambia la última línea):
 
-1. Abre PowerShell y pega:
+```powershell
+& $HOME\instalar-cgp.ps1 -Puerto 8080 -Correo jefe@cgp.gob -Clave "OtraClave123"
+```
 
-   ```powershell
-   Start-Process "C:\Program Files\Docker\Docker\Docker Desktop.exe"
-   while (-not (docker info 2>$null)) { Start-Sleep 5 }
-   ```
+| Parámetro | Qué es | Por defecto |
+|---|---|---|
+| `-Carpeta` | Dónde se descarga el sistema | `C:\Users\TU_USUARIO\proyectos` |
+| `-Puerto` | Puerto de la página en tu equipo | `8001` |
+| `-Correo` | Usuario administrador inicial | `admin@admin.com` |
+| `-Clave` | Contraseña del administrador inicial | `admin` |
 
-2. Espera a que termine. El sistema ya funciona en <http://localhost:8001/>.
+---
 
-Para apagarlo del todo:
+## Uso diario
+
+Cada vez que reinicies la computadora, abre **Docker Desktop** (menú Inicio) y espera a que diga *Engine running*. El sistema se enciende solo en <http://localhost:8001/>.
+
+Para apagarlo o encenderlo a mano, en PowerShell:
 
 ```powershell
 cd $HOME\proyectos\CGP\cgp-laravel
-docker compose stop
+docker compose stop     # apagar
+docker compose start    # encender
 ```
 
-Para encenderlo de nuevo: `docker compose start`.
-
 > ⚠ **Nunca** uses `docker compose down -v`: borra toda la información (usuarios y denuncias).
+
+Para actualizar el sistema a la última versión, repite los Pasos 1 y 2: el script descarga los cambios y vuelve a configurar sin borrar datos.
 
 ---
 
 ## Si algo sale mal
 
-| Qué ves | Qué hacer |
+El script se detiene y muestra un mensaje en **rojo** que dice qué pasó. Los más comunes:
+
+| Mensaje | Qué hacer |
 |---|---|
-| *No se reconoce el término `docker`* o `git` | Cierra la ventana, abre PowerShell nuevo. Si sigue, reinicia la computadora |
-| *error during connect* / *cannot find the file specified* | Docker no está encendido: repite el **Paso 4** |
-| *Access denied* al usar `docker` | Repite el paso 3 desde `net localgroup...` y luego `logoff` |
-| El error menciona *virtualization* | Hay que activar la **virtualización** en la BIOS de tu equipo (pide ayuda a quien te da soporte técnico) |
-| *port is already allocated* | Otro programa usa el mismo puerto. Reinicia la computadora y vuelve a intentar |
-| La página no abre | En PowerShell, dentro de `cgp-laravel`, ejecuta `docker compose ps`: deben aparecer dos líneas con *running*. Si no, `docker compose up -d` |
-| Cualquier otro error | Copia el mensaje completo y envíaselo a quien te dio esta guía |
+| *edición Home* | Esta guía no sirve para Windows Home |
+| *Docker no arrancó* | Activa la **virtualización** en la BIOS (pide ayuda a soporte técnico) y ejecuta el script otra vez |
+| *Falta instalar Git* | Instálalo de <https://git-scm.com/download/win> y ejecuta el script otra vez |
+| *port is already allocated* / *Ports are not available* | Otro programa usa el puerto: ejecuta con otro, p. ej. `-Puerto 8080` |
+| *Access denied* con `docker` | Cierra sesión en Windows, vuelve a entrar y ejecuta el script |
+| Cualquier otro | Copia el mensaje completo y envíaselo a quien te dio el script |
+
+Para ver qué pasa por dentro: `docker compose logs -f app` (dentro de la carpeta `cgp-laravel`).

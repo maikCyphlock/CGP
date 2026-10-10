@@ -462,4 +462,14 @@ class PanelAdminTest extends TestCase
         $u = StaffUser::where('email', 'ana@cgp.test')->firstOrFail();
         $this->assertTrue($u->accede('oac') && $u->accede('admin'));
     }
+
+    public function test_comando_defecto_crea_admin_y_se_puede_repetir(): void
+    {
+        $this->artisan('cgp:admin --defecto')->assertSuccessful();
+        $this->artisan('cgp:admin --defecto')->expectsOutputToContain('Ya existe')->assertSuccessful();
+
+        $u = StaffUser::where('email', 'admin@admin.com')->firstOrFail();
+        $this->assertTrue(\Illuminate\Support\Facades\Hash::check('admin', $u->password_hash));
+        $this->assertTrue($u->accede('oac') && $u->accede('admin'));
+    }
 }
