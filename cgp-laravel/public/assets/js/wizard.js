@@ -368,7 +368,7 @@ function construirOpcionesParroquia(conPlaceholder) {
 /* ═══════════════════════════════════════════════════════════
    CÓDIGOS TELEFÓNICOS DE VENEZUELA
    ═══════════════════════════════════════════════════════════ */
-var CODIGOS_MOVILES = ['0412', '0414', '0416', '0424', '0426'];
+var CODIGOS_MOVILES = ['0412', '0414', '0416','0422', '0424', '0426'];
 
 /** Códigos de área de telefonía fija, Portuguesa primero (Municipio Páez) */
 var CODIGOS_FIJOS = [

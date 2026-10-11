@@ -1,8 +1,10 @@
-services:
+ services:
   app:
     build: .
     container_name: cgp-laravel-app
     restart: always
+    environment:
+      PHP_CLI_SERVER_WORKERS: 4
     ports:
       - "${APP_PORT:-8001}:8000"
     volumes:
