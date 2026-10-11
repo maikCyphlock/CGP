@@ -412,12 +412,6 @@
             </div>
             <div id="bloque-tipo-tramite">
               <div class="form-section-title">
-                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"
-                  stroke-linecap="round" stroke-linejoin="round">
-                  <circle cx="12" cy="12" r="10" />
-                  <line x1="12" y1="8" x2="12" y2="12" />
-                  <line x1="12" y1="16" x2="12.01" y2="16" />
-                </svg>
                 Seleccione el Tipo de Trámite <span style="color:#1565c0;margin-left:3px;">*</span>
               </div>
               <div class="tipo-tramite-grid" id="tipo-tramite-grid">
@@ -497,11 +491,6 @@
               <div id="bloque-consulta-popular" style="display:none;margin-top:24px;">
                 <div class="form-section" style="padding-top:20px;border-top:1px solid #eef1f7;">
                   <div class="form-section-title" id="consulta-title-color">
-                    <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
-                      <circle cx="12" cy="12" r="10" />
-                      <line x1="12" y1="8" x2="12" y2="12" />
-                      <line x1="12" y1="16" x2="12.01" y2="16" />
-                    </svg>
                     Contexto de la Denuncia <span style="color:#1565c0;margin-left:3px;">*</span>
                   </div>
                   <div class="form-group">
@@ -742,6 +731,7 @@
                         <option value="0412">0412</option>
                         <option value="0414">0414</option>
                         <option value="0416">0416</option>
+                         <option value="0422">0422</option>
                         <option value="0424">0424</option>
                         <option value="0426">0426</option>
                       </select>
@@ -1160,10 +1150,6 @@
 
             <div class="form-section">
               <div class="form-section-title" id="revision-title-color">
-                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
-                  <path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z" />
-                  <circle cx="12" cy="12" r="3" />
-                </svg>
                 Resumen de su Solicitud
               </div>
               <div class="revision-card">
@@ -1195,7 +1181,7 @@
               <div class="revision-card">
                 <div class="revision-card-header">
                   <span class="revision-card-titulo">2. Datos del Solicitante</span>
-                  <button type="button" class="btn-revision-editar" onclick="editarDesdeRevision(2)"><svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="M12 20h9"/><path d="M16.5 3.5a2.1 2.1 0 0 1 3 3L7 19l-4 1 1-4z"/></svg> Editar</button>
+                  <button type="button" class="btn-revision-editar" onclick="editarDesdeRevision(2)">Editar</button>
                 </div>
                 <div class="row g-2">
                   <div class="col-md-6">
@@ -1332,10 +1318,6 @@
                 Guardar como PDF
               </button>
               <button class="btn-submit" id="btn-enviar-solicitud" style="background: #1565c0;" onclick="enviarSolicitud()">
-                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
-                  <line x1="22" y1="2" x2="11" y2="13" />
-                  <polygon points="22 2 15 22 11 13 2 9 22 2" />
-                </svg>
                 Enviar Solicitud
               </button>
             </div>
@@ -1756,9 +1738,9 @@
       if (contenedorResEvidencias) {
         if (evCargadas.total > 0) {
           contenedorResEvidencias.innerHTML = `<div style="color:#1565c0;font-weight:bold;margin-bottom:8px;">Se anexaron ${evCargadas.total} archivo(s):</div>` +
-            evCargadas.items.map(it => `<div style="margin-bottom:4px;">✅ <strong>${escaparHtml(it.doc)}:</strong> <span style="color:#555;">${escaparHtml(it.nombre)}</span></div>`).join('');
+            evCargadas.items.map(it => `<div style="margin-bottom:4px;"> <strong>${escaparHtml(it.doc)}:</strong> <span style="color:#555;">${escaparHtml(it.nombre)}</span></div>`).join('');
         } else {
-          contenedorResEvidencias.innerHTML = '<div style="color:#c62828; font-weight:600;">⚠️ No se anexaron evidencias ni documentos.</div>';
+          contenedorResEvidencias.innerHTML = '<div style="color:#c62828; font-weight:600;"> No se anexaron evidencias ni documentos.</div>';
         }
       }
     }
