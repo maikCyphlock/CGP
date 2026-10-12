@@ -11,13 +11,23 @@
     .noticia-texto ul, .noticia-texto ol { padding-left: 1.2rem; }
   </style>
   <!-- seccion de inicio como portada, el declarar puse el original de la contraloria general, hay que preguntar si es ese-->
-  <section id="hero" style="background-image: url('{{ asset('assets/img/portadita.jpeg') }}'); background-size: cover; background-position: center;">
-    <!-- el primer texto q se vera como portada (hero) -->
-    <div class="hero-content">
-      <h1>Contraloría Del <br>Municipio Páez</h1>
-      <h2>Órgano de Control Fiscal Municipal</h2>
-      <p>42 años de servicio, vigilando el patrimonio público de Acarigua<br>y sus parroquias · Estado Portuguesa</p>
-      <a href="https://www.cgr.gob.ve/contenido/047" class="btn-declare">Declare Aquí</a>
+  <section id="hero">
+    <div class="hero-inner">
+      <!-- el primer texto q se vera como portada (hero) -->
+      <div class="hero-content">
+        <span class="hero-eyebrow">Acarigua · Estado Portuguesa</span>
+        <h1>Contraloría del <span>Municipio Páez</span></h1>
+        <h2>Órgano de Control Fiscal Municipal</h2>
+        <p>Vigilamos el patrimonio público de Acarigua y sus parroquias con transparencia y cercanía al ciudadano.</p>
+        <div class="hero-actions">
+          <a href="https://djp.cgr.gob.ve/authentication/sign-in" class="btn-declare" target="_blank" rel="noopener">Declare Aquí</a>
+          <a href="{{ route('denuncias.create') }}" class="btn-hero-secondary">Hacer una denuncia</a>
+        </div>
+      </div>
+
+      <figure class="hero-figure">
+        <div class="hero-photo"><img src="{{ asset('assets/img/portadahero.jpg') }}" alt="Equipo de la Contraloría del Municipio Páez"></div>
+      </figure>
     </div>
 
     <!-- para las flechas animadas de scroll -->
@@ -49,7 +59,7 @@
           </a>
         </div>
         <div class="col-md-3 col-sm-6">
-          <a href="#" class="servicio-card h-100">
+          <a href="https://www.cgr.gob.ve/pc/registration" class="servicio-card h-100" target="_blank" rel="noopener">
             <span class="serv-icon">
               <svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
                 <line x1="3" y1="22" x2="21" y2="22" />
@@ -64,7 +74,7 @@
           </a>
         </div>
         <div class="col-md-3 col-sm-6">
-          <a href="#" class="servicio-card h-100">
+          <a href="https://www.cgr.gob.ve/contenido/073" class="servicio-card h-100" target="_blank" rel="noopener">
             <span class="serv-icon">
               <svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
                 <circle cx="11" cy="11" r="8" />
@@ -121,8 +131,8 @@
       </div>
 
       <div class="telefono-box">
-        <div class="sub">Línea de atención · Asistente de Despacho </div>
-        <div class="num">0414-3506418</div>
+        <div class="sub">Línea de atención al ciudadano · Asistente de Despacho </div>
+        <div class="num">0424-2502266</div>
         <div class="sub" style="margin-top:4px;">Llama · Escribe</div>
       </div>
     </div>
@@ -239,7 +249,7 @@
         </div>
         <div class="caja-ubicacion col-md-6">
           <h2>Ubicación</h2>
-          <p><strong>Dirección:</strong> Avenida 33 con calle 35, Edificio Doña Cecilia, Casco Central. Acarigua, Portuguesa.</p>
+          <p><strong>Dirección:</strong> Av. 33 con calle 35. Edif. Doña Cecilia. Frente a la Plaza Andrés Eloy Blanco. Acarigua, Municipio Páez, Estado Portuguesa.</p>
           <p><strong>Horario:</strong> Lunes a Viernes: 8:00 a.m. a 3:00 p.m.</p>
           <div class="contenedor-mapa">
             <iframe src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d3934.341484157!2d-69.2014!3d9.5597!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x0%3A0x0!2zOcKwMzMnMzQuOSJOIDY5wrAxMicwNS4wIlc!5e0!3m2!1ses!2sve!4v1650460000000!5m2!1ses!2sve" allowfullscreen="" loading="lazy"></iframe>
@@ -477,89 +487,60 @@
     <div class="container">
       <h2 class="section-title-center">Base Normativa</h2>
       <div class="title-underline"></div>
+      <p class="text-center text-muted mt-2">Marco legal, reglamentos e instrumentos jurídicos del control fiscal.</p>
 
-      <div class="row g-4 mt-2">
-        <div class="col-md-6">
-          <ul class="legal-list">
-            <li>
-              <span class="icon"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#1565c0" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-                  <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z" />
-                  <polyline points="14 2 14 8 20 8" />
-                  <line x1="16" y1="13" x2="8" y2="13" />
-                  <line x1="16" y1="17" x2="8" y2="17" />
-                </svg></span>
-              Constitución de la República Bolivariana de Venezuela (1999)
-            </li>
-            <li>
-              <span class="icon"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#1565c0" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-                  <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z" />
-                  <polyline points="14 2 14 8 20 8" />
-                  <line x1="16" y1="13" x2="8" y2="13" />
-                  <line x1="16" y1="17" x2="8" y2="17" />
-                </svg></span>
-              Ley Orgánica de la Contraloría General de la República y del Sistema Nacional de Control Fiscal
-            </li>
-            <li>
-              <span class="icon"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#1565c0" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-                  <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z" />
-                  <polyline points="14 2 14 8 20 8" />
-                  <line x1="16" y1="13" x2="8" y2="13" />
-                  <line x1="16" y1="17" x2="8" y2="17" />
-                </svg></span>
-              Ley Orgánica del Poder Público Municipal (LOPPM – G.O. N° 6.015)
-            </li>
-            <li>
-              <span class="icon"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#1565c0" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-                  <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z" />
-                  <polyline points="14 2 14 8 20 8" />
-                  <line x1="16" y1="13" x2="8" y2="13" />
-                  <line x1="16" y1="17" x2="8" y2="17" />
-                </svg></span>
-              Ley de Reforma del Decreto con Rango, Valor y Fuerza de Ley Contra la Corrupción
-            </li>
-          </ul>
-        </div>
-        <div class="col-md-6">
-          <ul class="legal-list">
-            <li>
-              <span class="icon"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#1565c0" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-                  <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z" />
-                  <polyline points="14 2 14 8 20 8" />
-                  <line x1="16" y1="13" x2="8" y2="13" />
-                  <line x1="16" y1="17" x2="8" y2="17" />
-                </svg></span>
-              Reglamento sobre Concursos Públicos para Designación de Contralores Municipales (G.O. N° 38.311)
-            </li>
-            <li>
-              <span class="icon"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#1565c0" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-                  <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z" />
-                  <polyline points="14 2 14 8 20 8" />
-                  <line x1="16" y1="13" x2="8" y2="13" />
-                  <line x1="16" y1="17" x2="8" y2="17" />
-                </svg></span>
-              Resolución N° 01-00-122 del 19/06/2009 (G.O. N° 39.205)
-            </li>
-            <li>
-              <span class="icon"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#1565c0" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-                  <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z" />
-                  <polyline points="14 2 14 8 20 8" />
-                  <line x1="16" y1="13" x2="8" y2="13" />
-                  <line x1="16" y1="17" x2="8" y2="17" />
-                </svg></span>
-              Ley de Consejos Comunales – Art. 29 (Unidades de Gestión Financiera)
-            </li>
-            <li>
-              <span class="icon"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#1565c0" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-                  <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z" />
-                  <polyline points="14 2 14 8 20 8" />
-                  <line x1="16" y1="13" x2="8" y2="13" />
-                  <line x1="16" y1="17" x2="8" y2="17" />
-                </svg></span>
-              Ordenanza Municipal de Control Fiscal del Municipio Páez, Estado Portuguesa
-            </li>
-          </ul>
-        </div>
+      @php
+        $pdf = fn ($f) => asset('assets/pdf/'.$f);
+        $leyes = [
+          ['Constitución de la República Bolivariana de Venezuela', 'Ext. 5.908 (18/2/2009)', 'https://www.asambleanacional.gob.ve/storage/documentos/botones/constitucion-nacional-20191205135853.PDF'],
+          ['Ley Orgánica de la Contraloría General de la República y del Sistema Nacional de Control Fiscal', 'Ext. 6.013 (23/12/2010)', 'https://www.oas.org/juridico/spanish/cr_res9.htm'],
+          ['Ley Contra la Corrupción', 'Ext. 6.699 (2/5/2022)', 'https://www.saren.gob.ve/wp-content/uploads/2025/01/15.-Ley-Contra-la-Corrupcion.pdf'],
+          ['Ley Orgánica del Poder Ciudadano', 'G.O. 37.310 (25/10/2011)', $pdf('ley-organica-del-poder-ciudadano.pdf')],
+          ['Ley Orgánica de Procedimientos Administrativos', 'Ext. 2.818 (1/7/1981)', $pdf('ley_org_procedimientos_administrativos.pdf')],
+          ['Decreto Ley Orgánica de la Administración Pública', 'Ext. 6.147 (17/11/2010)', $pdf('Ley-Organica-de-Administracion-Publica.pdf')],
+          ['Ley Orgánica de los Consejos Comunales', 'Ext. 6.759 (15/7/2022)', 'https://mppp.gob.ve/wp-content/uploads/2023/07/Ley-organica-de-los-Consejos-Comunales.pdf'],
+          ['Ley Orgánica del Poder Popular', 'Ext. 6.812 (6/6/2024)', $pdf('ley_organica_del_poder_popular.pdf')],
+          ['Ley Orgánica de las Comunas', 'Ext. 6.872 (30/12/2024)', $pdf('ley_organica_de_las_comunas.pdf')],
+          ['Ley Orgánica de Planificación Pública y Popular', 'Ext. 6.148 (18/11/2014)', $pdf('Ley-Orgánica-de-Planificación-Pública-y-Popular.pdf')],
+          ['Ley Orgánica de la Contraloría Social', 'Ext. 6.748 (9/6/2023)', $pdf('ley_organica_de_contraloria_social.pdf')],
+          ['Normas para Fomentar la Participación Ciudadana', 'G.O. 38.750 (20/8/2007)', $pdf('GO_38750_NORMAS_PARA_FOMENTAR_LA_PARTICIPACION_CIUDADANA.pdf')],
+          ['Ley Orgánica del Poder Público Municipal (LOPPM)', 'Poder Público Municipal', 'https://www.cmldc.gob.ve/wp-content/uploads/2024/04/Ley-Organica-del-Poder-Publico-Municipal.pdf'],
+          ['Ley de Infogobierno', 'G.O. N° 40.274', $pdf('LEY-INFOGOBIERNO.pdf')],
+          ['Ley para el Respeto de los Derechos Humanos en el Ejercicio de la Función Pública', 'G.O. N° 6.658', $pdf('ley-para-el-respeto-de-los-derechos-humanos-en-el-ejercicio-de-la-funcion-publica.pdf')],
+          ['Ordenanza Municipal de Control Fiscal del Municipio Páez, Estado Portuguesa', 'Municipio Páez', $pdf('ordenanza_municipal_de_control_fiscal_del_municipio_páez_estado_portuguesa.pdf')],
+        ];
+      @endphp
+
+      <div class="mx-auto mt-4 mb-5 position-relative" style="max-width: 550px;">
+        <span class="position-absolute top-50 translate-middle-y text-muted" style="left: 20px;">
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="11" cy="11" r="8" /><line x1="21" y1="21" x2="16.65" y2="16.65" /></svg>
+        </span>
+        <input type="search" id="legalSearch" class="form-control rounded-pill shadow-sm ps-5 py-3 border-0 bg-white" placeholder="Buscar ley, reglamento o gaceta..." aria-label="Buscar en la base normativa">
       </div>
+
+      <div class="row g-4" id="legalGrid">
+        @foreach ($leyes as [$titulo, $gaceta, $url])
+          <div class="col-lg-4 col-md-6 legal-item">
+            <div class="card h-100 border-0 shadow-sm rounded-4 p-3 bg-white">
+              <div class="card-body d-flex flex-column justify-content-between">
+                <h5 class="card-title fw-bold text-dark fs-6 mb-3">{{ $titulo }}</h5>
+                <div class="d-flex flex-wrap align-items-center justify-content-between gap-2 pt-3 border-top border-light">
+                  <span class="badge bg-primary bg-opacity-10 text-primary rounded-pill px-3 py-2 fw-semibold" style="font-size: 0.75rem;">{{ $gaceta }}</span>
+                  <a href="{{ $url }}" target="_blank" rel="noopener" class="btn btn-outline-primary btn-sm rounded-pill px-3 fw-semibold text-nowrap flex-shrink-0">
+                    {{ str_ends_with(strtolower($url), '.pdf') ? 'Ver PDF' : 'Ver página' }} &rarr;
+                  </a>
+                </div>
+              </div>
+            </div>
+          </div>
+        @endforeach
+      </div>
+
+      <nav class="mt-5" aria-label="Paginación de la base normativa">
+        <ul class="pagination justify-content-center" id="paginationControls"></ul>
+      </nav>
+
+      <p id="noResults" class="text-center text-muted fs-5 py-5" style="display: none;">No se encontraron normativas que coincidan con tu búsqueda.</p>
     </div>
   </section>
 
@@ -594,4 +575,48 @@
   </script>
   <!-- Animaciones de scroll y entrada -->
   <script src="{{ asset('assets/js/animations.js') }}"></script>
+  <script>
+    // Buscador y paginación de la base normativa (3 por página)
+    (function () {
+      const input = document.getElementById('legalSearch');
+      const items = Array.from(document.querySelectorAll('.legal-item'));
+      const controls = document.getElementById('paginationControls');
+      const noResults = document.getElementById('noResults');
+      const porPagina = 3;
+      const norm = t => t.normalize('NFD').replace(/[\u0300-\u036f]/g, '').toLowerCase();
+      let filtrados = items;
+      let pagina = 1;
+
+      function render() {
+        const total = Math.ceil(filtrados.length / porPagina);
+        pagina = Math.min(Math.max(pagina, 1), Math.max(total, 1));
+        items.forEach(i => i.style.display = 'none');
+        filtrados.slice((pagina - 1) * porPagina, pagina * porPagina).forEach(i => i.style.display = '');
+        noResults.style.display = filtrados.length ? 'none' : 'block';
+        controls.innerHTML = total <= 1 ? '' : [
+          `<li class="page-item ${pagina === 1 ? 'disabled' : ''}"><a class="page-link rounded-pill px-3 mx-1" href="#" data-p="${pagina - 1}">Anterior</a></li>`,
+          ...Array.from({ length: total }, (_, k) => `<li class="page-item ${pagina === k + 1 ? 'active' : ''}"><a class="page-link rounded-circle mx-1 d-flex align-items-center justify-content-center" style="width:38px;height:38px" href="#" data-p="${k + 1}">${k + 1}</a></li>`),
+          `<li class="page-item ${pagina === total ? 'disabled' : ''}"><a class="page-link rounded-pill px-3 mx-1" href="#" data-p="${pagina + 1}">Siguiente</a></li>`,
+        ].join('');
+      }
+
+      controls.addEventListener('click', e => {
+        const a = e.target.closest('a[data-p]');
+        if (!a) return;
+        e.preventDefault();
+        pagina = Number(a.dataset.p);
+        render();
+        document.getElementById('legal').scrollIntoView({ behavior: 'smooth' });
+      });
+
+      input.addEventListener('input', () => {
+        const q = norm(input.value.trim());
+        filtrados = items.filter(i => norm(i.textContent).includes(q));
+        pagina = 1;
+        render();
+      });
+
+      render();
+    })();
+  </script>
 @endpush

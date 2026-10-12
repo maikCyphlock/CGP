@@ -73,9 +73,9 @@
     <div class="footer-inner">
       <div class="row g-4 pb-4" style="border-bottom: 1px solid rgba(255,255,255,0.1); margin-bottom: 24px;">
         <div class="col-lg-4 col-md-6 footer-brand">
-          <img src="{{ asset('assets/img/logo.jpeg') }}" alt="Logo" style="width:56px;height:56px; border-radius: 25px;">
+          <img src="{{ asset('assets/img/logonuevo.jpeg') }}" alt="Logo" style="width:56px;height:56px; border-radius: 25px;">
           <p style="margin-top:12px;">Contraloría del Municipio Páez — Estado Portuguesa, República Bolivariana de Venezuela. Órgano de Control Fiscal Municipal.</p>
-          <div class="rif">RIF: G-20002790-4 · Acarigua, Estado Portuguesa</div>
+          <div class="rif">RIF: G-20001628-0 · Acarigua, Estado Portuguesa</div>
           <div class="social-row">
             <a href="https://www.instagram.com/contraloria_mpaez/" target="_blank" title="Instagram">
               <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
@@ -104,19 +104,8 @@
             <li><a href="{{ url('/#mision') }}">Misión y Visión</a></li>
             <li><a href="{{ url('/organigrama') }}">Organigrama</a></li>
             <li><a href="{{ url('/#Historia') }}">Historia</a></li>
-            <li><a href="#">Directorio</a></li>
+            <li><a href="{{ url('/#mision') }}">Ubicación</a></li>
             <li><a href="{{ url('/#legal') }}">Base Normativa</a></li>
-          </ul>
-        </div>
-
-        <div class="col-lg-2 col-md-6 footer-col">
-          <h6>Informes</h6>
-          <ul>
-            <li><a href="#">De Gestión</a></li>
-            <li><a href="#">De Actuación</a></li>
-            <li><a href="#">Especiales</a></li>
-            <li><a href="#">Dictámenes</a></li>
-            <li><a href="#">Sanciones</a></li>
           </ul>
         </div>
 
@@ -127,7 +116,6 @@
             <li><a href="{{ url('/#redes') }}">Redes Sociales</a></li>
             <li><a href="{{ url('/denuncias') }}">Denuncias</a></li>
             <li><a href="{{ url('/contraloria-escolar') }}">Contraloría Escolar</a></li>
-            <li><a href="{{ url('/#djp') }}">Declaración Jurada</a></li>
             <li><a href="https://www.cgr.gob.ve" target="_blank">CGR Venezuela ↗</a></li>
           </ul>
         </div>
