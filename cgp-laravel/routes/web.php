@@ -6,6 +6,7 @@ use App\Http\Controllers\Admin\ContenidoController;
 use App\Http\Controllers\Admin\InicioController;
 use App\Http\Controllers\Admin\MonitoreoController;
 use App\Http\Controllers\Oac\ExpedienteController;
+use App\Http\Controllers\Oac\ReporteController;
 use App\Http\Controllers\Admin\UsuarioController;
 use App\Http\Controllers\DenunciaController;
 use Illuminate\Support\Facades\DB;
@@ -75,6 +76,8 @@ Route::middleware(['auth', 'modulo:oac'])->prefix('oac')->name('oac.')->group(fu
     });
     Route::post('/expedientes/{expediente}/actuar', [ExpedienteController::class, 'actuar'])->whereUuid('expediente')->middleware('permiso:CASES,write')->name('expedientes.actuar');
     Route::post('/expedientes/{expediente}/clasificar', [ExpedienteController::class, 'clasificar'])->whereUuid('expediente')->middleware('permiso:CLASSIFY,write')->name('expedientes.clasificar');
+
+    Route::get('/reportes', [ReporteController::class, 'index'])->middleware('permiso:REPORTS,read')->name('reportes');
 
     // Catálogos de la OAC (tipos de trámite, irregularidades, unidades de derivación…)
     Route::middleware('permiso:CATALOGS,read')->group(function () {

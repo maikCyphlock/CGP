@@ -35,6 +35,9 @@
           <a href="{{ route('oac.expedientes.index', ['estado' => 'RECEIVED']) }}" class="{{ request('estado') === 'RECEIVED' ? 'active' : '' }}"><i class="fa-solid fa-inbox"></i> Por protocolizar</a>
           <a href="{{ route('oac.expedientes.index') }}" class="{{ request()->routeIs('oac.expedientes.*') && request('estado') !== 'RECEIVED' ? 'active' : '' }}"><i class="fa-solid fa-folder-open"></i> Expedientes</a>
         @endif
+        @if ($u->puede('REPORTS'))
+          <a href="{{ route('oac.reportes') }}" class="{{ request()->routeIs('oac.reportes') ? 'active' : '' }}"><i class="fa-solid fa-chart-column"></i> Reportes</a>
+        @endif
         @if ($u->puede('CATALOGS'))
           <div class="nav-group">Configuración</div>
           <a href="{{ route('oac.catalogos.index') }}" class="{{ request()->routeIs('oac.catalogos.*') ? 'active' : '' }}"><i class="fa-solid fa-layer-group"></i> Catálogos</a>

@@ -98,6 +98,18 @@ class PanelAdminTest extends TestCase
         $this->get('/admin')->assertRedirect('/admin/login');
     }
 
+    public function test_reportes_requieren_permiso_y_cuentan_expedientes(): void
+    {
+        $e = $this->expediente();
+
+        $this->actingAs($this->usuario([], ['CASES' => 'read']))->get('/oac/reportes')->assertForbidden();
+
+        $this->actingAs($this->usuario([], ['REPORTS' => 'read']));
+        $this->get('/oac/reportes')->assertOk()->assertSee('Recibidos en el período')->assertSee('Queja');
+        $this->get('/oac/reportes?formato=csv')->assertOk()->assertHeader('content-type', 'text/csv; charset=UTF-8');
+        $this->get('/oac/reportes?desde=2026-02-01&hasta=2026-01-01')->assertSessionHasErrors('hasta');
+    }
+
     public function test_flujo_de_estatus(): void
     {
         $u = $this->usuario();
@@ -468,10 +480,10 @@ class PanelAdminTest extends TestCase
     public function test_comando_crea_administrador_con_acceso_total(): void
     {
         $this->artisan('cgp:admin')
+            ->expectsQuestion('Correo', 'Ana@CGP.test')
             ->expectsQuestion('Nombres', 'Ana')
             ->expectsQuestion('Apellidos', 'Pérez')
             ->expectsQuestion('Cédula (solo números)', '12345678')
-            ->expectsQuestion('Correo', 'Ana@CGP.test')
             ->expectsQuestion('Contraseña (mínimo 8 caracteres)', 'clave-segura')
             ->expectsQuestion('Repita la contraseña', 'clave-segura')
             ->assertSuccessful();

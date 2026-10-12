@@ -60,8 +60,8 @@ class StaffUser extends Authenticatable
 
     /** Módulos del sistema (cada uno con su URL) y los privilegios que dan entrada a ellos. */
     const MODULOS = [
-        'oac' => ['CASES', 'CLASSIFY', 'CATALOGS'],
-        'admin' => ['USERS', 'ACCESS', 'STATS', 'CMS', 'REPORTS'],
+        'oac' => ['CASES', 'CLASSIFY', 'CATALOGS', 'REPORTS'],
+        'admin' => ['USERS', 'ACCESS', 'STATS', 'CMS'],
     ];
 
     /** ¿Puede entrar al módulo `oac` o `admin`? Basta con leer alguna de sus secciones. */
