@@ -1,0 +1,1323 @@
+@extends('layouts.app')
+
+@section('title', 'Organigrama – Contraloría del Municipio Páez')
+
+@push('fonts')
+  <link href="https://fonts.googleapis.com/css2?family=Merriweather:wght@400;700;900&family=Source+Sans+3:wght@400;500;600;700&display=swap" rel="stylesheet">
+@endpush
+
+@push('styles')
+  <link rel="stylesheet" href="{{ asset('assets/css/denuncias.css') }}">
+  <style>
+    /* Header del diseño (allí va en estilos en línea) */
+    #header { background: #0f2340; padding: 15px 30px; color: white; }
+    #header .header-container { width: 100%; max-width: 100%; }
+    #header .logo-link { display: flex; align-items: center; gap: 15px; text-decoration: none; color: white; }
+    #header .logo-texts .l1 { text-transform: uppercase; font-weight: bold; font-size: 0.95rem; line-height: 1.2; }
+
+    .org-hero .hero-desc { color: rgba(255,255,255,0.8); }
+
+    /* Este apartado no usa el menú hamburguesa */
+    #menu-toggle { display: none !important; }
+
+    :root {
+      --clr-primary:   #1a3a6b; 
+      --clr-secondary: #0f2340; 
+      --clr-accent:    #3b9b65;
+      --clr-bg-light:  #f4f7f9;
+    }
+
+    /* ESTILOS BASE Y HERO */
+    body {
+      margin: 0;
+      padding: 0;
+      font-family: 'Source Sans 3', sans-serif;
+      background-color: var(--clr-bg-light);
+    }
+
+    .org-hero {
+      background: linear-gradient(135deg, rgba(15,35,64,.92), rgba(26,58,107,.90)), #0f2340; 
+      padding: 120px 20px 40px !important;
+      color: white;
+      text-align: center;
+    }
+    .hero-title {
+      font-size: 2.5rem !important;
+      margin-bottom: 10px;
+      color: white !important ;
+    }
+    .hero-desc {
+      max-width: 900px !important;
+      margin: 0 auto;
+      font-size: 1.1rem !important;
+      opacity: 0.9;
+    }
+
+    /* STATS BAR */
+    .stats-bar { 
+      background: #0f2340; 
+      color: #fff; 
+      padding: 20px 0 !important; 
+      margin-top: -20px; 
+      animation: fadeIn 1.5s ease-in; 
+    }
+    .stats-container { 
+      display: flex; 
+      justify-content: space-around; 
+      text-align: center; 
+      flex-wrap: wrap; 
+      gap: 20px; 
+      max-width: 1100px; 
+      margin: 0 auto;
+    }
+    .stat-item h3 { margin: 0; font-size: 1.8rem; color: #fff; }
+    .stat-item p { margin: 0; font-size: 0.9rem; opacity: 0.8; }
+
+    /* DIVISOR JERARQUÍA */
+    .section-divider { 
+      text-align: center; 
+      padding: 50px 0 20px; 
+      background: var(--clr-bg-light); 
+      position: relative; 
+      z-index: 10; 
+    }
+    .divider-title { 
+      font-family: 'Merriweather', serif; 
+      color: var(--clr-primary); 
+      margin-bottom: 10px; 
+    }
+    .divider-line { 
+      height: 3px; 
+      background: var(--clr-primary); 
+      width: 0; 
+      margin: 0 auto; 
+      border-radius: 2px; 
+      animation: expandir 1.5s ease-out forwards; 
+    }
+
+    @keyframes expandir { to { width: 100px; } }
+    @keyframes fadeIn { from { opacity: 0; transform: translateY(20px); } to { opacity: 1; transform: translateY(0); } }
+
+    /* ORGANIGRAMA Y TARJETAS 3D */
+    #main {
+      position: relative;
+      z-index: 5;
+    }
+
+    @keyframes fadeInUp {
+      from { opacity: 0; transform: translateY(40px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+
+    @keyframes pulseGlow {
+      0% { box-shadow: 0 0 0 0 rgba(26, 58, 107, 0.4); }
+      70% { box-shadow: 0 0 0 15px rgba(26, 58, 107, 0); }
+      100% { box-shadow: 0 0 0 0 rgba(26, 58, 107, 0); }
+    }
+
+    .org-section {
+      background: var(--clr-bg-light);
+      padding: 30px 0 100px;
+      overflow: hidden;
+    }
+
+    .org-grid-container {
+      max-width: 1200px;
+      margin: 0 auto;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 45px;
+      perspective: 1000px; 
+    }
+
+    .org-row {
+      display: flex;
+      justify-content: center;
+      flex-wrap: wrap;
+      gap: 25px;
+      width: 100%;
+      position: relative;
+      z-index: 1;
+    }
+
+    .org-row.connected::before {
+      content: ''; 
+      position: absolute; 
+      top: -30px; 
+      left: 50%;
+      width: 2px; 
+      height: 30px; 
+      background: linear-gradient(to bottom, var(--clr-primary), transparent);
+      transform: translateX(-50%);
+      opacity: 0.5;
+    }
+
+    .org-card {
+      background: linear-gradient(135deg, var(--clr-secondary), var(--clr-primary));
+      color: white;
+      padding: 18px 12px;
+      border-radius: 16px; 
+      text-align: center;
+      font-weight: 700;
+      font-size: 1.1rem;
+      width: 230px;
+      min-height: 90px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      cursor: pointer;
+      box-shadow: 0 10px 20px rgba(15, 35, 64, 0.15);
+      border: 1px solid rgba(255, 255, 255, 0.1);
+      position: relative;
+      overflow: hidden;
+      transition: box-shadow 0.3s ease, border-color 0.3s ease;
+      transform-style: preserve-3d; 
+      opacity: 0;
+      animation: fadeInUp 0.8s cubic-bezier(0.25, 0.8, 0.25, 1) forwards;
+    }
+
+    .org-row:nth-child(1) .org-card { animation-delay: 0.1s; }
+    .org-row:nth-child(2) .org-card { animation-delay: 0.2s; }
+    .org-row:nth-child(3) .org-card { animation-delay: 0.3s; }
+    .org-row:nth-child(4) .org-card { animation-delay: 0.4s; }
+
+    .org-card::before {
+      content: '';
+      position: absolute;
+      top: 0; left: -100%;
+      width: 50%; height: 100%;
+      background: linear-gradient(to right, rgba(255,255,255,0) 0%, rgba(255,255,255,0.15) 50%, rgba(255,255,255,0) 100%);
+      transform: skewX(-25deg) translateZ(20px);
+      transition: all 0.7s ease;
+    }
+
+    .org-card:hover::before { left: 150%; }
+    .org-card:hover { box-shadow: 0 20px 40px rgba(26,58,107,0.4); border-color: rgba(255, 255, 255, 0.3); }
+    .org-card span { transform: translateZ(30px); display: block; pointer-events: none; }
+
+    .org-card.superior { 
+      width: 290px; font-size: 1.25rem; font-weight: 700;
+      background: linear-gradient(135deg, #0a172b, var(--clr-secondary));
+      animation: fadeInUp 0.8s forwards, pulseGlow 3s infinite;
+    }
+
+    .org-card.control { background: linear-gradient(135deg, #1b4d32, var(--clr-accent)); }
+
+
+    /* =========================================
+       CORRECCIÓN FINAL HEADER / HERO MÓVIL
+       ========================================= */
+
+    #header {
+      position: relative !important;
+      top: auto !important;
+      left: auto !important;
+      width: 100% !important;
+      z-index: 1000 !important;
+      visibility: visible !important;
+      opacity: 1 !important;
+    }
+
+    #header .header-container {
+      display: flex !important;
+      align-items: center !important;
+      justify-content: space-between !important;
+      visibility: visible !important;
+      opacity: 1 !important;
+    }
+
+    #header .logo-link,
+    #header .logo-texts,
+    #header .logo-texts .l1,
+    #navbar,
+    #navbar .btn-inicio {
+      visibility: visible !important;
+      opacity: 1 !important;
+    }
+
+    #navbar {
+      display: flex !important;
+      align-items: center !important;
+      justify-content: flex-end !important;
+      flex-shrink: 0 !important;
+    }
+
+    #navbar .btn-inicio {
+      display: inline-flex !important;
+      color: #fff !important;
+      background: transparent !important;
+      border: 1px solid rgba(255, 255, 255, 0.45) !important;
+      text-decoration: none !important;
+    }
+
+    /* El hero empieza después del header y nunca queda debajo de él. */
+    .org-hero {
+      position: relative !important;
+      z-index: 1 !important;
+      overflow: visible !important;
+    }
+
+    @media (max-width: 768px) {
+      #header .header-container {
+        min-height: 42px !important;
+        flex-direction: row !important;
+        flex-wrap: nowrap !important;
+      }
+
+      #header .logo-link {
+        flex: 1 1 auto !important;
+        width: auto !important;
+        max-width: calc(100% - 80px) !important;
+      }
+
+      #navbar {
+        display: flex !important;
+        flex: 0 0 auto !important;
+        width: auto !important;
+        margin-left: auto !important;
+        align-self: center !important;
+      }
+
+      #navbar .btn-inicio {
+        display: inline-flex !important;
+        width: auto !important;
+        min-width: 52px !important;
+      }
+
+      .org-hero {
+        padding-top: 34px !important;
+        padding-bottom: 28px !important;
+      }
+
+      .hero-content {
+        position: relative !important;
+        z-index: 2 !important;
+      }
+
+      .hero-title {
+        display: block !important;
+        visibility: visible !important;
+        opacity: 1 !important;
+        margin-top: 0 !important;
+        padding-top: 0 !important;
+      }
+
+      .hero-desc {
+        display: block !important;
+        visibility: visible !important;
+        opacity: 0.9 !important;
+      }
+    }
+
+    @media (max-width: 420px) {
+      .org-hero {
+        padding-top: 30px !important;
+      }
+
+      .hero-title {
+        font-size: 1.85rem !important;
+      }
+    }
+
+    /* =========================================
+       BOTÓN INICIO + AJUSTES RESPONSIVOS
+       ========================================= */
+
+    #header {
+      box-sizing: border-box;
+    }
+
+    #navbar {
+      display: flex;
+      align-items: center;
+      justify-content: flex-end;
+    }
+
+    .btn-inicio {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      padding: 8px 16px;
+      border: 1px solid rgba(255, 255, 255, 0.35);
+      border-radius: 20px;
+      background: transparent;
+      color: #fff !important;
+      text-decoration: none !important;
+      font-size: 0.9rem;
+      font-weight: 600 !important;
+      line-height: 1;
+      transition: background-color 0.2s ease, border-color 0.2s ease;
+      white-space: nowrap;
+    }
+
+    .btn-inicio:hover,
+    .btn-inicio:focus-visible {
+      background: rgba(255, 255, 255, 0.10);
+      border-color: rgba(255, 255, 255, 0.55);
+      outline: none;
+    }
+
+    /* El hero aprovecha mejor la altura disponible. */
+    .org-hero {
+      padding: 82px 20px 32px !important;
+      min-height: 250px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      box-sizing: border-box;
+    }
+
+    .hero-content {
+      width: 100%;
+      max-width: 900px;
+      margin: 0 auto;
+    }
+
+    .hero-title {
+      margin-top: 0;
+      margin-bottom: 8px;
+      line-height: 1.05;
+    }
+
+    .hero-desc {
+      line-height: 1.55;
+      margin-bottom: 0;
+    }
+
+    /* Barra de estadísticas más compacta. */
+    .stats-bar {
+      padding: 14px 15px !important;
+      margin-top: -10px;
+      box-sizing: border-box;
+    }
+
+    .stats-container {
+      gap: 14px 30px;
+      padding: 0 10px;
+      box-sizing: border-box;
+    }
+
+    .stat-item {
+      min-width: 120px;
+    }
+
+    .stat-item h3 {
+      line-height: 1.1;
+    }
+
+    .stat-item p {
+      margin-top: 4px;
+      line-height: 1.2;
+    }
+
+    /* Organigrama: ancho fluido sin desbordamiento. */
+    .org-grid-container {
+      width: min(100%, 1200px);
+      padding: 0 16px;
+      box-sizing: border-box;
+    }
+
+    .org-row {
+      box-sizing: border-box;
+    }
+
+    .org-card {
+      box-sizing: border-box;
+    }
+
+    @media (max-width: 768px) {
+      /* HEADER */
+      #header {
+        padding: 10px 14px !important;
+      }
+
+      .header-container {
+        gap: 10px;
+      }
+
+      .logo-link {
+        gap: 9px !important;
+        min-width: 0;
+      }
+
+      .logo-link > div:first-child {
+        width: 42px !important;
+        height: 42px !important;
+      }
+
+      .logo-link img {
+        width: 42px !important;
+        height: 42px !important;
+      }
+
+      .logo-texts .l1 {
+        font-size: 0.72rem !important;
+        line-height: 1.15 !important;
+      }
+
+      .btn-inicio {
+        padding: 7px 13px;
+        font-size: 0.8rem;
+      }
+
+      /* HERO */
+      .org-hero {
+        min-height: 245px;
+        padding: 58px 18px 28px !important;
+      }
+
+      .hero-title {
+        font-size: clamp(1.8rem, 8vw, 2.25rem) !important;
+        line-height: 1.05;
+      }
+
+      .hero-desc {
+        max-width: 100% !important;
+        font-size: 0.92rem !important;
+        line-height: 1.45;
+      }
+
+      /* STATS */
+      .stats-bar {
+        padding: 12px 10px !important;
+        margin-top: -6px;
+      }
+
+      .stats-container {
+        display: grid;
+        grid-template-columns: repeat(3, minmax(0, 1fr));
+        gap: 8px;
+        padding: 0;
+      }
+
+      .stat-item {
+        min-width: 0;
+      }
+
+      .stat-item h3 {
+        font-size: 1.25rem;
+      }
+
+      .stat-item p {
+        font-size: 0.68rem;
+        line-height: 1.15;
+      }
+
+      /* DIVISOR */
+      .section-divider {
+        padding: 32px 15px 12px;
+      }
+
+      .divider-title {
+        font-size: 1.25rem;
+        line-height: 1.25;
+      }
+
+      /* ORGANIGRAMA EN COLUMNA */
+      .org-section {
+        padding: 18px 0 60px;
+      }
+
+      .org-grid-container {
+        width: 100%;
+        padding: 0 15px;
+        gap: 38px;
+      }
+
+      .org-row,
+      .org-row.connected {
+        width: 100%;
+        flex-direction: column;
+        align-items: center;
+        justify-content: flex-start;
+        flex-wrap: nowrap;
+        gap: 28px;
+      }
+
+      .org-row.connected::before {
+        top: -28px;
+        height: 28px;
+        width: 2px;
+      }
+
+      .org-card,
+      .org-card.superior {
+        width: min(100%, 330px);
+        min-height: 72px;
+        padding: 15px 14px;
+        font-size: 0.94rem;
+        border-radius: 14px;
+      }
+
+      .org-card.superior {
+        font-size: 1.05rem;
+      }
+
+      /*
+       * En móvil cada tarjeta de una misma fila recibe un
+       * conector vertical superior, manteniendo el flujo limpio.
+       */
+      .org-row.connected .org-card:not(:first-child)::after {
+        content: '';
+        position: absolute;
+        left: 50%;
+        top: -29px;
+        width: 2px;
+        height: 28px;
+        background: linear-gradient(to bottom, var(--clr-primary), transparent);
+        transform: translateX(-50%);
+        opacity: 0.5;
+      }
+
+      /* Evita que el efecto 3D provoque desplazamientos visuales en móvil. */
+      .org-card:hover {
+        box-shadow: 0 12px 24px rgba(26, 58, 107, 0.25);
+      }
+
+      /* MODAL */
+      .modal-photo-container {
+        width: 150px;
+        height: 150px;
+      }
+    }
+
+    @media (max-width: 420px) {
+      .logo-texts .l1 {
+        font-size: 0.64rem !important;
+      }
+
+      .btn-inicio {
+        padding: 6px 11px;
+        font-size: 0.74rem;
+      }
+
+      .org-hero {
+        min-height: 225px;
+        padding-top: 52px !important;
+      }
+
+      .stats-container {
+        gap: 6px;
+      }
+
+      .stat-item h3 {
+        font-size: 1.12rem;
+      }
+
+      .stat-item p {
+        font-size: 0.62rem;
+      }
+
+      .org-card,
+      .org-card.superior {
+        width: min(100%, 310px);
+      }
+    }
+
+    /* MODAL EXECUTIVE GLASS */
+    .modal-overlay {
+      position: fixed; top: 0; left: 0; width: 100%; height: 100%;
+      background: rgba(15, 35, 64, 0.85); backdrop-filter: blur(12px); 
+      display: none; align-items: center; justify-content: center;
+      z-index: 2000; opacity: 0; transition: opacity 0.4s ease;
+      padding: 20px;
+      overflow-y: auto;
+    }
+
+    .modal-overlay.active { display: flex; opacity: 1; }
+
+    .modal-card {
+      background: rgba(255, 255, 255, 0.98); width: 100%; max-width: 580px;
+      border-radius: 24px; position: relative; box-shadow: 0 30px 60px rgba(0,0,0,0.4);
+      transform: translateY(50px) scale(0.95); transition: all 0.5s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+      padding: 35px 35px 35px; text-align: center; margin: auto; 
+      max-height: 90vh; overflow-y: auto;
+    }
+
+    .modal-overlay.active .modal-card { transform: translateY(0) scale(1); }
+
+    .modal-photo-container {
+      width: 200px; 
+      height: 200px; 
+      border-radius: 50%; 
+      background: var(--clr-bg-light);
+      margin: 0 auto 15px auto; 
+      border: 4px solid var(--clr-primary); 
+      box-shadow: 0 8px 20px rgba(0,0,0,0.15);
+      overflow: hidden; 
+      position: relative; 
+      z-index: 2;
+    }
+    .modal-photo-container img { 
+      width: 100%; 
+      height: 100%; 
+      object-fit: cover; 
+    }
+
+    .modal-header-title {
+      color: var(--clr-primary); font-family: 'Merriweather', serif; font-size: 0.85rem;
+      font-weight: 900; letter-spacing: 1.5px; text-transform: uppercase; margin-bottom: 6px;
+    }
+    .modal-info-box h3 { margin: 0 0 10px 0; color: var(--clr-secondary); font-size: 1.3rem; font-weight: 900; }
+    .modal-info-box p {
+      font-size: 0.9rem; line-height: 1.6; color: #4a5568; text-align: justify;
+      margin: 0 0 20px 0; padding-top: 15px; border-top: 2px solid rgba(26, 58, 107, 0.1);
+    }
+
+    /* Sub-perfiles dentro del modal */
+    .modal-sub-profiles {
+      display: flex;
+      flex-direction: column;
+      gap: 15px;
+      margin-top: 20px;
+      text-align: left;
+      border-top: 2px dashed rgba(26, 58, 107, 0.15);
+      padding-top: 20px;
+    }
+    .modal-sub-profile-item {
+      display: flex;
+      align-items: center;
+      gap: 15px;
+      background: #f8fafc;
+      padding: 12px 15px;
+      border-radius: 12px;
+      border: 1px solid rgba(26, 58, 107, 0.08);
+    }
+    .modal-sub-photo {
+      width: 135px; 
+      height: 135px; 
+      border-radius: 50%; 
+      object-fit: cover; 
+      flex-shrink: 0;
+      border: 2px solid var(--clr-primary);
+    }
+    .modal-sub-details h4 {
+      margin: 0 0 3px 0; font-size: 0.95rem; color: var(--clr-secondary); font-weight: 700;
+    }
+    .modal-sub-details .sub-cargo {
+      font-size: 0.78rem; color: var(--clr-primary); font-weight: 600; text-transform: uppercase; margin-bottom: 4px;
+    }
+    .modal-sub-details p {
+      margin: 0; font-size: 0.82rem; color: #64748b; border: none; padding: 0; text-align: left; line-height: 1.4;
+    }
+
+    .modal-card::-webkit-scrollbar { width: 6px; }
+    .modal-card::-webkit-scrollbar-thumb { background: rgba(26,58,107,0.2); border-radius: 10px; }
+
+    .btn-close-modal {
+      position: absolute; top: 20px; right: 20px; background: rgba(26,58,107,0.05);
+      border: none; width: 40px; height: 40px; border-radius: 50%;
+      display: flex; align-items: center; justify-content: center;
+      cursor: pointer; color: var(--clr-primary); transition: all 0.3s cubic-bezier(0.25, 0.8, 0.25, 1);
+      z-index: 10;
+    }
+    .btn-close-modal:hover { background: var(--clr-primary); color: #fff; transform: rotate(90deg) scale(1.1); }
+
+    /* =========================================
+   RESPONSIVIDAD Y CORRECCIÓN DE DESBORDAMIENTO
+   ========================================= */
+
+/* 1. Forzamos que el padding no expanda el tamaño total de los contenedores */
+.modal-overlay, .modal-card {
+  box-sizing: border-box;
+}
+
+@media (max-width: 768px) {
+  /* 2. Ajustamos la tarjeta al espacio disponible sin desbordarse */
+  .modal-card {
+    width: 100%;
+    padding: 30px 15px 20px; /* Reducimos el padding lateral a 15px */
+    max-height: 85vh;
+    margin: auto;
+  }
+  
+  /* 3. Reubicamos el botón de cerrar para que no choque */
+  .btn-close-modal {
+    top: 10px;
+    right: 10px;
+    width: 35px;
+    height: 35px;
+  }
+  
+  .btn-close-modal svg {
+    width: 18px;
+    height: 18px;
+  }
+
+  /* 4. Ajustes de tamaño de foto y fuentes */
+
+
+  .modal-header-title {
+    font-size: 0.75rem;
+  }
+  
+  .modal-info-box h3 {
+    font-size: 1.15rem;
+  }
+  
+  /* 5. Aseguramos que el texto del párrafo respete los márgenes */
+  .modal-info-box p {
+    font-size: 0.85rem;
+    padding-top: 10px;
+    word-wrap: break-word; /* Obliga al texto a bajar de línea si es muy largo */
+  }
+
+  /* 6. Reorganizamos los sub-perfiles en columna */
+  .modal-sub-profile-item {
+    flex-direction: column;
+    text-align: center;
+    gap: 10px;
+    padding: 15px 10px;
+  }
+  
+  .modal-sub-details p {
+    text-align: center;
+  }
+
+  
+}
+
+    /* =========================================
+       AJUSTE FINAL: HEADER EN UNA SOLA FILA
+       Y ESTADÍSTICAS ALINEADAS
+       ========================================= */
+
+    #header .header-container {
+      flex-direction: row !important;
+      flex-wrap: nowrap !important;
+    }
+
+    #navbar {
+      margin-left: auto !important;
+    }
+
+    .stats-container {
+      align-items: stretch !important;
+    }
+
+    .stat-item {
+      display: flex !important;
+      flex-direction: column !important;
+      align-items: center !important;
+      justify-content: flex-start !important;
+      text-align: center !important;
+      min-height: 44px;
+    }
+
+    .stat-item h3 {
+      width: 100% !important;
+      height: 22px;
+      display: flex !important;
+      align-items: center !important;
+      justify-content: center !important;
+      margin: 0 !important;
+      line-height: 1 !important;
+    }
+
+    .stat-item p {
+      width: 100% !important;
+      min-height: 18px;
+      display: flex !important;
+      align-items: flex-start !important;
+      justify-content: center !important;
+      margin: 4px 0 0 !important;
+      line-height: 1.15 !important;
+      white-space: normal !important;
+    }
+
+    @media (max-width: 768px) {
+      #header .header-container {
+        flex-direction: row !important;
+        flex-wrap: nowrap !important;
+        align-items: center !important;
+      }
+
+      #header .logo-link {
+        flex: 1 1 auto !important;
+        width: auto !important;
+        min-width: 0 !important;
+        max-width: calc(100% - 75px) !important;
+      }
+
+      #navbar {
+        display: flex !important;
+        flex: 0 0 auto !important;
+        width: auto !important;
+        margin-left: auto !important;
+      }
+
+      #navbar .btn-inicio {
+        display: inline-flex !important;
+        width: auto !important;
+      }
+
+      .stats-container {
+        grid-template-columns: repeat(3, minmax(0, 1fr)) !important;
+        align-items: start !important;
+      }
+
+      .stat-item {
+        min-height: 48px;
+      }
+
+      .stat-item h3 {
+        height: 20px;
+        font-size: 1.2rem !important;
+      }
+
+      .stat-item p {
+        min-height: 22px;
+        margin-top: 5px !important;
+        font-size: 0.62rem !important;
+        line-height: 1.15 !important;
+      }
+    }
+
+    @media (max-width: 420px) {
+      #header .logo-texts .l1 {
+        font-size: 0.62rem !important;
+      }
+
+      .stat-item h3 {
+        font-size: 1.08rem !important;
+      }
+
+      .stat-item p {
+        font-size: 0.58rem !important;
+      }
+    }
+
+
+    /* =========================================
+       CORRECCIÓN DEFINITIVA DEL BOTÓN INICIO
+       ========================================= */
+
+    #header {
+      position: relative !important;
+    }
+
+    #header .header-container {
+      position: relative !important;
+      display: flex !important;
+      flex-direction: row !important;
+      align-items: center !important;
+      justify-content: space-between !important;
+      width: 100% !important;
+      max-width: 100% !important;
+    }
+
+    #header .logo-link {
+      position: static !important;
+      flex: 0 1 auto !important;
+      margin: 0 !important;
+    }
+
+    #header #navbar {
+      position: static !important;
+      top: auto !important;
+      right: auto !important;
+      bottom: auto !important;
+      left: auto !important;
+      float: none !important;
+      transform: none !important;
+      display: flex !important;
+      align-items: center !important;
+      justify-content: flex-end !important;
+      width: auto !important;
+      height: auto !important;
+      margin: 0 0 0 auto !important;
+      padding: 0 !important;
+      flex: 0 0 auto !important;
+      z-index: 10 !important;
+    }
+
+    #header #navbar .btn-inicio {
+      position: static !important;
+      display: inline-flex !important;
+      float: none !important;
+      margin: 0 !important;
+      transform: none !important;
+      width: auto !important;
+      height: auto !important;
+      min-width: 52px !important;
+      box-sizing: border-box !important;
+    }
+
+    @media (max-width: 768px) {
+      #header .header-container {
+        flex-direction: row !important;
+        flex-wrap: nowrap !important;
+        align-items: center !important;
+      }
+
+      #header .logo-link {
+        flex: 1 1 auto !important;
+        min-width: 0 !important;
+        max-width: calc(100% - 75px) !important;
+      }
+
+      #header #navbar {
+        position: static !important;
+        flex: 0 0 auto !important;
+        width: auto !important;
+        margin-left: auto !important;
+      }
+
+      #header #navbar .btn-inicio {
+        position: static !important;
+        display: inline-flex !important;
+        margin: 0 !important;
+      }
+    }
+
+
+    /* =========================================
+       ESPACIADO SUPERIOR DE ESTADÍSTICAS
+       ========================================= */
+
+    .stats-bar {
+      padding-top: 18px !important;
+      padding-bottom: 14px !important;
+      box-sizing: border-box !important;
+    }
+
+    .stats-container {
+      margin-top: 2px !important;
+    }
+
+    @media (max-width: 768px) {
+      .stats-bar {
+        padding-top: 14px !important;
+        padding-bottom: 12px !important;
+      }
+
+      .stats-container {
+        margin-top: 1px !important;
+      }
+    }
+
+    @media (max-width: 420px) {
+      .stats-bar {
+        padding-top: 13px !important;
+        padding-bottom: 11px !important;
+      }
+    }
+
+  </style>
+@endpush
+
+@section('navigation')
+  <a href="{{ url('/') }}" class="btn-inicio" aria-label="Ir al inicio">Inicio</a>
+@endsection
+
+@section('content')
+<!-- HERO -->
+<section class="hero-banner org-hero" style="background: linear-gradient(135deg, rgba(15, 35, 64, 0.92), rgba(26, 58, 107, 0.82)), url('{{ asset('assets/img/portadahero.jpg') }}') center/cover no-repeat;">
+  <div class="hero-content">
+    <h1 class="hero-title">Estructura Organizativa</h1>
+    <p class="hero-desc">Organización al servicio del pueblo, conoce el esquema de trabajo y las direcciones troncales que conforman la Contraloría del Municipio Páez.</p>
+  </div>
+</section>
+
+<!-- STATS BAR -->
+<section class="stats-bar">
+  <div class="stats-container">
+    <div class="stat-item"><h3 class="counter" data-target="15">+15</h3><p>Direcciones Activas</p></div>
+    <div class="stat-item"><h3 class="counter" data-target="2026">2026</h3><p>Estructura Vigente</p></div>
+    <div class="stat-item"><h3 class="counter" data-target="100">100%</h3><p>Ética como Pilar</p></div>
+  </div>
+</section>
+
+<!-- DIVISOR JERARQUÍA INSTITUCIONAL -->
+<section class="section-divider">
+  <div class="container">
+    <h2 class="divider-title">Jerarquía Institucional</h2>
+    <div class="divider-line"></div>
+  </div>
+</section>
+
+<!-- ORGANIGRAMA MAIN -->
+<main id="main">
+  <section class="org-section">
+    <div class="container">
+      <div class="org-grid-container">
+        
+        <!-- Nivel 1 -->
+        <div class="org-row">
+          <div class="org-card superior" data-profile="contralor">
+            <span>DESPACHO DEL CONTRALOR</span>
+          </div>
+        </div>
+
+        <!-- Nivel 2 -->
+        <div class="org-row connected">
+          <div class="org-card" data-profile="auditoria"><span>UNIDAD DE AUDITORÍA INTERNA</span></div>
+          <div class="org-card" data-profile="juridico"><span>DIRECCIÓN DE SERVICIOS JURÍDICOS</span></div>
+          <div class="org-card" data-profile="oac"><span>OFICINA DE ATENCIÓN AL CIUDADANO</span></div>
+        </div>
+
+        <!-- Nivel 3 -->
+        <div class="org-row connected">
+          <div class="org-card" data-profile="planificacion"><span>DIR. DE PLANIFICACIÓN Y ARCHIVO</span></div>
+          <div class="org-card" data-profile="administrativo"><span>DIRECCIÓN ADMINISTRATIVA</span></div>
+          <div class="org-card" data-profile="rrhh"><span>DIRECCIÓN DE TALENTO HUMANO</span></div>
+        </div>
+
+        <!-- Nivel 4 -->
+        <div class="org-row connected">
+          <div class="org-card control" data-profile="posterior"><span>DIR. DE CONTROL POSTERIOR</span></div>
+          <div class="org-card control" data-profile="investigativa"><span>DIR. POTESTAD INVESTIGATIVA</span></div>
+          <div class="org-card control" data-profile="responsabilidades"><span>DIR. DETERMINACIÓN DE RESPONSABILIDADES</span></div>
+        </div>
+
+      </div>
+    </div>
+  </section>
+</main>
+
+<!-- MODAL EXECUTIVE GLASS -->
+<div id="profileModal" class="modal-overlay">
+  <div class="modal-card">
+    
+    <button class="btn-close-modal" type="button" aria-label="Cerrar perfil">
+      <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+        <line x1="18" y1="6" x2="6" y2="18"></line>
+        <line x1="6" y1="6" x2="18" y2="18"></line>
+      </svg>
+    </button>
+
+    <div class="modal-photo-container">
+      <img id="modalImage" src="" alt="Foto del funcionario">
+    </div>
+    
+    <div class="modal-header-title" id="modalPositionTitle">CARGO MUNICIPAL</div>
+    
+    <div class="modal-info-box">
+      <h3 id="modalName">NOMBRE APELLIDO</h3>
+      <p id="modalDesc">Descripción breve de las responsabilidades...</p>
+    </div>
+
+    <!-- Contenedor dinámico para perfiles adicionales -->
+    <div id="modalSubProfilesContainer"></div>
+
+  </div>
+</div>
+
+@endsection
+
+@push('scripts')
+<script>
+  const perfiles = {
+    'contralor': { 
+      titulo: 'Órgano Rector Superior – Despacho del Contralor', 
+      nombre: 'ABG. LEONEL LUCENA', 
+      desc: 'El vértice estratégico y la máxima instancia de gobernanza institucional. Ejerce el liderazgo directivo, la representación legal y la toma de decisiones vinculantes, dictando las directrices maestras que orientan la política de control fiscal hacia la transparentación y eficiencia de la gestión pública municipal.',
+      foto: '{{ asset('assets/img/despachocontralor.jpg') }}',
+      subperfiles: []
+    },
+    'auditoria': { 
+      titulo: 'Unidad de Soporte, Asesoría y Enlace Ciudadano', 
+      nombre: 'LIC. MERYS TOVAR', 
+      desc: 'El mecanismo de autogobierno y control endógeno. Vela con absoluta independencia funcional por la probidad en el manejo de los recursos propios de la Contraloría, blindando sus procesos internos contra cualquier desviación operativa o financiera.',
+      foto: '{{ asset('assets/img/despachoauditoria.jpg') }}',
+      subperfiles: []
+    },
+    'juridico': { 
+      titulo: 'Dirección de Servicios Jurídicos', 
+      nombre: 'ABG. ESTHER JIMÉNEZ', 
+      desc: 'El blindaje normativo de la institución. Actúa como el núcleo de consultoría legal encargado de dotar de seguridad jurídica a cada acto administrativo, auditoría y resolución, asegurando la perfecta sincronía con el ordenamiento legal venezolano.',
+      foto: '{{ asset('assets/img/despachoserviciosjuridicos.jpg') }}',
+      subperfiles: []
+    },
+    'oac': { 
+      titulo: 'Oficina de Atención al Ciudadano (OAC)', 
+      nombre: 'ING. JUAN ROMERO', 
+      desc: 'La interfaz de participación popular y democratización del control fiscal. Canaliza, procesa y da trazabilidad a las denuncias y peticiones de la comunidad, sirviendo como el puente operativo inicial donde el clamor social se transforma en materia prima para la investigación institucional.',
+      foto: '{{ asset('assets/img/despachooac.jpg') }}',
+      subperfiles: []
+    },
+    'planificacion': { 
+      titulo: 'Dirección de Planificación y Archivo', 
+      nombre: 'LIC. YOLANDA RIVERO', 
+      desc: 'El cerebro logístico y la memoria histórica del órgano. Diseña la brújula operativa de la institución mediante el seguimiento del Plan Operativo Anual (POA), al tiempo que resguarda el acervo documental e informacional bajo estrictos estándares de preservación y acceso.',
+      foto: '{{ asset('assets/img/despachoplanificacion.jpg') }}',
+      subperfiles: []
+    },
+    'administrativo': { 
+      titulo: 'Dirección Administrativa', 
+      nombre: 'LIC. MARY URRIOLA', 
+      desc: 'El motor financiero y de suministros. Gestiona el flujo de recursos presupuestarios, las contrataciones públicas y la infraestructura material, garantizando la sostenibilidad y el soporte operativo continuo de todo el engranaje institucional.',
+      foto: '{{ asset('assets/img/despachoadministrativo.jpg') }}',
+      subperfiles: [
+        {
+          nombre: 'LIC. JENIFER PEÑA',
+          cargo: 'Jefe de Presupuesto',
+          desc: 'Encargada de la administración, control y ejecución del presupuesto financiero asignado a la institución.',
+          foto: '{{ asset('assets/img/despachoadministrativosubperfil1.jpg') }}'
+        },
+        {
+          nombre: 'ING. BETSAIDA SUÁREZ',
+          cargo: 'Jefe de Bienes e Informática',
+          desc: 'Responsable del registro y control de los bienes institucionales, así como de la gestión y soporte tecnológico.',
+          foto: '{{ asset('assets/img/despachoadministrativosubperfil2.jpg') }}'
+        }
+      ]
+    },
+    'rrhh': { 
+      titulo: 'Dirección de Talento Humano', 
+      nombre: 'ING. LUIS JIMÉNEZ', 
+      desc: 'El núcleo de ingeniería social y desarrollo del personal. Administra el ciclo de vida de los funcionarios públicos, optimizando el rendimiento, la capacitación, el clima organizacional y el bienestar integral del capital humano que da vida a la Contraloría.',
+      foto: '{{ asset('assets/img/despachotalentohumano.jpg') }}',
+      subperfiles: []
+    },
+    'posterior': { 
+      titulo: 'Dirección de Control Posterior', 
+      nombre: 'ABG. YANNI LEAL', 
+      desc: 'La línea de fiscalización ex post. Evalúa con rigor técnico y financiero la ejecución presupuestaria de los entes públicos después de haber sido ejecutada, midiendo la legalidad, exactitud y eficacia del gasto mediante auditorías e inspecciones exhaustivas.',
+      foto: '{{ asset('assets/img/despachoposterior.jpg') }}',
+      subperfiles: [
+        {
+          nombre: 'LIC. LUSBELY VERDE',
+          cargo: 'Jefe de Actuaciones',
+          desc: 'Coordina y supervisa la ejecución de las actuaciones fiscales y auditorías programadas.',
+          foto: '{{ asset('assets/img/despachoposteriorsubperfil1.jpg') }}'
+        },
+      ]
+    }, 
+    'investigativa': { 
+      titulo: 'Dirección de Potestad Investigativa', 
+      nombre: 'ABG. JUAN TEJEA', 
+      desc: 'La instancia de instrucción y averiguación preliminar. Actúa de oficio o por indicios derivados del control posterior y la OAC para recabar evidencias, armar expedientes técnicos y configurar los elementos probatorios ante posibles irregularidades administrativas.',
+      foto: '{{ asset('assets/img/despachoinvestigativo.jpg') }}',
+      subperfiles: []
+    },
+    'responsabilidades': { 
+      titulo: 'Dirección de Determinación de Responsabilidades', 
+      nombre: 'DIR. GUSTAVO MONTES DE OCA', 
+      desc: 'El tribunal administrativo sancionatorio. Con base en los expedientes de investigación, sustancia los juicios administrativos garantizando rigurosamente el debido proceso, culminando con la emisión de declaratorias de responsabilidad, multas, reparos o inhabilitaciones según corresponda.',
+      foto: '{{ asset('assets/img/despachodeterminacionderesponsabilidades.jpg') }}',
+      subperfiles: []
+    }
+  };
+
+  function openProfile(id) {
+    const data = perfiles[id];
+    if (data) {
+      document.getElementById('modalPositionTitle').innerText = data.titulo;
+      document.getElementById('modalName').innerText = data.nombre;
+      document.getElementById('modalDesc').innerText = data.desc;
+      document.getElementById('modalImage').src = data.foto;
+      
+      const subContainer = document.getElementById('modalSubProfilesContainer');
+      subContainer.innerHTML = '';
+      
+      if (data.subperfiles && data.subperfiles.length > 0) {
+        let subHtml = '<div class="modal-sub-profiles">';
+        data.subperfiles.forEach(sub => {
+          subHtml += `
+            <div class="modal-sub-profile-item">
+              <img src="${sub.foto}" alt="${sub.nombre}" class="modal-sub-photo">
+              <div class="modal-sub-details">
+                <div class="sub-cargo">${sub.cargo}</div>
+                <h4>${sub.nombre}</h4>
+                <p>${sub.desc}</p>
+              </div>
+            </div>
+          `;
+        });
+        subHtml += '</div>';
+        subContainer.innerHTML = subHtml;
+      }
+
+      const modal = document.getElementById('profileModal');
+      if (modal) {
+        modal.style.display = 'flex';
+        document.body.style.overflow = 'hidden';
+        setTimeout(() => { modal.classList.add('active'); }, 10);
+      }
+    }
+  }
+
+  function closeProfile(event) {
+    if (event) event.preventDefault();
+    const modal = document.getElementById('profileModal');
+    if (modal) {
+      modal.classList.remove('active');
+      document.body.style.overflow = '';
+      setTimeout(() => { modal.style.display = 'none'; }, 400);
+    }
+  }
+
+  document.addEventListener('DOMContentLoaded', () => {
+    const counters = document.querySelectorAll('.counter');
+    counters.forEach(counter => {
+      const updateCount = () => {
+        const target = +counter.getAttribute('data-target');
+        const count = +counter.innerText.replace(/[^0-9]/g, '');
+        const speed = 200; 
+        const inc = target / speed;
+        if (count < target) {
+          counter.innerText = Math.ceil(count + inc);
+          setTimeout(updateCount, 10);
+        } else {
+          counter.innerText = target === 15 ? '+7' : target === 100 ? '100%' : target;
+        }
+      };
+      updateCount();
+    });
+
+    const cards = document.querySelectorAll('.org-card');
+    cards.forEach(card => {
+      card.addEventListener('click', () => {
+        const profileId = card.getAttribute('data-profile');
+        if (profileId) {
+          openProfile(profileId);
+        }
+      });
+
+      card.addEventListener('mousemove', e => {
+        const rect = card.getBoundingClientRect();
+        const x = e.clientX - rect.left;
+        const y = e.clientY - rect.top;
+        const centerX = rect.width / 2;
+        const centerY = rect.height / 2;
+        
+        const rotateX = ((y - centerY) / centerY) * -15; 
+        const rotateY = ((x - centerX) / centerX) * 15;
+
+        card.style.transform = `perspective(1000px) rotateX(${rotateX}deg) rotateY(${rotateY}deg) scale3d(1.05, 1.05, 1.05)`;
+      });
+
+      card.addEventListener('mouseleave', () => {
+        card.style.transform = `perspective(1000px) rotateX(0deg) rotateY(0deg) scale3d(1, 1, 1)`;
+        card.style.transition = 'transform 0.5s ease, box-shadow 0.3s ease';
+      });
+
+      card.addEventListener('mouseenter', () => {
+        card.style.transition = 'none';
+      });
+    });
+
+    const modalOverlay = document.getElementById('profileModal');
+    if (modalOverlay) {
+      modalOverlay.addEventListener('click', (e) => {
+        if (e.target === modalOverlay) {
+          closeProfile(e);
+        }
+      });
+    }
+    
+    const closeBtn = document.querySelector('.btn-close-modal');
+    if (closeBtn) {
+      closeBtn.addEventListener('click', closeProfile);
+    }
+
+    document.addEventListener('keydown', (e) => {
+      if (e.key === 'Escape') {
+        closeProfile(e);
+      }
+    });
+  });
+</script>
+@endpush

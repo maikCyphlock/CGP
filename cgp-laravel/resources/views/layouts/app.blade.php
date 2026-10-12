@@ -42,7 +42,7 @@
           <a href="#">Institución</a>
           <div class="dropdown-menu">
             <a href="{{ url('/#mision') }}">Misión y Visión</a>
-            <a href="https://drive.google.com/file/d/1cobbu88SJoTykQXbhrDzVc9ymcYY8sPi/view?usp=drive_open" target="_blank">Organigrama</a>
+            <a href="{{ url('/organigrama') }}">Organigrama</a>
             <a href="{{ url('/#Historia') }}">Historia</a>
             <a href="{{ url('/#mision') }}">Ubicación</a>
             <a href="{{ url('/#legal') }}">Base Normativa</a>
@@ -102,7 +102,7 @@
           <h6>Institución</h6>
           <ul>
             <li><a href="{{ url('/#mision') }}">Misión y Visión</a></li>
-            <li><a href="https://drive.google.com/file/d/1cobbu88SJoTykQXbhrDzVc9ymcYY8sPi/view?usp=drive_open" target="_blank">Organigrama</a></li>
+            <li><a href="{{ url('/organigrama') }}">Organigrama</a></li>
             <li><a href="{{ url('/#Historia') }}">Historia</a></li>
             <li><a href="#">Directorio</a></li>
             <li><a href="{{ url('/#legal') }}">Base Normativa</a></li>

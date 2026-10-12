@@ -536,6 +536,8 @@
     }
 
 
+    .comm-hero .hero-desc { color: rgba(255,255,255,0.8); }
+
     /* Este apartado no usa el menú hamburguesa */
     #menu-toggle { display: none !important; }
 
