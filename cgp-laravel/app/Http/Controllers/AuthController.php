@@ -17,9 +17,14 @@ class AuthController extends Controller
 
     const MINUTOS_BLOQUEO = 15;
 
-    /** El módulo (oac|admin) lo da la URL: /oac/login o /admin/login. */
+    /** El módulo (oac|admin) lo elige el selector del login; si no viene, lo da la URL. */
     private function modulo(Request $request): string
     {
+        $rol = $request->input('rol');
+        if (in_array($rol, ['oac', 'admin', 'web'], true)) {
+            return $rol === 'web' ? 'admin' : $rol; // el gestor de contenido web trabaja dentro de Administración
+        }
+
         return $request->is('oac', 'oac/*') ? 'oac' : 'admin';
     }
 
@@ -88,6 +93,10 @@ class AuthController extends Controller
             }
             $this->cerrar($request);
             $this->fallar('Su cuenta no tiene acceso a ningún módulo. Solicítelo al administrador.');
+        }
+
+        if ($request->input('rol') === 'web' && $user->puede('CMS')) {
+            return redirect()->route('admin.contenidos.index');
         }
 
         return redirect()->intended(route("$mod.inicio"));

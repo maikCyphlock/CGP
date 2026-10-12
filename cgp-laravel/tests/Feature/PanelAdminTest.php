@@ -393,8 +393,8 @@ class PanelAdminTest extends TestCase
         $this->get('/oac')->assertRedirect('/oac/login');
         $this->get('/oac/expedientes')->assertRedirect('/oac/login');
         $this->get('/admin/monitoreo')->assertRedirect('/admin/login');
-        $this->get('/oac/login')->assertOk()->assertSee('Oficina de Atención al Ciudadano');
-        $this->get('/admin/login')->assertOk()->assertSee('Administración del Sistema');
+        $this->get('/oac/login')->assertOk()->assertSee('value="oac" checked', false);
+        $this->get('/admin/login')->assertOk()->assertSee('value="admin" checked', false);
 
         // Personal de la OAC: entra a /oac, no a /admin (y queda registrado).
         $this->actingAs($oac);
@@ -427,6 +427,12 @@ class PanelAdminTest extends TestCase
         $this->post('/oac/logout')->assertRedirect('/oac/login');
         $this->post('/oac/login', ['email' => $adm->email, 'password' => 'clave-segura'])->assertRedirect('/admin'); // no es de la OAC: se le lleva a Administración
         $this->post('/admin/logout')->assertRedirect('/admin/login');
+        // El selector de rol del login manda sobre la URL.
+        $this->post('/admin/login', ['email' => $oac->email, 'password' => 'clave-segura', 'rol' => 'oac'])->assertRedirect('/oac');
+        $this->post('/oac/logout');
+        $web = $this->usuario([], ['CMS' => 'read']);
+        $this->post('/oac/login', ['email' => $web->email, 'password' => 'clave-segura', 'rol' => 'web'])->assertRedirect('/admin/contenidos');
+        $this->post('/admin/logout');
 
         // Quien no tiene ningún módulo no queda dentro.
         $nadie = $this->usuario([], []);
@@ -435,7 +441,7 @@ class PanelAdminTest extends TestCase
 
         // Queda historial de ingresos (el cierre se enlaza por la cookie de sesión, que estas pruebas no envían;
         // sí se cierra en el mismo request, como el de quien no tiene ningún módulo), y los fallos se registran.
-        $this->assertSame(3, DB::table('session_log')->count());
+        $this->assertSame(5, DB::table('session_log')->count());
         $this->assertSame(1, DB::table('session_log')->whereNotNull('closed_at')->count());
         $this->post('/admin/login', ['email' => $adm->email, 'password' => 'mala']);
         $this->assertSame(1, DB::table('unauthorized_access_log')->where('user_id', $adm->id)->where('endpoint', 'like', 'LOGIN FALLIDO%')->count());

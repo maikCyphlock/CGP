@@ -3,69 +3,174 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  @php
-    $esOac = $mod === 'oac';
-    $titulo = $esOac ? 'Oficina de Atención al Ciudadano' : 'Administración del Sistema';
-    $texto = $esOac
-      ? 'Acceso para el personal de la OAC: recepción, clasificación y seguimiento de denuncias, quejas y reclamos.'
-      : 'Acceso para contralores y recursos humanos: control de accesos, usuarios, contenido del portal y monitoreo del sistema.';
-  @endphp
-  <title>{{ $titulo }} · Contraloría del Municipio Páez</title>
+  @php $rol = old('rol', $mod); @endphp
+  <title>Acceso Administrativo - Contraloría del Municipio Páez</title>
+
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;700;900&family=Inter:wght@300;400;600&display=swap" rel="stylesheet">
   <link href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap/5.3.2/css/bootstrap.min.css" rel="stylesheet">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+
   <style>
-    body { font-family: 'Segoe UI', Roboto, Arial, sans-serif; background-color: #0d1b3e; margin: 0; min-height: 100vh; }
-    .login-wrapper { display: flex; min-height: 100vh; }
-    .login-info { background: linear-gradient(135deg, rgba(13,27,62,0.93), rgba(13,27,62,0.93)), url('{{ asset('assets/img/portadahero.jpg') }}'); background-size: cover; background-position: center; width: 50%; color: white; display: flex; align-items: center; justify-content: center; padding: 40px; }
-    .info-content { max-width: 450px; }
-    .info-content h1 { font-weight: 900; font-size: 2.5rem; text-transform: uppercase; background: linear-gradient(to right, #fff, #b3e5fc); -webkit-background-clip: text; -webkit-text-fill-color: transparent; background-clip: text; }
-    .info-content p { opacity: .8; line-height: 1.7; text-align: justify; }
-    .login-form-container { width: 50%; display: flex; align-items: center; justify-content: center; background-color: ghostwhite; padding: 16px; }
-    @media (max-width: 768px) { .login-info { display: none; } .login-form-container { width: 100%; } }
-    .form-box { background: #fff; padding: 40px; border-radius: 20px; box-shadow: 0 20px 50px rgba(0,0,0,0.1); width: 100%; max-width: 450px; }
+    h1, h2, h3 { font-family: 'Inter', sans-serif; text-transform: uppercase; letter-spacing: -0.5px; }
+    p { text-align: justify; line-height: 1.7; }
+    body { font-family: 'Inter', sans-serif; background-color: #0d1b3e; margin: 0; height: 100vh; overflow: hidden; }
+    .login-wrapper { display: flex; height: 100vh; }
+
+    .login-info {
+      background: linear-gradient(135deg, rgba(13, 27, 62, 0.93) 0%, rgba(13, 27, 62, 0.93) 100%), url('{{ asset('assets/img/portadahero.jpg') }}');
+      background-size: cover; background-position: center;
+      width: 50%; color: white; display: flex; align-items: center; justify-content: center; padding: 40px; position: relative;
+    }
+    .info-content { max-width: 450px; z-index: 2; }
+    .login-info h1 { font-family: 'Roboto', sans-serif; font-weight: 900; font-size: 2.5rem; margin-bottom: 5px; }
+    .login-info p { font-size: 0.95rem; line-height: 1.6; opacity: 0.8; }
+
+    /* Panel Derecho */
+    .login-form-container { width: 50%; display: flex; align-items: center; justify-content: center; background-color: ghostwhite; }
+
+    @media (max-width: 768px) {
+      .login-info { display: none !important; }
+      .login-form-container { width: 100%; }
+      body { overflow-y: auto; height: auto; }
+      .login-wrapper { height: auto; min-height: 100vh; }
+    }
+
+    .form-box {
+      background: rgba(255, 255, 255, 0.1); backdrop-filter: blur(15px);
+      border: 1px solid rgba(255, 255, 255, 0.2); padding: 40px 35px; border-radius: 20px;
+      box-shadow: 0 20px 50px rgba(0, 0, 0, 0.1); color: white; width: 100%; max-width: 450px; transition: all 0.3s ease;
+    }
+    .form-box:hover { box-shadow: 0 15px 40px rgba(26, 35, 64, 0.15); }
+    .form-control { transition: border-color 0.2s, box-shadow 0.2s; }
     .form-label { font-weight: 600; color: #1a2340; font-size: 0.85rem; }
-    .btn-login { background-color: #0d1b3e; color: white; font-weight: 700; padding: 12px; letter-spacing: .05em; border: none; }
-    .btn-login:hover { background-color: #1a2340; color: white; }
+
+    .btn-check:checked + .btn-outline-primary {
+      background-color: #0d1b3e !important; border-color: #0d1b3e !important; color: white !important;
+      transform: scale(1.02); transition: all 0.3s ease;
+    }
+    .btn-outline-primary {
+      border: 2px solid #dde3ee !important; color: #1a2340 !important; text-align: left !important; font-weight: 600;
+      padding: 8px 15px !important; font-size: 0.85rem !important; transition: all 0.3s ease; border-radius: 8px !important;
+    }
+    .form-control:focus, .form-select:focus { border-color: #1565c0; box-shadow: 0 0 0 0.2rem rgba(21, 101, 192, 0.15); }
+
+    .forgot-link { color: #1565c0; font-size: 0.8rem; text-decoration: none; font-weight: 600; cursor: pointer; }
+    .forgot-link:hover { text-decoration: underline; }
+
+    .btn-login { background-color: #0d1b3e; color: white; font-weight: 700; padding: 12px; border-radius: 6px; letter-spacing: 0.05em; transition: all 0.3s ease; border: none; }
+    .btn-login:hover { background-color: #1a2340; color: white; transform: translateY(-2px); }
+
+    @keyframes fadeInLeft { from { opacity: 0; transform: translateX(-30px); } to { opacity: 1; transform: translateX(0); } }
+    @keyframes fadeInRight { from { opacity: 0; transform: translateX(30px); } to { opacity: 1; transform: translateX(0); } }
+    .login-info { animation: fadeInLeft 0.8s ease-out forwards; }
+    .login-form-container { animation: fadeInRight 0.8s ease-out forwards; }
+
+    .info-content h1 {
+      background: linear-gradient(to right, #ffffff, #b3e5fc);
+      -webkit-background-clip: text; -webkit-text-fill-color: transparent; background-clip: text;
+    }
   </style>
 </head>
 <body>
+
 <div class="login-wrapper">
+  <!-- Panel Izquierdo Institucional -->
   <div class="login-info">
     <div class="info-content">
-      <h1>{{ $titulo }}</h1>
-      <p class="mt-4">{{ $texto }} Acceso restringido a personal autorizado de la Contraloría del Municipio Páez. Toda actividad es monitoreada para garantizar la transparencia y seguridad de los datos.</p>
+      <h1>Panel de Administración</h1>
+      <p class="mt-4">Acceso restringido exclusivo para personal autorizado de la Contraloría del Municipio Páez. Toda actividad en este portal es monitoreada para garantizar la transparencia y seguridad de los datos.</p>
     </div>
   </div>
 
+  <!-- Panel Derecho Formulario -->
   <div class="login-form-container">
     <div class="form-box">
-      <div class="d-flex align-items-center justify-content-center mb-4 p-3 rounded" style="background-color: #0d1b3e;">
-        <img src="{{ asset('assets/img/logo.jpeg') }}" alt="Logo" style="width: 40px; height: 40px; margin-right: 12px; border-radius: 8px; object-fit: cover;">
-        <h3 class="mb-0 text-white fw-bold">{{ $esOac ? 'OAC · INICIAR SESIÓN' : 'ADMINISTRACIÓN' }}</h3>
+
+      <!-- SECCIÓN 1: FORMULARIO DE INICIO DE SESIÓN -->
+      <div id="seccionLogin">
+        <div class="d-flex align-items-center justify-content-center mb-4 p-3 rounded" style="background-color: #0d1b3e;">
+          <img src="{{ asset('assets/img/logo.jpeg') }}" alt="Logo" style="width: 40px; height: 40px; margin-right: 12px; border-radius: 8px; object-fit: cover;">
+          <h3 class="mb-0 text-white" style="font-family: 'Roboto', sans-serif; font-weight: 700; font-size: 1.25rem;">INICIAR SESIÓN</h3>
+        </div>
+
+        @if ($errors->any())
+          <div class="alert alert-danger py-2" role="alert">{{ $errors->first() }}</div>
+        @endif
+
+        <form method="POST" action="{{ route($mod.'.login') }}" onsubmit="this.querySelector('button[type=submit]').disabled = true">
+          @csrf
+          <div class="row g-2">
+            <div class="col-12">
+              <input type="radio" class="btn-check" name="rol" id="rol0" value="admin" @checked($rol === 'admin')>
+              <label class="btn btn-outline-primary w-100 py-3 rounded-3 shadow-sm" for="rol0">
+                 Administrador del Sistema
+              </label>
+            </div>
+
+            <div class="col-12">
+              <input type="radio" class="btn-check" name="rol" id="rol1" value="web" @checked($rol === 'web')>
+              <label class="btn btn-outline-primary w-100 py-3 rounded-3 shadow-sm" for="rol1">
+                 Gestor de Contenido Web
+              </label>
+            </div>
+
+            <div class="col-12">
+              <input type="radio" class="btn-check" name="rol" id="rol2" value="oac" @checked($rol === 'oac')>
+              <label class="btn btn-outline-primary w-100 py-3 rounded-3 shadow-sm" for="rol2">
+                 Gestor de Módulo de Denuncias
+              </label>
+            </div>
+          </div>
+
+          <div class="mb-3 mt-3">
+            <hr>
+            <label for="email" class="form-label">Correo electrónico / Usuario</label>
+            <input type="email" class="form-control" id="email" name="email" value="{{ old('email') }}" placeholder="usuario@cgr.gob.ve" required autofocus autocomplete="username">
+          </div>
+
+          <div class="mb-4">
+            <label for="password" class="form-label">Contraseña</label>
+            <input type="password" class="form-control" id="password" name="password" placeholder="••••••••" required autocomplete="current-password">
+            <div class="text-end mt-2">
+              <a class="forgot-link" onclick="mostrarRecuperacion()">¿Olvidó su clave?</a>
+            </div>
+          </div>
+
+          <button type="submit" class="btn btn-login w-100">ACCEDER</button>
+        </form>
       </div>
 
-      @if ($errors->any())
-        <div class="alert alert-danger py-2" role="alert">{{ $errors->first() }}</div>
-      @endif
+      <!-- SECCIÓN 2: RECUPERACIÓN DE CONTRASEÑA (oculta inicialmente) -->
+      <div id="seccionRecuperar" class="d-none">
+        <div class="d-flex align-items-center justify-content-center mb-4 p-3 rounded" style="background-color: #0d1b3e;">
+          <img src="{{ asset('assets/img/logo.jpeg') }}" alt="Logo" style="width: 40px; height: 40px; margin-right: 12px; border-radius: 8px; object-fit: cover;">
+          <h3 class="mb-0 text-white" style="font-family: 'Roboto', sans-serif; font-weight: 700; font-size: 1.1rem;">RECUPERAR CLAVE</h3>
+        </div>
 
-      <form method="POST" action="{{ route($mod.'.login') }}" onsubmit="this.querySelector('button').disabled = true">
-        @csrf
-        <div class="mb-3">
-          <label for="email" class="form-label">Correo electrónico</label>
-          <input type="email" class="form-control" id="email" name="email" value="{{ old('email') }}" placeholder="usuario@cgr.gob.ve" required autofocus autocomplete="username">
+        {{-- ponytail: no hay envío de correos configurado; el restablecimiento lo hace el administrador desde Usuarios. --}}
+        <p class="text-secondary small mb-4" style="color: #495057 !important; text-align: justify;">
+          Para restablecer sus credenciales de acceso, solicítelo al administrador del sistema indicando su correo institucional registrado.
+        </p>
+
+        <div class="text-center">
+          <a class="forgot-link" onclick="mostrarLogin()"><i class="fa-solid fa-arrow-left me-1"></i> Volver al inicio de sesión</a>
         </div>
-        <div class="mb-4">
-          <label for="password" class="form-label">Contraseña</label>
-          <input type="password" class="form-control" id="password" name="password" placeholder="••••••••" required autocomplete="current-password">
-          <div class="form-text">¿Olvidó su clave? Solicite el restablecimiento al administrador del sistema.</div>
-        </div>
-        <button type="submit" class="btn btn-login w-100">ACCEDER</button>
-      </form>
-      <p class="text-center small text-muted mt-4 mb-0">
-        @if ($esOac) ¿Es administrador del sistema? <a href="{{ route('admin.login') }}">Ir a Administración</a>
-        @else ¿Trabaja en la OAC? <a href="{{ route('oac.login') }}">Ir a la Oficina de Atención al Ciudadano</a> @endif
-      </p>
+      </div>
+
     </div>
   </div>
 </div>
+
+<script>
+  function mostrarRecuperacion() {
+    document.getElementById('seccionLogin').classList.add('d-none');
+    document.getElementById('seccionRecuperar').classList.remove('d-none');
+  }
+  function mostrarLogin() {
+    document.getElementById('seccionRecuperar').classList.add('d-none');
+    document.getElementById('seccionLogin').classList.remove('d-none');
+  }
+</script>
 </body>
 </html>

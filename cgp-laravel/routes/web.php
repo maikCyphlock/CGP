@@ -57,6 +57,7 @@ Route::view('/organigrama', 'organigrama');
 //   /oac   → Oficina de Atención al Ciudadano (denuncias, quejas y reclamos)
 //   /admin → Administración del sistema (accesos, usuarios, portal web y monitoreo)
 // La misma cuenta puede entrar a ambos si tiene privilegios en los dos.
+Route::redirect('/login', '/admin/login');
 foreach (['oac', 'admin'] as $mod) {
     Route::middleware('guest')->prefix($mod)->group(function () use ($mod) {
         Route::get('/login', [AuthController::class, 'create'])->name("$mod.login");
