@@ -637,7 +637,6 @@
                       <option>Casado(a)</option>
                       <option>Divorciado(a)</option>
                       <option>Viudo(a)</option>
-                      <option>Unión estable</option>
                     </select>
                     <span class="error-msg" id="cit-ecivil-err">Seleccione su estado civil.</span>
                   </div>
@@ -758,7 +757,11 @@
                   <div class="form-group">
                     <label class="form-label">Teléfono del Trabajo</label>
                     <div style="display:flex;gap:6px;">
-                      <input type="tel" id="cit-telf-trab-cod" class="form-control" placeholder="Cód. área" maxlength="4" style="max-width:110px;flex-shrink:0;">
+                      <select id="cit-telf-trab-cod" class="form-select" style="max-width:130px;flex-shrink:0;">
+                        <option value="">Cód.</option>
+                        <option value="0255">0255</option>
+                        <option value="3301">3301</option>
+                      </select>
                       <input type="tel" id="cit-telf-trab-num" class="form-control" placeholder="1234567" maxlength="7">
                     </div>
                   </div>
@@ -935,10 +938,10 @@
                         <label class="form-label">Código SITUR</label>
                         <input type="text" id="proy-situr" class="form-control mayusculas" placeholder="SITUR"
                           oninput="this.value=this.value.toUpperCase()">
+                        <span class="error-msg" id="proy-situr-err">Código SITUR no válido. Ej.: C-URB-2014-11-0001 o CEC-ZU-205</span>
                       </div>
                     </div>
                   </div>
-                        <span class="error-msg" id="proy-situr-err">Código SITUR no válido. Ej.: C-URB-2014-11-0001 o CEC-ZU-205</span>
                 </div>
               </div>
             </div>
@@ -1502,7 +1505,7 @@
             ¿Verificó correctamente los datos ingresados en este paso antes de continuar al siguiente nivel?
           </p>
         </div>
-        <div class="modal-footer" style="background: #f7f9fd; border-bottom-left-radius: 8px; border-bottom-right-radius: 8px; padding: 12px 20px; border-top: 1px solid #eef1f7;">
+        <div class="modal-footer" style="justify-content: center; flex-wrap: nowrap; gap: 10px; background: #f7f9fd; border-bottom-left-radius: 8px; border-bottom-right-radius: 8px; padding: 12px 20px; border-top: 1px solid #eef1f7;">
           <button type="button" class="btn btn-outline-secondary" data-bs-dismiss="modal" style="font-size: 0.88rem; padding: 6px 16px; border-color: #b0bec5; color: #455a64;">Revisar nuevamente</button>
           <button type="button" class="btn btn-primary" id="btn-confirmar-modal" onclick="ejecutarPasoSiguiente()" style="background: #1565c0; border-color: #1565c0; font-size: 0.88rem; padding: 6px 20px; font-weight: 600;">Sí, todo es correcto</button>
         </div>
@@ -1536,11 +1539,54 @@
 
     const NOMBRES_PASOS = ["Tipo de Trámite", "Datos del Ciudadano", "Datos del Señalado", "Descripción de los Hechos", "Documentos y Evidencias"];
 
+    /* ── Borrador en localStorage: sobrevive a recargas, caduca a las 2 horas ── */
+    const BORRADOR_KEY = 'borrador-denuncia', BORRADOR_TTL = 2 * 60 * 60 * 1000;
+    const camposBorrador = () => document.querySelectorAll('input:not([type=file]):not([type=hidden]), select, textarea');
+    function guardarBorrador() {
+      if (!window.tipoFormulario) return; // el asistente aún no se ha iniciado
+      const campos = {};
+      camposBorrador().forEach(el => {
+        if (el.type === 'radio') { if (el.checked) campos['r:' + el.name] = el.value; }
+        else if (el.type === 'checkbox') { if (el.id) campos[el.id] = el.checked; }
+        else if (el.id && el.id !== 'input-codigo-consulta') campos[el.id] = el.value;
+      });
+      try { localStorage.setItem(BORRADOR_KEY, JSON.stringify({ t: Date.now(), tipo: window.tipoFormulario, paso: window.pasoActual, campos })); } catch (e) {}
+    }
+    function restaurarBorrador() {
+      let b;
+      try { b = JSON.parse(localStorage.getItem(BORRADOR_KEY)); } catch (e) {}
+      if (!b) return;
+      if (Date.now() - b.t > BORRADOR_TTL || !b.tipo) { localStorage.removeItem(BORRADOR_KEY); return; }
+      iniciarFlujo(b.tipo); // muestra el asistente y crea la primera tarjeta de señalado
+      camposBorrador().forEach(el => {
+        let cambio = false;
+        if (el.type === 'radio') { if (b.campos['r:' + el.name] === el.value) { el.checked = cambio = true; } }
+        else if (el.id in b.campos) {
+          if (el.type === 'checkbox') el.checked = b.campos[el.id]; else el.value = b.campos[el.id];
+          cambio = true;
+        }
+        if (cambio) el.dispatchEvent(new Event('change', { bubbles: true }));
+      });
+      if (b.paso > 1 && b.paso < 6 && typeof mostrarPaso === 'function') { window.pasoActual = b.paso; mostrarPaso(b.paso); }
+    }
+    document.addEventListener('input', guardarBorrador);
+    document.addEventListener('change', guardarBorrador);
+    window.addEventListener('beforeunload', guardarBorrador);
+
     document.addEventListener('DOMContentLoaded', function () {
+      restaurarBorrador();
       const elementoModal = document.getElementById('modalConfirmacionPaso');
       if (elementoModal && window.bootstrap) {
         instanciaModal = new bootstrap.Modal(elementoModal);
       }
+      // Primera letra de cada palabra en mayúscula en los campos de texto del registro
+      document.addEventListener('input', function (e) {
+        const el = e.target;
+        if (!el.matches('input[type="text"]:not(.mayusculas), textarea') || el.id === 'narracion') return;
+        const pos = el.selectionStart;
+        el.value = el.value.replace(/(^|\s)(\p{Ll})/gu, (m, sp, c) => sp + c.toUpperCase());
+        el.setSelectionRange(pos, pos);
+      });
     });
 
     /* ── Confirmación al avanzar: primero se valida el paso y, si está correcto, se pide confirmar ── */
@@ -1829,6 +1875,7 @@
         document.getElementById('nro-expediente-display').textContent = json.case_number;
         document.getElementById('btn-descargar-planilla').href = json.planilla_url;
         if (typeof guardarSenaladosEnPadron === 'function') guardarSenaladosEnPadron();
+        localStorage.removeItem(BORRADOR_KEY);
         mostrarConfirmacion();
       } catch (e) {
         alert('No se pudo conectar con el servidor. Intente de nuevo.');
