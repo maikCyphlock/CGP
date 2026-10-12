@@ -14,7 +14,7 @@
   <a href="{{ url()->previous() !== url()->current() ? url()->previous() : route('oac.expedientes.index') }}" class="btn btn-sm btn-outline-secondary"><i class="fa-solid fa-arrow-left me-1"></i> Volver</a>
   <div class="d-flex gap-2 align-items-center">
     <span class="badge badge-estatus fs-6 st-{{ $actual->code }}">{{ $actual->name }}</span>
-    <a href="{{ route('denuncias.planilla', $e->tracking_code) }}" target="_blank" class="btn btn-sm btn-outline-dark"><i class="fa-solid fa-file-pdf me-1"></i> Planilla PDF</a>
+    <a href="{{ route('denuncias.planilla', $e->tracking_code) }}" class="btn btn-sm btn-outline-dark ver-planilla" data-titulo="{{ $e->case_number }}"><i class="fa-solid fa-file-pdf me-1"></i> Planilla PDF</a>
   </div>
 </div>
 
@@ -181,6 +181,8 @@
     </div>
   </div>
 </div>
+
+@include('oac._modal_planilla')
 @endsection
 
 @push('scripts')

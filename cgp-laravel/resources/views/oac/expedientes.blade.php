@@ -55,7 +55,7 @@
             <td>{{ $e->citizen->first_name }} {{ $e->citizen->last_name }} <span class="text-muted">({{ $e->citizen->id_doc_number }})</span></td>
             <td>{{ $e->claimType->name }}</td>
             <td><span class="badge badge-estatus st-{{ $s->code }}">{{ $s->name }}</span></td>
-            <td class="text-end pe-4 text-nowrap"><a href="{{ route('denuncias.planilla', $e->tracking_code) }}" target="_blank" class="btn btn-sm btn-outline-secondary me-1" title="Ver planilla" onclick="event.stopPropagation()"><i class="fa-solid fa-file-pdf"></i></a><a href="{{ route('oac.expedientes.show', $e) }}" class="btn btn-sm {{ $s->code === 'RECEIVED' ? 'btn-cgp' : 'btn-outline-dark' }}">{{ $s->code === 'RECEIVED' ? 'Revisar' : 'Abrir' }}</a></td>
+            <td class="text-end pe-4 text-nowrap"><a href="{{ route('denuncias.planilla', $e->tracking_code) }}" class="btn btn-sm btn-outline-secondary me-1 ver-planilla" title="Ver planilla" data-titulo="{{ $e->case_number }}"><i class="fa-solid fa-file-pdf"></i></a><a href="{{ route('oac.expedientes.show', $e) }}" class="btn btn-sm {{ $s->code === 'RECEIVED' ? 'btn-cgp' : 'btn-outline-dark' }}">{{ $s->code === 'RECEIVED' ? 'Revisar' : 'Abrir' }}</a></td>
           </tr>
         @empty
           <tr><td colspan="6" class="text-center text-muted py-5">No hay expedientes con estos filtros.</td></tr>
@@ -65,5 +65,8 @@
   </div>
 </div>
 
+@include('oac._modal_planilla')
+
 <div class="mt-3">{{ $expedientes->links('pagination::bootstrap-5') }}</div>
 @endsection
+

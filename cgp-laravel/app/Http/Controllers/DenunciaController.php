@@ -267,7 +267,7 @@ class DenunciaController extends Controller
                 ->all(),
             'senalados' => $case->respondents->map(fn ($r) => $this->filaSenalado($r->attributes ?? []))->all(),
             'tiposSenalado' => $case->respondents->pluck('respondentType.code')->all(),
-        ])->setPaper('letter');
+        ])->setPaper('letter')->setOption('dpi', 120); // escala 96→120: el diseño (≈32cm) cabe en una hoja carta
 
         return $pdf->stream("planilla-{$case->case_number}.pdf");
     }
