@@ -79,6 +79,7 @@ if ([IO.File]::ReadAllText("$dir\.env") -notmatch '(?m)^APP_KEY=\S') {
     Ejecutar docker compose restart app   # el servidor lee el .env solo al arrancar
 }
 Ejecutar docker compose exec -T app php artisan migrate --force
+Ejecutar docker compose exec -T app php artisan optimize:clear   # borra caches viejas (rutas, config, vistas)
 Ejecutar docker compose exec -T app php artisan cgp:admin --defecto --correo $Correo --clave $Clave
 
 $url = "http://localhost:$Puerto"
