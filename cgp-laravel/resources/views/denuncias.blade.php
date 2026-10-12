@@ -781,19 +781,19 @@
                 </div>
                 <div class="col-md-3">
                   <div class="form-group">
+                    <label class="form-label">Municipio <span class="required" style="color:#1565c0;">*</span></label>
+                    <input type="text" id="cit-municipio" class="form-control" value="Páez" readonly tabindex="-1"
+                      style="background:#f2f4f8;color:#5a6474;cursor:not-allowed;">
+                  </div>
+                </div>
+                <div class="col-md-3">
+                  <div class="form-group">
                     <label class="form-label" style="visibility:hidden;">Nota</label>
                     <div style="background:#f2f4f8;color:#5a6474;border:1.5px solid #e1e6ee;border-radius:5px;
                       padding:8px 10px;font-size:0.72rem;line-height:1.35;display:flex;gap:7px;align-items:flex-start;
                       box-sizing:border-box;height:100%;">
                       <span>Si el caso no se tramita en Páez, compete a otra contraloría.</span>
                     </div>
-                  </div>
-                </div>
-                <div class="col-md-3">
-                  <div class="form-group">
-                    <label class="form-label">Municipio <span class="required" style="color:#1565c0;">*</span></label>
-                    <input type="text" id="cit-municipio" class="form-control" value="Páez" readonly tabindex="-1"
-                      style="background:#f2f4f8;color:#5a6474;cursor:not-allowed;">
                   </div>
                 </div>
                 <div class="col-md-3">
@@ -922,7 +922,7 @@
                         <label class="form-label">
                           Monto Estimado del Proyecto <span class="required" style="color:#1565c0;">*</span>
                         </label>
-                        <input type="text" id="proy-monto" class="form-control" placeholder="Ej. 500000">
+                        <input type="text" id="proy-monto" class="form-control" placeholder="Ej. 500.000,00" inputmode="decimal" oninput="formatearMonto(this)">
                         <span class="error-msg" id="proy-monto-err">Ingrese un monto estimado válido.</span>
                       </div>
                     </div>
@@ -1313,14 +1313,6 @@
               Anterior
             </button>
             <div style="display:flex;gap:12px;flex-wrap:wrap;">
-              <button class="btn-submit btn-pdf" id="btn-guardar-pdf" onclick="generarPDF()" style="display:none;background: #1565c0;">
-                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
-                  <polyline points="8 17 12 21 16 17" />
-                  <line x1="12" y1="12" x2="12" y2="21" />
-                  <path d="M20.88 18.09A5 5 0 0 0 18 9h-1.26A8 8 0 1 0 3 16.29" />
-                </svg>
-                Guardar como PDF
-              </button>
               <button class="btn-submit" id="btn-enviar-solicitud" style="background: #1565c0;" onclick="enviarSolicitud()">
                 Enviar Solicitud
               </button>
@@ -1538,6 +1530,13 @@
     let instanciaModal = null;
 
     const NOMBRES_PASOS = ["Tipo de Trámite", "Datos del Ciudadano", "Datos del Señalado", "Descripción de los Hechos", "Documentos y Evidencias"];
+
+    /* ── Monto en bolívares: 1.250.000,50 mientras se escribe ── */
+    function formatearMonto(el) {
+      let [ent, dec] = el.value.replace(/[^\d,]/g, '').split(',');
+      ent = (ent || '').replace(/^0+(?=\d)/, '').replace(/\B(?=(\d{3})+(?!\d))/g, '.');
+      el.value = dec === undefined ? ent : ent + ',' + dec.slice(0, 2);
+    }
 
     /* ── Borrador en localStorage: sobrevive a recargas, caduca a las 2 horas ── */
     const BORRADOR_KEY = 'borrador-denuncia', BORRADOR_TTL = 2 * 60 * 60 * 1000;
@@ -1863,7 +1862,7 @@
         senalados,
         ubicacion_senalado: val('sen-ubicacion'),
         proyecto: {
-          nombre: val('proy-nombre'), fecha: val('proy-fecha'), monto: val('proy-monto'),
+          nombre: val('proy-nombre'), fecha: val('proy-fecha'), monto: val('proy-monto').replace(/\./g, '').replace(',', '.'),
           financiador: val('proy-financiador'), situr: val('proy-situr'),
         },
         narracion: val('narracion'),

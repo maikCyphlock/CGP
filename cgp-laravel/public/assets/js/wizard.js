@@ -986,7 +986,7 @@ function validarPaso(numeroPaso) {
                 errores.push('Fecha de Aprobación del Proyecto');
                 marcarError('proy-fecha', 'proy-fecha-err');
             }
-            if (!/^\d+([.,]\d{1,2})?$/.test(document.getElementById('proy-monto').value.trim())) {
+            if (!/^\d{1,3}(\.\d{3})*(,\d{1,2})?$/.test(document.getElementById('proy-monto').value.trim())) {
                 errores.push('Monto del Proyecto');
                 marcarError('proy-monto', 'proy-monto-err');
             }
@@ -1702,7 +1702,7 @@ function poblarResumen() {
     document.getElementById('rev-card-evidencias').style.display = pasoAplica(5) ? '' : 'none';
 
     // Mostrar botón de PDF
-    document.getElementById('btn-guardar-pdf').style.display = 'inline-flex';
+    // botón "Guardar como PDF" eliminado del paso 6
 }
 
 
@@ -1939,8 +1939,8 @@ var REGLAS_VIVO = {
     'proy-monto': {
         req: true,
         check: function (v, final) {
-            if (/[^\d.,]/.test(v)) return 'Solo se permiten números. Ej.: 500000 o 1250,50';
-            if (final && !/^\d+([.,]\d{1,2})?$/.test(v)) return 'Ingrese un monto válido. Ej.: 500000 o 1250,50';
+            if (/[^\d.,]/.test(v)) return 'Solo se permiten números. Ej.: 500.000 o 1.250,50';
+            if (final && !/^\d{1,3}(\.\d{3})*(,\d{1,2})?$/.test(v)) return 'Ingrese un monto válido. Ej.: 500.000 o 1.250,50';
             return '';
         }
     },
