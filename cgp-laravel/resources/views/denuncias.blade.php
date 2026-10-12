@@ -1604,31 +1604,36 @@
       document.getElementById('err-codigo-consulta').classList.remove('visible');
     }
 
-    function consultarEstadoTramite() {
+    async function consultarEstadoTramite() {
       const codigo = document.getElementById('input-codigo-consulta').value.trim().toUpperCase();
       const containerRes = document.getElementById('resultado-estado-container');
       const err = document.getElementById('err-codigo-consulta');
 
       if (!codigo) {
+        err.textContent = 'Por favor ingrese un código válido.';
         err.classList.add('visible');
         containerRes.style.display = 'none';
         return;
       }
       err.classList.remove('visible');
-      containerRes.style.display = 'block';
-      document.getElementById('res-est-codigo').textContent = codigo;
+      containerRes.style.display = 'none';
 
-      if (codigo === 'OAC-2026-0001' || codigo.includes('0001')) {
-        document.getElementById('res-est-tipo').textContent = 'Denuncia';
-        document.getElementById('res-est-fecha').textContent = '26/03/2026';
-        document.getElementById('res-est-estado').textContent = 'En Fase de Investigación Preliminar';
-        document.getElementById('res-est-estado').style.color = '#1565c0';
-      } else {
-        document.getElementById('res-est-tipo').textContent = 'Solicitud Ciudadana General';
-        document.getElementById('res-est-fecha').textContent = new Date().toLocaleDateString();
-        document.getElementById('res-est-estado').textContent = 'Recibido en taquilla / Pendiente de Revisión';
-        document.getElementById('res-est-estado').style.color = '#2e7d32';
+      const resp = await fetch('{{ route('denuncias.estado') }}?codigo=' + encodeURIComponent(codigo), { headers: { 'Accept': 'application/json' } })
+        .catch(() => null);
+      if (!resp || !resp.ok) {
+        err.textContent = resp && resp.status === 404 ? 'No existe un trámite con ese código.'
+          : resp && resp.status === 429 ? 'Demasiadas consultas. Espere un minuto.'
+          : 'No se pudo conectar con el servidor. Intente de nuevo.';
+        err.classList.add('visible');
+        return;
       }
+      const r = await resp.json();
+      document.getElementById('res-est-codigo').textContent = r.case_number;
+      document.getElementById('res-est-tipo').textContent = r.tipo;
+      document.getElementById('res-est-fecha').textContent = r.fecha;
+      document.getElementById('res-est-estado').textContent = r.estatus;
+      document.getElementById('res-est-estado').style.color = r.cerrado ? '#2e7d32' : '#1565c0';
+      containerRes.style.display = 'block';
     }
 
     /* ── Cambio del tipo de trámite ── */

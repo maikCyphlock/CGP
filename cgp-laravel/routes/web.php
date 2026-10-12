@@ -42,6 +42,7 @@ Route::get('/media/cms/{archivo}', function (string $archivo) {
 
 Route::get('/denuncias', [DenunciaController::class, 'create'])->name('denuncias.create');
 Route::post('/denuncias', [DenunciaController::class, 'store'])->name('denuncias.store');
+Route::get('/denuncias/estado', [DenunciaController::class, 'estado'])->middleware('throttle:30,1')->name('denuncias.estado');
 Route::get('/denuncias/{trackingCode}/planilla', [DenunciaController::class, 'planilla'])->name('denuncias.planilla');
 
 Route::get('/contraloria-escolar', function () {

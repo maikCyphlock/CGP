@@ -141,6 +141,23 @@ class PanelAdminTest extends TestCase
         $this->get('/oac')->assertOk()->assertSee($e->case_number);
     }
 
+    public function test_consulta_publica_de_estado_lee_la_base_de_datos(): void
+    {
+        $e = $this->expediente();
+        $recibido = DB::table('case_status')->where('code', 'RECEIVED')->value('name');
+
+        $this->getJson('/denuncias/estado?codigo='.strtolower($e->case_number))->assertOk()
+            ->assertJson(['case_number' => $e->case_number, 'estatus' => $recibido])
+            ->assertJsonMissing(['Ana']);
+        $this->getJson('/denuncias/estado?codigo='.$e->tracking_code)->assertOk()->assertJsonPath('case_number', $e->case_number);
+        $this->getJson('/denuncias/estado?codigo=OAC-1999-00001')->assertNotFound();
+
+        $this->actingAs($this->usuario());
+        $this->actuar($e, ['desde' => 'RECEIVED', 'estatus' => 'IN_REVIEW'])->assertSessionHas('ok');
+        $this->getJson('/denuncias/estado?codigo='.$e->case_number)
+            ->assertJsonPath('estatus', DB::table('case_status')->where('code', 'IN_REVIEW')->value('name'));
+    }
+
     public function test_sin_permiso_se_bloquea_y_se_registra(): void
     {
         $solo = $this->usuario([], ['CASES' => 'read']);
