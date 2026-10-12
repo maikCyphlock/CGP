@@ -1541,7 +1541,29 @@
 
     /* ── Borrador en localStorage: sobrevive a recargas, caduca a las 2 horas ── */
     const BORRADOR_KEY = 'borrador-denuncia', BORRADOR_TTL = 2 * 60 * 60 * 1000;
-    const camposBorrador = () => document.querySelectorAll('input:not([type=file]):not([type=hidden]), select, textarea');
+    const SEL_CAMPOS = 'input:not([type=file]):not([type=hidden]), select, textarea';
+    const camposBorrador = () => [...document.querySelectorAll(SEL_CAMPOS)].filter(el => !el.closest('#lista-senalados'));
+    // Tarjetas de señalado: se crean dinámicamente y sus campos no tienen id; se guardan por posición
+    const leerSenalados = () => [...document.querySelectorAll('#lista-senalados .senalado-card')].map(t => ({
+      tipo: t.querySelector('[data-campo="tipo-senalado"]:checked')?.value || '',
+      valores: [...t.querySelectorAll('.senalado-card-campos ' + SEL_CAMPOS.split(', ').join(', .senalado-card-campos '))]
+        .map(el => (el.type === 'checkbox' || el.type === 'radio') ? el.checked : el.value),
+    }));
+    function restaurarSenalados(lista) {
+      (lista || []).forEach((s, i) => {
+        const cont = document.getElementById('lista-senalados');
+        if (!cont.children[i]) agregarSenalado();
+        const t = cont.children[i];
+        const cb = s.tipo && t.querySelector('[data-campo="tipo-senalado"][value="' + CSS.escape(s.tipo) + '"]');
+        if (!cb) return;
+        cb.checked = true;
+        onTipoSenaladoCheckboxChange(cb); // dibuja los campos del tipo elegido
+        t.querySelectorAll('.senalado-card-campos ' + SEL_CAMPOS.split(', ').join(', .senalado-card-campos ')).forEach((el, j) => {
+          if (!(j in s.valores)) return;
+          if (el.type === 'checkbox' || el.type === 'radio') el.checked = s.valores[j]; else el.value = s.valores[j];
+        });
+      });
+    }
     function guardarBorrador() {
       if (!window.tipoFormulario) return; // el asistente aún no se ha iniciado
       const campos = {};
@@ -1550,7 +1572,7 @@
         else if (el.type === 'checkbox') { if (el.id) campos[el.id] = el.checked; }
         else if (el.id && el.id !== 'input-codigo-consulta') campos[el.id] = el.value;
       });
-      try { localStorage.setItem(BORRADOR_KEY, JSON.stringify({ t: Date.now(), tipo: window.tipoFormulario, paso: window.pasoActual, campos })); } catch (e) {}
+      try { localStorage.setItem(BORRADOR_KEY, JSON.stringify({ t: Date.now(), tipo: window.tipoFormulario, paso: window.pasoActual, campos, senalados: leerSenalados() })); } catch (e) {}
     }
     function restaurarBorrador() {
       let b;
@@ -1567,6 +1589,7 @@
         }
         if (cambio) el.dispatchEvent(new Event('change', { bubbles: true }));
       });
+      restaurarSenalados(b.senalados);
       if (b.paso > 1 && b.paso < 6 && typeof mostrarPaso === 'function') { window.pasoActual = b.paso; mostrarPaso(b.paso); }
     }
     document.addEventListener('input', guardarBorrador);
