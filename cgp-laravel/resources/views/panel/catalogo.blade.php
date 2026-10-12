@@ -1,4 +1,4 @@
-@extends('layouts.panel')
+@extends(request()->is('admin', 'admin/*') ? 'layouts.web' : 'layouts.oac')
 
 @section('titulo', $c['titulo'])
 

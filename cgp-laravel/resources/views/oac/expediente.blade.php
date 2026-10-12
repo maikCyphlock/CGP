@@ -1,4 +1,4 @@
-@extends('layouts.panel')
+@extends('layouts.oac')
 
 @section('titulo', 'Expediente '.$e->case_number)
 

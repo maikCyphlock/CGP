@@ -1,4 +1,4 @@
-@extends('layouts.panel')
+@extends('layouts.web')
 
 @section('titulo', $item ? 'Editar contenido' : 'Nuevo contenido')
 

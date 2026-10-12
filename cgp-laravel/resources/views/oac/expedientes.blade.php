@@ -1,4 +1,4 @@
-@extends('layouts.panel')
+@extends('layouts.oac')
 
 @section('titulo', ($filtros['estado'] ?? null) === 'RECEIVED' ? 'Por Protocolizar' : 'Expedientes')
 
@@ -7,11 +7,11 @@
 
 {{-- Pestañas por estatus con su cantidad --}}
 <div class="d-flex flex-wrap gap-2 mb-3">
-  <a href="{{ $link(['estado' => null]) }}" class="btn btn-sm rounded-pill px-3 {{ empty($filtros['estado']) ? 'btn-dark' : 'btn-outline-secondary' }}">
+  <a href="{{ $link(['estado' => null]) }}" class="btn btn-sm px-3 {{ empty($filtros['estado']) ? 'btn-dark' : 'btn-outline-secondary' }}">
     Todos <span class="badge bg-secondary ms-1">{{ $conteo->sum() }}</span>
   </a>
   @foreach ($estatus as $s)
-    <a href="{{ $link(['estado' => $s->code]) }}" class="btn btn-sm rounded-pill px-3 {{ ($filtros['estado'] ?? null) === $s->code ? 'btn-dark' : 'btn-outline-secondary' }}">
+    <a href="{{ $link(['estado' => $s->code]) }}" class="btn btn-sm px-3 {{ ($filtros['estado'] ?? null) === $s->code ? 'btn-dark' : 'btn-outline-secondary' }}">
       {{ $s->name }} <span class="badge bg-secondary ms-1">{{ $conteo[$s->id] ?? 0 }}</span>
     </a>
   @endforeach
@@ -55,7 +55,7 @@
             <td>{{ $e->citizen->first_name }} {{ $e->citizen->last_name }} <span class="text-muted">({{ $e->citizen->id_doc_number }})</span></td>
             <td>{{ $e->claimType->name }}</td>
             <td><span class="badge badge-estatus st-{{ $s->code }}">{{ $s->name }}</span></td>
-            <td class="text-end pe-4"><a href="{{ route('oac.expedientes.show', $e) }}" class="btn btn-sm {{ $s->code === 'RECEIVED' ? 'btn-cgp' : 'btn-outline-dark' }}">{{ $s->code === 'RECEIVED' ? 'Revisar' : 'Abrir' }}</a></td>
+            <td class="text-end pe-4 text-nowrap"><a href="{{ route('denuncias.planilla', $e->tracking_code) }}" target="_blank" class="btn btn-sm btn-outline-secondary me-1" title="Ver planilla" onclick="event.stopPropagation()"><i class="fa-solid fa-file-pdf"></i></a><a href="{{ route('oac.expedientes.show', $e) }}" class="btn btn-sm {{ $s->code === 'RECEIVED' ? 'btn-cgp' : 'btn-outline-dark' }}">{{ $s->code === 'RECEIVED' ? 'Revisar' : 'Abrir' }}</a></td>
           </tr>
         @empty
           <tr><td colspan="6" class="text-center text-muted py-5">No hay expedientes con estos filtros.</td></tr>

@@ -1,64 +1,95 @@
-@extends('layouts.panel')
+@extends('layouts.oac')
 
-@section('titulo', 'Atención al Ciudadano')
+@section('titulo', 'Sistema de Control y Verificación')
 
 @section('contenido')
 @php
   $u = auth()->user();
   $hora = now()->timezone(config('app.timezone'))->hour;
-  $saludo = $hora < 12 ? 'Buen día' : ($hora < 19 ? 'Buenas tardes' : 'Buenas noches');
-  $icono = fn ($d) => '<svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round">'.$d.'</svg>';
-  $modulos = array_filter([
-    $u->puede('CASES') ? ['Gestión de expedientes', 'Recibir, clasificar y derivar denuncias, quejas y reclamos', route('oac.expedientes.index'), '<path d="M3 7a1 1 0 0 1 1-1h4.5l1.5 2H20a1 1 0 0 1 1 1v9a1 1 0 0 1-1 1H4a1 1 0 0 1-1-1V7Z"/>'] : null,
-    $u->puede('CATALOGS') ? ['Gestión de catálogos', 'Tipos de trámite, irregularidades, unidades de derivación y demás listas de la OAC', route('oac.catalogos.index'), '<path d="m12 3 8.5 4.5L12 12 3.5 7.5 12 3Z"/><path d="m3.5 12.5 8.5 4.5 8.5-4.5"/><path d="m3.5 16.5 8.5 4.5 8.5-4.5"/>'] : null,
-  ]);
+  $saludo = $hora < 12 ? 'Buenos días' : ($hora < 18 ? 'Buenas tardes' : 'Buenas noches');
+  $total = $kpi ? max(1, $kpi['recibidos'] + $kpi['revision'] + $kpi['cerrados']) : 1;
 @endphp
 
-<p class="text-muted" style="margin-top: -12px;">{{ $saludo }}, {{ $u->nombre }}.
-  @if ($kpi && $kpi['recibidos'])
-    Hay <strong>{{ $kpi['recibidos'] }}</strong> {{ $kpi['recibidos'] === 1 ? 'solicitud pendiente' : 'solicitudes pendientes' }} de revisar.
-  @elseif ($kpi)
-    No hay solicitudes pendientes.
-  @endif
-</p>
-
-@if ($kpi)
-<div class="stat-strip">
-  <a href="{{ route('oac.expedientes.index') }}"><div class="stat-label">Recibidas este mes</div><div class="stat-value">{{ $kpi['mes'] }}</div></a>
-  <a href="{{ route('oac.expedientes.index', ['estado' => 'RECEIVED']) }}"><div class="stat-label">Por protocolizar</div><div class="stat-value {{ $kpi['recibidos'] ? 'accent' : '' }}">{{ $kpi['recibidos'] }}</div></a>
-  <a href="{{ route('oac.expedientes.index') }}"><div class="stat-label">En trámite</div><div class="stat-value">{{ $kpi['revision'] }}</div></a>
-  <a href="{{ route('oac.expedientes.index') }}"><div class="stat-label">Cerrados</div><div class="stat-value">{{ $kpi['cerrados'] }}</div></a>
-</div>
-@endif
-
-<div class="card mb-4">
-  <div class="card-body py-2">
-    <div class="module-nav">
-      @foreach ($modulos as [$nombre, $texto, $link, $svg])
-        <a href="{{ $link }}">
-          <div class="module-nav-icon">{!! $icono($svg) !!}</div>
-          <div class="module-nav-text"><strong>{{ $nombre }}</strong><span>{{ $texto }}</span></div>
-          <i class="fa-solid fa-chevron-right module-nav-chevron"></i>
-        </a>
-      @endforeach
+<div class="welcome-banner p-4 p-md-5 mb-4">
+  <div class="row align-items-center flex-column-reverse flex-lg-row">
+    <div class="col-lg-8 text-center text-lg-start mt-4 mt-lg-0">
+      <div class="banner-pill">Contraloría del Municipio Páez</div>
+      <h1 class="fw-bold display-6 mb-2">{{ $saludo }}, {{ $u->first_name }}</h1>
+      <p class="text-white-50 mb-4" style="max-width: 650px;">
+        Sistema institucional para la recepción y el seguimiento de las denuncias, quejas y reclamos que llegan por el Portal Web.
+        @if ($kpi && $kpi['recibidos'])
+          Hay <strong class="text-white">{{ $kpi['recibidos'] }}</strong> {{ $kpi['recibidos'] === 1 ? 'solicitud pendiente' : 'solicitudes pendientes' }} de protocolizar.
+        @endif
+      </p>
+      <div class="d-flex justify-content-center justify-content-lg-start gap-2 flex-wrap">
+        @if ($kpi && $kpi['recibidos'])
+          <a href="{{ route('oac.expedientes.index', ['estado' => 'RECEIVED']) }}" class="btn btn-update px-4 py-2 fw-bold"><i class="fa-solid fa-inbox me-2"></i> Revisar pendientes</a>
+        @endif
+        <button class="btn btn-update px-4 py-2 fw-bold" onclick="location.reload()"><i class="fa-solid fa-rotate me-2"></i> Actualizar bandeja</button>
+      </div>
+    </div>
+    <div class="col-lg-4 text-center">
+      <div class="banner-photo-container"><img src="{{ asset('assets/img/logonuevo.jpeg') }}" alt=""></div>
+      <span class="small text-white-50 fw-semibold">Oficina de Atención al Ciudadano</span>
     </div>
   </div>
 </div>
 
 @if ($kpi)
+<div class="row g-3 mb-4">
+  <div class="col-xl-3 col-md-6">
+    <a href="{{ route('oac.expedientes.index', ['estado' => 'RECEIVED']) }}" class="kpi-card">
+      <div class="kpi-header-top"><span class="kpi-category">Portal / Ingresos</span><span class="kpi-status-badge {{ $kpi['recibidos'] ? 'alerta' : 'on' }}">{{ $kpi['recibidos'] ? 'Pendiente' : 'Al día' }}</span></div>
+      <div class="kpi-title">Por protocolizar</div>
+      <div class="kpi-value {{ $kpi['recibidos'] ? 'accent' : '' }}">{{ $kpi['recibidos'] }}</div>
+      <div class="kpi-bar"><div style="width: {{ round(100 * $kpi['recibidos'] / $total) }}%"></div></div>
+      <p class="kpi-desc">Solicitudes recibidas por el portal que esperan revisión.</p>
+    </a>
+  </div>
+  <div class="col-xl-3 col-md-6">
+    <a href="{{ route('oac.expedientes.index') }}" class="kpi-card">
+      <div class="kpi-header-top"><span class="kpi-category">Fase / Análisis</span><span class="kpi-status-badge">En curso</span></div>
+      <div class="kpi-title">En trámite</div>
+      <div class="kpi-value">{{ $kpi['revision'] }}</div>
+      <div class="kpi-bar"><div style="width: {{ round(100 * $kpi['revision'] / $total) }}%"></div></div>
+      <p class="kpi-desc">Expedientes en revisión, procesados o derivados a otra unidad.</p>
+    </a>
+  </div>
+  <div class="col-xl-3 col-md-6">
+    <a href="{{ route('oac.expedientes.index') }}" class="kpi-card">
+      <div class="kpi-header-top"><span class="kpi-category">Cierre / Legal</span><span class="kpi-status-badge">Concluido</span></div>
+      <div class="kpi-title">Cerrados</div>
+      <div class="kpi-value">{{ $kpi['cerrados'] }}</div>
+      <div class="kpi-bar"><div style="width: {{ round(100 * $kpi['cerrados'] / $total) }}%"></div></div>
+      <p class="kpi-desc">Casos archivados o anulados con estatus definitivo.</p>
+    </a>
+  </div>
+  <div class="col-xl-3 col-md-6">
+    <a href="{{ route('oac.expedientes.index') }}" class="kpi-card">
+      <div class="kpi-header-top"><span class="kpi-category">Mes / Recepción</span><span class="kpi-status-badge on">Activo</span></div>
+      <div class="kpi-title">Recibidas este mes</div>
+      <div class="kpi-value">{{ $kpi['mes'] }}</div>
+      <div class="kpi-bar"><div style="width: 100%"></div></div>
+      <p class="kpi-desc">Total de casos ingresados por el Apartado de Denuncias desde el día 1.</p>
+    </a>
+  </div>
+</div>
+
+<div class="nota"><strong>Nota:</strong> haga clic en cualquier registro de la tabla para abrir el expediente con su historial completo.</div>
+
 <div class="card overflow-hidden">
-  <div class="card-header fw-bold text-primary-cgp d-flex justify-content-between align-items-center">
+  <div class="card-header d-flex justify-content-between align-items-center">
     Últimos movimientos
-    <a href="{{ route('oac.expedientes.index') }}" class="small fw-semibold text-decoration-none text-primary-cgp">Ver todos <i class="fa-solid fa-arrow-right ms-1"></i></a>
+    <a href="{{ route('oac.expedientes.index') }}" class="small fw-semibold text-decoration-none text-primary-cgp text-capitalize">Ver todos <i class="fa-solid fa-arrow-right ms-1"></i></a>
   </div>
   <div class="table-responsive">
     <table class="table table-hover align-middle mb-0">
-      <thead><tr><th class="ps-4">Fecha / hora</th><th>Movimiento</th><th>Expediente</th><th>Usuario / origen</th></tr></thead>
+      <thead><tr><th class="ps-4">Fecha / Hora</th><th>Acción registrada</th><th>Referencia</th><th>Usuario / Origen</th></tr></thead>
       <tbody>
         @forelse ($movimientos as $m)
           <tr class="fila-link" onclick="location.href='{{ route('oac.expedientes.show', $m->id) }}'">
-            <td class="ps-4 text-secondary text-nowrap">{{ \Illuminate\Support\Carbon::parse($m->changed_at)->timezone(config('app.timezone'))->format('d/m/Y h:i a') }}</td>
-            <td class="fw-semibold">{{ $m->previous_status ? 'Pasó a '.$m->estatus : 'Solicitud recibida' }}</td>
+            <td class="ps-4 text-secondary fw-semibold text-nowrap">{{ \Illuminate\Support\Carbon::parse($m->changed_at)->timezone(config('app.timezone'))->format('d/m/Y - h:i a') }}</td>
+            <td class="fw-bold text-primary-cgp">{{ $m->previous_status ? 'Pasó a '.$m->estatus : 'Recepción de denuncia ciudadana' }}</td>
             <td><span class="badge bg-light">{{ $m->case_number }}</span></td>
             <td class="text-muted">{{ $m->usuario }}</td>
           </tr>
@@ -69,5 +100,7 @@
     </table>
   </div>
 </div>
+@else
+<div class="card"><div class="card-body text-muted">Su cuenta no tiene acceso a los expedientes. Use el menú lateral para entrar a las secciones permitidas.</div></div>
 @endif
 @endsection

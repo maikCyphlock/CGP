@@ -1,4 +1,4 @@
-@extends('layouts.panel')
+@extends('layouts.oac')
 
 @section('titulo', 'Reportes y estadísticas')
 

@@ -1,4 +1,4 @@
-@extends('layouts.panel')
+@extends('layouts.web')
 
 @section('titulo', 'Monitoreo del sistema')
 
@@ -33,7 +33,7 @@
 
 <div class="d-flex flex-wrap gap-2 mb-3">
   @foreach ($pestanas as $clave => [$nombre, $n])
-    <a href="{{ route('admin.monitoreo', ['ver' => $clave]) }}" class="btn btn-sm rounded-pill px-3 {{ $ver === $clave ? 'btn-dark' : 'btn-outline-secondary' }}">{{ $nombre }}@if ($n) <span class="badge bg-secondary ms-1">{{ $n }}</span>@endif</a>
+    <a href="{{ route('admin.monitoreo', ['ver' => $clave]) }}" class="btn btn-sm px-3 {{ $ver === $clave ? 'btn-dark' : 'btn-outline-secondary' }}">{{ $nombre }}@if ($n) <span class="badge bg-secondary ms-1">{{ $n }}</span>@endif</a>
   @endforeach
 </div>
 

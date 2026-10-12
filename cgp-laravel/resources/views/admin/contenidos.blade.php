@@ -1,6 +1,6 @@
-@extends('layouts.panel')
+@extends('layouts.web')
 
-@section('titulo', 'Página Web')
+@section('titulo', 'Noticias y contenido')
 
 @section('contenido')
 <div class="d-flex justify-content-between align-items-center mb-3">

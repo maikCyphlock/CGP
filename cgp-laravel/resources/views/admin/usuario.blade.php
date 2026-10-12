@@ -1,4 +1,4 @@
-@extends('layouts.panel')
+@extends('layouts.web')
 
 @section('titulo', $u->first_name.' '.$u->last_name)
 
