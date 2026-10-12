@@ -13,6 +13,9 @@ use Illuminate\Validation\Rule;
 
 class DenunciaController extends Controller
 {
+    // Código SITUR (Ministerio de las Comunas): comuna, circuito comunal o formato legado. Igual que RE_SITUR en wizard.js.
+    const RE_SITUR = '/^(?:C-(?:MIX|RUR|URB)-(?:19|20)\d{2}-(?:0[1-9]|1[0-2])-\d{4}|CEC-[A-Z]{2,3}-\d{3,4}|(?:0[1-9]|1\d|2[0-5])-(?:0[1-9]|[1-9]\d)-\d{4})$/';
+
     // Valores del formulario → códigos de catálogo en la base de datos.
     const TIPOS_TRAMITE = [
         'denuncia' => 'COMPLAINT',
@@ -82,12 +85,14 @@ class DenunciaController extends Controller
             'senalados.*.tipo' => ['required', Rule::in(array_keys(self::TIPOS_SENALADO))],
             'senalados.*.campos' => 'array',
             'senalados.*.campos.*' => 'nullable|string|max:250',
+            'senalados.*.campos.cm-situr' => ['nullable', 'regex:'.self::RE_SITUR],
+            'senalados.*.campos.cc-situr' => ['nullable', 'regex:'.self::RE_SITUR],
             'ubicacion_senalado' => 'required_with:senalados.0|nullable|string|min:5|max:250',
             'proyecto.nombre' => 'exclude_unless:es_consulta,true|required|string|min:4|max:200',
             'proyecto.fecha' => 'exclude_unless:es_consulta,true|required|date|before_or_equal:today',
             'proyecto.monto' => 'exclude_unless:es_consulta,true|required|numeric|gt:0',
             'proyecto.financiador' => 'exclude_unless:es_consulta,true|required|string|min:3|max:200',
-            'proyecto.situr' => 'nullable|string|max:40',
+            'proyecto.situr' => ['nullable', 'string', 'regex:'.self::RE_SITUR],
             'narracion' => 'required|string|min:50|max:3500',
             'otra_instancia' => 'boolean',
             'cual_instancia' => 'required_if:otra_instancia,true|nullable|string|max:200',
@@ -105,6 +110,7 @@ class DenunciaController extends Controller
             'before_or_equal' => 'La fecha de :attribute no puede ser futura.',
             'numeric' => 'El :attribute debe ser un número.',
             'gt' => 'El :attribute debe ser mayor que cero.',
+            'regex' => 'El código SITUR no es válido. Ej.: C-URB-2014-11-0001 o CEC-ZU-205.',
             'accepted' => 'Debe aceptar la declaración jurada.',
         ], [
             'tipo_tramite' => 'tipo de trámite',

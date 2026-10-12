@@ -938,6 +938,7 @@
                       </div>
                     </div>
                   </div>
+                        <span class="error-msg" id="proy-situr-err">Código SITUR no válido. Ej.: C-URB-2014-11-0001 o CEC-ZU-205</span>
                 </div>
               </div>
             </div>
@@ -1527,7 +1528,7 @@
   </footer>
 
   <script src="https://cdnjs.cloudflare.com/ajax/libs/bootstrap/5.3.2/js/bootstrap.bundle.min.js"></script>
-  <script src="{{ asset('assets') }}/js/wizard.js"></script>
+  <script src="{{ asset('assets/js/wizard.js') }}?v={{ filemtime(public_path('assets/js/wizard.js')) }}"></script>
   
   <script>
     let pasoPendienteValidacion = 1;

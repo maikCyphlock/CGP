@@ -994,6 +994,11 @@ function validarPaso(numeroPaso) {
                 errores.push('Ente Financiador');
                 marcarError('proy-financiador', 'proy-financiador-err');
             }
+            var situr = document.getElementById('proy-situr').value.trim();
+            if (situr && msgSitur(situr, true)) {
+                errores.push('Código SITUR');
+                marcarError('proy-situr', 'proy-situr-err');
+            }
         }
     }
 
@@ -1849,6 +1854,12 @@ function nuevaSolicitud() {
 
 var RE_RIF = /^[JGVECjgvec]-?\d{8,9}-?\d?$/;
 var RE_DOC_SENALADO = /^\d{5,10}$/;
+// SITUR (Ministerio de las Comunas): comuna C-URB-2014-11-0001, circuito CEC-ZU-205 o legado 23-13-0004.
+// ponytail: el formato de los consejos comunales no está publicado; agregarlo aquí y en DenunciaController::RE_SITUR.
+var RE_SITUR = /^(?:C-(?:MIX|RUR|URB)-(?:19|20)\d{2}-(?:0[1-9]|1[0-2])-\d{4}|CEC-[A-Z]{2,3}-\d{3,4}|(?:0[1-9]|1\d|2[0-5])-(?:0[1-9]|[1-9]\d)-\d{4})$/;
+function msgSitur(v) {
+    return !RE_SITUR.test(v.trim().toUpperCase()) ? 'Código SITUR no válido. Ej.: C-URB-2014-11-0001 o CEC-ZU-205' : '';
+}
 
 function msgMinimo(n) {
     return function (v, final) {
@@ -1934,6 +1945,7 @@ var REGLAS_VIVO = {
         }
     },
     'proy-financiador': { req: true, check: msgMinimo(3) },
+    'proy-situr': { check: msgSitur },
     'narracion': {
         req: true,
         check: function (v, final) {
@@ -1955,6 +1967,8 @@ var REGLAS_SENALADO_OPCIONAL = {
     },
     'pj-rif': function (v, final) { return (final && !RE_RIF.test(v)) ? 'Formato de R.I.F. no válido. Ej.: J-12345678-9' : ''; },
     'oe-rif': function (v, final) { return (final && !RE_RIF.test(v)) ? 'Formato de R.I.F. no válido. Ej.: G-20001628-0' : ''; },
+    'cm-situr': msgSitur,
+    'cc-situr': msgSitur,
     'cc-rif': function (v, final) { return (final && !RE_RIF.test(v)) ? 'Formato de R.I.F. no válido. Ej.: J-12345678-9' : ''; },
     'ot-documento': function (v, final) {
         return (final && !(RE_DOC_SENALADO.test(v) || RE_RIF.test(v)))
