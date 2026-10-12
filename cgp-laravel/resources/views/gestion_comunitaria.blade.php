@@ -856,31 +856,7 @@
   });
 
   /* LÓGICA DE TABLAS, PESTAÑAS Y MODAL */
-  const DATA = {
-    mensual: [
-      { year: 2024, month: "Enero",      pdf: "informes/com-mensual-2024-01.pdf", img: "informes/com-mensual-2024-01.jpg" },
-      { year: 2024, month: "Febrero",    pdf: "informes/com-mensual-2024-02.pdf", img: "informes/com-mensual-2024-02.jpg" },
-      { year: 2024, month: "Marzo",      pdf: "informes/com-mensual-2024-03.pdf", img: "informes/com-mensual-2024-03.jpg" },
-      { year: 2024, month: "Abril",      pdf: "informes/com-mensual-2024-04.pdf", img: "informes/com-mensual-2024-04.jpg" },
-      { year: 2024, month: "Mayo",       pdf: "informes/com-mensual-2024-05.pdf", img: "informes/com-mensual-2024-05.jpg" },
-      { year: 2024, month: "Junio",      pdf: "informes/com-mensual-2024-06.pdf", img: "informes/com-mensual-2024-06.jpg" },
-    ],
-    trimestral: [
-      { year: 2024, month: "I Trimestre",   pdf: "informes/com-trim-2024-Q1.pdf", img: "informes/com-trim-2024-Q1.jpg" },
-      { year: 2024, month: "II Trimestre",  pdf: "informes/com-trim-2024-Q2.pdf", img: "informes/com-trim-2024-Q2.jpg" },
-      { year: 2023, month: "I Trimestre",   pdf: "informes/com-trim-2023-Q1.pdf", img: "informes/com-trim-2023-Q1.jpg" },
-      { year: 2023, month: "II Trimestre",  pdf: "informes/com-trim-2023-Q2.pdf", img: "informes/com-trim-2023-Q2.jpg" },
-    ],
-    semestral: [
-      { year: 2024, month: "I Semestre",  pdf: "informes/com-sem-2024-S1.pdf", img: "informes/com-sem-2024-S1.jpg" },
-      { year: 2024, month: "II Semestre", pdf: "informes/com-sem-2024-S2.pdf", img: "informes/com-sem-2024-S2.jpg" },
-      { year: 2023, month: "I Semestre",  pdf: "informes/com-sem-2023-S1.pdf", img: "informes/com-sem-2023-S1.jpg" },
-    ],
-    anual: [
-      { year: 2024, month: "Año Completo", pdf: "informes/com-anual-2024.pdf", img: "informes/com-anual-2024.jpg" },
-      { year: 2023, month: "Año Completo", pdf: "informes/com-anual-2023.pdf", img: "informes/com-anual-2023.jpg" },
-    ],
-  };
+  const DATA = @json($informes);
 
   let currentPeriod  = "mensual";
   let currentPage    = 1;
@@ -921,9 +897,9 @@
           <button class="btn-action btn-pdf" onclick="downloadPDF(${start + i})" title="Descargar PDF">
             <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>
           </button>
-          <button class="btn-action btn-preview" onclick="openModal(${start + i})" title="Ver imagen">
+          ${r.img ? `<button class="btn-action btn-preview" onclick="openModal(${start + i})" title="Ver imagen">
             <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><rect x="3" y="3" width="18" height="18" rx="2"/><circle cx="8.5" cy="8.5" r="1.5"/><polyline points="21 15 16 10 5 21"/></svg>
-          </button>
+          </button>` : ""}
         </td>
       </tr>
     `).join("") || `<tr><td colspan="3" class="empty-state">No se encontraron informes para los criterios indicados.</td></tr>`;

@@ -33,6 +33,7 @@
       <li><a href="{{ route('admin.inicio') }}" class="{{ request()->routeIs('admin.inicio') ? 'active' : '' }}"><i class="fa-solid fa-chart-pie"></i> Inicio</a></li>
       @if ($u->puede('CMS'))
         <li><a href="{{ route('admin.contenidos.index') }}" class="{{ request()->routeIs('admin.contenidos.*') ? 'active' : '' }}"><i class="fa-solid fa-newspaper"></i> Noticias y contenido</a></li>
+        <li><a href="{{ route('admin.informes.index') }}" class="{{ request()->routeIs('admin.informes.*') ? 'active' : '' }}"><i class="fa-solid fa-file-pdf"></i> Informes</a></li>
       @endif
 
       @if ($u->puede('STATS') || $u->puede('USERS'))

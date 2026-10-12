@@ -3,6 +3,7 @@
 use App\Http\Controllers\AuthController;
 use App\Http\Controllers\CatalogoController;
 use App\Http\Controllers\Admin\ContenidoController;
+use App\Http\Controllers\Admin\InformeController;
 use App\Http\Controllers\Admin\InicioController;
 use App\Http\Controllers\Admin\MonitoreoController;
 use App\Http\Controllers\Oac\ExpedienteController;
@@ -46,11 +47,15 @@ Route::post('/denuncias', [DenunciaController::class, 'store'])->name('denuncias
 Route::get('/denuncias/estado', [DenunciaController::class, 'estado'])->middleware('throttle:30,1')->name('denuncias.estado');
 Route::get('/denuncias/{trackingCode}/planilla', [DenunciaController::class, 'planilla'])->name('denuncias.planilla');
 
-Route::get('/contraloria-escolar', function () {
-    return view('contraloria_escolar');
-});
+Route::get('/contraloria-escolar', fn () => view('contraloria_escolar', ['informes' => InformeController::publicos('escolar')]));
+Route::get('/gestion-comunitaria', fn () => view('gestion_comunitaria', ['informes' => InformeController::publicos('gestion')]));
 
-Route::view('/gestion-comunitaria', 'gestion_comunitaria');
+// Archivos de informes publicados (PDF e imagen de vista previa).
+Route::get('/media/informes/{archivo}', function (string $archivo) {
+    abort_unless(DB::table('web_report')->where('pdf_path', $archivo)->orWhere('image_path', $archivo)->exists(), 404);
+
+    return Storage::response("informes/$archivo", null, ['Cache-Control' => 'public, max-age=86400']);
+})->where('archivo', '[A-Za-z0-9]{20,60}\.(pdf|jpg|jpeg|png|webp)')->name('media.informe');
 Route::view('/organigrama', 'organigrama');
 
 // Dos backoffice separados, cada uno con su URL, su login y su inicio:
@@ -136,5 +141,8 @@ Route::middleware(['auth', 'modulo:admin'])->prefix('admin')->name('admin.')->gr
     Route::middleware('permiso:CMS,write')->group(function () {
         Route::post('/contenidos', [ContenidoController::class, 'store'])->name('contenidos.store');
         Route::post('/contenidos/{id}', [ContenidoController::class, 'update'])->name('contenidos.update');
+        Route::post('/informes', [InformeController::class, 'store'])->name('informes.store');
     });
+    Route::get('/informes', [InformeController::class, 'index'])->middleware('permiso:CMS,read')->name('informes.index');
+    Route::post('/informes/{id}/eliminar', [InformeController::class, 'destroy'])->whereNumber('id')->middleware('permiso:CMS,delete')->name('informes.destroy');
 });

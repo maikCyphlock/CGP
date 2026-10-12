@@ -7,7 +7,8 @@ services:
       - vendor:/var/www/html/vendor
     environment:
       PHP_CLI_SERVER_WORKERS: 4
-    command: ["php", "artisan", "serve", "--host=0.0.0.0", "--port=8000", "--no-reload"]
+    # Cada arranque (también "docker compose start") aplica las migraciones pendientes; reintenta hasta que la base responda.
+    command: ["sh", "-c", "until php artisan migrate --force; do echo 'Esperando la base de datos...'; sleep 3; done; exec php artisan serve --host=0.0.0.0 --port=8000 --no-reload"]
 
 volumes:
   vendor:
