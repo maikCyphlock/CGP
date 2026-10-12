@@ -25,12 +25,14 @@
     <div class="header-container">
       <a href="{{ url('/') }}" class="logo-link">
         <div style="width:56px;height:56px;flex-shrink:0;display:flex;align-items:center;justify-content:center;">
-          <img src="{{ asset('assets/img/logo.jpeg') }}" alt="Logo" style="width:56px;height:56px; border-radius: 25px;">
+          <img src="{{ asset('assets/img/logonuevo.jpeg') }}" alt="Logo" style="width:56px;height:56px; border-radius: 25px;">
         </div>
         <div class="logo-texts">
           <div class="l1">Contraloría del <br>Municipio Páez</div>
         </div>
       </a>
+
+      <button id="menu-toggle" class="menu-btn" aria-label="Menú">☰</button>
 
       <!-- Navegación principal -->
       <nav id="navbar">
@@ -42,36 +44,22 @@
             <a href="{{ url('/#mision') }}">Misión y Visión</a>
             <a href="https://drive.google.com/file/d/1cobbu88SJoTykQXbhrDzVc9ymcYY8sPi/view?usp=drive_open" target="_blank">Organigrama</a>
             <a href="{{ url('/#Historia') }}">Historia</a>
+            <a href="{{ url('/#mision') }}">Ubicación</a>
             <a href="{{ url('/#legal') }}">Base Normativa</a>
-          </div>
-        </div>
-        <div class="dropdown">
-          <a href="#">Informes</a>
-          <div class="dropdown-menu">
-            <a href="#">De Gestión</a>
-            <a href="#">De Actuación</a>
-            <a href="#">Especiales</a>
-          </div>
-        </div>
-        <div class="dropdown">
-          <a href="#">Publicaciones</a>
-          <div class="dropdown-menu">
-            <a href="#">Dictámenes</a>
-            <a href="#">Publicaciones Especiales</a>
-            <a href="#">Concursos</a>
           </div>
         </div>
         <a href="{{ url('/#noticias') }}">Noticias</a>
         <a href="{{ url('/#redes') }}">Redes Sociales</a>
         <div class="dropdown">
-          <a href="{{ url('/#participacion') }}">Participación Ciudadana</a>
+          <a href="#">Participación Ciudadana</a>
           <div class="dropdown-menu">
             <a href="{{ url('/#participacion') }}">Información General</a>
             <a href="{{ url('/denuncias') }}">Denuncias</a>
             <a href="{{ url('/contraloria-escolar') }}">Contraloría Escolar</a>
+            <a href="{{ url('/gestion-comunitaria') }}">Gestión Comunitaria</a>
           </div>
         </div>
-        <a href="https://sistemas.cgr.gob.ve/webmail/" target="_blank" class="webmail-btn">Webmail</a>
+        <a href="mailto:municipiopaezcontraloria@gmail.com" class="webmail-btn">Mail</a>
         @show
       </nav>
     </div>
@@ -152,6 +140,31 @@
     </div>
   </footer>
 
+  <script>
+    // Menú hamburguesa y submenús en móvil
+    (function () {
+      const navbar = document.getElementById('navbar');
+      document.getElementById('menu-toggle').addEventListener('click', function () {
+        navbar.classList.toggle('active');
+      });
+      document.querySelectorAll('#navbar .dropdown > a').forEach(function (toggle) {
+        toggle.addEventListener('click', function (e) {
+          if (window.innerWidth > 992) return;
+          e.preventDefault();
+          const parent = this.parentElement;
+          document.querySelectorAll('#navbar .dropdown').forEach(function (d) {
+            if (d !== parent) d.classList.remove('open');
+          });
+          parent.classList.toggle('open');
+        });
+      });
+      document.querySelectorAll('#navbar a:not(.dropdown > a)').forEach(function (link) {
+        link.addEventListener('click', function () {
+          if (window.innerWidth <= 992) navbar.classList.remove('active');
+        });
+      });
+    })();
+  </script>
   @stack('scripts')
 </body>
 

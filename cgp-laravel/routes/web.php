@@ -48,6 +48,8 @@ Route::get('/contraloria-escolar', function () {
     return view('contraloria_escolar');
 });
 
+Route::view('/gestion-comunitaria', 'gestion_comunitaria');
+
 // Dos backoffice separados, cada uno con su URL, su login y su inicio:
 //   /oac   → Oficina de Atención al Ciudadano (denuncias, quejas y reclamos)
 //   /admin → Administración del sistema (accesos, usuarios, portal web y monitoreo)

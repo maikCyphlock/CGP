@@ -3,26 +3,770 @@
 @section('title', 'Contraloría va a la Escuela – Contraloría del Municipio Páez')
 
 @push('fonts')
-  <link href="https://fonts.googleapis.com/css2?family=Merriweather:wght@400;700;900&family=Source+Sans+3:wght@400;500;600;700&display=swap" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=Merriweather:wght@400;700;900&family=Montserrat:wght@400;500;600;700;800&family=Source+Sans+3:wght@400;500;600;700&display=swap" rel="stylesheet">
 @endpush
 
 @push('styles')
   <link rel="stylesheet" href="{{ asset('assets/css/contraloriaescolar.css') }}">
+  <style>
+    :root {
+      --clr-primary:   #1a3a6b; 
+      --clr-secondary: #0f2340; 
+      --clr-accent:    #2563eb;
+      --clr-bg-light:  #f4f7f9;
+    }
+
+
+    /* =========================================
+       HEADER EXACTO A APARTADODEORGANIGRAMA.HTML
+       ========================================= */
+
+    #header {
+      position: relative !important;
+      top: auto !important;
+      left: auto !important;
+      width: 100% !important;
+      z-index: 1000 !important;
+      visibility: visible !important;
+      opacity: 1 !important;
+      box-sizing: border-box;
+      background: #0f2340;
+      padding: 15px 30px;
+      color: white;
+    }
+
+    #header .header-container {
+      position: relative !important;
+      display: flex !important;
+      flex-direction: row !important;
+      align-items: center !important;
+      justify-content: space-between !important;
+      width: 100% !important;
+      max-width: 100% !important;
+      visibility: visible !important;
+      opacity: 1 !important;
+    }
+
+    #header .logo-link {
+      position: static !important;
+      flex: 0 1 auto !important;
+      margin: 0 !important;
+      display: flex;
+      align-items: center;
+      gap: 15px;
+      text-decoration: none;
+      color: white;
+      visibility: visible !important;
+      opacity: 1 !important;
+    }
+
+    #header .logo-texts,
+    #header .logo-texts .l1 {
+      visibility: visible !important;
+      opacity: 1 !important;
+    }
+
+    #header .logo-texts .l1 {
+      text-transform: uppercase;
+      font-weight: bold;
+      font-size: 0.95rem;
+      line-height: 1.2;
+    }
+
+    #header #navbar {
+      position: static !important;
+      top: auto !important;
+      right: auto !important;
+      bottom: auto !important;
+      left: auto !important;
+      float: none !important;
+      transform: none !important;
+      display: flex !important;
+      align-items: center !important;
+      justify-content: flex-end !important;
+      width: auto !important;
+      height: auto !important;
+      margin: 0 0 0 auto !important;
+      padding: 0 !important;
+      flex: 0 0 auto !important;
+      z-index: 10 !important;
+      visibility: visible !important;
+      opacity: 1 !important;
+    }
+
+    .btn-inicio {
+      display: inline-flex !important;
+      align-items: center;
+      justify-content: center;
+      padding: 8px 16px;
+      border: 1px solid rgba(255, 255, 255, 0.35);
+      border-radius: 20px;
+      background: transparent !important;
+      color: #fff !important;
+      text-decoration: none !important;
+      font-size: 0.9rem;
+      font-weight: 600 !important;
+      line-height: 1;
+      transition: background-color 0.2s ease, border-color 0.2s ease;
+      white-space: nowrap;
+      visibility: visible !important;
+      opacity: 1 !important;
+      position: static !important;
+      float: none !important;
+      margin: 0 !important;
+      transform: none !important;
+      width: auto !important;
+      height: auto !important;
+      min-width: 52px !important;
+      box-sizing: border-box !important;
+    }
+
+    .btn-inicio:hover,
+    .btn-inicio:focus-visible {
+      background: rgba(255, 255, 255, 0.10) !important;
+      border-color: rgba(255, 255, 255, 0.55) !important;
+      outline: none;
+    }
+
+    @media (max-width: 768px) {
+      #header {
+        padding: 10px 14px !important;
+      }
+
+      #header .header-container {
+        min-height: 42px !important;
+        flex-direction: row !important;
+        flex-wrap: nowrap !important;
+        align-items: center !important;
+        gap: 10px;
+      }
+
+      #header .logo-link {
+        flex: 1 1 auto !important;
+        width: auto !important;
+        min-width: 0 !important;
+        max-width: calc(100% - 75px) !important;
+        gap: 9px !important;
+      }
+
+      #header .logo-link > div:first-child,
+      #header .logo-link img {
+        width: 42px !important;
+        height: 42px !important;
+      }
+
+      #header .logo-texts .l1 {
+        font-size: 0.72rem !important;
+        line-height: 1.15 !important;
+      }
+
+      #header #navbar {
+        position: static !important;
+        display: flex !important;
+        flex: 0 0 auto !important;
+        width: auto !important;
+        margin-left: auto !important;
+        align-self: center !important;
+      }
+
+      #header #navbar .btn-inicio {
+        position: static !important;
+        display: inline-flex !important;
+        width: auto !important;
+        min-width: 52px !important;
+        padding: 7px 13px;
+        font-size: 0.8rem;
+        margin: 0 !important;
+      }
+    }
+
+    @media (max-width: 420px) {
+      #header .logo-texts .l1 {
+        font-size: 0.62rem !important;
+      }
+
+      .btn-inicio {
+        padding: 6px 11px;
+        font-size: 0.74rem;
+      }
+    }
+
+    /* =========================================
+       ESTILOS DEL RESTO DE LA PÁGINA
+       ========================================= */
+
+    .comm-hero {
+      background: linear-gradient(135deg, rgba(15,35,64,.94), rgba(26,58,107,.92)), url('{{ asset('assets/img/portadahero.jpg') }}') center/cover no-repeat;
+      padding: 150px 20px 40px 20px;
+      display: flex;
+      flex-direction: column;
+      align-items: flex-start;
+      justify-content: center;
+      color: white;
+      text-align: left;
+      position: relative;
+      overflow: hidden;
+      width: 100%;
+    }
+
+    .hero-content {
+      max-width: 900px;
+      margin: 0;
+      width: 100%;
+    }
+
+    .hero-title {
+      font-family: 'Merriweather', serif; 
+      font-weight: 900;
+      font-size: clamp(1.3rem, 3.2vw, 2.1rem);
+      margin-bottom: 12px;
+      line-height: 1.25;
+      text-align: left;
+      word-break: break-word;
+    }
+
+    .hero-desc {
+      max-width: 100%;
+      margin: 0;
+      font-size: clamp(0.85rem, 3vw, 1.05rem);
+      opacity: 0.95;
+      line-height: 1.5;
+      animation: fadeInUp 1s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+      text-align: justify !important;
+    }
+
+    @keyframes fadeInUp {
+      from { opacity: 0; transform: translateY(20px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+
+    .main-container {
+      max-width: 1000px;
+      margin: 25px auto;
+      padding: 0 15px;
+      flex: 1;
+      width: 100%;
+    }
+
+    .features-grid {
+      display: grid;
+      grid-template-columns: 1fr;
+      gap: 15px;
+      margin-bottom: 35px;
+      width: 100%;
+    }
+
+    @media (min-width: 640px) {
+      .features-grid {
+        grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
+        gap: 20px;
+      }
+    }
+
+    /* ---------- TARJETAS: BORDE Y TÍTULO A LA IZQUIERDA, PÁRRAFO JUSTIFICADO ---------- */
+    .feature-card {
+      background: #fff;
+      padding: 22px 18px 22px 22px;
+      border-radius: 14px;
+      box-shadow: 0 6px 20px rgba(15, 35, 64, 0.04);
+      border: 1px solid rgba(26, 58, 107, 0.08);
+      position: relative;
+      overflow: hidden;
+      width: 100%;
+      transform: translateY(20px);
+      opacity: 0;
+      transition: all 0.5s cubic-bezier(0.16, 1, 0.3, 1);
+      cursor: pointer;
+    }
+
+    .feature-card.visible {
+      transform: translateY(0);
+      opacity: 1;
+    }
+
+    .feature-card::before {
+      content: '';
+      position: absolute;
+      top: 0; 
+      left: 0; 
+      right: auto;
+      width: 4px; 
+      height: 100%;
+      background: var(--clr-primary);
+      transition: width 0.3s cubic-bezier(0.16, 1, 0.3, 1), background 0.3s ease;
+    }
+
+    .feature-card:hover {
+      transform: translateY(-6px) scale(1.01);
+      box-shadow: 0 14px 30px rgba(26, 58, 107, 0.12);
+      border-color: rgba(37, 99, 235, 0.3);
+    }
+
+    .feature-card:hover::before {
+      width: 8px;
+      background: var(--clr-accent);
+    }
+
+    .feature-card h4 {
+      font-weight: 700;
+      font-size: 1rem;
+      color: var(--clr-secondary);
+      margin: 0 0 8px 0;
+      text-align: left !important;
+      transition: color 0.3s ease;
+    }
+
+    .feature-card:hover h4 {
+      color: var(--clr-accent);
+    }
+
+    .feature-card p {
+      margin: 0;
+      font-size: 0.85rem;
+      color: #555;
+      line-height: 1.5 !important;
+      text-align: justify !important;
+      text-justify: inter-word;
+      font-weight: 500;
+    }
+
+    .faq-section-title {
+      text-align: center;
+      margin-bottom: 25px;
+      width: 100%;
+    }
+
+    .faq-section-title h2 {
+      font-weight: 700;
+      color: var(--clr-primary);
+      font-size: clamp(1.2rem, 4vw, 1.7rem);
+      margin-bottom: 8px;
+      text-align: center;
+    }
+
+    .faq-section-title p {
+      color: #64748b;
+      font-size: 0.9rem;
+      text-align: center;
+      font-weight: 500;
+    }
+
+    .search-wrap {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
+
+    .search-field {
+      position: relative;
+      display: flex;
+      align-items: center;
+    }
+
+    .search-field .search-icon {
+      position: absolute;
+      left: 10px;
+      color: #64748b;
+      pointer-events: none;
+    }
+
+    .search-field input {
+      padding: 6px 12px 6px 32px !important;
+      border: 1px solid #cbd5e1;
+      border-radius: 6px;
+      outline: none;
+      font-size: 0.9rem;
+      width: 100%;
+    }
+    
+    .search-field input:focus {
+      border-color: var(--clr-accent);
+      box-shadow: 0 0 0 3px rgba(37, 99, 235, 0.1);
+    }
+
+    .search-box-container {
+      background: #fff;
+      border-radius: 50rem;
+      box-shadow: 0 6px 20px rgba(15, 35, 64, 0.06);
+      display: flex;
+      align-items: center;
+      padding: 6px 15px;
+      margin-bottom: 25px;
+      border: 1px solid rgba(26, 58, 107, 0.12);
+      width: 100%;
+      transition: all 0.3s ease;
+    }
+
+    .search-box-container:focus-within {
+      box-shadow: 0 8px 24px rgba(37, 99, 235, 0.15);
+      border-color: var(--clr-accent);
+      transform: translateY(-2px);
+    }
+
+    .search-input {
+      border: none;
+      background: transparent;
+      outline: none;
+      width: 100%;
+      padding: 6px 10px;
+      font-size: 0.9rem;
+      color: var(--clr-secondary);
+      text-align: left;
+    }
+
+    .faq-accordion {
+      display: flex;
+      flex-direction: column;
+      gap: 14px;
+      width: 100%;
+      margin-bottom: 40px;
+    }
+
+    .faq-item {
+      background: #fff;
+      border-radius: 14px;
+      border: 1px solid rgba(26, 58, 107, 0.08);
+      box-shadow: 0 3px 12px rgba(0,0,0,0.02);
+      overflow: hidden;
+      width: 100%;
+      transform: translateY(15px);
+      opacity: 0;
+      animation: fadeInUp 0.5s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+      transition: transform 0.3s ease, box-shadow 0.3s ease, border-color 0.3s ease;
+    }
+
+    .faq-item:nth-child(1) { animation-delay: 0.05s; }
+    .faq-item:nth-child(2) { animation-delay: 0.1s; }
+    .faq-item:nth-child(3) { animation-delay: 0.15s; }
+    .faq-item:nth-child(4) { animation-delay: 0.2s; }
+    .faq-item:nth-child(5) { animation-delay: 0.25s; }
+
+    .faq-item:hover {
+      border-color: rgba(37, 99, 235, 0.25);
+      box-shadow: 0 8px 24px rgba(15, 35, 64, 0.07);
+    }
+
+    .faq-question {
+      width: 100%;
+      background: none;
+      border: none;
+      padding: 16px 18px;
+      text-align: justify;
+      font-size: clamp(0.85rem, 2.5vw, 0.95rem);
+      font-weight: 700;
+      color: var(--clr-secondary);
+      cursor: pointer;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      gap: 12px;
+      transition: background 0.3s ease, color 0.3s ease;
+    }
+
+    .faq-item.active .faq-question {
+      background: linear-gradient(90deg, rgba(26, 58, 107, 0.04), rgba(37, 99, 235, 0.02));
+      color: var(--clr-primary);
+    }
+
+    .faq-question svg {
+      transition: transform 0.4s cubic-bezier(0.34, 1.56, 0.64, 1), color 0.3s ease;
+      flex-shrink: 0;
+      color: var(--clr-primary);
+      width: 20px;
+      height: 20px;
+    }
+
+    .faq-item.active .faq-question svg {
+      transform: rotate(180deg) scale(1.1);
+      color: var(--clr-accent);
+    }
+
+    .faq-answer-wrapper {
+      max-height: 0;
+      overflow: hidden;
+      transition: max-height 0.4s cubic-bezier(0.16, 1, 0.3, 1), padding 0.3s ease;
+      background: #fafbfc;
+      will-change: max-height;
+    }
+
+    .faq-item.active .faq-answer-wrapper {
+      max-height: 800px;
+      border-top: 1px solid rgba(26, 58, 107, 0.06);
+    }
+
+    .faq-answer {
+      padding: 18px;
+      font-size: 0.9rem;
+      line-height: 1.6;
+      font-weight: 500;
+      color: #4a5568;
+      text-align: justify;
+      opacity: 0;
+      transform: translateY(-8px);
+      transition: opacity 0.3s ease 0.1s, transform 0.3s ease 0.1s;
+    }
+
+    .faq-item.active .faq-answer {
+      opacity: 1;
+      transform: translateY(0);
+    }
+
+    .faq-answer ul {
+      margin: 10px 0 0 0;
+      padding-left: 18px;
+      text-align: justify;
+    }
+
+    .faq-answer li {
+      margin-bottom: 6px;
+      text-align: justify;
+    }
+
+    .no-results {
+      text-align: center;
+      padding: 25px 15px;
+      color: #64748b;
+      font-style: italic;
+      background: #fff;
+      border-radius: 12px;
+      border: 1px dashed rgba(26, 58, 107, 0.2);
+      display: none;
+      font-size: 0.9rem;
+      animation: fadeInUp 0.3s ease;
+    }
+
+
+    /* Este apartado no usa el menú hamburguesa */
+    #menu-toggle { display: none !important; }
+
+    .faq-answer,
+    .faq-answer li,
+    .hero-desc {
+      text-align: justify !important;
+      text-justify: inter-word;
+    }
+
+    .hero-title,
+    .faq-section-title h2,
+    .faq-section-title p {
+      text-align: center !important;
+    }
+
+    .comm-hero {
+      position: relative !important;
+      width: 100% !important;
+      box-sizing: border-box !important;
+      overflow: hidden !important;
+      align-items: center !important;
+      justify-content: center !important;
+      padding: 80px 20px 38px !important;
+    }
+
+    .comm-hero .hero-content {
+      position: relative !important;
+      z-index: 2 !important;
+      width: min(100%, 900px) !important;
+      max-width: 900px !important;
+      margin: 0 auto !important;
+    }
+
+    .comm-hero .hero-title {
+      width: 100% !important;
+      margin: 0 0 12px !important;
+      line-height: 1.18 !important;
+      word-break: normal !important;
+      overflow-wrap: break-word !important;
+    }
+
+    .comm-hero .hero-desc {
+      width: 100% !important;
+      max-width: 900px !important;
+      margin: 0 auto !important;
+      line-height: 1.55 !important;
+    }
+
+    .main-container {
+      width: min(100%, 1000px) !important;
+      box-sizing: border-box !important;
+    }
+
+    @media (max-width: 768px) {
+      .comm-hero {
+        padding: 52px 18px 30px !important;
+        min-height: 300px;
+        align-items: center !important;
+      }
+
+      .comm-hero .hero-content {
+        width: 100% !important;
+      }
+
+      .comm-hero .hero-title {
+        font-size: clamp(1.55rem, 8vw, 2.15rem) !important;
+        line-height: 1.12 !important;
+        text-align: center !important;
+      }
+
+      .comm-hero .hero-desc {
+        font-size: 0.88rem !important;
+        line-height: 1.5 !important;
+        text-align: justify !important;
+      }
+
+      .main-container {
+        margin: 20px auto !important;
+        padding: 0 14px !important;
+      }
+
+      .features-grid {
+        grid-template-columns: 1fr !important;
+        gap: 14px !important;
+      }
+
+      .feature-card {
+        padding: 19px 16px 19px 20px !important;
+      }
+
+      .feature-card h4 {
+        text-align: left !important;
+      }
+
+      .feature-card p {
+        font-size: 0.83rem !important;
+        line-height: 1.48 !important;
+        text-align: justify !important;
+      }
+
+      .faq-section-title {
+        margin-top: 30px !important;
+        margin-bottom: 20px !important;
+      }
+
+      .faq-section-title h2 {
+        font-size: 1.25rem !important;
+      }
+
+      .faq-section-title p {
+        font-size: 0.82rem !important;
+        line-height: 1.45 !important;
+        text-align: center !important;
+      }
+
+      .faq-question {
+        text-align: justify !important;
+      }
+
+      .faq-answer,
+      .faq-answer li {
+        text-align: justify !important;
+      }
+    }
+
+    @media (max-width: 420px) {
+      .comm-hero {
+        padding: 44px 15px 27px !important;
+        min-height: 275px;
+      }
+
+      .comm-hero .hero-title {
+        font-size: 1.55rem !important;
+      }
+
+      .comm-hero .hero-desc {
+        font-size: 0.82rem !important;
+      }
+    }
+
+    /* Períodos de informes en una sola línea */
+    .period-tabs {
+      display: grid !important;
+      grid-template-columns: repeat(4, minmax(0, 1fr)) !important;
+      align-items: center !important;
+      justify-items: stretch !important;
+      gap: 6px !important;
+      width: 100% !important;
+      box-sizing: border-box !important;
+    }
+
+    .tab-btn {
+      width: 100% !important;
+      min-width: 0 !important;
+      margin: 0 !important;
+      padding: 9px 6px !important;
+      box-sizing: border-box !important;
+      white-space: nowrap !important;
+      text-align: center !important;
+    }
+
+    @media (max-width: 768px) {
+      .period-tabs-section {
+        width: 100% !important;
+        box-sizing: border-box !important;
+      }
+
+      .period-tabs {
+        grid-template-columns: repeat(4, minmax(0, 1fr)) !important;
+        gap: 5px !important;
+      }
+
+      .tab-btn {
+        min-height: 34px !important;
+        padding: 8px 3px !important;
+        font-size: 0.72rem !important;
+        line-height: 1 !important;
+      }
+    }
+
+    @media (max-width: 420px) {
+      .period-tabs {
+        gap: 4px !important;
+      }
+
+      .tab-btn {
+        min-height: 32px !important;
+        padding: 7px 2px !important;
+        font-size: 0.68rem !important;
+      }
+    }
+
+  </style>
 @endpush
 
+@section('navigation')
+  <a href="{{ url('/') }}" class="btn-inicio" aria-label="Ir al inicio">Inicio</a>
+@endsection
+
 @section('content')
-<section class="hero-banner" style="margin-top: 78px;">
-  <div class="hero-overlay"></div>
+<section class="comm-hero">
   <div class="hero-content">
-    <h1 class="hero-title">Contraloría va a la Escuela</h1>
-    <p class="hero-desc">Fortaleciendo los valores constitucionales de participación ciudadana y control fiscal en las instituciones educativas del Municipio Páez.</p>
+    <h1 class="hero-title">La Contraloría va a la Escuela</h1>
+    <p class="hero-desc">Fomentando la cultura del control fiscal, los valores éticos y la participación activa de los estudiantes en la vigilancia de las instituciones educativas del Municipio Páez.</p>
   </div>
 </section>
 
-<main id="main">
+<main class="main-container">
+  
+  <div class="features-grid">
+    <div class="feature-card">
+      <h4>Formación Ciudadana</h4>
+      <p>Capacitación y talleres dirigidos a niños y jóvenes sobre la importancia de la honestidad, la ética y el cuidado de los bienes públicos.</p>
+    </div>
+    <div class="feature-card">
+      <h4>Elección del Contralor Escolar</h4>
+      <p>Procesos democráticos escolares para la elección del Contralor o Contralora Escolar y su equipo de trabajo de veeduría.</p>
+    </div>
+    <div class="feature-card">
+      <h4>Control Preventivo Escolar</h4>
+      <p>Acompañamiento a la comunidad educativa en la supervisión de comedores escolares, infraestructura y recursos asignados.</p>
+    </div>
+  </div>
 
-  <!-- Period Tabs -->
-  <section class="period-tabs-section">
+  <div class="faq-section-title" style="margin-top: 40px;">
+    <h2>Informes de Contraloría Escolar</h2>
+    <p>Consulte los reportes de actividades, talleres y veedurías en las escuelas</p>
+  </div>
+
+  <section class="period-tabs-section" style="margin-bottom: 20px;">
     <div class="container">
       <div class="period-tabs" role="tablist" aria-label="Período de informes">
         <button class="tab-btn active" role="tab" aria-selected="true"  data-period="mensual">Mensual</button>
@@ -33,7 +777,6 @@
     </div>
   </section>
 
-  <!-- Controls Bar -->
   <section class="controls-section">
     <div class="container controls-bar">
       <div class="show-entries">
@@ -47,17 +790,16 @@
         <span>entradas</span>
       </div>
       <div class="search-wrap">
-        <label for="searchInput">Buscar:</label>
+        <label for="tableSearchInput">Buscar informe:</label>
         <div class="search-field">
           <svg class="search-icon" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="8"/><path d="m21 21-4.35-4.35"/></svg>
-          <input type="search" id="searchInput" placeholder="Año, mes, palabra clave…" autocomplete="off">
+          <input type="search" id="tableSearchInput" placeholder="Año, mes, palabra clave…" autocomplete="off">
         </div>
       </div>
     </div>
   </section>
 
-  <!-- Reports Table -->
-  <section class="reports-section">
+  <section class="reports-section" style="margin-bottom: 40px;">
     <div class="container">
       <div class="table-wrapper">
         <table class="reports-table" id="reportsTable">
@@ -70,7 +812,7 @@
                 </span>
               </th>
               <th class="col-month sortable" data-col="month">
-                Mes
+                Período
                 <span class="sort-icon">
                   <svg width="10" height="10" viewBox="0 0 10 14"><path d="M5 0L9.33 5H.67L5 0Z" fill="currentColor"/><path d="M5 14L.67 9h8.66L5 14Z" fill="currentColor" opacity=".4"/></svg>
                 </span>
@@ -84,12 +826,11 @@
             </tr>
           </thead>
           <tbody id="reportsBody">
-            <!-- Rows injected by JS -->
+            <!-- Filas inyectadas dinámicamente por JavaScript -->
           </tbody>
         </table>
       </div>
 
-      <!-- Pagination -->
       <div class="pagination-bar" id="paginationBar">
         <span class="pagination-info" id="paginationInfo"></span>
         <div class="pagination-controls" id="paginationControls"></div>
@@ -97,17 +838,91 @@
     </div>
   </section>
 
-  <!-- Back Button -->
-  <div class="back-wrap">
-    <a href="{{ url('/') }}" class="btn-back">
-      <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M19 12H5M12 5l-7 7 7 7"/></svg>
-      Regresar
-    </a>
+  <div class="faq-section-title">
+    <h2>Directrices y Preguntas Frecuentes</h2>
+    <p>Utilice el buscador en tiempo real para consultar dudas sobre el programa de Contraloría Escolar</p>
+  </div>
+
+  <div class="search-box-container">
+    <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#1a3a6b" stroke-width="2.5" style="margin-left: 3px; flex-shrink: 0;"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>
+    <input type="text" id="faqSearchInput" class="search-input" placeholder="Buscar en preguntas frecuentes..." autocomplete="off">
+  </div>
+
+  <div class="faq-accordion" id="faqAccordion">
+    
+    <div class="faq-item" data-keywords="que es programa contraloria escolar objetivos estudiantes colegio escuela">
+      <button class="faq-question">
+        ¿En qué consiste el programa "La Contraloría va a la Escuela"?
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="6 9 12 15 18 9"></polyline></svg>
+      </button>
+      <div class="faq-answer-wrapper">
+        <div class="faq-answer">
+          Es una iniciativa pedagógica y preventiva orientada a capacitar a los estudiantes de educación primaria y media sobre el control fiscal, la transparencia, la rendición de cuentas y el buen uso de los bienes e instalaciones de sus instituciones educativas.
+        </div>
+      </div>
+    </div>
+
+    <div class="faq-item" data-keywords="funciones rol deberes contralor escolar veeduria estudiante electo">
+      <button class="faq-question">
+        ¿Cuáles son las funciones del Contralor Escolar?
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="6 9 12 15 18 9"></polyline></svg>
+      </button>
+      <div class="faq-answer-wrapper">
+        <div class="faq-answer">
+          El Contralor Escolar electo actúa como veedor del cumplimiento de las metas pedagógicas y del mantenimiento del plantel. Sus funciones principales incluyen:
+          <ul>
+            <li>Observar la calidad y estado de los servicios del comedor o programa de alimentación escolar.</li>
+            <li>Promover el cuidado del mobiliario, áreas verdes, sanitarios y laboratorios de la escuela.</li>
+            <li>Presentar observaciones constructivas a la directiva del plantel y al equipo de la Contraloría Municipal.</li>
+          </ul>
+        </div>
+      </div>
+    </div>
+
+    <div class="faq-item" data-keywords="eleccion votacion postulacion requisitos contralor escolar proceso electoral">
+      <button class="faq-question">
+        ¿Cómo se realiza la elección del Contralor Escolar?
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="6 9 12 15 18 9"></polyline></svg>
+      </button>
+      <div class="faq-answer-wrapper">
+        <div class="faq-answer">
+          La elección se realiza mediante un proceso democrático y participativo dentro de la institución. Los estudiantes postulan sus propuestas, realizan campañas de concienciación y finalmente ejercen su derecho al voto formal organizado conjuntamente con los docentes y la Contraloría Municipal.
+        </div>
+      </div>
+    </div>
+
+    <div class="faq-item" data-keywords="pae alimento programa alimentacion escolar vigilancia comedor comprobacion">
+      <button class="faq-question">
+        ¿Cómo supervisa la Contraloría Escolar el Programa de Alimentación Escolar (PAE)?
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="6 9 12 15 18 9"></polyline></svg>
+      </button>
+      <div class="faq-answer-wrapper">
+        <div class="faq-answer">
+          El Contralor Escolar y su equipo realizan un seguimiento preventivo respecto al estado higiénico del comedor, el cumplimiento de los menús servidos y la recepción adecuada de los insumos entregados al plantel, reportando irregularidades ante las autoridades correspondientes.
+        </div>
+      </div>
+    </div>
+
+    <div class="faq-item" data-keywords="solicitar talleres charlas capacitacion abordaje escuela plantel educativo direccion">
+      <button class="faq-question">
+        ¿Cómo solicitar un abordaje o taller de Contraloría Escolar en mi escuela?
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="6 9 12 15 18 9"></polyline></svg>
+      </button>
+      <div class="faq-answer-wrapper">
+        <div class="faq-answer">
+          Los directivos, docentes o comités de padres pueden consignar una solicitud escrita dirigida a la Dirección de Atención al Ciudadano de la Contraloría Municipal o comunicarse a través de los canales institucionales para programar la jornada de capacitación y acompañamiento electoral escolar.
+        </div>
+      </div>
+    </div>
+
+  </div>
+
+  <div id="noResults" class="no-results">
+    No se encontraron registros que coincidan con su búsqueda en preguntas frecuentes.
   </div>
 
 </main>
 
-<!-- ══════════ MODAL ══════════ -->
 <div class="modal-overlay" id="modalOverlay" role="dialog" aria-modal="true" aria-label="Vista previa del informe">
   <button class="modal-close" id="modalClose" aria-label="Cerrar">
     <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M18 6L6 18M6 6l12 12"/></svg>
@@ -123,172 +938,213 @@
     <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M9 18l6-6-6-6"/></svg>
   </button>
 </div>
+
 @endsection
 
 @push('scripts')
 <script>
-/* ══ DATA ══ */
-const DATA = {
-  mensual: [
-    { year: 2024, month: "Enero",      pdf: "{{ asset('pages/informes/mensual-2024-01.pdf') }}", img: "{{ asset('pages/informes/mensual-2024-01.jpg') }}" },
-    { year: 2024, month: "Febrero",    pdf: "{{ asset('pages/informes/mensual-2024-02.pdf') }}", img: "{{ asset('pages/informes/mensual-2024-02.jpg') }}" },
-    { year: 2024, month: "Marzo",      pdf: "{{ asset('pages/informes/mensual-2024-03.pdf') }}", img: "{{ asset('pages/informes/mensual-2024-03.jpg') }}" },
-    { year: 2024, month: "Abril",      pdf: "{{ asset('pages/informes/mensual-2024-04.pdf') }}", img: "{{ asset('pages/informes/mensual-2024-04.jpg') }}" },
-    { year: 2024, month: "Mayo",       pdf: "{{ asset('pages/informes/mensual-2024-05.pdf') }}", img: "{{ asset('pages/informes/mensual-2024-05.jpg') }}" },
-    { year: 2024, month: "Junio",      pdf: "{{ asset('pages/informes/mensual-2024-06.pdf') }}", img: "{{ asset('pages/informes/mensual-2024-06.jpg') }}" },
-  ],
-  trimestral: [
-    { year: 2024, month: "I Trimestre",   pdf: "{{ asset('pages/informes/trim-2024-Q1.pdf') }}", img: "{{ asset('pages/informes/trim-2024-Q1.jpg') }}" },
-    { year: 2024, month: "II Trimestre",  pdf: "{{ asset('pages/informes/trim-2024-Q2.pdf') }}", img: "{{ asset('pages/informes/trim-2024-Q2.jpg') }}" },
-    { year: 2023, month: "I Trimestre",   pdf: "{{ asset('pages/informes/trim-2023-Q1.pdf') }}", img: "{{ asset('pages/informes/trim-2023-Q1.jpg') }}" },
-    { year: 2023, month: "II Trimestre",  pdf: "{{ asset('pages/informes/trim-2023-Q2.pdf') }}", img: "{{ asset('pages/informes/trim-2023-Q2.jpg') }}" },
-  ],
-  semestral: [
-    { year: 2024, month: "I Semestre",  pdf: "{{ asset('pages/informes/sem-2024-S1.pdf') }}", img: "{{ asset('pages/informes/sem-2024-S1.jpg') }}" },
-    { year: 2024, month: "II Semestre", pdf: "{{ asset('pages/informes/sem-2024-S2.pdf') }}", img: "{{ asset('pages/informes/sem-2024-S2.jpg') }}" },
-    { year: 2023, month: "I Semestre",  pdf: "{{ asset('pages/informes/sem-2023-S1.pdf') }}", img: "{{ asset('pages/informes/sem-2023-S1.jpg') }}" },
-  ],
-  anual: [
-    { year: 2024, month: "Año Completo", pdf: "{{ asset('pages/informes/anual-2024.pdf') }}", img: "{{ asset('pages/informes/anual-2024.jpg') }}" },
-    { year: 2023, month: "Año Completo", pdf: "{{ asset('pages/informes/anual-2023.pdf') }}", img: "{{ asset('pages/informes/anual-2023.jpg') }}" },
-  ],
-};
+  /* LÓGICA DE TARJETAS Y FAQ */
+  document.addEventListener('DOMContentLoaded', () => {
+    const featureCards = document.querySelectorAll('.feature-card');
+    featureCards.forEach((card, index) => {
+      setTimeout(() => {
+        card.classList.add('visible');
+      }, 100 + (index * 120));
+    });
 
-/* ══ STATE ══ */
-let currentPeriod  = "mensual";
-let currentPage    = 1;
-let entriesPerPage = 10;
-let searchTerm     = "";
-let filteredRows   = [];
-let modalIndex     = 0;
+    const faqItems = document.querySelectorAll('.faq-item');
+    faqItems.forEach(item => {
+      const questionBtn = item.querySelector('.faq-question');
+      questionBtn.addEventListener('click', () => {
+        const isActive = item.classList.contains('active');
+        faqItems.forEach(otherItem => {
+          otherItem.classList.remove('active');
+        });
+        if (!isActive) {
+          item.classList.add('active');
+        }
+      });
+    });
 
-/* ══ ELEMENTS ══ */
-const tbody        = document.getElementById("reportsBody");
-const pageInfo     = document.getElementById("paginationInfo");
-const pageCtrl     = document.getElementById("paginationControls");
-const searchInput  = document.getElementById("searchInput");
-const entriesSelect= document.getElementById("entriesCount");
-const modalOverlay = document.getElementById("modalOverlay");
-const modalImg     = document.getElementById("modalImg");
-const modalCaption = document.getElementById("modalCaption");
+    const faqSearchInput = document.getElementById('faqSearchInput');
+    const noResultsDiv = document.getElementById('noResults');
+    if (faqSearchInput) {
+      faqSearchInput.addEventListener('input', (e) => {
+        const term = e.target.value.toLowerCase().trim();
+        let visibleCount = 0;
+        faqItems.forEach(item => {
+          const keywords = item.getAttribute('data-keywords') || '';
+          const title = item.querySelector('.faq-question').textContent.toLowerCase();
+          const answer = item.querySelector('.faq-answer').textContent.toLowerCase();
 
-/* ══ RENDER TABLE ══ */
-function renderTable() {
-  const all = DATA[currentPeriod] || [];
-  filteredRows = all.filter(r => {
-    if (!searchTerm) return true;
-    const q = searchTerm.toLowerCase();
-    return String(r.year).includes(q) || r.month.toLowerCase().includes(q);
+          if (keywords.includes(term) || title.includes(term) || answer.includes(term)) {
+            item.style.display = 'block';
+            visibleCount++;
+          } else {
+            item.style.display = 'none';
+            item.classList.remove('active');
+          }
+        });
+        if (visibleCount === 0) {
+          noResultsDiv.style.display = 'block';
+        } else {
+          noResultsDiv.style.display = 'none';
+        }
+      });
+    }
   });
 
-  const total = filteredRows.length;
-  const pages = Math.ceil(total / entriesPerPage) || 1;
-  if (currentPage > pages) currentPage = pages;
+  /* LÓGICA DE TABLAS, PESTAÑAS Y MODAL */
+  const DATA = {
+    mensual: [
+      { year: 2024, month: "Enero",      pdf: "informes/esc-mensual-2024-01.pdf", img: "informes/esc-mensual-2024-01.jpg" },
+      { year: 2024, month: "Febrero",    pdf: "informes/esc-mensual-2024-02.pdf", img: "informes/esc-mensual-2024-02.jpg" },
+      { year: 2024, month: "Marzo",      pdf: "informes/esc-mensual-2024-03.pdf", img: "informes/esc-mensual-2024-03.jpg" },
+      { year: 2024, month: "Abril",      pdf: "informes/esc-mensual-2024-04.pdf", img: "informes/esc-mensual-2024-04.jpg" },
+      { year: 2024, month: "Mayo",       pdf: "informes/esc-mensual-2024-05.pdf", img: "informes/esc-mensual-2024-05.jpg" },
+      { year: 2024, month: "Junio",      pdf: "informes/esc-mensual-2024-06.pdf", img: "informes/esc-mensual-2024-06.jpg" },
+    ],
+    trimestral: [
+      { year: 2024, month: "I Trimestre",   pdf: "informes/esc-trim-2024-Q1.pdf", img: "informes/esc-trim-2024-Q1.jpg" },
+      { year: 2024, month: "II Trimestre",  pdf: "informes/esc-trim-2024-Q2.pdf", img: "informes/esc-trim-2024-Q2.jpg" },
+      { year: 2023, month: "I Trimestre",   pdf: "informes/esc-trim-2023-Q1.pdf", img: "informes/esc-trim-2023-Q1.jpg" },
+      { year: 2023, month: "II Trimestre",  pdf: "informes/esc-trim-2023-Q2.pdf", img: "informes/esc-trim-2023-Q2.jpg" },
+    ],
+    semestral: [
+      { year: 2024, month: "I Semestre",  pdf: "informes/esc-sem-2024-S1.pdf", img: "informes/esc-sem-2024-S1.jpg" },
+      { year: 2024, month: "II Semestre", pdf: "informes/esc-sem-2024-S2.pdf", img: "informes/esc-sem-2024-S2.jpg" },
+      { year: 2023, month: "I Semestre",  pdf: "informes/esc-sem-2023-S1.pdf", img: "informes/esc-sem-2023-S1.jpg" },
+    ],
+    anual: [
+      { year: 2024, month: "Año Completo", pdf: "informes/esc-anual-2024.pdf", img: "informes/esc-anual-2024.jpg" },
+      { year: 2023, month: "Año Completo", pdf: "informes/esc-anual-2023.pdf", img: "informes/esc-anual-2023.jpg" },
+    ],
+  };
 
-  const start = (currentPage - 1) * entriesPerPage;
-  const slice = filteredRows.slice(start, start + entriesPerPage);
+  let currentPeriod  = "mensual";
+  let currentPage    = 1;
+  let entriesPerPage = 10;
+  let tableSearchTerm = "";
+  let filteredRows   = [];
+  let modalIndex     = 0;
 
-  tbody.innerHTML = slice.map((r, i) => `
-    <tr class="report-row" style="animation-delay:${i * 45}ms">
-      <td class="col-year">${r.year}</td>
-      <td class="col-month">${r.month}</td>
-      <td class="col-actions">
-        <button class="btn-action btn-pdf" onclick="downloadPDF(${start + i})" title="Descargar PDF">
-          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>
-        </button>
-        <button class="btn-action btn-preview" onclick="openModal(${start + i})" title="Ver imagen">
-          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><rect x="3" y="3" width="18" height="18" rx="2"/><circle cx="8.5" cy="8.5" r="1.5"/><polyline points="21 15 16 10 5 21"/></svg>
-        </button>
-      </td>
-    </tr>
-  `).join("") || `<tr><td colspan="3" class="empty-state">No se encontraron informes para los criterios indicados.</td></tr>`;
+  const tbody        = document.getElementById("reportsBody");
+  const pageInfo     = document.getElementById("paginationInfo");
+  const pageCtrl     = document.getElementById("paginationControls");
+  const tableSearchInput = document.getElementById("tableSearchInput");
+  const entriesSelect= document.getElementById("entriesCount");
+  const modalOverlay = document.getElementById("modalOverlay");
+  const modalImg     = document.getElementById("modalImg");
+  const modalCaption = document.getElementById("modalCaption");
 
-  /* info text */
-  const from = total ? start + 1 : 0;
-  const to   = Math.min(start + entriesPerPage, total);
-  pageInfo.textContent = `Mostrando del ítem ${from} al ${to} de un total de ${total} ítem${total !== 1 ? "s" : ""}`;
+  function renderTable() {
+    const all = DATA[currentPeriod] || [];
+    filteredRows = all.filter(r => {
+      if (!tableSearchTerm) return true;
+      const q = tableSearchTerm.toLowerCase();
+      return String(r.year).includes(q) || r.month.toLowerCase().includes(q);
+    });
 
-  renderPagination(pages);
-}
+    const total = filteredRows.length;
+    const pages = Math.ceil(total / entriesPerPage) || 1;
+    if (currentPage > pages) currentPage = pages;
 
-function renderPagination(pages) {
-  const btns = [];
-  btns.push(`<button class="page-btn nav-btn" ${currentPage === 1 ? "disabled" : ""} onclick="goPage(${currentPage - 1})">Anterior</button>`);
-  for (let p = 1; p <= pages; p++) {
-    btns.push(`<button class="page-btn ${p === currentPage ? "active" : ""}" onclick="goPage(${p})">${p}</button>`);
+    const start = (currentPage - 1) * entriesPerPage;
+    const slice = filteredRows.slice(start, start + entriesPerPage);
+
+    tbody.innerHTML = slice.map((r, i) => `
+      <tr class="report-row" style="animation-delay:${i * 45}ms">
+        <td class="col-year">${r.year}</td>
+        <td class="col-month">${r.month}</td>
+        <td class="col-actions">
+          <button class="btn-action btn-pdf" onclick="downloadPDF(${start + i})" title="Descargar PDF">
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>
+          </button>
+          <button class="btn-action btn-preview" onclick="openModal(${start + i})" title="Ver imagen">
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><rect x="3" y="3" width="18" height="18" rx="2"/><circle cx="8.5" cy="8.5" r="1.5"/><polyline points="21 15 16 10 5 21"/></svg>
+          </button>
+        </td>
+      </tr>
+    `).join("") || `<tr><td colspan="3" class="empty-state">No se encontraron informes para los criterios indicados.</td></tr>`;
+
+    const from = total ? start + 1 : 0;
+    const to   = Math.min(start + entriesPerPage, total);
+    pageInfo.textContent = `Mostrando el contenido del ${from} al ${to}, da un total de ${total} contenido${total !== 1 ? "s" : ""}`;
+
+    renderPagination(pages);
   }
-  btns.push(`<button class="page-btn nav-btn" ${currentPage === pages ? "disabled" : ""} onclick="goPage(${currentPage + 1})">Siguiente</button>`);
-  pageCtrl.innerHTML = btns.join("");
-}
 
-function goPage(p) { currentPage = p; renderTable(); }
+  function renderPagination(pages) {
+    const btns = [];
+    btns.push(`<button class="page-btn nav-btn" ${currentPage === 1 ? "disabled" : ""} onclick="goPage(${currentPage - 1})">Anterior</button>`);
+    for (let p = 1; p <= pages; p++) {
+      btns.push(`<button class="page-btn ${p === currentPage ? "active" : ""}" onclick="goPage(${p})">${p}</button>`);
+    }
+    btns.push(`<button class="page-btn nav-btn" ${currentPage === pages ? "disabled" : ""} onclick="goPage(${currentPage + 1})">Siguiente</button>`);
+    pageCtrl.innerHTML = btns.join("");
+  }
 
-/* ══ TABS ══ */
-document.querySelectorAll(".tab-btn").forEach(btn => {
-  btn.addEventListener("click", () => {
-    document.querySelectorAll(".tab-btn").forEach(b => { b.classList.remove("active"); b.setAttribute("aria-selected","false"); });
-    btn.classList.add("active");
-    btn.setAttribute("aria-selected","true");
-    currentPeriod = btn.dataset.period;
-    currentPage   = 1;
-    searchInput.value = "";
-    searchTerm = "";
-    renderTable();
+  function goPage(p) { currentPage = p; renderTable(); }
+
+  document.querySelectorAll(".tab-btn").forEach(btn => {
+    btn.addEventListener("click", () => {
+      document.querySelectorAll(".tab-btn").forEach(b => { b.classList.remove("active"); b.setAttribute("aria-selected","false"); });
+      btn.classList.add("active");
+      btn.setAttribute("aria-selected","true");
+      currentPeriod = btn.dataset.period;
+      currentPage   = 1;
+      tableSearchInput.value = "";
+      tableSearchTerm = "";
+      renderTable();
+    });
   });
-});
 
-/* ══ SEARCH ══ */
-searchInput.addEventListener("input", () => { searchTerm = searchInput.value.trim(); currentPage = 1; renderTable(); });
+  tableSearchInput.addEventListener("input", () => { tableSearchTerm = tableSearchInput.value.trim(); currentPage = 1; renderTable(); });
+  entriesSelect.addEventListener("change", () => { entriesPerPage = parseInt(entriesSelect.value); currentPage = 1; renderTable(); });
 
-/* ══ ENTRIES ══ */
-entriesSelect.addEventListener("change", () => { entriesPerPage = parseInt(entriesSelect.value); currentPage = 1; renderTable(); });
+  function downloadPDF(idx) {
+    const r = filteredRows[idx];
+    if (!r) return;
+    const a = document.createElement("a");
+    a.href = r.pdf;
+    a.download = `Informe_${r.year}_${r.month}.pdf`;
+    a.click();
+  }
 
-/* ══ DOWNLOAD ══ */
-function downloadPDF(idx) {
-  const r = filteredRows[idx];
-  if (!r) return;
-  const a = document.createElement("a");
-  a.href = r.pdf;
-  a.download = `Informe_${r.year}_${r.month}.pdf`;
-  a.click();
-}
+  function openModal(idx) {
+    modalIndex = idx;
+    showModalSlide();
+    modalOverlay.classList.add("open");
+    document.body.style.overflow = "hidden";
+  }
 
-/* ══ MODAL ══ */
-function openModal(idx) {
-  modalIndex = idx;
-  showModalSlide();
-  modalOverlay.classList.add("open");
-  document.body.style.overflow = "hidden";
-}
+  function showModalSlide() {
+    const r = filteredRows[modalIndex];
+    if (!r) return;
+    modalImg.src = r.img;
+    modalImg.alt = `Informe ${r.month} ${r.year}`;
+    modalCaption.textContent = `${r.month} ${r.year}`;
+    document.getElementById("modalPrev").disabled = modalIndex === 0;
+    document.getElementById("modalNext").disabled = modalIndex === filteredRows.length - 1;
+  }
 
-function showModalSlide() {
-  const r = filteredRows[modalIndex];
-  if (!r) return;
-  modalImg.src = r.img;
-  modalImg.alt = `Informe ${r.month} ${r.year}`;
-  modalCaption.textContent = `${r.month} ${r.year}`;
-  document.getElementById("modalPrev").disabled = modalIndex === 0;
-  document.getElementById("modalNext").disabled = modalIndex === filteredRows.length - 1;
-}
+  function closeModal() {
+    modalOverlay.classList.remove("open");
+    document.body.style.overflow = "";
+    modalImg.src = "";
+  }
 
-function closeModal() {
-  modalOverlay.classList.remove("open");
-  document.body.style.overflow = "";
-  modalImg.src = "";
-}
+  document.getElementById("modalClose").addEventListener("click", closeModal);
+  document.getElementById("modalPrev").addEventListener("click", () => { if (modalIndex > 0) { modalIndex--; showModalSlide(); } });
+  document.getElementById("modalNext").addEventListener("click", () => { if (modalIndex < filteredRows.length - 1) { modalIndex++; showModalSlide(); } });
+  modalOverlay.addEventListener("click", e => { if (e.target === modalOverlay) closeModal(); });
+  document.addEventListener("keydown", e => {
+    if (!modalOverlay.classList.contains("open")) return;
+    if (e.key === "Escape") closeModal();
+    if (e.key === "ArrowLeft")  document.getElementById("modalPrev").click();
+    if (e.key === "ArrowRight") document.getElementById("modalNext").click();
+  });
 
-document.getElementById("modalClose").addEventListener("click", closeModal);
-document.getElementById("modalPrev").addEventListener("click", () => { if (modalIndex > 0) { modalIndex--; showModalSlide(); } });
-document.getElementById("modalNext").addEventListener("click", () => { if (modalIndex < filteredRows.length - 1) { modalIndex++; showModalSlide(); } });
-modalOverlay.addEventListener("click", e => { if (e.target === modalOverlay) closeModal(); });
-document.addEventListener("keydown", e => {
-  if (!modalOverlay.classList.contains("open")) return;
-  if (e.key === "Escape") closeModal();
-  if (e.key === "ArrowLeft")  document.getElementById("modalPrev").click();
-  if (e.key === "ArrowRight") document.getElementById("modalNext").click();
-});
-
-/* ══ INIT ══ */
-renderTable();
+  renderTable();
 </script>
 @endpush
