@@ -256,20 +256,10 @@ header, .header-container {
 }
 .hero-photo {
   position: relative;
-  aspect-ratio: 16 / 9;
+  aspect-ratio: 4 / 3;
   overflow: hidden;
   border-radius: 24px;
   box-shadow: 0 30px 60px -20px rgba(13,27,62,.45);
-}
-/* Degradado navy desde la izquierda/arriba: tapa la ola lila que trae la foto */
-.hero-photo::after {
-  content: '';
-  position: absolute;
-  inset: 0;
-  background:
-    linear-gradient(100deg, #0d1b3e 0%, rgba(13,27,62,.9) 20%, rgba(13,27,62,.45) 38%, rgba(13,27,62,0) 55%),
-    linear-gradient(180deg, rgba(13,27,62,.55) 0%, rgba(13,27,62,0) 22%);
-  pointer-events: none;
 }
 .hero-photo img {
   display: block;
@@ -277,7 +267,7 @@ header, .header-container {
   height: 100%;
   object-fit: cover;
   object-position: 100% 100%;
-  transform: scale(1.06);
+  transform: scale(1.18);
   transform-origin: 100% 100%; /* zoom anclado abajo-derecha: saca la ola de arriba/izquierda */
 }
 
@@ -289,8 +279,7 @@ header, .header-container {
   }
   .hero-figure { order: -1; margin-right: 20px; }
   .hero-figure::before { inset: 16px -16px -16px 16px; }
-  .hero-photo { aspect-ratio: 16 / 10; }
-  .hero-photo img { transform: none; }
+  .hero-photo { aspect-ratio: 4 / 3; }
 }
 
 /* Flechas de scroll animadas */
@@ -889,7 +878,7 @@ header, .header-container {
 }
 
 .ig-post:hover img {
-  transform: scale(1.06);
+  transform: scale(1.18);
   filter: brightness(0.7);
 }
 
