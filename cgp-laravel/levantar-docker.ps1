@@ -56,15 +56,15 @@ $conf = [IO.File]::ReadAllText("$dir\.env")
 $conf = $conf -replace '(?m)^APP_URL=.*$', "APP_URL=http://localhost:$Puerto"
 if ($conf -match '(?m)^APP_PORT=') { $conf = $conf -replace '(?m)^APP_PORT=.*$', "APP_PORT=$Puerto" }
 else { $conf = $conf.TrimEnd() + "`nAPP_PORT=$Puerto`n" }
+# Ajustes de Docker solo para Windows (vendor en volumen, ver docker-compose.windows.yml)
+if ($conf -notmatch '(?m)^COMPOSE_FILE=') { $conf = $conf.TrimEnd() + "`nCOMPOSE_FILE=docker-compose.yml;docker-compose.windows.yml`n" }
 [IO.File]::WriteAllText("$dir\.env", $conf, (New-Object Text.UTF8Encoding $false))   # UTF-8 sin BOM
 
-if (-not (Test-Path vendor\autoload.php)) {
-    Write-Host 'Instalando dependencias PHP (tarda unos minutos)...'
-    Ejecutar docker run --rm -v "${dir}:/app" -w /app composer:2 install --no-interaction --prefer-dist --ignore-platform-reqs
-}
-
 Paso '3/4  Encendiendo el sistema (la primera vez tarda varios minutos)'
-Ejecutar docker compose up -d --build
+Ejecutar docker compose build
+Write-Host 'Instalando dependencias PHP (la primera vez tarda unos minutos)...'
+Ejecutar docker compose run --rm --no-deps app composer install --no-interaction --prefer-dist --optimize-autoloader
+Ejecutar docker compose up -d
 $limite = (Get-Date).AddMinutes(3)
 Write-Host -NoNewline 'Esperando la base de datos'
 while ((Silencioso docker compose exec -T db pg_isready -U cgp -d cgp) -ne 0) {
@@ -74,7 +74,10 @@ while ((Silencioso docker compose exec -T db pg_isready -U cgp -d cgp) -ne 0) {
 Write-Host ' lista'
 
 Paso '4/4  Base de datos y usuario administrador'
-if ([IO.File]::ReadAllText("$dir\.env") -notmatch '(?m)^APP_KEY=\S') { Ejecutar docker compose exec -T app php artisan key:generate --force }
+if ([IO.File]::ReadAllText("$dir\.env") -notmatch '(?m)^APP_KEY=\S') {
+    Ejecutar docker compose exec -T app php artisan key:generate --force
+    Ejecutar docker compose restart app   # el servidor lee el .env solo al arrancar
+}
 Ejecutar docker compose exec -T app php artisan migrate --force
 Ejecutar docker compose exec -T app php artisan cgp:admin --defecto --correo $Correo --clave $Clave
 
