@@ -116,6 +116,7 @@
             <li><a href="{{ url('/#redes') }}">Redes Sociales</a></li>
             <li><a href="{{ url('/denuncias') }}">Denuncias</a></li>
             <li><a href="{{ url('/contraloria-escolar') }}">Contraloría Escolar</a></li>
+            <li><a href="{{ url('/gestion-comunitaria') }}">Gestión Comunitaria</a></li>
             <li><a href="https://www.cgr.gob.ve" target="_blank">CGR Venezuela ↗</a></li>
           </ul>
         </div>
