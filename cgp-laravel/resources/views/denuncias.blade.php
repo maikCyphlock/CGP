@@ -206,6 +206,69 @@
         border-bottom: 1px solid #ccc;
       }
     }
+
+    /* Adaptación responsiva para la tabla de Datos Demográficos Complementarios */
+@media (max-width: 768px) {
+  /* Quita el scroll contenedor en dispositivos móviles */
+  .form-group div[style*="overflow-x:auto"] {
+    overflow-x: visible !important;
+  }
+
+  /* Transforma la tabla y sus filas en contenedores flexibles/bloque */
+  .tabla-demografica,
+  .tabla-demografica tbody,
+  .tabla-demografica tr {
+    display: block !important;
+    width: 100% !important;
+  }
+
+  /* Oculta los encabezados tradicionales de la tabla */
+  .tabla-demografica thead {
+    display: none !important;
+  }
+  .tabla-demografica td {
+    display: block !important;
+    width: 100% !important;
+    padding: 6px 0 !important;
+    box-sizing: border-box;
+  }
+
+  .tabla-demografica td:nth-child(1)::before {
+    content: "Lugar de Nacimiento";
+    display: block;
+    font-weight: 600;
+    font-size: 0.82rem;
+    color: #1a2340;
+    margin-bottom: 4px;
+  }
+
+  .tabla-demografica td:nth-child(2)::before {
+    content: "Nivel Educativo";
+    display: block;
+    font-weight: 600;
+    font-size: 0.82rem;
+    color: #1a2340;
+    margin-bottom: 4px;
+  }
+
+  .tabla-demografica td:nth-child(3)::before {
+    content: "Profesión";
+    display: block;
+    font-weight: 600;
+    font-size: 0.82rem;
+    color: #1a2340;
+    margin-bottom: 4px;
+  }
+
+  .tabla-demografica td:nth-child(4)::before {
+    content: "Ocupación";
+    display: block;
+    font-weight: 600;
+    font-size: 0.82rem;
+    color: #1a2340;
+    margin-bottom: 4px;
+  }
+}
   </style>
 </head>
 
@@ -616,12 +679,18 @@
                   </div>
                 </div>
                 <div class="col-md-3">
-                  <div class="form-group">
-                    <label class="form-label">Fecha de Nacimiento <span class="required" style="color:#1565c0;">*</span></label>
-                    <input type="date" id="cit-fecha-nac" class="form-control" onchange="actualizarEdadComputada(this)">
-                    <span class="error-msg" id="cit-fecha-nac-err">Seleccione su fecha de nacimiento.</span>
-                  </div>
-                </div>
+  <div class="form-group">
+    <label class="form-label">Fecha de Nacimiento <span class="required" style="color:#1565c0;">*</span></label>
+    <input type="date" id="cit-fecha-nac" class="form-control" onchange="actualizarEdadComputada(this)">
+  
+    <div style="margin-top: 6px; padding: 6px 10px; background: #f0f7ff; border-left: 3px solid #1565c0; border-radius: 6px; display: flex; align-items: flex-start; gap: 8px; box-shadow: 0 1px 3px rgba(0,0,0,0.03);">
+      <span style="font-size: 0.72rem; color: #1a365d; line-height: 1.35; font-weight: 500;">
+       <span>Seleccione primero el <strong>Año</strong>, luego el <strong>Mes</strong> y el <strong>Día</strong> en el desplegable.</span>
+    </div>
+
+    <span class="error-msg" id="cit-fecha-nac-err">Seleccione su fecha de nacimiento.</span>
+  </div>
+</div>
                 <div class="col-md-2">
                   <div class="form-group">
                     <label class="form-label">Edad <span class="required" style="color:#1565c0;">*</span></label>
@@ -1285,11 +1354,11 @@
 
             <div class="form-section">
               <div style="background:#cdcdcd;border:1px solid #a1a09e;border-radius:6px;
-                        padding:16px 20px;font-size:0.82rem;color:#555;line-height:1.75;margin-bottom:18px;">
-                <strong style="color:#1a2340;">Declaración Jurada:</strong><br>
-                Declaro que los datos suministrados son fidedignos, y estoy en conocimiento de que cualquier
-                falta o falsedad en los mismos involucra sanciones o la no aceptación de la solicitud, conforme
-                a la normativa legal vigente.
+                     padding:16px 20px;font-size:0.82rem;color:#555;line-height:1.75;margin-bottom:18px; text-align: justify;">
+                  <strong style="color:#1a2340;">Declaración Jurada:</strong><br>
+                  Declaro que los datos suministrados son fidedignos, y estoy en conocimiento de que cualquier
+                  falta o falsedad en los mismos involucra sanciones o la no aceptación de la solicitud, conforme
+                  a la normativa legal vigente.
               </div>
               <div class="form-group">
                 <label style="display:flex;align-items:flex-start;gap:10px;cursor:pointer;">
