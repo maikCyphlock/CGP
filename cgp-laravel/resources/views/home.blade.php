@@ -9,24 +9,151 @@
     .noticia-texto { font-size: 0.82rem; color: #666; line-height: 1.6; }
     .noticia-texto p { margin-bottom: 0.6rem; }
     .noticia-texto ul, .noticia-texto ol { padding-left: 1.2rem; }
+    .hero-content p { text-align: justify; }
+
+    /* ── Carrusel Dinámico del Hero ── */
+    .hero-photo.hero-carousel {
+      position: relative;
+      overflow: hidden;
+      aspect-ratio: 16 / 10 !important;
+      width: 100%;
+      background: #0d1b3e;
+    }
+    .carousel-track {
+      display: flex;
+      width: 100%;
+      height: 100%;
+      transition: transform 0.7s cubic-bezier(0.22, 1, 0.36, 1);
+      will-change: transform;
+    }
+    .carousel-slide {
+      min-width: 100%;
+      width: 100%;
+      height: 100%;
+      flex-shrink: 0;
+      position: relative;
+      overflow: hidden;
+    }
+    /* Adapta las fotos originales sin cortar rostros ni hacer zooms excesivos */
+    .hero-photo.hero-carousel .carousel-slide img {
+      display: block !important;
+      width: 100% !important;
+      height: 100% !important;
+      object-fit: cover !important;
+      object-position: center 25% !important;
+      transform: none !important;
+      transition: transform 3.5s ease-out;
+    }
+    .carousel-slide.active img {
+      transform: scale(1.05) !important;
+    }
+    /* Barra de progreso de tiempo */
+    .carousel-progress {
+      position: absolute;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 3px;
+      background: rgba(255, 255, 255, 0.25);
+      z-index: 8;
+    }
+    .carousel-progress-bar {
+      height: 100%;
+      width: 0%;
+      background: #2563eb;
+      box-shadow: 0 0 8px #3b82f6;
+    }
+    /* Puntos de navegación */
+    .carousel-dots {
+      position: absolute;
+      bottom: 12px;
+      left: 50%;
+      transform: translateX(-50%);
+      display: flex;
+      gap: 7px;
+      z-index: 7;
+      background: rgba(13, 27, 62, 0.45);
+      backdrop-filter: blur(4px);
+      padding: 5px 12px;
+      border-radius: 20px;
+    }
+    .carousel-dots .dot {
+      width: 8px;
+      height: 8px;
+      border-radius: 50%;
+      background: rgba(255, 255, 255, 0.5);
+      border: none;
+      padding: 0;
+      cursor: pointer;
+      transition: all 0.3s ease;
+    }
+    .carousel-dots .dot.active {
+      background: #ffffff;
+      width: 22px;
+      border-radius: 10px;
+    }
+    /* Flechas de navegación */
+    .carousel-arrow {
+      position: absolute;
+      top: 50%;
+      transform: translateY(-50%);
+      background: rgba(13, 27, 62, 0.65);
+      color: #fff;
+      border: 1px solid rgba(255, 255, 255, 0.2);
+      width: 36px;
+      height: 36px;
+      border-radius: 50%;
+      font-size: 22px;
+      line-height: 1;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      cursor: pointer;
+      opacity: 0.8;
+      transition: all 0.25s ease;
+      z-index: 6;
+    }
+    .hero-carousel:hover .carousel-arrow { opacity: 1; }
+    .carousel-arrow:hover { background: #1565c0; border-color: transparent; transform: translateY(-50%) scale(1.08); }
+    .carousel-arrow.prev { left: 10px; }
+    .carousel-arrow.next { right: 10px; }
   </style>
   <!-- seccion de inicio como portada, el declarar puse el original de la contraloria general, hay que preguntar si es ese-->
   <section id="hero">
     <div class="hero-inner">
       <!-- el primer texto q se vera como portada (hero) -->
       <div class="hero-content">
-        <span class="hero-eyebrow">Acarigua · Estado Portuguesa</span>
         <h1>Contraloría del <span>Municipio Páez</span></h1>
         <h2>Órgano de Control Fiscal Municipal</h2>
-        <p>Vigilamos el patrimonio público de Acarigua y sus parroquias con transparencia y cercanía al ciudadano.</p>
+        <p style="text-align: justify;">Vigilamos el patrimonio público de Acarigua y sus parroquias con transparencia y cercanía al ciudadano.</p>
         <div class="hero-actions">
           <a href="https://djp.cgr.gob.ve/authentication/sign-in" class="btn-declare" target="_blank" rel="noopener">Declare Aquí</a>
-          <a href="{{ route('denuncias.create') }}" class="btn-hero-secondary">Hacer una denuncia</a>
         </div>
       </div>
 
       <figure class="hero-figure">
-        <div class="hero-photo"><img src="{{ asset('assets/img/portadahero.jpg') }}" alt="Equipo de la Contraloría del Municipio Páez"></div>
+        <div class="hero-photo hero-carousel" id="heroCarousel">
+          <div class="carousel-progress"><div class="carousel-progress-bar" id="carouselProgressBar"></div></div>
+          <div class="carousel-track">
+            <div class="carousel-slide active">
+              <img src="{{ asset('assets/img/portadahero.jpg') }}" alt="Equipo de la Contraloría del Municipio Páez">
+            </div>
+            <div class="carousel-slide">
+              <img src="{{ asset('assets/img/reunion.jpeg') }}" alt="Reunión institucional">
+            </div>
+            <div class="carousel-slide">
+              <img src="{{ asset('assets/img/mesadetrabajo1.jpeg') }}" alt="Mesa de trabajo">
+            </div>
+            <div class="carousel-slide">
+              <img src="{{ asset('assets/img/juramentacion.jpeg') }}" alt="Actividades institucionales">
+            </div>
+          </div>
+          <!-- Indicadores de puntos -->
+          <div class="carousel-dots" id="heroCarouselDots"></div>
+          <!-- Flechas de navegación -->
+          <button type="button" class="carousel-arrow prev" id="heroPrevBtn" aria-label="Foto anterior">‹</button>
+          <button type="button" class="carousel-arrow next" id="heroNextBtn" aria-label="Siguiente foto">›</button>
+        </div>
       </figure>
     </div>
 
@@ -281,7 +408,7 @@
             </span>
             <h4>Denuncias Ciudadanas</h4>
             <p>Reporte irregularidades en el manejo de fondos públicos municipales. Su denuncia es confidencial y contribuye a la transparencia de la gestión pública.</p>
-            <a href="{{ url('/denuncias') }}" class="ver-mas">Ver más →</a>
+            <a href="{{ url('/denuncias') }}" class="ver-mas">Ver más</a>
           </div>
         </div>
         <div class="col-md-4">
@@ -294,7 +421,7 @@
             </span>
             <h4>Contraloría va a la Escuela</h4>
             <p>Programa educativo que promueve los valores de transparencia, legalidad y ética pública en instituciones educativas del Municipio Páez.</p>
-            <a href="{{ url('/contraloria-escolar') }}" class="ver-mas">Ver más →</a>
+            <a href="{{ url('/contraloria-escolar') }}" class="ver-mas">Ver más</a>
           </div>
         </div>
         <div class="col-md-4">
@@ -309,7 +436,7 @@
             </span>
             <h4>Gestión Comunitaria</h4>
             <p>Acompañamiento a las unidades de gestión financiera de los consejos comunales en el correcto cumplimiento de sus obligaciones de control fiscal.</p>
-            <a href="#" class="ver-mas">Ver más →</a>
+            <a href="{{ url('/gestion-comunitaria') }}" class="ver-mas">Ver más</a>
           </div>
         </div>
       </div>
@@ -527,7 +654,7 @@
                 <div class="d-flex flex-wrap align-items-center justify-content-between gap-2 pt-3 border-top border-light">
                   <span class="badge bg-primary bg-opacity-10 text-primary rounded-pill px-3 py-2 fw-semibold" style="font-size: 0.75rem;">{{ $gaceta }}</span>
                   <a href="{{ $url }}" target="_blank" rel="noopener" class="btn btn-outline-primary btn-sm rounded-pill px-3 fw-semibold text-nowrap flex-shrink-0">
-                    {{ str_ends_with(strtolower($url), '.pdf') ? 'Ver PDF' : 'Ver página' }} &rarr;
+                    {{ str_ends_with(strtolower($url), '.pdf') ? 'Ver PDF' : 'Ver página' }}
                   </a>
                 </div>
               </div>
@@ -617,6 +744,76 @@
       });
 
       render();
+    })();
+
+    // Carrusel dinámico y automático del Hero
+    (function () {
+      const track = document.querySelector('.carousel-track');
+      if (!track) return;
+
+      const slides = Array.from(track.children);
+      const dotsContainer = document.getElementById('heroCarouselDots');
+      const prevBtn = document.getElementById('heroPrevBtn');
+      const nextBtn = document.getElementById('heroNextBtn');
+      const progressBar = document.getElementById('carouselProgressBar');
+      const INTERVAL = 3200; // 3.2 segundos por foto para movimiento continuo
+      let currentIndex = 0;
+      let timer = null;
+
+      // Generar puntos indicadores
+      slides.forEach((_, i) => {
+        const dot = document.createElement('button');
+        dot.type = 'button';
+        dot.className = 'dot' + (i === 0 ? ' active' : '');
+        dot.setAttribute('aria-label', `Foto ${i + 1}`);
+        dot.addEventListener('click', () => {
+          goTo(i);
+        });
+        dotsContainer.appendChild(dot);
+      });
+
+      const dots = Array.from(dotsContainer.children);
+
+      function updateProgressBar() {
+        if (!progressBar) return;
+        progressBar.style.transition = 'none';
+        progressBar.style.width = '0%';
+        requestAnimationFrame(() => {
+          requestAnimationFrame(() => {
+            progressBar.style.transition = `width ${INTERVAL}ms linear`;
+            progressBar.style.width = '100%';
+          });
+        });
+      }
+
+      function goTo(index) {
+        currentIndex = (index + slides.length) % slides.length;
+        track.style.transform = `translateX(-${currentIndex * 100}%)`;
+        dots.forEach((d, i) => d.classList.toggle('active', i === currentIndex));
+        slides.forEach((s, i) => s.classList.toggle('active', i === currentIndex));
+        resetTimer();
+      }
+
+      function startTimer() {
+        updateProgressBar();
+        timer = setInterval(() => {
+          currentIndex = (currentIndex + 1) % slides.length;
+          track.style.transform = `translateX(-${currentIndex * 100}%)`;
+          dots.forEach((d, i) => d.classList.toggle('active', i === currentIndex));
+          slides.forEach((s, i) => s.classList.toggle('active', i === currentIndex));
+          updateProgressBar();
+        }, INTERVAL);
+      }
+
+      function resetTimer() {
+        clearInterval(timer);
+        startTimer();
+      }
+
+      if (prevBtn) prevBtn.addEventListener('click', () => goTo(currentIndex - 1));
+      if (nextBtn) nextBtn.addEventListener('click', () => goTo(currentIndex + 1));
+
+      startTimer();
     })();
   </script>
 @endpush

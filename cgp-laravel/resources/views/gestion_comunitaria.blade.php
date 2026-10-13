@@ -186,6 +186,19 @@
 
     .comm-hero .hero-desc { color: rgba(255,255,255,0.8); }
 
+    .faq-answer,
+    .faq-answer li,
+    .hero-desc {
+      text-align: justify !important;
+      text-justify: inter-word;
+    }
+
+    .hero-title,
+    .faq-section-title h2,
+    .faq-section-title p {
+      text-align: center !important;
+    }
+
     /* Este apartado no usa el menú hamburguesa */
     #menu-toggle { display: none !important; }
     :root {
@@ -201,7 +214,8 @@
 
     .comm-hero {
       background: linear-gradient(135deg, rgba(15,35,64,.94), rgba(26,58,107,.92)), url('{{ asset('assets/img/portadahero.jpg') }}') center/cover no-repeat;
-      padding: 150px 20px 40px 20px;
+      padding: 05px 20px 10px 20px;
+      padding: 80px 20px 38px;
       display: flex;
       flex-direction: column;
       align-items: center;
@@ -219,20 +233,43 @@
       background: linear-gradient(90deg, var(--clr-primary), var(--clr-accent), #1d4ed8);
     }
 
+    .comm-hero .hero-content {
+      position: relative;
+      z-index: 2;
+      width: min(100%, 900px);
+      max-width: 900px;
+      margin: 0 auto;
+    }
+
     .hero-content {
       max-width: 900px;
       margin: 0 auto;
       width: 100%;
     }
 
+    .comm-hero .hero-title {
+      width: 100%;
+      margin: 0 0 12px;
+      line-height: 1.18;
+      word-break: normal;
+      overflow-wrap: break-word;
+    }
+
     .hero-title {
       font-family: 'Merriweather', serif; 
-      font-weight: 900;
+      font-weight: 700;
       font-size: clamp(1.3rem, 3.2vw, 2.1rem);
       margin-bottom: 12px;
       line-height: 1.25;
       text-align: center;
       word-break: break-word;
+    }
+
+    .comm-hero .hero-desc {
+      width: 100%;
+      max-width: 900px;
+      margin: 0 auto;
+      line-height: 1.55;
     }
 
     .hero-desc {
@@ -248,6 +285,40 @@
     @keyframes fadeInUp {
       from { opacity: 0; transform: translateY(20px); }
       to { opacity: 1; transform: translateY(0); }
+    }
+
+    @media (max-width: 768px) {
+      .comm-hero {
+        padding: 52px 18px 30px !important;
+        min-height: 300px;
+        align-items: center !important;
+      }
+      .comm-hero .hero-content {
+        width: 100% !important;
+      }
+      .comm-hero .hero-title {
+        font-size: clamp(1.55rem, 8vw, 2.15rem) !important;
+        line-height: 1.12 !important;
+        text-align: center !important;
+      }
+      .comm-hero .hero-desc {
+        font-size: 0.88rem !important;
+        line-height: 1.5 !important;
+        text-align: justify !important;
+      }
+    }
+
+    @media (max-width: 420px) {
+      .comm-hero {
+        padding: 44px 15px 27px !important;
+        min-height: 275px;
+      }
+      .comm-hero .hero-title {
+        font-size: 1.55rem !important;
+      }
+      .comm-hero .hero-desc {
+        font-size: 0.82rem !important;
+      }
     }
 
     .main-container {
