@@ -10,8 +10,8 @@
   <link rel="stylesheet" href="{{ asset('assets/css/denuncias.css') }}">
   <style>
     /* Header del diseño (allí va en estilos en línea) */
-    #header { background: #0f2340; padding: 15px 30px; color: white; }
-    #header .header-container { width: 100%; max-width: 100%; }
+    #header { background: #0b253e !important; padding: 15px 30px; color: white; }
+    #header .header-container { width: 100%; max-width: 100%; background: transparent !important; }
     #header .logo-link { display: flex; align-items: center; gap: 15px; text-decoration: none; color: white; }
     #header .logo-texts .l1 { text-transform: uppercase; font-weight: bold; font-size: 0.95rem; line-height: 1.2; }
 

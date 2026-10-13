@@ -24,8 +24,8 @@
   <header id="header">
     <div class="header-container">
       <a href="{{ url('/') }}" class="logo-link">
-        <div style="width:56px;height:56px;flex-shrink:0;display:flex;align-items:center;justify-content:center;">
-          <img src="{{ asset('assets/img/logonuevo.jpeg') }}" alt="Logo" style="width:56px;height:56px; border-radius: 25px;">
+        <div style="width:56px;height:56px;flex-shrink:0;display:flex;align-items:center;justify-content:center;background-color:#0b253e;">
+          <img src="{{ asset('assets/img/logonuevo.jpeg') }}" alt="Logo" style="width:56px;height:56px; border-radius: 25px; background-color: #0b253e;">
         </div>
         <div class="logo-texts">
           <div class="l1">Contraloría del <br>Municipio Páez</div>

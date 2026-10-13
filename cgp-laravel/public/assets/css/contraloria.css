@@ -34,8 +34,8 @@ p {
 
 /* ─── HEADER ─── */
 
-header, .header-container {
-    background-color: #0f213b;
+header, #header, .header-container {
+    background-color: #0b253e;
 }
 
 #header {
@@ -1221,7 +1221,7 @@ footer {
     top: 75px;
     left: 0;
     width: 100%;
-    background-color: #0f213b;
+    background-color: #0b253e;
     padding: 15px 0;
     box-shadow: 0 10px 25px rgba(0, 0, 0, 0.4);
     z-index: 1000;
@@ -1292,7 +1292,7 @@ footer {
     top: 100%;
     left: 0;
     width: 100%;
-    background-color: #0f213b;
+    background-color: #0b253e;
     box-shadow: 0 10px 15px rgba(0,0,0,0.3);
     padding: 20px;
     z-index: 1000;

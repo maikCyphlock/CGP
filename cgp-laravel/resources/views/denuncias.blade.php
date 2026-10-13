@@ -31,7 +31,7 @@
       visibility: visible !important;
       opacity: 1 !important;
       box-sizing: border-box;
-      background: #0f2340;
+      background: #0b253e !important;
       padding: 15px 30px;
       color: white;
     }
@@ -46,6 +46,7 @@
       max-width: 100% !important;
       visibility: visible !important;
       opacity: 1 !important;
+      background: transparent !important;
     }
 
     #header .logo-link {
@@ -730,7 +731,7 @@
                         <option value="0412">0412</option>
                         <option value="0414">0414</option>
                         <option value="0416">0416</option>
-                         <option value="0422">0422</option>
+                        <option value="0422">0422</option>
                         <option value="0424">0424</option>
                         <option value="0426">0426</option>
                       </select>
