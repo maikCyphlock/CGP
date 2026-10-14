@@ -1169,7 +1169,7 @@
                   </svg>
                   Documentos y Evidencias que Anexa
                 </div>
-                <p id="texto-nota-evidencia" style="font-size:0.78rem;color:#888;margin-bottom:16px;">
+                <p id="texto-nota-evidencia" style="font-size:0.78rem;color:#888;margin-bottom:16px;text-align:justify;">
                   Cargue los documentos uno por uno, en el orden que se muestra a continuación.
                 </p>
 
@@ -1579,12 +1579,55 @@
     <div class="footer-inner">
       <div class="row g-4 pb-4" style="border-bottom: 1px solid rgba(255,255,255,0.1); margin-bottom: 24px;">
         <div class="col-lg-4 col-md-6 footer-brand">
-          <img src="{{ asset('assets') }}/img/logo.jpeg" alt="Logo" style="width:56px;height:56px; border-radius: 25px;">
-          <p style="margin-top:12px;">Contraloría del Municipio Páez — Estado Portuguesa, República Bolivariana de
-            Venezuela. Órgano de Control Fiscal Municipal.</p>
+          <img src="{{ asset('assets/img/logonuevo.jpeg') }}" alt="Logo" style="width:56px;height:56px; border-radius: 25px;">
+          <p style="margin-top:12px;">Contraloría del Municipio Páez — Estado Portuguesa, República Bolivariana de Venezuela. Órgano de Control Fiscal Municipal.</p>
           <div class="rif">RIF: G-20001628-0 · Acarigua, Estado Portuguesa</div>
+          <div class="social-row">
+            <a href="https://www.instagram.com/contraloria_mpaez/" target="_blank" title="Instagram">
+              <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                <rect x="2" y="2" width="20" height="20" rx="5" ry="5" />
+                <circle cx="12" cy="12" r="4" />
+                <circle cx="17.5" cy="6.5" r="0.5" fill="currentColor" />
+              </svg>
+            </a>
+            <a href="https://www.facebook.com/contraloriamunicipiopaez.estadoportuguesa?mibextid=wwXIfr" target="_blank" title="Facebook">
+              <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                <path d="M18 2h-3a5 5 0 0 0-5 5v3H7v4h3v8h4v-8h3l1-4h-4V7a1 1 0 0 1 1-1h3z" />
+              </svg>
+            </a>
+            <a href="https://x.com/cmeppaez" target="_blank" title="Twitter / X">
+              <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                <path d="M4 4l16 16M4 20L20 4" />
+                <path d="M20 4h-5l-11 16h5" />
+              </svg>
+            </a>
+          </div>
+        </div>
+
+        <div class="col-lg-2 col-md-6 footer-col">
+          <h6>Institución</h6>
+          <ul>
+            <li><a href="{{ url('/#mision') }}">Misión y Visión</a></li>
+            <li><a href="{{ url('/organigrama') }}">Organigrama</a></li>
+            <li><a href="{{ url('/#Historia') }}">Historia</a></li>
+            <li><a href="{{ url('/#mision') }}">Ubicación</a></li>
+            <li><a href="{{ url('/#legal') }}">Base Normativa</a></li>
+          </ul>
+        </div>
+
+        <div class="col-lg-2 col-md-6 footer-col">
+          <h6>Ciudadanía</h6>
+          <ul>
+            <li><a href="{{ url('/#participacion') }}">Participación Ciudadana</a></li>
+            <li><a href="{{ url('/#redes') }}">Redes Sociales</a></li>
+            <li><a href="{{ url('/denuncias') }}">Denuncias</a></li>
+            <li><a href="{{ url('/contraloria-escolar') }}">Contraloría Escolar</a></li>
+            <li><a href="{{ url('/gestion-comunitaria') }}">Gestión Comunitaria</a></li>
+            <li><a href="https://www.cgr.gob.ve" target="_blank">CGR Venezuela ↗</a></li>
+          </ul>
         </div>
       </div>
+
       <div class="footer-bottom">
         <span>© 2026 Contraloría del Municipio Páez · Dirección General de Tecnología de Información</span>
         <a href="https://www.cgr.gob.ve" target="_blank">cgr.gob.ve</a>
@@ -1688,8 +1731,21 @@
       if (aplica && !validarPaso(paso)) return;
 
       pasoPendienteValidacion = paso;
-      document.getElementById('modal-texto-pregunta').innerHTML =
-        `¿Confirma que ha revisado correctamente los datos correspondientes al <strong>Paso ${paso} (${NOMBRES_PASOS[paso - 1]})</strong> y desea avanzar al siguiente nivel?`;
+
+      // Personalización del texto del modal
+      const radioTramite = document.querySelector('input[name="tipo_tramite"]:checked');
+      const esSugerencia = radioTramite && radioTramite.value === 'sugerencia';
+
+      if (esSugerencia && paso === 5) {
+        document.getElementById('modal-texto-pregunta').innerHTML =
+          `¿Confirma que ha revisado correctamente los datos correspondientes al <strong>Paso 5</strong> y desea avanzar al siguiente nivel?`;
+      } else if (!pasoAplica(3) && (paso === 3 || paso === 4)) {
+        document.getElementById('modal-texto-pregunta').innerHTML =
+          `¿Confirma que ha revisado correctamente los datos correspondientes al <strong>Paso ${paso}</strong> y desea avanzar al siguiente nivel?`;
+      } else {
+        document.getElementById('modal-texto-pregunta').innerHTML =
+          `¿Confirma que ha revisado correctamente los datos correspondientes al <strong>Paso ${paso} (${NOMBRES_PASOS[paso - 1]})</strong> y desea avanzar al siguiente nivel?`;
+      }
 
       if (instanciaModal) instanciaModal.show();
       else ejecutarPasoSiguiente();   // si el modal no cargó, no se bloquea el avance
@@ -1803,10 +1859,15 @@
       else if (tipo === 'queja') {
         textoNotaEvidencia.innerHTML = 'Cargue los documentos uno por uno, en el orden que se muestra a continuación. <strong>Para las quejas, la copia de la C.I. del denunciante y la carta de exposición de motivo son obligatorias;</strong> los demás documentos puede omitirlos según su criterio.';
       }
-      else if (tipo === 'reclamo' || tipo === 'peticion') {
+      else if (tipo === 'reclamo') {
         contSenaladoWrapper.style.display = 'none';
         if (contSenaladoNoAplica) contSenaladoNoAplica.style.display = 'block';
-        textoNotaEvidencia.innerHTML = 'Cargue los anexos, identificaciones o documentos que acompañen su solicitud.';
+        textoNotaEvidencia.innerHTML = 'Cargue los anexos, identificaciones o documentos que acompañen su reclamo.';
+      }
+      else if (tipo === 'peticion') {
+        contSenaladoWrapper.style.display = 'none';
+        if (contSenaladoNoAplica) contSenaladoNoAplica.style.display = 'block';
+        textoNotaEvidencia.innerHTML = 'Cargue los anexos, identificaciones o documentos que acompañen su petición.';
       }
       else if (tipo === 'sugerencia') {
         contSenaladoWrapper.style.display = 'none';
@@ -1814,6 +1875,10 @@
         contEvidenciaWrapper.style.display = 'none';
         if (contEvidenciaNoAplica) contEvidenciaNoAplica.style.display = 'block';
         camposRequeridosCiudadano.forEach(el => el.style.display = 'none');
+      }
+
+      if (typeof renderSecuenciaEvidencias === 'function') {
+        renderSecuenciaEvidencias();
       }
     }
 

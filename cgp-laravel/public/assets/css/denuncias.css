@@ -471,6 +471,13 @@
   padding: 34px 36px;
 }
 
+.form-body p,
+.form-body .nota-info,
+.form-body .aviso-menor-edad,
+.form-body .evidencia-item-cuerpo .nota-info {
+  text-align: justify;
+}
+
 .form-section {
   border-bottom: 1px solid #eef1f7;
   padding-bottom: 28px;
@@ -877,7 +884,8 @@
 .evidencia-item-header {
   display: flex;
   align-items: center;
-  gap: 10px;
+  flex-wrap: wrap;
+  gap: 8px 10px;
   padding: 12px 16px;
   min-width: 0;
 }
@@ -903,11 +911,8 @@
   font-size: 0.84rem;
   font-weight: 600;
   color: #1a2340;
-  flex: 1;
   min-width: 0;
-  overflow: hidden;
-  text-overflow: ellipsis;
-  white-space: nowrap;
+  word-break: break-word;
 }
 
 .evidencia-item-tag {
@@ -1040,6 +1045,16 @@
   padding: 4px 12px;
   font-size: 0.75rem;
   color: #1a4b8c;
+  max-width: 100%;
+  min-width: 0;
+}
+
+.file-chip-name {
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  min-width: 0;
+  max-width: 180px;
 }
 
 .file-chip button {
@@ -1365,6 +1380,7 @@
   font-size: 0.72rem;
   line-height: 1.35;
   box-sizing: border-box;
+  text-align: justify;
 }
 
 

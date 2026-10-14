@@ -1388,23 +1388,23 @@ function obtenerEtiquetaPrimerSenalado() {
 /** Documentos de evidencia, en el orden en que se solicitan. */
 var EVIDENCIAS_ITEMS = [
     // Documentos obligatorios
-    { valor: 'ci_denunciante', etiqueta: 'Copia C.I. del denunciante', opcional: false,
-      nota: 'Adjunte una copia legible de su cédula de identidad (ambas caras) o de su pasaporte vigente.' },
-    { valor: 'carta_exposicion', etiqueta: 'Carta de exposición de motivo', opcional: false,
-      nota: 'Carta firmada en la que expone los motivos de su trámite. Puede adjuntarla en PDF, Word o imagen.' },
+    { valor: 'ci_denunciante', etiqueta: 'Copia C.I. del denunciante', opcional: false, tipo: 'imagen',
+      nota: 'Adjunte una copia legible de su cédula de identidad (ambas caras) o de su pasaporte vigente. <strong>Formatos admitidos: PDF, PNG, JPG.</strong>' },
+    { valor: 'carta_exposicion', etiqueta: 'Carta de exposición de motivo', opcional: false, tipo: 'imagen',
+      nota: 'Carta firmada en la que expone los motivos de su trámite. Puede adjuntarla en PDF, Word o imagen. <strong>Formatos admitidos: PDF, PNG, JPG.</strong>' },
     // Documentos que el denunciante puede omitir
-    { valor: 'ci_testigo', etiqueta: 'Copia C.I. del testigo', opcional: true,
-      nota: 'Solo si existe un testigo de los hechos. Copia legible de su cédula de identidad.' },
-    { valor: 'fotografias', etiqueta: 'Fotografías', opcional: true,
-      nota: 'Formatos de imagen (JPG, PNG). Procure que muestren con claridad los hechos denunciados.' },
-    { valor: 'video', etiqueta: 'Video', opcional: true,
-      nota: 'Formatos de video comunes (MP4). Máximo 10 MB por archivo.' },
-    { valor: 'grabacion_voz', etiqueta: 'Grabación de voz', opcional: true,
-      nota: 'Formatos de audio (MP3, WAV). Máximo 10 MB por archivo.' },
-    { valor: 'testimonio_escrito', etiqueta: 'Testimonio escrito con firma y huella', opcional: true,
-      nota: 'Documento firmado y con huella dactilar del declarante, escaneado o fotografiado.' },
-    { valor: 'otros_docs', etiqueta: 'Otros documentos', opcional: true,
-      nota: 'Cualquier otro anexo que respalde su trámite (PDF, Word o imagen).' }
+    { valor: 'ci_testigo', etiqueta: 'Copia C.I. del testigo', opcional: true, tipo: 'imagen',
+      nota: 'Solo si existe un testigo de los hechos. Copia legible de su cédula de identidad. <strong>Formatos admitidos: PDF, PNG, JPG.</strong>' },
+    { valor: 'fotografias', etiqueta: 'Fotografías', opcional: true, tipo: 'imagen',
+      nota: 'Formatos de imagen (JPG, PNG) o PDF. Procure que muestren con claridad los hechos denunciados. <strong>Formatos admitidos: PDF, PNG, JPG.</strong>' },
+    { valor: 'video', etiqueta: 'Video', opcional: true, tipo: 'video',
+      nota: 'Formatos de video comunes (MP4, AVI, MOV, MKV, WEBM). Máximo 10 MB por archivo. <strong>Solo se permiten archivos de video.</strong>' },
+    { valor: 'grabacion_voz', etiqueta: 'Grabación de voz', opcional: true, tipo: 'audio',
+      nota: 'Formatos de audio (MP3, WAV, OGG, M4A, AAC). Máximo 10 MB por archivo. <strong>Solo se permiten archivos de audio.</strong>' },
+    { valor: 'testimonio_escrito', etiqueta: 'Testimonio escrito con firma y huella', opcional: true, tipo: 'imagen',
+      nota: 'Documento firmado y con huella dactilar del declarante, escaneado o fotografiado. <strong>Formatos admitidos: PDF, PNG, JPG.</strong>' },
+    { valor: 'otros_docs', etiqueta: 'Otros documentos', opcional: true, tipo: 'general',
+      nota: 'Cualquier otro anexo que respalde su trámite (PDF, Word, imagen, video o audio).' }
 ];
 
 /** Índice (0-based) del documento actualmente activo en la secuencia. */
@@ -1416,13 +1416,73 @@ var evidenciaEditando = null;
 /** Archivos adjuntados por cada tipo de documento: { valor: File[] } */
 var archivosPorDocumento = {};
 
+/**
+ * Mapeo de tipo de documento → formatos aceptados.
+ * Cada entrada define:
+ *   accept     – valor para el atributo accept del <input type="file">
+ *   extensiones – extensiones válidas (con punto, minúsculas)
+ *   mimePrefix – prefijos MIME aceptados (para validación extra)
+ *   descripcion – texto legible para el mensaje de error
+ */
+var ACCEPT_POR_TIPO = {
+    imagen: {
+        accept: '.pdf,.png,.jpg,.jpeg',
+        extensiones: ['.pdf', '.png', '.jpg', '.jpeg'],
+        mimePrefix: [],
+        descripcion: 'PDF, PNG o JPG/JPEG'
+    },
+    video: {
+        accept: 'video/mp4,video/x-msvideo,video/quicktime,video/x-matroska,video/webm,.mp4,.avi,.mov,.mkv,.webm',
+        extensiones: ['.mp4', '.avi', '.mov', '.mkv', '.webm'],
+        mimePrefix: ['video/'],
+        descripcion: 'video (MP4, AVI, MOV, MKV, WEBM)'
+    },
+    audio: {
+        accept: 'audio/mpeg,audio/wav,audio/ogg,audio/mp4,audio/aac,audio/x-m4a,.mp3,.wav,.ogg,.m4a,.aac',
+        extensiones: ['.mp3', '.wav', '.ogg', '.m4a', '.aac'],
+        mimePrefix: ['audio/'],
+        descripcion: 'audio (MP3, WAV, OGG, M4A, AAC)'
+    },
+    general: {
+        accept: 'image/*,video/*,audio/*,.pdf,.doc,.docx',
+        extensiones: null, // null = acepta todo
+        mimePrefix: [],
+        descripcion: 'imagen, video, audio, PDF o Word'
+    }
+};
+
+/**
+ * Valida si un archivo es del formato permitido para el tipo de documento.
+ * @param {File} archivo
+ * @param {string} tipoDoc – clave del ACCEPT_POR_TIPO ('imagen','video','audio','general')
+ * @returns {boolean}
+ */
+function validarFormatoArchivo(archivo, tipoDoc) {
+    var regla = ACCEPT_POR_TIPO[tipoDoc];
+    if (!regla || regla.extensiones === null) return true; // 'general' acepta todo
+
+    var nombre = archivo.name.toLowerCase();
+    var ext = nombre.substring(nombre.lastIndexOf('.'));
+    var mime = (archivo.type || '').toLowerCase();
+
+    // Verificar por extensión
+    if (regla.extensiones.indexOf(ext) !== -1) return true;
+
+    // Verificar por prefijo MIME (útil para video/* o audio/*)
+    for (var p = 0; p < regla.mimePrefix.length; p++) {
+        if (mime.indexOf(regla.mimePrefix[p]) === 0) return true;
+    }
+
+    return false;
+}
+
 /** Construye el chip visual de un archivo adjunto a un documento. */
 function construirChipArchivoDocumento(valorDoc, indice, archivo) {
     return '<div class="file-chip">' +
         '<svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">' +
         '<path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/></svg>' +
-        archivo.name +
-        ' <span style="color:#8da4c2">(' + (archivo.size / 1024).toFixed(0) + ' KB)</span>' +
+        '<span class="file-chip-name" title="' + archivo.name + '">' + archivo.name + '</span>' +
+        ' <span style="color:#8da4c2;flex-shrink:0">(' + (archivo.size / 1024).toFixed(0) + ' KB)</span>' +
         '<button type="button" onclick="eliminarArchivoDocumento(\'' + valorDoc + '\',' + indice + ')" title="Quitar">' +
         '<svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">' +
         '<line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg></button>' +
@@ -1470,10 +1530,30 @@ function renderSecuenciaEvidencias() {
             ? '<span class="evidencia-item-tag">Puede omitirlo</span>'
             : '<span class="evidencia-item-tag obligatorio">Obligatorio</span>';
 
+        var tipoTramiteEl = document.querySelector('input[name="tipo_tramite"]:checked');
+        var tipoActual = tipoTramiteEl ? tipoTramiteEl.value : '';
+        var esNoDenuncia = (tipoActual === 'peticion' || tipoActual === 'sugerencia');
+
+        var etiquetaMostrada = item.etiqueta;
+        var notaMostrada = item.nota;
+
+        if (esNoDenuncia) {
+            if (item.valor === 'ci_denunciante') {
+                etiquetaMostrada = 'Copia C.I. del ciudadano';
+                notaMostrada = 'Adjunte una copia legible de su cédula de identidad (ambas caras) o de su pasaporte vigente. <strong>Formatos admitidos: PDF, PNG, JPG.</strong>';
+            } else if (item.valor === 'carta_exposicion') {
+                notaMostrada = 'Carta firmada en la que expone los motivos de su solicitud. Puede adjuntarla en PDF, Word o imagen. <strong>Formatos admitidos: PDF, PNG, JPG.</strong>';
+            } else if (item.valor === 'fotografias') {
+                notaMostrada = 'Formatos de imagen (JPG, PNG) o PDF. Procure que muestren con claridad el respaldo de su solicitud. <strong>Formatos admitidos: PDF, PNG, JPG.</strong>';
+            } else if (item.valor === 'otros_docs') {
+                notaMostrada = 'Cualquier otro anexo que respalde su solicitud (PDF, Word, imagen, video o audio).';
+            }
+        }
+
         var cabecera =
             '<div class="evidencia-item-header">' +
             '<span class="evidencia-num">' + numContenido + '</span>' +
-            '<span class="evidencia-item-titulo">' + item.etiqueta + '</span>' +
+            '<span class="evidencia-item-titulo">' + etiquetaMostrada + '</span>' +
             marca +
             '<span class="evidencia-item-estado">' + etiquetaEstado + '</span>' +
             enlaceEditar +
@@ -1500,7 +1580,7 @@ function renderSecuenciaEvidencias() {
 
             cuerpo =
                 '<div class="evidencia-item-cuerpo">' +
-                '<div class="nota-info" style="margin-bottom:12px;">' + item.nota + '</div>' +
+                '<div class="nota-info" style="margin-bottom:12px;">' + notaMostrada + '</div>' +
                 '<div class="file-drop" onclick="document.getElementById(\'archivo-input-' + item.valor + '\').click()" ' +
                 'ondragover="event.preventDefault();this.style.borderColor=\'#1565c0\'" ' +
                 'ondragleave="this.style.borderColor=\'\'" ' +
@@ -1511,7 +1591,7 @@ function renderSecuenciaEvidencias() {
                 '<path d="M20.39 18.39A5 5 0 0 0 18 9h-1.26A8 8 0 1 0 3 16.3"/></svg>' +
                 '</div>' +
                 '<p><strong>Haga clic o arrastre el archivo aquí</strong><br>Máx. 10 MB por archivo</p>' +
-                '<input type="file" id="archivo-input-' + item.valor + '" multiple accept="image/*,video/*,audio/*,.pdf,.doc,.docx" ' +
+                '<input type="file" id="archivo-input-' + item.valor + '" multiple accept="' + (ACCEPT_POR_TIPO[item.tipo] || ACCEPT_POR_TIPO.general).accept + '" ' +
                 'onchange="agregarArchivosDocumento(\'' + item.valor + '\', this.files)" style="display:none;">' +
                 '</div>' +
                 '<span class="error-msg" id="archivo-err-' + item.valor + '" style="display:none;margin-top:6px;"></span>' +
@@ -1527,7 +1607,7 @@ function renderSecuenciaEvidencias() {
 
     if (editando === null && evidenciaIndiceActual >= EVIDENCIAS_ITEMS.length) {
         html += '<p style="font-size:0.8rem;color:#1565c0;font-weight:600;margin-top:14px;">' +
-            '✓ Revisó todos los documentos. Puede continuar, o pulsar "Editar" en cualquiera para modificarlo.</p>';
+            'Revisó todos los documentos. Puede continuar, o pulsar "Editar" en cualquiera para modificarlo.</p>';
     }
     contenedor.innerHTML = html;
 }
@@ -1540,9 +1620,19 @@ function renderSecuenciaEvidencias() {
 function agregarArchivosDocumento(valorDoc, archivos) {
     var MAX_MB = 10 * 1024 * 1024; // 10 MB
     var grandes = [];
+    var formatoInvalido = [];
     if (!archivosPorDocumento[valorDoc]) archivosPorDocumento[valorDoc] = [];
 
+    // Buscar el tipo del documento en EVIDENCIAS_ITEMS
+    var itemDoc = EVIDENCIAS_ITEMS.find(function (it) { return it.valor === valorDoc; });
+    var tipoDoc = itemDoc ? (itemDoc.tipo || 'general') : 'general';
+
     Array.from(archivos).forEach(function (archivo) {
+        // Validar formato ANTES del tamaño
+        if (!validarFormatoArchivo(archivo, tipoDoc)) {
+            formatoInvalido.push(archivo.name);
+            return;
+        }
         if (archivo.size > MAX_MB) { grandes.push(archivo.name); return; }
         archivosPorDocumento[valorDoc].push(archivo);
     });
@@ -1551,8 +1641,16 @@ function agregarArchivosDocumento(valorDoc, archivos) {
 
     var errEl = document.getElementById('archivo-err-' + valorDoc);
     if (errEl) {
+        var mensajes = [];
+        if (formatoInvalido.length) {
+            var regla = ACCEPT_POR_TIPO[tipoDoc] || ACCEPT_POR_TIPO.general;
+            mensajes.push('Formato no permitido (' + formatoInvalido.join(', ') + '). Solo se admite: ' + regla.descripcion + '.');
+        }
         if (grandes.length) {
-            errEl.textContent = 'Archivo(s) demasiado grande(s) (máx. 10 MB): ' + grandes.join(', ');
+            mensajes.push('Archivo(s) demasiado grande(s) (máx. 10 MB): ' + grandes.join(', '));
+        }
+        if (mensajes.length) {
+            errEl.textContent = mensajes.join(' | ');
             errEl.style.display = 'block';
         } else {
             errEl.style.display = 'none';
@@ -2093,9 +2191,17 @@ function escaparHtml(texto) {
 /** Lista todos los archivos cargados, con el nombre del documento al que pertenecen. */
 function obtenerEvidenciasCargadas() {
     var items = [];
+    var tipoTramiteEl = document.querySelector('input[name="tipo_tramite"]:checked');
+    var tipoActual = tipoTramiteEl ? tipoTramiteEl.value : '';
+    var esNoDenuncia = (tipoActual === 'peticion' || tipoActual === 'sugerencia');
+
     EVIDENCIAS_ITEMS.forEach(function (it) {
+        var nombreDoc = it.etiqueta;
+        if (esNoDenuncia && it.valor === 'ci_denunciante') {
+            nombreDoc = 'Copia C.I. del ciudadano';
+        }
         (archivosPorDocumento[it.valor] || []).forEach(function (a) {
-            items.push({ doc: it.etiqueta, nombre: a.name });
+            items.push({ doc: nombreDoc, nombre: a.name });
         });
     });
     return { total: items.length, items: items };
