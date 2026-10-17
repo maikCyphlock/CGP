@@ -15,7 +15,7 @@
   <link href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap/5.3.2/css/bootstrap.min.css" rel="stylesheet">
   
   <!-- Estilos base -->
-  <link rel="stylesheet" href="{{ asset('assets/css/contraloria.css') }}">
+  <link rel="stylesheet" href="{{ asset('assets/css/contraloria.css') }}?v={{ filemtime(public_path('assets/css/contraloria.css')) }}">
   @stack('styles')
 </head>
 

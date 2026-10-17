@@ -18,6 +18,10 @@
   .pv-card .texto { font-size: .85rem; color: #555; line-height: 1.6; }
   .pv-card .texto p { margin-bottom: .6rem; }
   .pv-card .texto ul, .pv-card .texto ol { padding-left: 1.2rem; }
+  .pv-mv { background: #1a4b8c; color: #fff; padding: 28px 24px; border-radius: 6px; }
+  .pv-mv h3 { font-size: 1.3rem; font-weight: 700; margin-bottom: 12px; }
+  .pv-mv .texto { font-size: .85rem; line-height: 1.75; opacity: .9; }
+  .pv-mv .texto a { color: #fff; }
 </style>
 @endpush
 
@@ -44,7 +48,7 @@
             </div>
             <div class="col-md-6">
               <label class="ed-estado mb-0" id="ed-estado" for="pub">
-                <input class="form-check-input m-0" type="checkbox" name="published" value="1" id="pub" @checked(old('published', $item->published ?? false))>
+                <input class="form-check-input m-0" type="checkbox" name="published" value="1" id="pub" @checked(old('published', $item->published ?? true))>
                 <span><strong id="ed-estado-txt"></strong><br><small class="text-muted" id="ed-donde"></small></span>
               </label>
             </div>
@@ -79,8 +83,13 @@
     </div>
 
     <div class="col-lg-5">
-      <div class="fw-semibold small text-muted mb-2"><i class="fa-regular fa-eye me-1"></i> Así se verá en el portal</div>
-      <div class="pv-card mb-4">
+      <div class="d-flex justify-content-between align-items-center mb-2">
+        <span class="fw-semibold small text-muted"><i class="fa-regular fa-eye me-1"></i> Así se verá en el portal</span>
+        @if ($item?->published)<a href="{{ url('/') }}" target="_blank" class="small" id="pv-ver">Ver en el portal <i class="fa-solid fa-arrow-up-right-from-square"></i></a>@endif
+      </div>
+      <div class="pv-mv mb-4" id="pv-mv" hidden><h3 id="pv-mv-titulo"></h3><div class="texto" id="pv-mv-texto"></div></div>
+      <div class="alert alert-secondary small mb-4" id="pv-ninguna" hidden>Este tipo de contenido todavía no tiene un lugar en el portal; se guarda pero no se muestra.</div>
+      <div class="pv-card mb-4" id="pv-noticia">
         <div class="top"></div>
         <img id="pv-img" alt="" style="width:100%;aspect-ratio:16/9;object-fit:cover;display:block" @if ($item?->image_path) src="{{ route('admin.contenidos.imagen', $item->image_path) }}" @else hidden @endif>
         <div class="cuerpo">
@@ -119,14 +128,23 @@
   const puedeEscribir = @json($puedeEscribir);
   let sucio = false, editor = null;
 
+  // Sección del portal donde sale cada tipo (para el enlace «Ver en el portal»).
+  const ancla = { NEWS: '#noticias', MISSION: '#mision', VISION: '#mision' };
+
   function render() {
-    const md = cuerpo.value;
+    const md = cuerpo.value, code = tipo.selectedOptions[0]?.dataset.code;
+    const html = DOMPurify.sanitize(md.trim() ? marked.parse(md, { breaks: true }) : '<p style="opacity:.6">El texto aparecerá aquí.</p>');
+    const mv = code === 'MISSION' || code === 'VISION';
+    // Misión y Visión salen en la tarjeta azul de la portada (con su encabezado fijo, no el título).
+    $('pv-mv').hidden = !mv; $('pv-noticia').hidden = code !== 'NEWS'; $('pv-ninguna').hidden = mv || code === 'NEWS';
+    $('pv-mv-titulo').textContent = code === 'VISION' ? 'Visión' : 'Misión';
+    $('pv-mv-texto').innerHTML = html;
     $('pv-titulo').textContent = titulo.value || 'Título de la noticia';
-    $('pv-texto').innerHTML = DOMPurify.sanitize(md.trim() ? marked.parse(md, { breaks: true }) : '<p class="text-muted">El texto aparecerá aquí.</p>');
+    $('pv-texto').innerHTML = html;
+    if ($('pv-ver')) $('pv-ver').href = @json(url('/')) + (ancla[code] || '');
     $('ed-cuenta').textContent = md.length.toLocaleString('es') + ' / 50.000';
     $('ed-estado').classList.toggle('on', pub.checked);
     $('ed-estado-txt').textContent = pub.checked ? 'Publicado' : 'Borrador';
-    const code = tipo.selectedOptions[0]?.dataset.code;
     $('ed-donde').textContent = pub.checked ? (donde[code] || 'Visible en el panel; este tipo aún no se muestra en el sitio.') : 'Nadie lo ve en el portal hasta que lo publiques.';
   }
 

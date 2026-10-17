@@ -519,11 +519,6 @@
           </div>
           <div class="ig-info">
             <a href="https://www.instagram.com/contraloria_mpaez/" target="_blank" class="ig-handle">@contraloria_mpaez</a>
-            <div class="ig-stats">
-              <div class="ig-stat"><span class="n">595</span><span class="l">Publicaciones</span></div>
-              <div class="ig-stat"><span class="n">756</span><span class="l">Seguidores</span></div>
-              <div class="ig-stat"><span class="n">366</span><span class="l">Siguiendo</span></div>
-            </div>
             <a href="https://www.instagram.com/contraloria_mpaez/" target="_blank" class="ig-follow-btn">
               <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
                 <rect x="2" y="2" width="20" height="20" rx="5" ry="5" />
@@ -536,65 +531,8 @@
         </div>
       </div>
 
-      <!-- fotos publicas de manera manual dentro del codigo -->
-      <div class="ig-posts-grid">
-        <div class="ig-post">
-          <img src="{{ asset('assets/img/mesadetrabajo1.jpeg') }}" alt="Mesa de trabajo con estudiantes de la UPTP" loading="lazy">
-          <div class="ig-post-overlay">
-            <p>Mesa de trabajo con estudiantes de la casa de estudio J.J. Montilla con fines de brindar apoyo para el desarrollo de su proyecto de Grado.</p>
-            <span class="ig-post-date">Abril 2026</span>
-          </div>
-        </div>
-        <div class="ig-post">
-          <img src="{{ asset('assets/img/mesadetrabajo2.jpeg') }}" alt="Mesa de trabajo con estudiantes de la UPTP" loading="lazy">
-          <div class="ig-post-overlay">
-            <p>Mesa de trabajo con estudiantes de la casa de estudio J.J. Montilla con fines de brindar apoyo para el desarrollo de su proyecto de Grado.</p>
-            <span class="ig-post-date">Abril 2026</span>
-          </div>
-        </div>
-        <div class="ig-post">
-          <img src="{{ asset('assets/img/juramentacion.jpeg') }}" alt="Juramentacion del nuevo contralor" loading="lazy">
-          <div class="ig-post-overlay">
-            <p>Juramento del nuevo Contralor del Municipio Páez, el Abg. Leonel Lucena. </p>
-            <span class="ig-post-date">Junio 2025</span>
-          </div>
-        </div>
-        <div class="ig-post">
-          <img src="{{ asset('assets/img/reunion.jpeg') }}" alt="Reunion de Contralores." loading="lazy">
-          <div class="ig-post-overlay">
-            <p>El Abg. Leonel Lucena, Contralor del Municipio Páez, junto a la Contralora del Estado Portuguesa, Dra. Nayke Tovar, y los Contralores Municipales de la Región Llanera, acudieron a la Contraloría General de la República para optimizar la gestión fiscal en la región.</p>
-            <span class="ig-post-date">Enero 2026</span>
-          </div>
-        </div>
-        <div class="ig-post">
-          <img src="{{ asset('assets/img/clasecontralor.jpeg') }}" loading="lazy">
-          <div class="ig-post-overlay">
-            <p> Taller organizado junto a la Contraloría del municipio Páez, convocó a contralores y técnicos del Eje Sur del estado. </p>
-            <span class="ig-post-date">Marzo 2026</span>
-          </div>
-        </div>
-        <div class="ig-post">
-          <img src="{{ asset('assets/img/ninos.jpeg') }}" loading="lazy">
-          <div class="ig-post-overlay">
-            <p>La Contraloría del Municipio Páez, dando continuidad al programa escolar en la fase 4.</p>
-            <span class="ig-post-date">Marzo 2026</span>
-          </div>
-        </div>
-        <div class="ig-post">
-          <img src="{{ asset('assets/img/rrhh.jpeg') }}" alt="Recursos Humano" loading="lazy">
-          <div class="ig-post-overlay">
-            <p>Entre las direcciones de Talento Humano de la Contraloría Municipal de Páez y Contraloría Municipal de Araure, se llevó a cabo una Mesa de Trabajo con el fin de optimizar los procesos en beneficio de los trabajadores del Sistema Nacional de Control Fiscal.</p>
-            <span class="ig-post-date">Febrero 2026</span>
-          </div>
-        </div>
-        <div class="ig-post">
-          <img src="{{ asset('assets/img/contralores.jpeg') }}" alt="Reunion de contralores" loading="lazy">
-          <div class="ig-post-overlay">
-            <p>El Contralor Municipal de Páez, Abg. Leonel Lucena, junto a los Directores de Administración y Talento Humano sostuvieron reunión con el Contralor del Municipio Araure, M.Sc. Julio Camacaro, con el objetivo de asegurar estándares para el cumplimiento de los principios de legalidad.</p>
-            <span class="ig-post-date">Marzo 2026</span>
-          </div>
-        </div>
-      </div>
+      <!-- Embed oficial del perfil: muestra solas las últimas publicaciones, sin token ni acceso a la cuenta. -->
+      <iframe class="ig-embed" src="https://www.instagram.com/contraloria_mpaez/embed/" title="Últimas publicaciones de @contraloria_mpaez en Instagram" loading="lazy" scrolling="no"></iframe>
 
       <div class="redes-cta">
         <a href="https://www.instagram.com/contraloria_mpaez/" target="_blank">
