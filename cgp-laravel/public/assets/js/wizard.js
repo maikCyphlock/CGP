@@ -787,6 +787,26 @@ function mostrarPaso(numeroPaso) {
         else if (n < numeroPaso - 1) item.classList.add('completado');
     });
 
+    // Actualizar banner superior del tipo de trámite seleccionado
+    var bannerTramite = document.getElementById('banner-tramite-seleccionado');
+    var textoTramite = document.getElementById('texto-tramite-seleccionado');
+    if (bannerTramite && textoTramite) {
+        var rSel = document.querySelector('input[name="tipo_tramite"]:checked');
+        var tipoNombres = {
+            'denuncia': 'Denuncia',
+            'queja': 'Queja',
+            'reclamo': 'Reclamo',
+            'peticion': 'Petición',
+            'sugerencia': 'Sugerencia'
+        };
+        if (numeroPaso > 1 && rSel && tipoNombres[rSel.value]) {
+            textoTramite.textContent = tipoNombres[rSel.value];
+            bannerTramite.style.display = 'block';
+        } else {
+            bannerTramite.style.display = 'none';
+        }
+    }
+
     // Scroll al inicio del wizard
     var wizard = document.getElementById('vista-wizard');
     if (wizard) wizard.scrollIntoView({ behavior: 'smooth', block: 'start' });
@@ -798,6 +818,8 @@ function mostrarPaso(numeroPaso) {
  * Limpia el estado del wizard.
  */
 function volverSeleccion() {
+    var bannerTramite = document.getElementById('banner-tramite-seleccionado');
+    if (bannerTramite) bannerTramite.style.display = 'none';
     document.getElementById('vista-seleccion').style.display = 'block';
     document.getElementById('barra-progreso').style.display = 'none';
     document.getElementById('vista-wizard').style.display = 'none';
@@ -864,17 +886,60 @@ function validarPaso(numeroPaso) {
             errores.push('Número de documento');
             marcarError('cit-nro-doc', 'cit-nro-doc-err');
         }
+        // Expresión regular para solo letras, acentos y espacios
+        var reSoloLetras = /^[a-zA-ZáéíóúÁÉÍÓÚñÑüÜ\s]+$/;
+
         // Primer Nombre
-        if (document.getElementById('cit-primer-nombre').value.trim().length < 2) {
+        var pNombre = document.getElementById('cit-primer-nombre').value.trim();
+        if (pNombre.length < 2) {
             errores.push('Primer Nombre');
             marcarError('cit-primer-nombre', 'cit-primer-nombre-err');
+        } else if (!reSoloLetras.test(pNombre)) {
+            errores.push('Primer Nombre (solo se permiten letras)');
+            var errPN = document.getElementById('cit-primer-nombre-err');
+            if (errPN) errPN.textContent = 'Solo se permiten letras.';
+            marcarError('cit-primer-nombre', 'cit-primer-nombre-err');
         }
+
+        // Segundo Nombre (opcional, pero si tiene contenido debe ser solo letras)
+        var sNombre = document.getElementById('cit-segundo-nombre').value.trim();
+        if (sNombre && !reSoloLetras.test(sNombre)) {
+            errores.push('Segundo Nombre (solo se permiten letras)');
+            marcarError('cit-segundo-nombre', 'cit-segundo-nombre-err');
+        }
+
         // Primer Apellido
-        if (document.getElementById('cit-primer-apellido').value.trim().length < 2) {
+        var pApellido = document.getElementById('cit-primer-apellido').value.trim();
+        if (pApellido.length < 2) {
             errores.push('Primer Apellido');
             marcarError('cit-primer-apellido', 'cit-primer-apellido-err');
+        } else if (!reSoloLetras.test(pApellido)) {
+            errores.push('Primer Apellido (solo se permiten letras)');
+            var errPA = document.getElementById('cit-primer-apellido-err');
+            if (errPA) errPA.textContent = 'Solo se permiten letras.';
+            marcarError('cit-primer-apellido', 'cit-primer-apellido-err');
         }
-        // Segundo Nombre y Segundo Apellido son opcionales (sin validación)
+
+        // Segundo Apellido (opcional, pero si tiene contenido debe ser solo letras)
+        var sApellido = document.getElementById('cit-segundo-apellido').value.trim();
+        if (sApellido && !reSoloLetras.test(sApellido)) {
+            errores.push('Segundo Apellido (solo se permiten letras)');
+            marcarError('cit-segundo-apellido', 'cit-segundo-apellido-err');
+        }
+
+        // Profesión (opcional, pero solo letras si se introduce)
+        var prof = document.getElementById('cit-profesion').value.trim();
+        if (prof && !reSoloLetras.test(prof)) {
+            errores.push('Profesión (solo se permiten letras)');
+            marcarError('cit-profesion', 'cit-profesion-err');
+        }
+
+        // Ocupación (opcional, pero solo letras si se introduce)
+        var ocup = document.getElementById('cit-ocupacion').value.trim();
+        if (ocup && !reSoloLetras.test(ocup)) {
+            errores.push('Ocupación (solo se permiten letras)');
+            marcarError('cit-ocupacion', 'cit-ocupacion-err');
+        }
         // Sexo
         if (!document.getElementById('cit-sexo').value) {
             errores.push('Sexo');

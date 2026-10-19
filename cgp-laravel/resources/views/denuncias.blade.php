@@ -269,6 +269,11 @@
     margin-bottom: 4px;
   }
 }
+
+    @keyframes fadeInPopover {
+      from { opacity: 0; transform: translateY(-4px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
   </style>
 </head>
 
@@ -452,6 +457,13 @@
           </svg>
           Volver a las consideraciones
         </button>
+
+        <!-- BANNER DE TRÁMITE SELECCIONADO (Visible en pasos 2 a 6) -->
+        <div id="banner-tramite-seleccionado" style="display:none; width: 100%; box-sizing: border-box; margin: 0 0 16px 0; background: #e8f0fe; border-left: 4px solid #1565c0; border-radius: 6px; padding: 10px 16px; box-shadow: 0 1px 3px rgba(0,0,0,0.05); text-align: justify;">
+          <div style="font-size: 0.9rem; color: #1a365d; text-align: justify;">
+            Está realizando una solicitud de tipo: <strong id="texto-tramite-seleccionado" style="color: #1565c0; text-transform: uppercase;">-</strong>
+          </div>
+        </div>
 
         <!-- PASO 1 -->
         <div class="wizard-paso" id="paso-1">
@@ -652,6 +664,7 @@
                   <div class="form-group">
                     <label class="form-label">Segundo Nombre</label>
                     <input type="text" id="cit-segundo-nombre" class="form-control" placeholder="Ej. Antonio">
+                    <span class="error-msg" id="cit-segundo-nombre-err">Solo se permiten letras.</span>
                   </div>
                 </div>
                 <div class="col-md-3">
@@ -665,6 +678,7 @@
                   <div class="form-group">
                     <label class="form-label">Segundo Apellido</label>
                     <input type="text" id="cit-segundo-apellido" class="form-control" placeholder="Ej. Rodríguez">
+                    <span class="error-msg" id="cit-segundo-apellido-err">Solo se permiten letras.</span>
                   </div>
                 </div>
                 <div class="col-md-2">
@@ -679,18 +693,43 @@
                   </div>
                 </div>
                 <div class="col-md-3">
-  <div class="form-group">
-    <label class="form-label">Fecha de Nacimiento <span class="required" style="color:#1565c0;">*</span></label>
-    <input type="date" id="cit-fecha-nac" class="form-control" onchange="actualizarEdadComputada(this)">
-  
-    <div style="margin-top: 6px; padding: 6px 10px; background: #f0f7ff; border-left: 3px solid #1565c0; border-radius: 6px; display: flex; align-items: flex-start; gap: 8px; box-shadow: 0 1px 3px rgba(0,0,0,0.03);">
-      <span style="font-size: 0.72rem; color: #1a365d; line-height: 1.35; font-weight: 500;">
-       <span>Seleccione primero el <strong>Año</strong>, luego el <strong>Mes</strong> y el <strong>Día</strong> en el desplegable.</span>
-    </div>
+                  <div class="form-group">
+                    <label class="form-label">Fecha de Nacimiento <span class="required" style="color:#1565c0;">*</span></label>
+                    <div style="position: relative; display: flex; align-items: center; gap: 8px;">
+                      <input type="date" id="cit-fecha-nac" class="form-control" onchange="actualizarEdadComputada(this)" style="flex: 1; min-width: 0;">
+                      <button type="button" id="btn-info-calendario" 
+                        onclick="toggleTooltipCalendario(event)" 
+                        title="Indicación sobre el calendario"
+                        aria-label="Ayuda para seleccionar fecha"
+                        style="width: 34px; height: 34px; min-width: 34px; border-radius: 50%; border: 1.5px solid #1565c0; background: #e8f0fe; color: #1565c0; display: inline-flex; align-items: center; justify-content: center; cursor: pointer; padding: 0; transition: all 0.2s ease; box-shadow: 0 1px 3px rgba(0,0,0,0.08);"
+                        onmouseover="this.style.background='#1565c0'; this.style.color='#ffffff';"
+                        onmouseout="if(!document.getElementById('popover-info-calendario') || document.getElementById('popover-info-calendario').style.display !== 'block'){ this.style.background='#e8f0fe'; this.style.color='#1565c0'; }">
+                        <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+                          <circle cx="12" cy="12" r="10"></circle>
+                          <line x1="12" y1="16" x2="12" y2="12"></line>
+                          <line x1="12" y1="8" x2="12.01" y2="8"></line>
+                        </svg>
+                      </button>
 
-    <span class="error-msg" id="cit-fecha-nac-err">Seleccione su fecha de nacimiento.</span>
-  </div>
-</div>
+                      <!-- Popover flotante informativo del calendario -->
+                      <div id="popover-info-calendario" style="display: none; position: absolute; top: calc(100% + 8px); right: 0; width: 245px; background: #ffffff; border: 1px solid #bfdbfe; border-radius: 8px; padding: 10px 12px; box-shadow: 0 6px 18px rgba(15, 23, 42, 0.15); z-index: 100; text-align: left; animation: fadeInPopover 0.2s ease-out;">
+                        <div style="display: flex; align-items: flex-start; gap: 8px;">
+                          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#1565c0" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" style="flex-shrink: 0; margin-top: 2px;">
+                            <circle cx="12" cy="12" r="10"></circle>
+                            <line x1="12" y1="16" x2="12" y2="12"></line>
+                            <line x1="12" y1="8" x2="12.01" y2="8"></line>
+                          </svg>
+                          <div style="font-size: 0.78rem; color: #1e293b; line-height: 1.35;">
+                            Seleccione primero el <strong>Año</strong>, luego el <strong>Mes</strong> y el <strong>Día</strong> en el desplegable.
+                          </div>
+                          <button type="button" onclick="cerrarTooltipCalendario(event)" style="background: none; border: none; padding: 0; cursor: pointer; color: #94a3b8; font-size: 16px; line-height: 1; margin-left: auto;" title="Cerrar">&times;</button>
+                        </div>
+                      </div>
+                    </div>
+
+                    <span class="error-msg" id="cit-fecha-nac-err">Seleccione su fecha de nacimiento.</span>
+                  </div>
+                </div>
                 <div class="col-md-2">
                   <div class="form-group">
                     <label class="form-label">Edad <span class="required" style="color:#1565c0;">*</span></label>
@@ -757,9 +796,11 @@
                         </td>
                         <td>
                           <input type="text" id="cit-profesion" class="form-control" placeholder="Ej. Docente">
+                          <span class="error-msg" id="cit-profesion-err">Solo se permiten letras.</span>
                         </td>
                         <td>
                           <input type="text" id="cit-ocupacion" class="form-control" placeholder="Ej. Comerciante">
+                          <span class="error-msg" id="cit-ocupacion-err">Solo se permiten letras.</span>
                         </td>
                       </tr>
                     </tbody>
@@ -914,11 +955,6 @@
           </div>
           <div class="form-body">
             <div class="banner-error" id="err-paso3" style="display:none;">
-              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
-                <path d="M10.29 3.86L1.82 18a2 2 0 0 0 1.71 3h16.94a2 2 0 0 0 1.71-3L13.71 3.86a2 2 0 0 0-3.42 0z" />
-                <line x1="12" y1="9" x2="12" y2="13" />
-                <line x1="12" y1="17" x2="12.01" y2="17" />
-              </svg>
               <div><strong>Por favor corrija los siguientes campos:</strong>
                 <ul id="err-paso3-lista"></ul>
               </div>
@@ -1714,6 +1750,57 @@
       if (elementoModal && window.bootstrap) {
         instanciaModal = new bootstrap.Modal(elementoModal);
       }
+      // Validación en tiempo real: nombres, apellidos, profesión y ocupación solo letras
+      const camposSoloTexto = [
+        'cit-primer-nombre',
+        'cit-segundo-nombre',
+        'cit-primer-apellido',
+        'cit-segundo-apellido',
+        'cit-profesion',
+        'cit-ocupacion'
+      ];
+
+      camposSoloTexto.forEach(id => {
+        const campo = document.getElementById(id);
+        if (!campo) return;
+        const errSpan = document.getElementById(id + '-err');
+
+        campo.addEventListener('input', function () {
+          const val = this.value;
+          // Detectar si ingresó algún caracter no permitido (números, símbolos, etc.)
+          const tieneCaracteresInvalidos = /[^a-zA-ZáéíóúÁÉÍÓÚñÑüÜ\s]/.test(val);
+
+          if (tieneCaracteresInvalidos) {
+            // Filtrar y eliminar números y caracteres no permitidos
+            this.value = val.replace(/[^a-zA-ZáéíóúÁÉÍÓÚñÑüÜ\s]/g, '');
+            if (errSpan) {
+              errSpan.textContent = 'Solo se permiten letras.';
+              errSpan.classList.add('visible');
+              errSpan.style.display = 'block';
+            }
+            this.classList.add('invalid');
+          } else {
+            // Si el campo quedó limpio o válido
+            if (this.id === 'cit-primer-nombre' || this.id === 'cit-primer-apellido') {
+              if (this.value.trim().length >= 2) {
+                if (errSpan) {
+                  errSpan.classList.remove('visible');
+                  errSpan.style.display = 'none';
+                }
+                this.classList.remove('invalid');
+              }
+            } else {
+              // Campos opcionales: si no hay caracteres inválidos, se quita el error
+              if (errSpan) {
+                errSpan.classList.remove('visible');
+                errSpan.style.display = 'none';
+              }
+              this.classList.remove('invalid');
+            }
+          }
+        });
+      });
+
       // Primera letra de cada palabra en mayúscula en los campos de texto del registro
       document.addEventListener('input', function (e) {
         const el = e.target;
@@ -1722,6 +1809,59 @@
         el.value = el.value.replace(/(^|\s)(\p{Ll})/gu, (m, sp, c) => sp + c.toUpperCase());
         el.setSelectionRange(pos, pos);
       });
+    });
+
+    /* ── Indicación informativa del calendario de fecha de nacimiento ── */
+    function toggleTooltipCalendario(e) {
+      if (e) {
+        e.preventDefault();
+        e.stopPropagation();
+      }
+      const popover = document.getElementById('popover-info-calendario');
+      const btn = document.getElementById('btn-info-calendario');
+      if (!popover) return;
+      const isVisible = popover.style.display === 'block';
+      if (isVisible) {
+        popover.style.display = 'none';
+        if (btn) {
+          btn.style.background = '#e8f0fe';
+          btn.style.color = '#1565c0';
+        }
+      } else {
+        popover.style.display = 'block';
+        if (btn) {
+          btn.style.background = '#1565c0';
+          btn.style.color = '#ffffff';
+        }
+      }
+    }
+
+    function cerrarTooltipCalendario(e) {
+      if (e) {
+        e.preventDefault();
+        e.stopPropagation();
+      }
+      const popover = document.getElementById('popover-info-calendario');
+      const btn = document.getElementById('btn-info-calendario');
+      if (popover) popover.style.display = 'none';
+      if (btn) {
+        btn.style.background = '#e8f0fe';
+        btn.style.color = '#1565c0';
+      }
+    }
+
+    document.addEventListener('click', function (e) {
+      const popover = document.getElementById('popover-info-calendario');
+      const btn = document.getElementById('btn-info-calendario');
+      if (popover && popover.style.display === 'block') {
+        if (!popover.contains(e.target) && (!btn || !btn.contains(e.target))) {
+          popover.style.display = 'none';
+          if (btn) {
+            btn.style.background = '#e8f0fe';
+            btn.style.color = '#1565c0';
+          }
+        }
+      }
     });
 
     /* ── Confirmación al avanzar: primero se valida el paso y, si está correcto, se pide confirmar ── */
@@ -1821,8 +1961,25 @@
       document.getElementById('res-est-codigo').textContent = r.case_number;
       document.getElementById('res-est-tipo').textContent = r.tipo;
       document.getElementById('res-est-fecha').textContent = r.fecha;
-      document.getElementById('res-est-estado').textContent = r.estatus;
-      document.getElementById('res-est-estado').style.color = r.cerrado ? '#2e7d32' : '#1565c0';
+
+      // Verificar si está en revisión (por código IN_REVIEW o por texto)
+      const estatusNorm = (r.estatus || '').toLowerCase().normalize('NFD').replace(/[\u0300-\u036f]/g, '');
+      const esEnRevision = (r.estatus_codigo === 'IN_REVIEW') || estatusNorm.includes('revision');
+
+      // Tipos de trámites que requieren o admiten evidencias/documentos (todos excepto la sugerencia)
+      const tipoNorm = (r.tipo || '').toLowerCase().normalize('NFD').replace(/[\u0300-\u036f]/g, '');
+      const tipoCod = (r.tipo_codigo || '').toUpperCase();
+      const requiereEvidencias = (tipoCod !== 'SUGGESTION') && !tipoNorm.includes('sugerencia');
+
+      const elEstado = document.getElementById('res-est-estado');
+      if (esEnRevision && requiereEvidencias) {
+        elEstado.innerHTML = `${r.estatus} <span style="font-size:0.82rem; font-weight:normal; color:#c62828; display:inline-block; margin-top:2px;">— Debe asistir a la sede de la Contraloría a consignar las evidencias</span>`;
+        elEstado.style.color = '#1565c0';
+      } else {
+        elEstado.textContent = r.estatus;
+        elEstado.style.color = r.cerrado ? '#2e7d32' : '#1565c0';
+      }
+
       containerRes.style.display = 'block';
     }
 
@@ -1875,6 +2032,22 @@
         contEvidenciaWrapper.style.display = 'none';
         if (contEvidenciaNoAplica) contEvidenciaNoAplica.style.display = 'block';
         camposRequeridosCiudadano.forEach(el => el.style.display = 'none');
+      }
+
+      const tipoNombres = {
+        'denuncia': 'Denuncia',
+        'queja': 'Queja',
+        'reclamo': 'Reclamo',
+        'peticion': 'Petición',
+        'sugerencia': 'Sugerencia'
+      };
+      const bannerTramite = document.getElementById('banner-tramite-seleccionado');
+      const textoTramite = document.getElementById('texto-tramite-seleccionado');
+      if (bannerTramite && textoTramite && tipoNombres[tipo]) {
+        textoTramite.textContent = tipoNombres[tipo];
+        if (typeof pasoActual !== 'undefined' && pasoActual > 1) {
+          bannerTramite.style.display = 'block';
+        }
       }
 
       if (typeof renderSecuenciaEvidencias === 'function') {

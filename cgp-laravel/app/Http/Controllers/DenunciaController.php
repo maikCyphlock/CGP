@@ -242,15 +242,17 @@ class DenunciaController extends Controller
             ->join('claim_type as t', 't.id', '=', 'c.claim_type_id')
             ->join('case_status as s', 's.id', '=', 'c.status_id')
             ->where(fn ($q) => $q->where('c.case_number', $codigo)->orWhere('c.tracking_code', strtolower($codigo)))
-            ->first(['c.case_number', 't.name as tipo', 'c.created_at', 's.name as estatus', 's.is_terminal']);
+            ->first(['c.case_number', 't.name as tipo', 't.code as tipo_codigo', 'c.created_at', 's.name as estatus', 's.code as estatus_codigo', 's.is_terminal']);
 
         abort_unless($case, 404, 'No existe un trámite con ese código.');
 
         return response()->json([
             'case_number' => $case->case_number,
             'tipo' => $case->tipo,
+            'tipo_codigo' => $case->tipo_codigo,
             'fecha' => date('d/m/Y', strtotime($case->created_at)),
             'estatus' => $case->estatus,
+            'estatus_codigo' => $case->estatus_codigo,
             'cerrado' => (bool) $case->is_terminal,
         ]);
     }
