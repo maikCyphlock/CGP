@@ -21,7 +21,7 @@ Route::get('/', function () {
         ->join('cms_content_type as t', 't.id', '=', 'c.content_type_id')
         ->where('c.published', true)
         ->orderByDesc('c.published_at')
-        ->get(['t.code', 'c.title', 'c.body', 'c.published_at', 'c.image_path'])
+        ->get(['t.code', 'c.title', 'c.body', 'c.published_at'])
         ->groupBy('code');
 
     // El cuerpo se guarda como Markdown; se descarta el HTML crudo y los enlaces peligrosos.
@@ -34,13 +34,6 @@ Route::get('/', function () {
         'vision' => $html($cms->get('VISION')?->first()),
     ]);
 });
-
-// Imágenes del CMS: solo las que están en uso por un contenido publicado.
-Route::get('/media/cms/{archivo}', function (string $archivo) {
-    abort_unless(DB::table('cms_content')->where('image_path', $archivo)->where('published', true)->exists(), 404);
-
-    return Storage::response("cms/$archivo", null, ['Cache-Control' => 'public, max-age=86400']);
-})->where('archivo', '[A-Za-z0-9]{20,60}\.(jpg|jpeg|png|webp)')->name('media.cms');
 
 Route::get('/denuncias', [DenunciaController::class, 'create'])->name('denuncias.create');
 Route::post('/denuncias', [DenunciaController::class, 'store'])->name('denuncias.store');
@@ -135,7 +128,6 @@ Route::middleware(['auth', 'modulo:admin'])->prefix('admin')->name('admin.')->gr
     Route::middleware('permiso:CMS,read')->group(function () {
         Route::get('/contenidos', [ContenidoController::class, 'index'])->name('contenidos.index');
         Route::get('/contenidos/nuevo', [ContenidoController::class, 'create'])->middleware('permiso:CMS,write')->name('contenidos.create');
-        Route::get('/contenidos/imagen/{archivo}', [ContenidoController::class, 'imagen'])->where('archivo', '[A-Za-z0-9]{20,60}\.(jpg|jpeg|png|webp)')->name('contenidos.imagen');
         Route::get('/contenidos/{id}', [ContenidoController::class, 'edit'])->name('contenidos.edit');
     });
     Route::middleware('permiso:CMS,write')->group(function () {

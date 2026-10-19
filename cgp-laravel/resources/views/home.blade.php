@@ -455,7 +455,6 @@
         <div class="col-md-4">
           <div class="noticia-card h-100">
             <div class="noticia-top"></div>
-            @if ($n->image_path)<img src="{{ route('media.cms', $n->image_path) }}" alt="" loading="lazy" style="width:100%;aspect-ratio:16/9;object-fit:cover;display:block">@endif
             <div class="noticia-body">
               <div class="noticia-fecha">{{ \Illuminate\Support\Carbon::parse($n->published_at)->locale('es')->translatedFormat('j \\d\\e F, Y') }}</div>
               <h5>{{ $n->title }}</h5>
