@@ -32,7 +32,7 @@
 @endphp
 <a href="{{ route('admin.contenidos.index') }}" class="btn btn-sm btn-outline-secondary mb-3"><i class="fa-solid fa-arrow-left me-1"></i> Volver</a>
 
-<form method="POST" id="ed-form" enctype="multipart/form-data" action="{{ $item ? route('admin.contenidos.update', $item->id) : route('admin.contenidos.store') }}">
+<form method="POST" id="ed-form" action="{{ $item ? route('admin.contenidos.update', $item->id) : route('admin.contenidos.store') }}">
   @csrf
   <fieldset @disabled(! $puedeEscribir)>
   <div class="row g-4">
@@ -60,17 +60,6 @@
           <textarea name="body" id="ed-cuerpo" hidden>{{ old('body', $item->body ?? '') }}</textarea>
           <div class="d-flex justify-content-between small mt-1"><span class="text-danger" id="ed-cuerpo-error" hidden>Escribe el contenido.</span><span class="text-muted ms-auto" id="ed-cuenta"></span></div>
 
-          <div class="mt-4">
-            <label class="form-label fw-semibold small">Imagen <span class="text-muted fw-normal">(opcional · JPG, PNG o WebP · máx. 4 MB · se muestra en las noticias)</span></label>
-            @if ($item?->image_path)
-              <div class="d-flex align-items-center gap-3 mb-2" id="ed-img-actual">
-                <img src="{{ route('admin.contenidos.imagen', $item->image_path) }}" alt="" style="height:64px;border-radius:6px;border:1px solid var(--border)">
-                <label class="small text-danger mb-0"><input type="checkbox" name="quitar_imagen" value="1" class="form-check-input me-1">Quitar imagen</label>
-              </div>
-            @endif
-            <input type="file" name="imagen" id="ed-img" class="form-control" accept="image/jpeg,image/png,image/webp">
-            <div class="small text-danger mt-1" id="ed-img-error" hidden></div>
-          </div>
 
           @if ($puedeEscribir)
             <div class="mt-4 d-flex align-items-center gap-3">
@@ -91,7 +80,6 @@
       <div class="alert alert-secondary small mb-4" id="pv-ninguna" hidden>Este tipo de contenido todavía no tiene un lugar en el portal; se guarda pero no se muestra.</div>
       <div class="pv-card mb-4" id="pv-noticia">
         <div class="top"></div>
-        <img id="pv-img" alt="" style="width:100%;aspect-ratio:16/9;object-fit:cover;display:block" @if ($item?->image_path) src="{{ route('admin.contenidos.imagen', $item->image_path) }}" @else hidden @endif>
         <div class="cuerpo">
           <div class="fecha">{{ now()->timezone(config('app.timezone'))->locale('es')->translatedFormat('j \d\e F, Y') }}</div>
           <h5 id="pv-titulo"></h5>
@@ -100,10 +88,10 @@
       </div>
 
       <div class="card border-0 shadow-sm">
-        <div class="card-header bg-white fw-bold text-primary-cgp">Versiones anteriores</div>
+        <div class="card-header bg-white fw-bold text-primary-cgp">Versiones anteriores <span class="text-muted fw-normal small">(texto antes de cada cambio)</span></div>
         <ul class="list-group list-group-flush small">
           @forelse ($versiones as $v)
-            <li class="list-group-item"><div class="fw-semibold">{{ $v->title }}</div><div class="text-muted">{{ $v->autor }} · {{ \Illuminate\Support\Carbon::parse($v->modified_at)->timezone(config('app.timezone'))->format('d/m/Y h:i a') }}</div></li>
+            <li class="list-group-item"><div class="fw-semibold"><span class="text-muted fw-normal">Título anterior:</span> {{ $v->title }}</div><div class="text-muted">{{ $v->autor }} · {{ \Illuminate\Support\Carbon::parse($v->modified_at)->timezone(config('app.timezone'))->format('d/m/Y h:i a') }}</div></li>
           @empty
             <li class="list-group-item text-muted">Todavía no se ha editado.</li>
           @endforelse
@@ -165,15 +153,6 @@
     toastui.Editor.factory({ el: $('ed-editor'), viewer: true, initialValue: cuerpo.value });
   }
 
-  // Imagen: valida el peso antes de enviar y la muestra en la vista previa.
-  $('ed-img').addEventListener('change', e => {
-    const f = e.target.files[0], err = $('ed-img-error');
-    err.hidden = true;
-    if (!f) return;
-    if (!/^image\/(jpeg|png|webp)$/.test(f.type)) { err.textContent = 'Debe ser JPG, PNG o WebP.'; err.hidden = false; e.target.value = ''; return; }
-    if (f.size > 4 * 1024 * 1024) { err.textContent = 'La imagen pesa ' + (f.size / 1048576).toFixed(1) + ' MB; el máximo es 4 MB.'; err.hidden = false; e.target.value = ''; return; }
-    $('pv-img').src = URL.createObjectURL(f); $('pv-img').hidden = false; marcar();
-  });
 
   $('ed-form').addEventListener('submit', e => {
     if (editor) cuerpo.value = editor.getMarkdown();
