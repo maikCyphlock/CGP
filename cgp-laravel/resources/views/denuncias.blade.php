@@ -1019,7 +1019,7 @@
                         <label class="form-label">
                           Fecha de Aprobación <span class="required" style="color:#1565c0;">*</span>
                         </label>
-                        <input type="date" id="proy-fecha" class="form-control">
+                        <input type="date" id="proy-fecha" class="form-control" max="{{ date('Y-m-d') }}" onchange="validarFechaProyecto(this)" oninput="validarFechaProyecto(this)">
                         <span class="error-msg" id="proy-fecha-err">Seleccione la fecha de aprobación.</span>
                       </div>
                     </div>
@@ -1773,16 +1773,31 @@
           if (tieneCaracteresInvalidos) {
             // Filtrar y eliminar números y caracteres no permitidos
             this.value = val.replace(/[^a-zA-ZáéíóúÁÉÍÓÚñÑüÜ\s]/g, '');
+            this.dataset.errorLetras = '1';
             if (errSpan) {
-              errSpan.textContent = 'Solo se permiten letras.';
+              errSpan.textContent = 'No se aceptan números ni signos especiales. Solo se permiten letras.';
               errSpan.classList.add('visible');
               errSpan.style.display = 'block';
             }
             this.classList.add('invalid');
+
+            if (this._timerErrorLetras) clearTimeout(this._timerErrorLetras);
+            this._timerErrorLetras = setTimeout(() => {
+              delete this.dataset.errorLetras;
+              const req = (this.id === 'cit-primer-nombre' || this.id === 'cit-primer-apellido');
+              if (this.value.trim().length >= (req ? 2 : 0)) {
+                if (errSpan && errSpan.textContent.includes('No se aceptan')) {
+                  errSpan.classList.remove('visible');
+                  errSpan.style.display = 'none';
+                  this.classList.remove('invalid');
+                }
+              }
+            }, 3500);
           } else {
-            // Si el campo quedó limpio o válido
+            // Si el campo tiene contenido válido suficiente, se quita la alerta
             if (this.id === 'cit-primer-nombre' || this.id === 'cit-primer-apellido') {
               if (this.value.trim().length >= 2) {
+                delete this.dataset.errorLetras;
                 if (errSpan) {
                   errSpan.classList.remove('visible');
                   errSpan.style.display = 'none';
@@ -1790,7 +1805,7 @@
                 this.classList.remove('invalid');
               }
             } else {
-              // Campos opcionales: si no hay caracteres inválidos, se quita el error
+              delete this.dataset.errorLetras;
               if (errSpan) {
                 errSpan.classList.remove('visible');
                 errSpan.style.display = 'none';
@@ -1801,6 +1816,50 @@
         });
       });
 
+      // Validación y sanitización reactiva en tiempo real: nombres y apellidos del señalado (Paso 3)
+      document.addEventListener('input', function (e) {
+        const el = e.target;
+        if (!el || !el.matches) return;
+        if (el.matches('[data-campo="pn-nombres"], [data-campo="jp-nombres"], [data-campo="pj-representante"]')) {
+          const val = el.value;
+          const tieneCaracteresInvalidos = /[^a-zA-ZáéíóúÁÉÍÓÚñÑüÜ\s,]/.test(val);
+          const grupo = el.closest('.form-group');
+          const errSpan = grupo ? (grupo.querySelector('.error-msg[data-campo-err]') || grupo.querySelector('.error-msg')) : null;
+
+          if (tieneCaracteresInvalidos) {
+            el.value = val.replace(/[^a-zA-ZáéíóúÁÉÍÓÚñÑüÜ\s,]/g, '');
+            el.dataset.errorLetras = '1';
+            if (errSpan) {
+              errSpan.textContent = 'No se aceptan números ni signos especiales. Solo se permiten letras.';
+              errSpan.classList.add('visible');
+              errSpan.style.display = 'block';
+            }
+            el.classList.add('invalid');
+
+            if (el._timerErrorLetras) clearTimeout(el._timerErrorLetras);
+            el._timerErrorLetras = setTimeout(() => {
+              delete el.dataset.errorLetras;
+              if (el.value.trim().length >= 3 || !el.classList.contains('campo-dinamico-req')) {
+                if (errSpan && errSpan.textContent.includes('No se aceptan')) {
+                  errSpan.classList.remove('visible');
+                  errSpan.style.display = 'none';
+                  el.classList.remove('invalid');
+                }
+              }
+            }, 3500);
+          } else {
+            if (el.value.trim().length >= 3 || (!el.classList.contains('campo-dinamico-req') && el.value.trim().length === 0)) {
+              delete el.dataset.errorLetras;
+              if (errSpan && errSpan.textContent.includes('No se aceptan')) {
+                errSpan.classList.remove('visible');
+                errSpan.style.display = 'none';
+                el.classList.remove('invalid');
+              }
+            }
+          }
+        }
+      });
+
       // Primera letra de cada palabra en mayúscula en los campos de texto del registro
       document.addEventListener('input', function (e) {
         const el = e.target;
@@ -1809,7 +1868,45 @@
         el.value = el.value.replace(/(^|\s)(\p{Ll})/gu, (m, sp, c) => sp + c.toUpperCase());
         el.setSelectionRange(pos, pos);
       });
+
+      // Configuración de fecha máxima para la fecha del proyecto (no futura)
+      const proyFecha = document.getElementById('proy-fecha');
+      if (proyFecha) {
+        const dHoy = new Date();
+        const hoy = dHoy.getFullYear() + '-' + String(dHoy.getMonth() + 1).padStart(2, '0') + '-' + String(dHoy.getDate()).padStart(2, '0');
+        proyFecha.max = hoy;
+      }
     });
+
+    /* ── Validación en tiempo real para la fecha de aprobación del proyecto (no futura) ── */
+    function validarFechaProyecto(input) {
+      if (!input) return;
+      const err = document.getElementById('proy-fecha-err');
+      const val = input.value;
+      if (!val) {
+        if (err) {
+          err.textContent = 'Seleccione la fecha de aprobación.';
+        }
+        return;
+      }
+      const dHoy = new Date();
+      const hoy = dHoy.getFullYear() + '-' + String(dHoy.getMonth() + 1).padStart(2, '0') + '-' + String(dHoy.getDate()).padStart(2, '0');
+      if (val > hoy) {
+        if (err) {
+          err.textContent = 'La fecha de aprobación no puede ser una fecha futura.';
+          err.classList.add('visible');
+          err.style.display = 'block';
+        }
+        input.classList.add('invalid');
+      } else {
+        if (err) {
+          err.textContent = 'Seleccione la fecha de aprobación.';
+          err.classList.remove('visible');
+          err.style.display = 'none';
+        }
+        input.classList.remove('invalid');
+      }
+    }
 
     /* ── Indicación informativa del calendario de fecha de nacimiento ── */
     function toggleTooltipCalendario(e) {

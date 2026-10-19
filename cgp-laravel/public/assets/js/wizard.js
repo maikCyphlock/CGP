@@ -1047,9 +1047,21 @@ function validarPaso(numeroPaso) {
                 errores.push('Denominación del Proyecto');
                 marcarError('proy-nombre', 'proy-nombre-err');
             }
-            if (!document.getElementById('proy-fecha').value) {
+            var valFechaProy = document.getElementById('proy-fecha').value;
+            if (!valFechaProy) {
                 errores.push('Fecha de Aprobación del Proyecto');
+                var errF = document.getElementById('proy-fecha-err');
+                if (errF) errF.textContent = 'Seleccione la fecha de aprobación.';
                 marcarError('proy-fecha', 'proy-fecha-err');
+            } else {
+                var dHoy = new Date();
+                var hoy = dHoy.getFullYear() + '-' + String(dHoy.getMonth() + 1).padStart(2, '0') + '-' + String(dHoy.getDate()).padStart(2, '0');
+                if (valFechaProy > hoy) {
+                    errores.push('Fecha de Aprobación del Proyecto (no puede ser una fecha futura)');
+                    var errF = document.getElementById('proy-fecha-err');
+                    if (errF) errF.textContent = 'La fecha de aprobación no puede ser una fecha futura.';
+                    marcarError('proy-fecha', 'proy-fecha-err');
+                }
             }
             if (!/^\d{1,3}(\.\d{3})*(,\d{1,2})?$/.test(document.getElementById('proy-monto').value.trim())) {
                 errores.push('Monto del Proyecto');
@@ -1410,6 +1422,38 @@ function validarBloquesSenaladoDinamicos() {
         if (msg) {
             campo.classList.add('invalid');
             errores.push(msg);
+        }
+    });
+
+    // Validación de nombres y apellidos del señalado (solo letras)
+    var reSoloLetrasSenalado = /^[a-zA-ZáéíóúÁÉÍÓÚñÑüÜ\s,]+$/;
+    document.querySelectorAll('#lista-senalados [data-campo="pn-nombres"], #lista-senalados [data-campo="jp-nombres"]').forEach(function (campo) {
+        var valor = (campo.value || '').trim();
+        if (valor && !reSoloLetrasSenalado.test(valor)) {
+            campo.classList.add('invalid');
+            campo.classList.remove('valid');
+            var grupo = campo.closest('.form-group');
+            var err = grupo ? grupo.querySelector('.error-msg[data-campo-err]') : null;
+            if (err) {
+                err.textContent = 'Solo se permiten letras.';
+                err.classList.add('visible');
+            }
+            errores.push('Apellidos y Nombres del Señalado (solo se permiten letras)');
+        }
+    });
+
+    document.querySelectorAll('#lista-senalados [data-campo="pj-representante"]').forEach(function (campo) {
+        var valor = (campo.value || '').trim();
+        if (valor && !reSoloLetrasSenalado.test(valor)) {
+            campo.classList.add('invalid');
+            campo.classList.remove('valid');
+            var grupo = campo.closest('.form-group');
+            var err = grupo ? grupo.querySelector('.error-msg[data-campo-err]') : null;
+            if (err) {
+                err.textContent = 'Solo se permiten letras.';
+                err.classList.add('visible');
+            }
+            errores.push('Representante Legal del Señalado (solo se permiten letras)');
         }
     });
 
@@ -2098,7 +2142,16 @@ var REGLAS_VIVO = {
     'cit-direccion': { req: true, check: msgMinimo(10) },
     'sen-ubicacion': { req: true, check: msgMinimo(5) },
     'proy-nombre': { req: true, check: msgMinimo(4) },
-    'proy-fecha': { req: true },
+    'proy-fecha': {
+        req: true,
+        check: function (v) {
+            if (!v) return 'Seleccione la fecha de aprobación.';
+            var dHoy = new Date();
+            var hoy = dHoy.getFullYear() + '-' + String(dHoy.getMonth() + 1).padStart(2, '0') + '-' + String(dHoy.getDate()).padStart(2, '0');
+            if (v > hoy) return 'La fecha de aprobación no puede ser una fecha futura.';
+            return '';
+        }
+    },
     'proy-monto': {
         req: true,
         check: function (v, final) {
@@ -2155,7 +2208,11 @@ function obtenerAvisoVivo(campo) {
     }
     var grupo = campo.closest('.form-group');
     if (!grupo) return null;
-    var vivo = grupo.querySelector('.error-msg[data-vivo]');
+    if (campo.dataset && campo.dataset.campo) {
+        var errDinamico = grupo.querySelector('.error-msg[data-campo-err="' + campo.dataset.campo + '"]');
+        if (errDinamico) return errDinamico;
+    }
+    var vivo = grupo.querySelector('.error-msg[data-vivo]') || grupo.querySelector('.error-msg');
     if (!vivo) {
         vivo = document.createElement('span');
         vivo.className = 'error-msg';
@@ -2167,18 +2224,59 @@ function obtenerAvisoVivo(campo) {
 
 /** Muestra u oculta el aviso de un campo. mensaje: null = válido; '' = mensaje por defecto. */
 function mostrarEstadoVivo(campo, mensaje) {
+    if (campo.dataset && campo.dataset.errorLetras === '1' && mensaje === null) {
+        return; // Preservar aviso de letras mientras esté activo el temporizador
+    }
     var err = obtenerAvisoVivo(campo);
     if (err && err.dataset.orig === undefined) err.dataset.orig = err.textContent;
     if (mensaje === null) {
         campo.classList.remove('invalid');
-        if (err) err.classList.remove('visible');
+        if (err) {
+            err.classList.remove('visible');
+            err.style.display = 'none';
+        }
         return;
     }
     campo.classList.add('invalid');
     if (err) {
         err.textContent = mensaje || err.dataset.orig || 'Revise este campo.';
         err.classList.add('visible');
+        err.style.display = 'block';
     }
+}
+
+/** Sanitiza campos que solo admiten letras y muestra el aviso explicativo */
+function aplicarSanitizacionSoloLetras(campo, permitirComa) {
+    var regexInvalido = permitirComa ? /[^a-zA-ZáéíóúÁÉÍÓÚñÑüÜ\s,]/ : /[^a-zA-ZáéíóúÁÉÍÓÚñÑüÜ\s]/;
+    var regexLimpieza = permitirComa ? /[^a-zA-ZáéíóúÁÉÍÓÚñÑüÜ\s,]/g : /[^a-zA-ZáéíóúÁÉÍÓÚñÑüÜ\s]/g;
+    var val = campo.value;
+
+    if (regexInvalido.test(val)) {
+        campo.value = val.replace(regexLimpieza, '');
+        campo.dataset.errorLetras = '1';
+
+        mostrarEstadoVivo(campo, 'No se aceptan números ni signos especiales. Solo se permiten letras.');
+
+        if (campo._timerErrorLetras) clearTimeout(campo._timerErrorLetras);
+        campo._timerErrorLetras = setTimeout(function () {
+            delete campo.dataset.errorLetras;
+            var vActual = (campo.value || '').trim();
+            var min = campo.classList.contains('campo-dinamico-req') ? 3 : 2;
+            if (vActual.length >= min || (!campo.classList.contains('campo-dinamico-req') && vActual.length === 0)) {
+                mostrarEstadoVivo(campo, null);
+            }
+        }, 3500);
+        return true;
+    } else {
+        var vActual = (campo.value || '').trim();
+        var min = campo.classList.contains('campo-dinamico-req') ? 3 : 2;
+        if (vActual.length >= min) {
+            if (campo._timerErrorLetras) clearTimeout(campo._timerErrorLetras);
+            delete campo.dataset.errorLetras;
+            mostrarEstadoVivo(campo, null);
+        }
+    }
+    return false;
 }
 
 /** Evalúa un campo y actualiza su aviso. alSalir: true al perder el foco o cambiar el valor. */
@@ -2187,6 +2285,9 @@ function validarCampoVivo(campo, alSalir) {
     var dinamico = campo.closest && campo.closest('#lista-senalados');
 
     if (dinamico) {
+        if (campo.dataset.campo === 'pn-nombres' || campo.dataset.campo === 'jp-nombres' || campo.dataset.campo === 'pj-representante') {
+            if (aplicarSanitizacionSoloLetras(campo, true)) return;
+        }
         var opcional = REGLAS_SENALADO_OPCIONAL[campo.dataset.campo];
         if (opcional) {
             mostrarEstadoVivo(campo, v ? (opcional(v, alSalir) || null) : null);
@@ -2195,6 +2296,11 @@ function validarCampoVivo(campo, alSalir) {
             else mostrarEstadoVivo(campo, (alSalir && v.length < 3) ? 'Debe tener al menos 3 caracteres.' : null);
         }
         return;
+    }
+
+    var camposCiudadanoTexto = ['cit-primer-nombre', 'cit-segundo-nombre', 'cit-primer-apellido', 'cit-segundo-apellido', 'cit-profesion', 'cit-ocupacion'];
+    if (camposCiudadanoTexto.indexOf(campo.id) !== -1) {
+        if (aplicarSanitizacionSoloLetras(campo, false)) return;
     }
 
     var regla = REGLAS_VIVO[campo.id];

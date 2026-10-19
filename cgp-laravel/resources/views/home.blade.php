@@ -4,8 +4,9 @@
 
 @section('content')
   <style>
-    .mv-texto, .mv-texto p { font-size: 0.9rem; line-height: 1.75; opacity: 0.9; }
-    .mv-texto p { margin-bottom: 0.6rem; }
+    .mv-texto, .mv-texto p, .mv-texto * { font-size: 0.9rem; line-height: 1.75; opacity: 0.9; text-align: justify !important; }
+    .mv-texto p { margin-bottom: 0.6rem; text-align: justify !important; }
+    .mv-intro { text-align: justify !important; }
     .noticia-texto { font-size: 0.82rem; color: #666; line-height: 1.6; }
     .noticia-texto p { margin-bottom: 0.6rem; }
     .noticia-texto ul, .noticia-texto ol { padding-left: 1.2rem; }
@@ -136,7 +137,7 @@
           <div class="carousel-progress"><div class="carousel-progress-bar" id="carouselProgressBar"></div></div>
           <div class="carousel-track">
             <div class="carousel-slide active">
-              <img src="{{ asset('assets/img/portadahero.jpg') }}" alt="Equipo de la Contraloría del Municipio Páez">
+              <img src="{{ asset('assets/img/portadasinrayas.jpg') }}" alt="Equipo de la Contraloría del Municipio Páez">
             </div>
             <div class="carousel-slide">
               <img src="{{ asset('assets/img/reunion.jpeg') }}" alt="Reunión institucional">
@@ -369,9 +370,9 @@
         <div class="col-md-6">
           <div class="mv-card-blue h-100">
             <h3>Misión</h3>
-            <div class="mv-texto">@if ($mision){!! $mision->html !!}@else"Nuestro compromiso es apalancar el desarrollo continuado y sostenible del municipio Páez del estado Portuguesa potenciando una función de gobierno óptima, transparente y de calidad en el uso de los recursos financieros y bienes del municipio, fomentando sinergias positivas creadoras de valor que propendan a la total observancia del marco jurídico positivo Venezolano."@endif</div>
+            <div class="mv-texto" style="text-align: justify;">@if ($mision){!! $mision->html !!}@else"Nuestro compromiso es apalancar el desarrollo continuado y sostenible del municipio Páez del estado Portuguesa potenciando una función de gobierno óptima, transparente y de calidad en el uso de los recursos financieros y bienes del municipio, fomentando sinergias positivas creadoras de valor que propendan a la total observancia del marco jurídico positivo Venezolano."@endif</div>
             <h3 style="font-size:1.3rem; margin-top:24px;">Visión</h3>
-            <div class="mv-texto">@if ($vision){!! $vision->html !!}@else"A cinco años ejerceremos la rectoría total de la función contralora en el municipio Páez del estado Portuguesa, siendo referentes a nivel estadal y nacional. Visualizamos en cinco años una estructura funcional y normativa eficaz, eficiente, efectiva, pertinente y oportuna, que interactúa exitosamente a lo interno de la Alcaldía y Cámara del municipio Páez del estado Portuguesa y a lo externo con los diferentes estamentos del poder comunal en la búsqueda de la prestación de un servicio contralor sostenible y de calidad."@endif</div>
+            <div class="mv-texto" style="text-align: justify;">@if ($vision){!! $vision->html !!}@else"A cinco años ejerceremos la rectoría total de la función contralora en el municipio Páez del estado Portuguesa, siendo referentes a nivel estadal y nacional. Visualizamos en cinco años una estructura funcional y normativa eficaz, eficiente, efectiva, pertinente y oportuna, que interactúa exitosamente a lo interno de la Alcaldía y Cámara del municipio Páez del estado Portuguesa y a lo externo con los diferentes estamentos del poder comunal en la búsqueda de la prestación de un servicio contralor sostenible y de calidad."@endif</div>
           </div>
         </div>
         <div class="caja-ubicacion col-md-6">
