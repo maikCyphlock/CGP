@@ -2219,10 +2219,14 @@
       }
     }
 
+    let enviandoSolicitud = false;
+
     // Función que recoge ABSOLUTAMENTE TODOS los datos ingresados
     // Envía la solicitud al servidor; si se guarda, muestra la confirmación
     // con el número de expediente real y el enlace a la planilla en PDF.
     window.enviarSolicitud = async function() {
+      if (enviandoSolicitud) return;
+
       const acepta = document.getElementById('acepta-declaracion');
       if (acepta && !acepta.checked) {
         document.getElementById('acepta-decl-err').classList.add('visible');
@@ -2304,7 +2308,17 @@
       });
 
       const boton = document.getElementById('btn-enviar-solicitud');
-      if (boton) boton.disabled = true;
+      const textoOriginal = boton ? boton.innerHTML : 'Enviar Solicitud';
+
+      enviandoSolicitud = true;
+      if (boton) {
+        boton.disabled = true;
+        boton.innerHTML = `
+          <span class="spinner-border spinner-border-sm me-2" role="status" aria-hidden="true" style="vertical-align: -0.15em;"></span>
+          Enviando solicitud, espere...
+        `;
+      }
+
       try {
         const resp = await fetch(@json(route('denuncias.store')), {
           method: 'POST',
@@ -2318,6 +2332,11 @@
         if (!resp.ok) {
           const errores = json.errors ? Object.values(json.errors).flat() : [json.message || 'Error desconocido'];
           alert('No se pudo registrar la solicitud:\n\n• ' + errores.join('\n• '));
+          if (boton) {
+            boton.disabled = false;
+            boton.innerHTML = textoOriginal;
+          }
+          enviandoSolicitud = false;
           return;
         }
         document.getElementById('nro-expediente-display').textContent = json.case_number;
@@ -2327,8 +2346,11 @@
         mostrarConfirmacion();
       } catch (e) {
         alert('No se pudo conectar con el servidor. Intente de nuevo.');
-      } finally {
-        if (boton) boton.disabled = false;
+        if (boton) {
+          boton.disabled = false;
+          boton.innerHTML = textoOriginal;
+        }
+        enviandoSolicitud = false;
       }
     };
 

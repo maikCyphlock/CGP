@@ -168,11 +168,34 @@ class DenunciaController extends Controller
         $esConsulta = $d['tipo_tramite'] === 'denuncia' && ($d['es_consulta'] ?? false);
 
         $case = DB::transaction(function () use ($d, $c, $esConsulta, $request) {
+            $docTypeId = $this->catalogId('id_document_type', self::TIPOS_DOC[$c['tipo_doc']]);
+            $claimTypeId = $this->catalogId('claim_type', self::TIPOS_TRAMITE[$d['tipo_tramite']]);
+
+            // Verificación de duplicado reciente (Anti-doble clic / Spam / Idempotencia)
+            $existingCitizen = Citizen::where('id_doc_type_id', $docTypeId)
+                ->where('id_doc_number', $c['nro_doc'])
+                ->lockForUpdate()
+                ->first();
+
+            if ($existingCitizen) {
+                $duplicado = CaseFile::where('citizen_id', $existingCitizen->id)
+                    ->where('claim_type_id', $claimTypeId)
+                    ->where('created_at', '>=', now()->subMinutes(5))
+                    ->whereRaw('TRIM(narrative) = ?', [trim($d['narracion'])])
+                    ->first();
+
+                if ($duplicado) {
+                    abort(response()->json([
+                        'message' => 'Ya existe un trámite idéntico registrado recientemente con el expediente N° ' . $duplicado->case_number . '. Si se trató de un error de envío involuntario, no se preocupe: su solicitud original ya fue recibida exitosamente.',
+                    ], 422));
+                }
+            }
+
             // Si el ciudadano ya existe (misma cédula) se actualizan sus datos.
-            $citizen = Citizen::firstOrNew([
-                'id_doc_type_id' => $this->catalogId('id_document_type', self::TIPOS_DOC[$c['tipo_doc']]),
+            $citizen = ($existingCitizen ?? new Citizen([
+                'id_doc_type_id' => $docTypeId,
                 'id_doc_number' => $c['nro_doc'],
-            ])->fill([
+            ]))->fill([
                 'first_name' => trim($c['primer_nombre'].' '.($c['segundo_nombre'] ?? '')),
                 'last_name' => trim($c['primer_apellido'].' '.($c['segundo_apellido'] ?? '')),
                 'sex' => $c['sexo'],
