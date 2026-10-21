@@ -2247,6 +2247,27 @@
         });
       }
 
+      const citDocVal = val('cit-nro-doc').replace(/\D/g, '');
+      const citTipoVal = val('cit-tipo-doc');
+      for (const s of senalados) {
+        const c = s.campos || {};
+        const pnDoc = (c['pn-nro-doc'] || '').replace(/\D/g, '');
+        const pnTipo = (c['pn-tipo-doc'] || '').trim();
+        const jpDoc = (c['jp-nro-doc'] || '').replace(/\D/g, '');
+        const jpTipo = (c['jp-tipo-doc'] || '').trim();
+        const otDoc = (c['ot-documento'] || '').trim();
+        const otNum = otDoc.replace(/\D/g, '');
+
+        if (citDocVal && (
+          (pnDoc && pnDoc === citDocVal && (!pnTipo || pnTipo === citTipoVal)) ||
+          (jpDoc && jpDoc === citDocVal && (!jpTipo || jpTipo === citTipoVal)) ||
+          (otNum && otNum === citDocVal && !/^[JjGgCc]/.test(otDoc))
+        )) {
+          alert('Error en el formulario:\n\n• La persona o funcionario señalado no puede tener la misma cédula que el denunciante.');
+          return;
+        }
+      }
+
       const datos = {
         tipo_tramite: radio('tipo_tramite'),
         es_consulta: radio('tipo_tramite') === 'denuncia' && radio('es_consulta') === 'si',

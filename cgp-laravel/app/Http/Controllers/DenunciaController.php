@@ -132,6 +132,31 @@ class DenunciaController extends Controller
             'cual_instancia' => 'instancia',
         ]);
 
+        $v->after(function ($validator) use ($datos) {
+            $citNroDoc = preg_replace('/\D/', '', $datos['ciudadano']['nro_doc'] ?? '');
+            $citTipoDoc = $datos['ciudadano']['tipo_doc'] ?? '';
+            if ($citNroDoc !== '') {
+                foreach ($datos['senalados'] ?? [] as $index => $s) {
+                    $c = $s['campos'] ?? [];
+                    $pnNro = preg_replace('/\D/', '', $c['pn-nro-doc'] ?? '');
+                    $pnTipo = $c['pn-tipo-doc'] ?? '';
+                    if ($pnNro !== '' && $pnNro === $citNroDoc && (empty($pnTipo) || $pnTipo === $citTipoDoc)) {
+                        $validator->errors()->add("senalados.{$index}.campos.pn-nro-doc", 'La persona señalada no puede tener la misma cédula que el denunciante.');
+                    }
+                    $jpNro = preg_replace('/\D/', '', $c['jp-nro-doc'] ?? '');
+                    $jpTipo = $c['jp-tipo-doc'] ?? '';
+                    if ($jpNro !== '' && $jpNro === $citNroDoc && (empty($jpTipo) || $jpTipo === $citTipoDoc)) {
+                        $validator->errors()->add("senalados.{$index}.campos.jp-nro-doc", 'El juez de paz señalado no puede tener la misma cédula que el denunciante.');
+                    }
+                    $otDoc = trim($c['ot-documento'] ?? '');
+                    $otNro = preg_replace('/\D/', '', $otDoc);
+                    if ($otNro !== '' && $otNro === $citNroDoc && !preg_match('/^[JjGgCc]/', $otDoc)) {
+                        $validator->errors()->add("senalados.{$index}.campos.ot-documento", 'El documento del señalado no puede coincidir con la cédula del denunciante.');
+                    }
+                }
+            }
+        });
+
         $request->validate([
             'evidencias' => 'array',
             'evidencias.*' => 'array',

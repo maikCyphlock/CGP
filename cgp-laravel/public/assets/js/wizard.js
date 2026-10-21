@@ -1421,6 +1421,7 @@ function validarBloquesSenaladoDinamicos() {
         var msg = mensajeCampoOpcionalSenalado(campo);
         if (msg) {
             campo.classList.add('invalid');
+            mostrarEstadoVivo(campo, msg);
             errores.push(msg);
         }
     });
@@ -2173,22 +2174,53 @@ var REGLAS_VIVO = {
 
 /** Campos opcionales del señalado: solo se validan si se llenan. */
 var REGLAS_SENALADO_OPCIONAL = {
-    'pn-nro-doc': function (v, final) {
+    'pn-nro-doc': function (v, final, campo) {
         if (/\D/.test(v)) return 'Solo se permiten números (entre 5 y 10 dígitos).';
-        return (final && !RE_DOC_SENALADO.test(v)) ? 'Debe tener entre 5 y 10 dígitos.' : '';
+        if (final && !RE_DOC_SENALADO.test(v)) return 'Debe tener entre 5 y 10 dígitos.';
+        var elCitDoc = document.getElementById('cit-nro-doc');
+        var citDoc = elCitDoc ? elCitDoc.value.trim() : '';
+        if (citDoc && v === citDoc) {
+            var elCitTipo = document.getElementById('cit-tipo-doc');
+            var citTipo = elCitTipo ? elCitTipo.value.trim() : '';
+            var tarjeta = campo ? campo.closest('.senalado-card') : (document.activeElement ? document.activeElement.closest('.senalado-card') : null);
+            var senTipo = tarjeta ? (tarjeta.querySelector('[data-campo="pn-tipo-doc"]')?.value || '').trim() : '';
+            if (!senTipo || !citTipo || senTipo === citTipo) {
+                return 'El señalado no puede tener la misma cédula que el denunciante.';
+            }
+        }
+        return '';
     },
-    'jp-nro-doc': function (v, final) {
+    'jp-nro-doc': function (v, final, campo) {
         if (/\D/.test(v)) return 'Solo se permiten números (entre 5 y 10 dígitos).';
-        return (final && !RE_DOC_SENALADO.test(v)) ? 'Debe tener entre 5 y 10 dígitos.' : '';
+        if (final && !RE_DOC_SENALADO.test(v)) return 'Debe tener entre 5 y 10 dígitos.';
+        var elCitDoc = document.getElementById('cit-nro-doc');
+        var citDoc = elCitDoc ? elCitDoc.value.trim() : '';
+        if (citDoc && v === citDoc) {
+            var elCitTipo = document.getElementById('cit-tipo-doc');
+            var citTipo = elCitTipo ? elCitTipo.value.trim() : '';
+            var tarjeta = campo ? campo.closest('.senalado-card') : (document.activeElement ? document.activeElement.closest('.senalado-card') : null);
+            var senTipo = tarjeta ? (tarjeta.querySelector('[data-campo="jp-tipo-doc"]')?.value || '').trim() : '';
+            if (!senTipo || !citTipo || senTipo === citTipo) {
+                return 'El juez de paz señalado no puede tener la misma cédula que el denunciante.';
+            }
+        }
+        return '';
     },
     'pj-rif': function (v, final) { return (final && !RE_RIF.test(v)) ? 'Formato de R.I.F. no válido. Ej.: J-12345678-9' : ''; },
     'oe-rif': function (v, final) { return (final && !RE_RIF.test(v)) ? 'Formato de R.I.F. no válido. Ej.: G-20001628-0' : ''; },
     'cm-situr': msgSitur,
     'cc-situr': msgSitur,
     'cc-rif': function (v, final) { return (final && !RE_RIF.test(v)) ? 'Formato de R.I.F. no válido. Ej.: J-12345678-9' : ''; },
-    'ot-documento': function (v, final) {
-        return (final && !(RE_DOC_SENALADO.test(v) || RE_RIF.test(v)))
-            ? 'Ingrese una cédula (solo números) o un R.I.F. válido. Ej.: J-12345678-9' : '';
+    'ot-documento': function (v, final, campo) {
+        if (final && !(RE_DOC_SENALADO.test(v) || RE_RIF.test(v)))
+            return 'Ingrese una cédula (solo números) o un R.I.F. válido. Ej.: J-12345678-9';
+        var elCitDoc = document.getElementById('cit-nro-doc');
+        var citDoc = elCitDoc ? elCitDoc.value.trim() : '';
+        var num = v.replace(/\D/g, '');
+        if (citDoc && num === citDoc && !/^[JjGgCc]/.test(v)) {
+            return 'El documento del señalado no puede coincidir con la cédula del denunciante.';
+        }
+        return '';
     }
 };
 
@@ -2196,7 +2228,7 @@ var REGLAS_SENALADO_OPCIONAL = {
 function mensajeCampoOpcionalSenalado(campo) {
     var regla = REGLAS_SENALADO_OPCIONAL[campo.dataset.campo];
     var v = (campo.value || '').trim();
-    return (regla && v) ? regla(v, true) : '';
+    return (regla && v) ? regla(v, true, campo) : '';
 }
 
 /** Localiza (o crea) el aviso de error de un campo. */
@@ -2290,12 +2322,24 @@ function validarCampoVivo(campo, alSalir) {
         }
         var opcional = REGLAS_SENALADO_OPCIONAL[campo.dataset.campo];
         if (opcional) {
-            mostrarEstadoVivo(campo, v ? (opcional(v, alSalir) || null) : null);
+            mostrarEstadoVivo(campo, v ? (opcional(v, alSalir, campo) || null) : null);
+        } else if (campo.dataset.campo === 'pn-tipo-doc' || campo.dataset.campo === 'jp-tipo-doc') {
+            var tarjeta = campo.closest('.senalado-card');
+            var campoDoc = tarjeta ? tarjeta.querySelector('[data-campo="pn-nro-doc"], [data-campo="jp-nro-doc"]') : null;
+            if (campoDoc && campoDoc.value.trim()) {
+                validarCampoVivo(campoDoc, true);
+            }
         } else if (campo.classList.contains('campo-dinamico-req')) {
             if (v === '') mostrarEstadoVivo(campo, alSalir ? 'Este campo es obligatorio.' : null);
             else mostrarEstadoVivo(campo, (alSalir && v.length < 3) ? 'Debe tener al menos 3 caracteres.' : null);
         }
         return;
+    }
+
+    if (campo.id === 'cit-nro-doc' || campo.id === 'cit-tipo-doc') {
+        document.querySelectorAll('#lista-senalados [data-campo="pn-nro-doc"], #lista-senalados [data-campo="jp-nro-doc"], #lista-senalados [data-campo="ot-documento"]').forEach(function (cDoc) {
+            if (cDoc.value.trim()) validarCampoVivo(cDoc, true);
+        });
     }
 
     var camposCiudadanoTexto = ['cit-primer-nombre', 'cit-segundo-nombre', 'cit-primer-apellido', 'cit-segundo-apellido', 'cit-profesion', 'cit-ocupacion'];
