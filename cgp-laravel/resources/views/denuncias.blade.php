@@ -1019,17 +1019,20 @@
                         <label class="form-label">
                           Fecha de Aprobación <span class="required" style="color:#1565c0;">*</span>
                         </label>
-                        <input type="date" id="proy-fecha" class="form-control" max="{{ date('Y-m-d') }}" onchange="validarFechaProyecto(this)" oninput="validarFechaProyecto(this)">
+                        <input type="date" id="proy-fecha" class="form-control" min="{{ date('Y-m-d', strtotime('-5 years')) }}" max="{{ date('Y-m-d') }}" onchange="validarFechaProyecto(this)" oninput="validarFechaProyecto(this)">
                         <span class="error-msg" id="proy-fecha-err">Seleccione la fecha de aprobación.</span>
                       </div>
                     </div>
                     <div class="col-md-3">
                       <div class="form-group">
                         <label class="form-label">
-                          Monto Estimado del Proyecto <span class="required" style="color:#1565c0;">*</span>
+                          Monto Estimado del Proyecto (Bs.) <span class="required" style="color:#1565c0;">*</span>
                         </label>
-                        <input type="text" id="proy-monto" class="form-control" placeholder="Ej. 500.000,00" inputmode="decimal" oninput="formatearMonto(this)">
-                        <span class="error-msg" id="proy-monto-err">Ingrese un monto estimado válido.</span>
+                        <div style="display:flex;align-items:stretch;">
+                          <span style="display:inline-flex;align-items:center;padding:0 12px;background:#f1f5f9;color:#0d47a1;font-weight:700;font-size:0.85rem;border:1.5px solid #cdd5e0;border-right:none;border-radius:5px 0 0 5px;user-select:none;">Bs.</span>
+                          <input type="text" id="proy-monto" class="form-control" style="border-top-left-radius:0;border-bottom-left-radius:0;" placeholder="0,00" inputmode="decimal" oninput="formatearMonto(this)" onblur="formatearMontoAlSalir(this)">
+                        </div>
+                        <span class="error-msg" id="proy-monto-err">Ingrese un monto estimado válido en Bolívares.</span>
                       </div>
                     </div>
                     <div class="col-md-6">
@@ -1680,11 +1683,25 @@
 
     const NOMBRES_PASOS = ["Tipo de Trámite", "Datos del Ciudadano", "Datos del Señalado", "Descripción de los Hechos", "Documentos y Evidencias"];
 
-    /* ── Monto en bolívares: 1.250.000,50 mientras se escribe ── */
+    /* ── Monto en bolívares: 1.250.000,50 mientras se escribe y al perder el foco ── */
     function formatearMonto(el) {
-      let [ent, dec] = el.value.replace(/[^\d,]/g, '').split(',');
+      let v = el.value.replace(/[^\d,]/g, '');
+      let [ent, dec] = v.split(',');
       ent = (ent || '').replace(/^0+(?=\d)/, '').replace(/\B(?=(\d{3})+(?!\d))/g, '.');
-      el.value = dec === undefined ? ent : ent + ',' + dec.slice(0, 2);
+      el.value = dec === undefined ? ent : (ent || '0') + ',' + dec.slice(0, 2);
+    }
+
+    function formatearMontoAlSalir(el) {
+      formatearMonto(el);
+      let v = (el.value || '').trim();
+      if (!v) return;
+      if (!v.includes(',')) {
+        el.value = v + ',00';
+      } else {
+        let [ent, dec] = v.split(',');
+        dec = (dec || '').padEnd(2, '0').slice(0, 2);
+        el.value = (ent || '0') + ',' + dec;
+      }
     }
 
     /* ── Borrador en localStorage: sobrevive a recargas, caduca a las 2 horas ── */
@@ -1869,16 +1886,20 @@
         el.setSelectionRange(pos, pos);
       });
 
-      // Configuración de fecha máxima para la fecha del proyecto (no futura)
+      // Configuración de fecha máxima (hoy) y mínima (hasta 5 años atrás) para la aprobación del proyecto
       const proyFecha = document.getElementById('proy-fecha');
       if (proyFecha) {
         const dHoy = new Date();
         const hoy = dHoy.getFullYear() + '-' + String(dHoy.getMonth() + 1).padStart(2, '0') + '-' + String(dHoy.getDate()).padStart(2, '0');
+        const dMin = new Date(dHoy);
+        dMin.setFullYear(dMin.getFullYear() - 5);
+        const minFecha = dMin.getFullYear() + '-' + String(dMin.getMonth() + 1).padStart(2, '0') + '-' + String(dMin.getDate()).padStart(2, '0');
         proyFecha.max = hoy;
+        proyFecha.min = minFecha;
       }
     });
 
-    /* ── Validación en tiempo real para la fecha de aprobación del proyecto (no futura) ── */
+    /* ── Validación en tiempo real para la fecha de aprobación del proyecto (no futura y máx. 5 años atrás) ── */
     function validarFechaProyecto(input) {
       if (!input) return;
       const err = document.getElementById('proy-fecha-err');
@@ -1891,9 +1912,20 @@
       }
       const dHoy = new Date();
       const hoy = dHoy.getFullYear() + '-' + String(dHoy.getMonth() + 1).padStart(2, '0') + '-' + String(dHoy.getDate()).padStart(2, '0');
+      const dMin = new Date(dHoy);
+      dMin.setFullYear(dMin.getFullYear() - 5);
+      const minFecha = dMin.getFullYear() + '-' + String(dMin.getMonth() + 1).padStart(2, '0') + '-' + String(dMin.getDate()).padStart(2, '0');
+
       if (val > hoy) {
         if (err) {
           err.textContent = 'La fecha de aprobación no puede ser una fecha futura.';
+          err.classList.add('visible');
+          err.style.display = 'block';
+        }
+        input.classList.add('invalid');
+      } else if (val < minFecha) {
+        if (err) {
+          err.textContent = 'La fecha de aprobación no puede exceder los 5 años de antigüedad.';
           err.classList.add('visible');
           err.style.display = 'block';
         }
@@ -2292,7 +2324,7 @@
         senalados,
         ubicacion_senalado: val('sen-ubicacion'),
         proyecto: {
-          nombre: val('proy-nombre'), fecha: val('proy-fecha'), monto: val('proy-monto').replace(/\./g, '').replace(',', '.'),
+          nombre: val('proy-nombre'), fecha: val('proy-fecha'), monto: val('proy-monto').replace(/[^\d,.]/g, '').replace(/\./g, '').replace(',', '.'),
           financiador: val('proy-financiador'), situr: val('proy-situr'),
         },
         narracion: val('narracion'),
@@ -2416,7 +2448,8 @@
           seccionProyecto.style.display = 'block';
           document.getElementById('print-proy-nombre').textContent = document.getElementById('proy-nombre').value || 'No indicó';
           document.getElementById('print-proy-fecha').textContent = document.getElementById('proy-fecha').value || 'No indicó';
-          document.getElementById('print-proy-monto').textContent = document.getElementById('proy-monto').value || '0.00';
+          const proyMontoVal = document.getElementById('proy-monto').value.trim();
+          document.getElementById('print-proy-monto').textContent = proyMontoVal ? (proyMontoVal.includes(',') ? proyMontoVal : proyMontoVal + ',00') : '0,00';
           document.getElementById('print-proy-financiador').textContent = document.getElementById('proy-financiador').value || 'No indicó';
           document.getElementById('print-proy-situr').textContent = document.getElementById('proy-situr').value || 'No indicó';
         } else {

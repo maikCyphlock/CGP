@@ -1056,15 +1056,24 @@ function validarPaso(numeroPaso) {
             } else {
                 var dHoy = new Date();
                 var hoy = dHoy.getFullYear() + '-' + String(dHoy.getMonth() + 1).padStart(2, '0') + '-' + String(dHoy.getDate()).padStart(2, '0');
+                var dMin = new Date(dHoy);
+                dMin.setFullYear(dMin.getFullYear() - 5);
+                var minFecha = dMin.getFullYear() + '-' + String(dMin.getMonth() + 1).padStart(2, '0') + '-' + String(dMin.getDate()).padStart(2, '0');
+
                 if (valFechaProy > hoy) {
                     errores.push('Fecha de Aprobación del Proyecto (no puede ser una fecha futura)');
                     var errF = document.getElementById('proy-fecha-err');
                     if (errF) errF.textContent = 'La fecha de aprobación no puede ser una fecha futura.';
                     marcarError('proy-fecha', 'proy-fecha-err');
+                } else if (valFechaProy < minFecha) {
+                    errores.push('Fecha de Aprobación del Proyecto (no puede exceder los 5 años de antigüedad)');
+                    var errF = document.getElementById('proy-fecha-err');
+                    if (errF) errF.textContent = 'La fecha de aprobación no puede exceder los 5 años de antigüedad.';
+                    marcarError('proy-fecha', 'proy-fecha-err');
                 }
             }
-            if (!/^\d{1,3}(\.\d{3})*(,\d{1,2})?$/.test(document.getElementById('proy-monto').value.trim())) {
-                errores.push('Monto del Proyecto');
+            if (!/^(?:\d{1,3}(\.\d{3})*|\d+)(,\d{1,2})?$/.test(document.getElementById('proy-monto').value.trim())) {
+                errores.push('Monto Estimado del Proyecto (en Bolívares)');
                 marcarError('proy-monto', 'proy-monto-err');
             }
             if (document.getElementById('proy-financiador').value.trim().length < 3) {
@@ -1891,10 +1900,12 @@ function poblarResumen() {
     var bloqueProy = document.getElementById('res-bloque-proyecto');
     if (tipoTramiteEl && tipoTramiteEl.value === 'denuncia' && esConsulta && esConsulta.value === 'si') {
         bloqueProy.style.display = '';
+        var valMontoRes = document.getElementById('proy-monto').value.trim();
+        if (valMontoRes && !valMontoRes.includes(',')) valMontoRes += ',00';
         document.getElementById('res-proyecto').textContent =
             'Denominación: ' + (document.getElementById('proy-nombre').value.trim() || '—') + '\n' +
             'Fecha de aprobación: ' + (document.getElementById('proy-fecha').value || '—') + '\n' +
-            'Monto: Bs. ' + (document.getElementById('proy-monto').value.trim() || '—') + '\n' +
+            'Monto: Bs. ' + (valMontoRes || '—') + '\n' +
             'Ente financiador: ' + (document.getElementById('proy-financiador').value.trim() || '—') +
             (document.getElementById('proy-situr').value.trim() ? '\nCódigo SITUR: ' + document.getElementById('proy-situr').value.trim() : '');
     } else {
@@ -2149,15 +2160,20 @@ var REGLAS_VIVO = {
             if (!v) return 'Seleccione la fecha de aprobación.';
             var dHoy = new Date();
             var hoy = dHoy.getFullYear() + '-' + String(dHoy.getMonth() + 1).padStart(2, '0') + '-' + String(dHoy.getDate()).padStart(2, '0');
+            var dMin = new Date(dHoy);
+            dMin.setFullYear(dMin.getFullYear() - 5);
+            var minFecha = dMin.getFullYear() + '-' + String(dMin.getMonth() + 1).padStart(2, '0') + '-' + String(dMin.getDate()).padStart(2, '0');
+
             if (v > hoy) return 'La fecha de aprobación no puede ser una fecha futura.';
+            if (v < minFecha) return 'La fecha de aprobación no puede exceder los 5 años de antigüedad.';
             return '';
         }
     },
     'proy-monto': {
         req: true,
         check: function (v, final) {
-            if (/[^\d.,]/.test(v)) return 'Solo se permiten números. Ej.: 500.000 o 1.250,50';
-            if (final && !/^\d{1,3}(\.\d{3})*(,\d{1,2})?$/.test(v)) return 'Ingrese un monto válido. Ej.: 500.000 o 1.250,50';
+            if (/[^\d.,]/.test(v)) return 'Solo se permiten números en formato Bolívares (Bs.). Ej.: 500.000,00';
+            if (final && !/^(?:\d{1,3}(\.\d{3})*|\d+)(,\d{1,2})?$/.test(v)) return 'Ingrese un monto válido en Bolívares (Bs.). Ej.: 500.000,00';
             return '';
         }
     },
