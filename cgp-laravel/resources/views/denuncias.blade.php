@@ -379,22 +379,6 @@
             confidencialidad y utilizados únicamente para los fines del proceso de investigación.
         </div>
         </div>
-         
-       <div class="aviso-anonimato" style="background-color: #e3f2fd; border-left: 4px solid #1565c0; color: #0d47a1; max-width: 800px; margin: 0 auto 20px auto;">
-          <span class="av-icon" style="color: #1565c0;">
-            <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"
-              stroke-linecap="round" stroke-linejoin="round">
-              <path d="M10.29 3.86L1.82 18a2 2 0 0 0 1.71 3h16.94a2 2 0 0 0 1.71-3L13.71 3.86a2 2 0 0 0-3.42 0z" />
-              <line x1="12" y1="9" x2="12" y2="13" />
-              <line x1="12" y1="17" x2="12.01" y2="17" />
-            </svg>
-          </span>
-          <div>
-            <strong>Atención para menores de edad:</strong>
-            Si usted es menor de edad, puede realizar una denuncia, queja, reclamo, petición o sugerencia siempre y cuando el trámite sea presentado y usted esté debidamente representado por su representante legal o un adulto responsable.
-          </div>
-        </div>
-
         <div style="text-align: center; margin-bottom: 20px; display: flex; justify-content: center; gap: 15px; flex-wrap: wrap;">
           <button class="btn-submit" style="font-size: 1.1rem; padding: 12px 32px; background: #022139; border: 1px solid #4d7f99;" onclick="mostrarConsultaTramite()">
             Estado de Trámite

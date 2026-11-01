@@ -10,7 +10,7 @@
     .noticia-texto { font-size: 0.82rem; color: #666; line-height: 1.6; }
     .noticia-texto p { margin-bottom: 0.6rem; }
     .noticia-texto ul, .noticia-texto ol { padding-left: 1.2rem; }
-    .hero-content p { text-align: justify; }
+    .hero-content p { text-align: left; }
 
     /* ── Carrusel Dinámico del Hero ── */
     .hero-photo.hero-carousel {
@@ -118,7 +118,31 @@
     .carousel-arrow:hover { background: #1565c0; border-color: transparent; transform: translateY(-50%) scale(1.08); }
     .carousel-arrow.prev { left: 10px; }
     .carousel-arrow.next { right: 10px; }
+    /* ── Rediseño del banner (hero): institucional, fondo blanco ── */
+    #hero { background: #fff !important; background-image: none !important; }
+    #hero .hero-content h1 { font-family: 'Fraunces', Georgia, serif; font-weight: 700; letter-spacing: -0.01em; line-height: 1.05; color: #0b2545; }
+    #hero .hero-content h1 span { color: #1565c0; display: block; }
+    #hero .hero-content h2 { font-family: 'Inter', system-ui, sans-serif; font-size: 1rem; font-weight: 600; color: #1565c0; text-transform: none; letter-spacing: 0; margin-bottom: 14px; }
+    #hero .hero-content p { text-align: left !important; color: #51617a; line-height: 1.65; max-width: 46ch; }
+    #hero .hero-actions { display: flex; flex-wrap: wrap; gap: 14px; }
+    #hero .hero-actions .btn-declare { background: #0b2545 !important; color: #fff !important; border: 1.5px solid #0b2545; border-radius: 10px; font-weight: 600; box-shadow: 0 8px 20px rgba(11, 37, 69, 0.25) !important; transition: transform .15s ease; }
+    #hero .hero-actions .btn-declare:hover { transform: translateY(-2px); }
+    #hero .hero-actions .btn-denuncia { display: inline-block; padding: 14px 26px; border-radius: 10px; border: 1.5px solid #0b2545; color: #0b2545; font-weight: 600; text-decoration: none; background: transparent; transition: transform .15s ease, background .15s ease; }
+    #hero .hero-actions .btn-denuncia:hover { transform: translateY(-2px); background: #f4f7fb; }
+    #hero .hero-actions a:focus-visible { outline: 3px solid #1565c0; outline-offset: 3px; }
+
+    #hero .hero-figure::before, #hero .hero-figure::after, #hero .hero-photo::before, #hero .hero-photo::after { display: none !important; }
+    #hero .hero-photo.hero-carousel { border-radius: 20px; box-shadow: 0 30px 60px -20px rgba(11, 37, 69, 0.45) !important; }
+    #hero .carousel-caption { position: absolute; left: 0; right: 0; bottom: 0; padding: 70px 24px 38px; color: #fff; z-index: 5; pointer-events: none; background: linear-gradient(transparent, rgba(11, 37, 69, 0.88)); line-height: 1.35; font-size: 0.95rem; }
+    #hero .carousel-caption b { display: block; font-family: 'Fraunces', Georgia, serif; font-size: 1.25rem; }
+    #hero .carousel-progress { top: auto; bottom: 18px; left: 24px; right: 24px; width: auto; height: 3px; border-radius: 3px; overflow: hidden; z-index: 8; background: rgba(255, 255, 255, 0.3); }
+    #hero .carousel-progress-bar { background: #fff; box-shadow: none; }
+    #hero .carousel-dots { left: auto; right: 24px; bottom: 30px; transform: none; background: transparent; backdrop-filter: none; padding: 0; z-index: 8; }
+    #hero .carousel-arrow { opacity: 0; }
+    #hero .hero-carousel:hover .carousel-arrow, #hero .carousel-arrow:focus-visible { opacity: 1; }
+    @media (hover: none) { #hero .carousel-arrow { opacity: 0.85; } }
   </style>
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,600;9..144,700&family=Inter:wght@400;500;600&display=swap">
   <!-- seccion de inicio como portada, el declarar puse el original de la contraloria general, hay que preguntar si es ese-->
   <section id="hero">
     <div class="hero-inner">
@@ -126,9 +150,9 @@
       <div class="hero-content">
         <h1>Contraloría del <span>Municipio Páez</span></h1>
         <h2>Órgano de Control Fiscal Municipal</h2>
-        <p style="text-align: justify;">Vigilamos el patrimonio público de Acarigua y sus parroquias con transparencia y cercanía al ciudadano.</p>
+        <p>Vigilamos el patrimonio público de Acarigua y sus parroquias con transparencia y cercanía al ciudadano.</p>
         <div class="hero-actions">
-          <a href="https://djp.cgr.gob.ve/authentication/sign-in" class="btn-declare" target="_blank" rel="noopener">Declare Aquí</a>
+          <a href="https://djp.cgr.gob.ve/authentication/sign-in" class="btn-declare" target="_blank" rel="noopener">Declaración jurada de patrimonio</a>
         </div>
       </div>
 
@@ -138,15 +162,19 @@
           <div class="carousel-track">
             <div class="carousel-slide active">
               <img src="{{ asset('assets/img/portadasinrayas.jpg') }}" alt="Equipo de la Contraloría del Municipio Páez">
+              <div class="carousel-caption"><b>Nuestro equipo</b>Al servicio de Acarigua</div>
             </div>
             <div class="carousel-slide">
               <img src="{{ asset('assets/img/reunion.jpeg') }}" alt="Reunión institucional">
+              <div class="carousel-caption"><b>Reuniones institucionales</b>Trabajo coordinado por el Municipio</div>
             </div>
             <div class="carousel-slide">
               <img src="{{ asset('assets/img/mesadetrabajo1.jpeg') }}" alt="Mesa de trabajo">
+              <div class="carousel-caption"><b>Mesas de trabajo</b>Planificación y control fiscal</div>
             </div>
             <div class="carousel-slide">
               <img src="{{ asset('assets/img/juramentacion.jpeg') }}" alt="Actividades institucionales">
+              <div class="carousel-caption"><b>Juramentación</b>Compromiso con la gestión pública</div>
             </div>
           </div>
           <!-- Indicadores de puntos -->
