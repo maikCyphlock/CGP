@@ -61,7 +61,7 @@ class DenunciaController extends Controller
             'tipo_tramite' => ['required', Rule::in(array_keys(self::TIPOS_TRAMITE))],
             'es_consulta' => 'boolean',
             'ciudadano.tipo_doc' => ['required', Rule::in(array_keys(self::TIPOS_DOC))],
-            'ciudadano.nro_doc' => 'required|string|max:12',
+            'ciudadano.nro_doc' => ['required', 'string', 'regex:/^\d{5,10}$/'],
             'ciudadano.primer_nombre' => 'required|string|max:40',
             'ciudadano.segundo_nombre' => 'nullable|string|max:39',
             'ciudadano.primer_apellido' => 'required|string|max:40',
@@ -81,7 +81,7 @@ class DenunciaController extends Controller
             'ciudadano.parroquia' => 'nullable|string|max:80',
             'ciudadano.municipio' => 'nullable|string|max:80',
             'ciudadano.ciudad' => 'nullable|string|max:80',
-            'senalados' => 'array',
+            'senalados' => 'required_if:tipo_tramite,denuncia,queja|array',
             'senalados.*.tipo' => ['required', Rule::in(array_keys(self::TIPOS_SENALADO))],
             'senalados.*.campos' => 'array',
             'senalados.*.campos.*' => 'nullable|string|max:250',
@@ -112,6 +112,8 @@ class DenunciaController extends Controller
             'gt' => 'El :attribute debe ser mayor que cero.',
             'regex' => 'El código SITUR no es válido. Ej.: C-URB-2014-11-0001 o CEC-ZU-205.',
             'accepted' => 'Debe aceptar la declaración jurada.',
+            'ciudadano.nro_doc.regex' => 'El número de documento debe tener entre 5 y 10 dígitos.',
+            'senalados.required_if' => 'Debe agregar al menos un señalado.',
         ], [
             'tipo_tramite' => 'tipo de trámite',
             'ciudadano.tipo_doc' => 'tipo de documento',
@@ -135,7 +137,12 @@ class DenunciaController extends Controller
         $request->validate([
             'evidencias' => 'array',
             'evidencias.*' => 'array',
-            'evidencias.*.*' => 'file|max:10240',
+            // Formatos que ofrece el formulario; `mimes` revisa el contenido, no solo la extensión.
+            'evidencias.*.*' => 'file|max:10240|mimes:pdf,png,jpg,jpeg,doc,docx,mp4,avi,mov,qt,mkv,webm,mp3,mpga,wav,ogg,oga,m4a,aac',
+        ], [
+            'evidencias.*.*.uploaded' => 'El archivo no se pudo cargar: el máximo es de 10 MB.',
+            'evidencias.*.*.max' => 'El archivo supera el máximo de 10 MB.',
+            'evidencias.*.*.mimes' => 'Formato no permitido. Se admiten PDF, Word, imagen, video o audio.',
         ]);
 
         $d = $v->validate();

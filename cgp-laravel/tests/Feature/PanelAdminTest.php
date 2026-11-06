@@ -49,11 +49,56 @@ class PanelAdminTest extends TestCase
                 'sexo' => 'F', 'correo' => 'ana@example.com', 'telf_cel' => '04141234567',
                 'direccion' => 'Calle 1, Acarigua, Portuguesa',
             ],
+            'senalados' => [['tipo' => 'persona_natural', 'campos' => ['pn-nombres' => 'Luis Pérez']]],
+            'ubicacion_senalado' => 'Plaza Bolívar, Acarigua',
             'narracion' => str_repeat('Hechos narrados por la ciudadana. ', 3),
             'acepta_declaracion' => true,
         ])])->assertCreated();
 
         return CaseFile::where('case_number', $r->json('case_number'))->firstOrFail();
+    }
+
+    public function test_el_servidor_valida_el_envio_publico(): void
+    {
+        \Illuminate\Support\Facades\Storage::fake();
+        $datos = [
+            'tipo_tramite' => 'denuncia',
+            'ciudadano' => [
+                'tipo_doc' => 'V', 'nro_doc' => '12345678', 'primer_nombre' => 'Ana', 'primer_apellido' => 'Díaz',
+                'sexo' => 'F', 'correo' => 'ana@example.com', 'telf_cel' => '04141234567',
+                'direccion' => 'Calle 1, Acarigua, Portuguesa',
+            ],
+            'senalados' => [['tipo' => 'persona_natural', 'campos' => ['pn-nombres' => 'Luis Pérez']]],
+            'ubicacion_senalado' => 'Plaza Bolívar, Acarigua',
+            'narracion' => str_repeat('Hechos narrados por la ciudadana. ', 3),
+            'acepta_declaracion' => true,
+        ];
+        $enviar = fn ($d, $f = []) => $this->post('/denuncias', ['datos' => json_encode($d)] + $f, ['Accept' => 'application/json']);
+        // Archivo real: el falso de Laravel se identifica por el nombre y no por el contenido.
+        $archivo = function ($n, $c) {
+            $ruta = tempnam(sys_get_temp_dir(), 'ev');
+            file_put_contents($ruta, $c);
+
+            return new \Illuminate\Http\UploadedFile($ruta, $n, null, null, true);
+        };
+
+        $mal = $datos;
+        $mal['ciudadano']['nro_doc'] = '12AB';
+        $enviar($mal)->assertUnprocessable()->assertJsonValidationErrors('ciudadano.nro_doc');
+
+        $mal = $datos;
+        unset($mal['senalados'], $mal['ubicacion_senalado']);
+        $enviar($mal)->assertUnprocessable()->assertJsonValidationErrors('senalados');
+
+        $enviar($datos, ['evidencias' => ['otros_docs' => [$archivo('virus.exe', "MZ\x90\0".str_repeat("\0", 200))]]])->assertUnprocessable();
+        $enviar($datos, ['evidencias' => ['fotografias' => [$archivo('virus.pdf', "MZ\x90\0".str_repeat("\0", 200))]]])->assertUnprocessable();
+
+        // Los tipos que no piden señalado (petición) y los archivos permitidos siguen entrando.
+        $peticion = $datos;
+        $peticion['tipo_tramite'] = 'peticion';
+        unset($peticion['senalados'], $peticion['ubicacion_senalado']);
+        $enviar($peticion)->assertCreated();
+        $enviar($datos, ['evidencias' => ['ci_denunciante' => [$archivo('cedula.pdf', "%PDF-1.4\n%prueba\n")]]])->assertCreated();
     }
 
     private function actuar(CaseFile $e, array $datos)
