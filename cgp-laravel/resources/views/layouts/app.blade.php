@@ -17,6 +17,20 @@
   <!-- Estilos base -->
   <link rel="stylesheet" href="{{ asset('assets/css/contraloria.css') }}?v={{ filemtime(public_path('assets/css/contraloria.css')) }}">
   @stack('styles')
+  <!-- Menú de navegación: letras más grandes (solo escritorio) -->
+  <style>
+    @media (min-width: 993px) {
+      #navbar > a,
+      #navbar .dropdown > a { font-size: 1.1rem; font-weight: 500; padding: 0.7rem 1.05rem; }
+      #navbar .dropdown-menu a { font-size: 1rem; }
+      .logo-texts .l1 { font-size: 1.05rem; }
+    }
+    /* Laptops pequeñas: un poco más compacto para que no se parta en dos líneas */
+    @media (min-width: 993px) and (max-width: 1280px) {
+      #navbar > a,
+      #navbar .dropdown > a { font-size: 1rem; padding: 0.6rem 0.7rem; }
+    }
+  </style>
 </head>
 
 <body>

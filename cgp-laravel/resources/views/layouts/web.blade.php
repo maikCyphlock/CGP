@@ -9,7 +9,12 @@
   <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;500;700&family=Open+Sans:wght@400;600;700&display=swap" rel="stylesheet">
   <link href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap/5.3.2/css/bootstrap.min.css" rel="stylesheet">
   <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.2/css/all.min.css" rel="stylesheet">
-  <link href="{{ asset('assets/css/web.css') }}" rel="stylesheet">
+  <link href="{{ asset('assets/css/web.css') }}?v={{ filemtime(public_path('assets/css/web.css')) }}" rel="stylesheet">
+  <style>
+    .page p, .card p, .card-body p, .welcome-banner p, .main-content p, .activity-item p, .kpi-desc {
+      text-align: justify !important;
+    }
+  </style>
   @stack('estilos')
 </head>
 <body>

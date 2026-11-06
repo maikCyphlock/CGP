@@ -379,22 +379,6 @@
             confidencialidad y utilizados únicamente para los fines del proceso de investigación.
         </div>
         </div>
-         
-       <div class="aviso-anonimato" style="background-color: #e3f2fd; border-left: 4px solid #1565c0; color: #0d47a1; max-width: 800px; margin: 0 auto 20px auto;">
-          <span class="av-icon" style="color: #1565c0;">
-            <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"
-              stroke-linecap="round" stroke-linejoin="round">
-              <path d="M10.29 3.86L1.82 18a2 2 0 0 0 1.71 3h16.94a2 2 0 0 0 1.71-3L13.71 3.86a2 2 0 0 0-3.42 0z" />
-              <line x1="12" y1="9" x2="12" y2="13" />
-              <line x1="12" y1="17" x2="12.01" y2="17" />
-            </svg>
-          </span>
-          <div>
-            <strong>Atención para menores de edad:</strong>
-            Si usted es menor de edad, puede realizar una denuncia, queja, reclamo, petición o sugerencia siempre y cuando el trámite sea presentado y usted esté debidamente representado por su representante legal o un adulto responsable.
-          </div>
-        </div>
-
         <div style="text-align: center; margin-bottom: 20px; display: flex; justify-content: center; gap: 15px; flex-wrap: wrap;">
           <button class="btn-submit" style="font-size: 1.1rem; padding: 12px 32px; background: #022139; border: 1px solid #4d7f99;" onclick="mostrarConsultaTramite()">
             Estado de Trámite
@@ -1019,17 +1003,20 @@
                         <label class="form-label">
                           Fecha de Aprobación <span class="required" style="color:#1565c0;">*</span>
                         </label>
-                        <input type="date" id="proy-fecha" class="form-control">
+                        <input type="date" id="proy-fecha" class="form-control" min="{{ date('Y-m-d', strtotime('-5 years')) }}" max="{{ date('Y-m-d') }}" onchange="validarFechaProyecto(this)" oninput="validarFechaProyecto(this)">
                         <span class="error-msg" id="proy-fecha-err">Seleccione la fecha de aprobación.</span>
                       </div>
                     </div>
                     <div class="col-md-3">
                       <div class="form-group">
                         <label class="form-label">
-                          Monto Estimado del Proyecto <span class="required" style="color:#1565c0;">*</span>
+                          Monto Estimado del Proyecto (Bs.) <span class="required" style="color:#1565c0;">*</span>
                         </label>
-                        <input type="text" id="proy-monto" class="form-control" placeholder="Ej. 500.000,00" inputmode="decimal" oninput="formatearMonto(this)">
-                        <span class="error-msg" id="proy-monto-err">Ingrese un monto estimado válido.</span>
+                        <div style="display:flex;align-items:stretch;">
+                          <span style="display:inline-flex;align-items:center;padding:0 12px;background:#f1f5f9;color:#0d47a1;font-weight:700;font-size:0.85rem;border:1.5px solid #cdd5e0;border-right:none;border-radius:5px 0 0 5px;user-select:none;">Bs.</span>
+                          <input type="text" id="proy-monto" class="form-control" style="border-top-left-radius:0;border-bottom-left-radius:0;" placeholder="0,00" inputmode="decimal" oninput="formatearMonto(this)" onblur="formatearMontoAlSalir(this)">
+                        </div>
+                        <span class="error-msg" id="proy-monto-err">Ingrese un monto estimado válido en Bolívares.</span>
                       </div>
                     </div>
                     <div class="col-md-6">
@@ -1680,11 +1667,25 @@
 
     const NOMBRES_PASOS = ["Tipo de Trámite", "Datos del Ciudadano", "Datos del Señalado", "Descripción de los Hechos", "Documentos y Evidencias"];
 
-    /* ── Monto en bolívares: 1.250.000,50 mientras se escribe ── */
+    /* ── Monto en bolívares: 1.250.000,50 mientras se escribe y al perder el foco ── */
     function formatearMonto(el) {
-      let [ent, dec] = el.value.replace(/[^\d,]/g, '').split(',');
+      let v = el.value.replace(/[^\d,]/g, '');
+      let [ent, dec] = v.split(',');
       ent = (ent || '').replace(/^0+(?=\d)/, '').replace(/\B(?=(\d{3})+(?!\d))/g, '.');
-      el.value = dec === undefined ? ent : ent + ',' + dec.slice(0, 2);
+      el.value = dec === undefined ? ent : (ent || '0') + ',' + dec.slice(0, 2);
+    }
+
+    function formatearMontoAlSalir(el) {
+      formatearMonto(el);
+      let v = (el.value || '').trim();
+      if (!v) return;
+      if (!v.includes(',')) {
+        el.value = v + ',00';
+      } else {
+        let [ent, dec] = v.split(',');
+        dec = (dec || '').padEnd(2, '0').slice(0, 2);
+        el.value = (ent || '0') + ',' + dec;
+      }
     }
 
     /* ── Borrador en localStorage: sobrevive a recargas, caduca a las 2 horas ── */
@@ -1773,16 +1774,31 @@
           if (tieneCaracteresInvalidos) {
             // Filtrar y eliminar números y caracteres no permitidos
             this.value = val.replace(/[^a-zA-ZáéíóúÁÉÍÓÚñÑüÜ\s]/g, '');
+            this.dataset.errorLetras = '1';
             if (errSpan) {
-              errSpan.textContent = 'Solo se permiten letras.';
+              errSpan.textContent = 'No se aceptan números ni signos especiales. Solo se permiten letras.';
               errSpan.classList.add('visible');
               errSpan.style.display = 'block';
             }
             this.classList.add('invalid');
+
+            if (this._timerErrorLetras) clearTimeout(this._timerErrorLetras);
+            this._timerErrorLetras = setTimeout(() => {
+              delete this.dataset.errorLetras;
+              const req = (this.id === 'cit-primer-nombre' || this.id === 'cit-primer-apellido');
+              if (this.value.trim().length >= (req ? 2 : 0)) {
+                if (errSpan && errSpan.textContent.includes('No se aceptan')) {
+                  errSpan.classList.remove('visible');
+                  errSpan.style.display = 'none';
+                  this.classList.remove('invalid');
+                }
+              }
+            }, 3500);
           } else {
-            // Si el campo quedó limpio o válido
+            // Si el campo tiene contenido válido suficiente, se quita la alerta
             if (this.id === 'cit-primer-nombre' || this.id === 'cit-primer-apellido') {
               if (this.value.trim().length >= 2) {
+                delete this.dataset.errorLetras;
                 if (errSpan) {
                   errSpan.classList.remove('visible');
                   errSpan.style.display = 'none';
@@ -1790,7 +1806,7 @@
                 this.classList.remove('invalid');
               }
             } else {
-              // Campos opcionales: si no hay caracteres inválidos, se quita el error
+              delete this.dataset.errorLetras;
               if (errSpan) {
                 errSpan.classList.remove('visible');
                 errSpan.style.display = 'none';
@@ -1801,6 +1817,50 @@
         });
       });
 
+      // Validación y sanitización reactiva en tiempo real: nombres y apellidos del señalado (Paso 3)
+      document.addEventListener('input', function (e) {
+        const el = e.target;
+        if (!el || !el.matches) return;
+        if (el.matches('[data-campo="pn-nombres"], [data-campo="jp-nombres"], [data-campo="pj-representante"]')) {
+          const val = el.value;
+          const tieneCaracteresInvalidos = /[^a-zA-ZáéíóúÁÉÍÓÚñÑüÜ\s,]/.test(val);
+          const grupo = el.closest('.form-group');
+          const errSpan = grupo ? (grupo.querySelector('.error-msg[data-campo-err]') || grupo.querySelector('.error-msg')) : null;
+
+          if (tieneCaracteresInvalidos) {
+            el.value = val.replace(/[^a-zA-ZáéíóúÁÉÍÓÚñÑüÜ\s,]/g, '');
+            el.dataset.errorLetras = '1';
+            if (errSpan) {
+              errSpan.textContent = 'No se aceptan números ni signos especiales. Solo se permiten letras.';
+              errSpan.classList.add('visible');
+              errSpan.style.display = 'block';
+            }
+            el.classList.add('invalid');
+
+            if (el._timerErrorLetras) clearTimeout(el._timerErrorLetras);
+            el._timerErrorLetras = setTimeout(() => {
+              delete el.dataset.errorLetras;
+              if (el.value.trim().length >= 3 || !el.classList.contains('campo-dinamico-req')) {
+                if (errSpan && errSpan.textContent.includes('No se aceptan')) {
+                  errSpan.classList.remove('visible');
+                  errSpan.style.display = 'none';
+                  el.classList.remove('invalid');
+                }
+              }
+            }, 3500);
+          } else {
+            if (el.value.trim().length >= 3 || (!el.classList.contains('campo-dinamico-req') && el.value.trim().length === 0)) {
+              delete el.dataset.errorLetras;
+              if (errSpan && errSpan.textContent.includes('No se aceptan')) {
+                errSpan.classList.remove('visible');
+                errSpan.style.display = 'none';
+                el.classList.remove('invalid');
+              }
+            }
+          }
+        }
+      });
+
       // Primera letra de cada palabra en mayúscula en los campos de texto del registro
       document.addEventListener('input', function (e) {
         const el = e.target;
@@ -1809,7 +1869,60 @@
         el.value = el.value.replace(/(^|\s)(\p{Ll})/gu, (m, sp, c) => sp + c.toUpperCase());
         el.setSelectionRange(pos, pos);
       });
+
+      // Configuración de fecha máxima (hoy) y mínima (hasta 5 años atrás) para la aprobación del proyecto
+      const proyFecha = document.getElementById('proy-fecha');
+      if (proyFecha) {
+        const dHoy = new Date();
+        const hoy = dHoy.getFullYear() + '-' + String(dHoy.getMonth() + 1).padStart(2, '0') + '-' + String(dHoy.getDate()).padStart(2, '0');
+        const dMin = new Date(dHoy);
+        dMin.setFullYear(dMin.getFullYear() - 5);
+        const minFecha = dMin.getFullYear() + '-' + String(dMin.getMonth() + 1).padStart(2, '0') + '-' + String(dMin.getDate()).padStart(2, '0');
+        proyFecha.max = hoy;
+        proyFecha.min = minFecha;
+      }
     });
+
+    /* ── Validación en tiempo real para la fecha de aprobación del proyecto (no futura y máx. 5 años atrás) ── */
+    function validarFechaProyecto(input) {
+      if (!input) return;
+      const err = document.getElementById('proy-fecha-err');
+      const val = input.value;
+      if (!val) {
+        if (err) {
+          err.textContent = 'Seleccione la fecha de aprobación.';
+        }
+        return;
+      }
+      const dHoy = new Date();
+      const hoy = dHoy.getFullYear() + '-' + String(dHoy.getMonth() + 1).padStart(2, '0') + '-' + String(dHoy.getDate()).padStart(2, '0');
+      const dMin = new Date(dHoy);
+      dMin.setFullYear(dMin.getFullYear() - 5);
+      const minFecha = dMin.getFullYear() + '-' + String(dMin.getMonth() + 1).padStart(2, '0') + '-' + String(dMin.getDate()).padStart(2, '0');
+
+      if (val > hoy) {
+        if (err) {
+          err.textContent = 'La fecha de aprobación no puede ser una fecha futura.';
+          err.classList.add('visible');
+          err.style.display = 'block';
+        }
+        input.classList.add('invalid');
+      } else if (val < minFecha) {
+        if (err) {
+          err.textContent = 'La fecha de aprobación no puede exceder los 5 años de antigüedad.';
+          err.classList.add('visible');
+          err.style.display = 'block';
+        }
+        input.classList.add('invalid');
+      } else {
+        if (err) {
+          err.textContent = 'Seleccione la fecha de aprobación.';
+          err.classList.remove('visible');
+          err.style.display = 'none';
+        }
+        input.classList.remove('invalid');
+      }
+    }
 
     /* ── Indicación informativa del calendario de fecha de nacimiento ── */
     function toggleTooltipCalendario(e) {
@@ -2122,10 +2235,14 @@
       }
     }
 
+    let enviandoSolicitud = false;
+
     // Función que recoge ABSOLUTAMENTE TODOS los datos ingresados
     // Envía la solicitud al servidor; si se guarda, muestra la confirmación
     // con el número de expediente real y el enlace a la planilla en PDF.
     window.enviarSolicitud = async function() {
+      if (enviandoSolicitud) return;
+
       const acepta = document.getElementById('acepta-declaracion');
       if (acepta && !acepta.checked) {
         document.getElementById('acepta-decl-err').classList.add('visible');
@@ -2150,6 +2267,27 @@
         });
       }
 
+      const citDocVal = val('cit-nro-doc').replace(/\D/g, '');
+      const citTipoVal = val('cit-tipo-doc');
+      for (const s of senalados) {
+        const c = s.campos || {};
+        const pnDoc = (c['pn-nro-doc'] || '').replace(/\D/g, '');
+        const pnTipo = (c['pn-tipo-doc'] || '').trim();
+        const jpDoc = (c['jp-nro-doc'] || '').replace(/\D/g, '');
+        const jpTipo = (c['jp-tipo-doc'] || '').trim();
+        const otDoc = (c['ot-documento'] || '').trim();
+        const otNum = otDoc.replace(/\D/g, '');
+
+        if (citDocVal && (
+          (pnDoc && pnDoc === citDocVal && (!pnTipo || pnTipo === citTipoVal)) ||
+          (jpDoc && jpDoc === citDocVal && (!jpTipo || jpTipo === citTipoVal)) ||
+          (otNum && otNum === citDocVal && !/^[JjGgCc]/.test(otDoc))
+        )) {
+          alert('Error en el formulario:\n\n• La persona o funcionario señalado no puede tener la misma cédula que el denunciante.');
+          return;
+        }
+      }
+
       const datos = {
         tipo_tramite: radio('tipo_tramite'),
         es_consulta: radio('tipo_tramite') === 'denuncia' && radio('es_consulta') === 'si',
@@ -2170,7 +2308,7 @@
         senalados,
         ubicacion_senalado: val('sen-ubicacion'),
         proyecto: {
-          nombre: val('proy-nombre'), fecha: val('proy-fecha'), monto: val('proy-monto').replace(/\./g, '').replace(',', '.'),
+          nombre: val('proy-nombre'), fecha: val('proy-fecha'), monto: val('proy-monto').replace(/[^\d,.]/g, '').replace(/\./g, '').replace(',', '.'),
           financiador: val('proy-financiador'), situr: val('proy-situr'),
         },
         narracion: val('narracion'),
@@ -2186,7 +2324,17 @@
       });
 
       const boton = document.getElementById('btn-enviar-solicitud');
-      if (boton) boton.disabled = true;
+      const textoOriginal = boton ? boton.innerHTML : 'Enviar Solicitud';
+
+      enviandoSolicitud = true;
+      if (boton) {
+        boton.disabled = true;
+        boton.innerHTML = `
+          <span class="spinner-border spinner-border-sm me-2" role="status" aria-hidden="true" style="vertical-align: -0.15em;"></span>
+          Enviando solicitud, espere...
+        `;
+      }
+
       try {
         const resp = await fetch(@json(route('denuncias.store')), {
           method: 'POST',
@@ -2200,6 +2348,11 @@
         if (!resp.ok) {
           const errores = json.errors ? Object.values(json.errors).flat() : [json.message || 'Error desconocido'];
           alert('No se pudo registrar la solicitud:\n\n• ' + errores.join('\n• '));
+          if (boton) {
+            boton.disabled = false;
+            boton.innerHTML = textoOriginal;
+          }
+          enviandoSolicitud = false;
           return;
         }
         document.getElementById('nro-expediente-display').textContent = json.case_number;
@@ -2209,8 +2362,11 @@
         mostrarConfirmacion();
       } catch (e) {
         alert('No se pudo conectar con el servidor. Intente de nuevo.');
-      } finally {
-        if (boton) boton.disabled = false;
+        if (boton) {
+          boton.disabled = false;
+          boton.innerHTML = textoOriginal;
+        }
+        enviandoSolicitud = false;
       }
     };
 
@@ -2276,7 +2432,8 @@
           seccionProyecto.style.display = 'block';
           document.getElementById('print-proy-nombre').textContent = document.getElementById('proy-nombre').value || 'No indicó';
           document.getElementById('print-proy-fecha').textContent = document.getElementById('proy-fecha').value || 'No indicó';
-          document.getElementById('print-proy-monto').textContent = document.getElementById('proy-monto').value || '0.00';
+          const proyMontoVal = document.getElementById('proy-monto').value.trim();
+          document.getElementById('print-proy-monto').textContent = proyMontoVal ? (proyMontoVal.includes(',') ? proyMontoVal : proyMontoVal + ',00') : '0,00';
           document.getElementById('print-proy-financiador').textContent = document.getElementById('proy-financiador').value || 'No indicó';
           document.getElementById('print-proy-situr').textContent = document.getElementById('proy-situr').value || 'No indicó';
         } else {

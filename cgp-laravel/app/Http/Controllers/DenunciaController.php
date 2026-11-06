@@ -89,7 +89,13 @@ class DenunciaController extends Controller
             'senalados.*.campos.cc-situr' => ['nullable', 'regex:'.self::RE_SITUR],
             'ubicacion_senalado' => 'required_with:senalados.0|nullable|string|min:5|max:250',
             'proyecto.nombre' => 'exclude_unless:es_consulta,true|required|string|min:4|max:200',
-            'proyecto.fecha' => 'exclude_unless:es_consulta,true|required|date|before_or_equal:today',
+            'proyecto.fecha' => [
+                'exclude_unless:es_consulta,true',
+                'required',
+                'date',
+                'before_or_equal:today',
+                'after_or_equal:'.now()->subYears(5)->format('Y-m-d'),
+            ],
             'proyecto.monto' => 'exclude_unless:es_consulta,true|required|numeric|gt:0',
             'proyecto.financiador' => 'exclude_unless:es_consulta,true|required|string|min:3|max:200',
             'proyecto.situr' => ['nullable', 'string', 'regex:'.self::RE_SITUR],
@@ -108,6 +114,7 @@ class DenunciaController extends Controller
             'date' => 'La fecha de :attribute no es válida.',
             'before' => 'La fecha de :attribute debe ser anterior a hoy.',
             'before_or_equal' => 'La fecha de :attribute no puede ser futura.',
+            'after_or_equal' => 'La fecha de :attribute no puede exceder los 5 años de antigüedad.',
             'numeric' => 'El :attribute debe ser un número.',
             'gt' => 'El :attribute debe ser mayor que cero.',
             'regex' => 'El código SITUR no es válido. Ej.: C-URB-2014-11-0001 o CEC-ZU-205.',
@@ -134,6 +141,31 @@ class DenunciaController extends Controller
             'cual_instancia' => 'instancia',
         ]);
 
+        $v->after(function ($validator) use ($datos) {
+            $citNroDoc = preg_replace('/\D/', '', $datos['ciudadano']['nro_doc'] ?? '');
+            $citTipoDoc = $datos['ciudadano']['tipo_doc'] ?? '';
+            if ($citNroDoc !== '') {
+                foreach ($datos['senalados'] ?? [] as $index => $s) {
+                    $c = $s['campos'] ?? [];
+                    $pnNro = preg_replace('/\D/', '', $c['pn-nro-doc'] ?? '');
+                    $pnTipo = $c['pn-tipo-doc'] ?? '';
+                    if ($pnNro !== '' && $pnNro === $citNroDoc && (empty($pnTipo) || $pnTipo === $citTipoDoc)) {
+                        $validator->errors()->add("senalados.{$index}.campos.pn-nro-doc", 'La persona señalada no puede tener la misma cédula que el denunciante.');
+                    }
+                    $jpNro = preg_replace('/\D/', '', $c['jp-nro-doc'] ?? '');
+                    $jpTipo = $c['jp-tipo-doc'] ?? '';
+                    if ($jpNro !== '' && $jpNro === $citNroDoc && (empty($jpTipo) || $jpTipo === $citTipoDoc)) {
+                        $validator->errors()->add("senalados.{$index}.campos.jp-nro-doc", 'El juez de paz señalado no puede tener la misma cédula que el denunciante.');
+                    }
+                    $otDoc = trim($c['ot-documento'] ?? '');
+                    $otNro = preg_replace('/\D/', '', $otDoc);
+                    if ($otNro !== '' && $otNro === $citNroDoc && !preg_match('/^[JjGgCc]/', $otDoc)) {
+                        $validator->errors()->add("senalados.{$index}.campos.ot-documento", 'El documento del señalado no puede coincidir con la cédula del denunciante.');
+                    }
+                }
+            }
+        });
+
         $request->validate([
             'evidencias' => 'array',
             'evidencias.*' => 'array',
@@ -150,11 +182,34 @@ class DenunciaController extends Controller
         $esConsulta = $d['tipo_tramite'] === 'denuncia' && ($d['es_consulta'] ?? false);
 
         $case = DB::transaction(function () use ($d, $c, $esConsulta, $request) {
+            $docTypeId = $this->catalogId('id_document_type', self::TIPOS_DOC[$c['tipo_doc']]);
+            $claimTypeId = $this->catalogId('claim_type', self::TIPOS_TRAMITE[$d['tipo_tramite']]);
+
+            // Verificación de duplicado reciente (Anti-doble clic / Spam / Idempotencia)
+            $existingCitizen = Citizen::where('id_doc_type_id', $docTypeId)
+                ->where('id_doc_number', $c['nro_doc'])
+                ->lockForUpdate()
+                ->first();
+
+            if ($existingCitizen) {
+                $duplicado = CaseFile::where('citizen_id', $existingCitizen->id)
+                    ->where('claim_type_id', $claimTypeId)
+                    ->where('created_at', '>=', now()->subMinutes(5))
+                    ->whereRaw('TRIM(narrative) = ?', [trim($d['narracion'])])
+                    ->first();
+
+                if ($duplicado) {
+                    abort(response()->json([
+                        'message' => 'Ya existe un trámite idéntico registrado recientemente con el expediente N° ' . $duplicado->case_number . '. Si se trató de un error de envío involuntario, no se preocupe: su solicitud original ya fue recibida exitosamente.',
+                    ], 422));
+                }
+            }
+
             // Si el ciudadano ya existe (misma cédula) se actualizan sus datos.
-            $citizen = Citizen::firstOrNew([
-                'id_doc_type_id' => $this->catalogId('id_document_type', self::TIPOS_DOC[$c['tipo_doc']]),
+            $citizen = ($existingCitizen ?? new Citizen([
+                'id_doc_type_id' => $docTypeId,
                 'id_doc_number' => $c['nro_doc'],
-            ])->fill([
+            ]))->fill([
                 'first_name' => trim($c['primer_nombre'].' '.($c['segundo_nombre'] ?? '')),
                 'last_name' => trim($c['primer_apellido'].' '.($c['segundo_apellido'] ?? '')),
                 'sex' => $c['sexo'],

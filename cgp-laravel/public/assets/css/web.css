@@ -209,3 +209,9 @@ a.kpi-card:hover { box-shadow: var(--futur-glow-hover); color: inherit; }
 
 .list-group-item { border-color: var(--border); }
 .pagination { --bs-pagination-active-bg: var(--secondary-color); --bs-pagination-active-border-color: var(--secondary-color); --bs-pagination-color: var(--secondary-color); }
+
+/* ---------- Párrafos justificados en paneles de control ---------- */
+.page p, .card p, .card-body p, .welcome-banner p, .main-content p, .activity-item p, .kpi-desc {
+  text-align: justify !important;
+}
+

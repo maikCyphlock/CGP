@@ -84,7 +84,7 @@ INSERT INTO referral_unit (code, name) VALUES
     ('INVESTIGATIVE_POWER', 'Potestad Investigativa');
 
 
--- 1.5 Tipos de señalado  ← configurable
+-- 1.5 Tipos de señalado  ← configurable 
 -- field_schema define qué campos extra lleva cada tipo.
 -- La app lee este JSON para renderizar el formulario y validar attributes en respondent.
 --
