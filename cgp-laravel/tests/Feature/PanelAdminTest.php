@@ -40,9 +40,23 @@ class PanelAdminTest extends TestCase
         return $u;
     }
 
+    /** C.I. y carta: obligatorias en todo trámite salvo la sugerencia. */
+    private function docs(): array
+    {
+        \Illuminate\Support\Facades\Storage::fake();
+        $pdf = function ($n) {
+            $ruta = tempnam(sys_get_temp_dir(), 'ev');
+            file_put_contents($ruta, "%PDF-1.4\n%prueba\n");
+
+            return new \Illuminate\Http\UploadedFile($ruta, $n, null, null, true);
+        };
+
+        return ['evidencias' => ['ci_denunciante' => [$pdf('cedula.pdf')], 'carta_exposicion' => [$pdf('carta.pdf')]]];
+    }
+
     private function expediente(): CaseFile
     {
-        $r = $this->postJson('/denuncias', ['datos' => json_encode([
+        $r = $this->post('/denuncias', $this->docs() + ['datos' => json_encode([
             'tipo_tramite' => 'queja',
             'ciudadano' => [
                 'tipo_doc' => 'V', 'nro_doc' => '12345678', 'primer_nombre' => 'Ana', 'primer_apellido' => 'Díaz',
@@ -53,7 +67,7 @@ class PanelAdminTest extends TestCase
             'ubicacion_senalado' => 'Plaza Bolívar, Acarigua',
             'narracion' => str_repeat('Hechos narrados por la ciudadana. ', 3),
             'acepta_declaracion' => true,
-        ])])->assertCreated();
+        ])], ['Accept' => 'application/json'])->assertCreated();
 
         return CaseFile::where('case_number', $r->json('case_number'))->firstOrFail();
     }
@@ -97,8 +111,14 @@ class PanelAdminTest extends TestCase
         $peticion = $datos;
         $peticion['tipo_tramite'] = 'peticion';
         unset($peticion['senalados'], $peticion['ubicacion_senalado']);
-        $enviar($peticion)->assertCreated();
-        $enviar($datos, ['evidencias' => ['ci_denunciante' => [$archivo('cedula.pdf', "%PDF-1.4\n%prueba\n")]]])->assertCreated();
+        $enviar($peticion)->assertUnprocessable()->assertJsonValidationErrors(['evidencias.ci_denunciante', 'evidencias.carta_exposicion']);
+        $enviar($peticion, $this->docs())->assertCreated();
+        $enviar($datos, ['evidencias' => ['ci_denunciante' => [$archivo('cedula.pdf', "%PDF-1.4\n%prueba\n")]]])->assertUnprocessable()->assertJsonValidationErrors('evidencias.carta_exposicion');
+        $enviar($datos, $this->docs())->assertCreated();
+        $sugerencia = $datos;
+        $sugerencia['tipo_tramite'] = 'sugerencia';
+        unset($sugerencia['senalados'], $sugerencia['ubicacion_senalado']);
+        $enviar($sugerencia)->assertCreated();
     }
 
     public function test_no_permite_senalados_con_mismo_rif_situr_o_documento(): void
