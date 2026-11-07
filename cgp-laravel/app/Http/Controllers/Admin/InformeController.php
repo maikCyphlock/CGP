@@ -35,7 +35,7 @@ class InformeController extends Controller
             'pdf.max' => 'El PDF pesa más de 20 MB.',
             'imagen.max' => 'La imagen pesa más de 4 MB.',
             'imagen.mimes' => 'La imagen debe ser JPG, PNG o WebP.',
-        ], ['section' => 'sección', 'period' => 'período', 'year' => 'año', 'label' => 'descripción del período']);
+        ], ['section' => 'sección', 'period' => 'período', 'year' => 'año', 'label' => 'nombre del período']);
 
         DB::table('web_report')->insert([
             'section' => $d['section'], 'period' => $d['period'], 'year' => $d['year'], 'label' => $d['label'],

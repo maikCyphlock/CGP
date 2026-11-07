@@ -31,8 +31,9 @@
         <input type="number" name="year" class="form-control" min="2000" max="2100" value="{{ old('year', now()->year) }}" required>
       </div>
       <div class="col-md-4">
-        <label class="form-label">Descripción del período</label>
+        <label class="form-label">Nombre del período</label>
         <input type="text" name="label" class="form-control" maxlength="60" placeholder="Ej.: Enero, I Trimestre, Año Completo" value="{{ old('label') }}" required>
+        <div class="form-text">Se muestra en la columna «Período» de la tabla pública.</div>
       </div>
       <div class="col-md-6">
         <label class="form-label">Informe (PDF, máx. 20 MB)</label>
@@ -53,7 +54,7 @@
 <div class="card border-0 shadow-sm overflow-hidden">
   <div class="table-responsive">
     <table class="table table-hover align-middle mb-0" style="font-size: .9rem;">
-      <thead class="table-light"><tr><th class="ps-4">Sección</th><th>Período</th><th>Año</th><th>Descripción</th><th>Archivos</th><th></th></tr></thead>
+      <thead class="table-light"><tr><th class="ps-4">Sección</th><th>Período</th><th>Año</th><th>Nombre del período</th><th>Archivos</th><th></th></tr></thead>
       <tbody>
         @forelse ($items as $i)
           <tr>

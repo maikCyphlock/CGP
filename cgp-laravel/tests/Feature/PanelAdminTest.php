@@ -384,6 +384,23 @@ class PanelAdminTest extends TestCase
             ->assertSee('A cinco años ejerceremos'); // visión sin publicar: texto fijo
     }
 
+    public function test_editar_mision_antigua_actualiza_la_portada_y_tipos_sin_lugar_no_se_ofrecen(): void
+    {
+        $this->actingAs($u = $this->usuario());
+        $tipo = fn (string $c) => DB::table('cms_content_type')->where('code', $c)->value('id');
+        $mision = fn (string $titulo, $fecha) => DB::table('cms_content')->insertGetId([
+            'content_type_id' => $tipo('MISSION'), 'title' => $titulo, 'body' => $titulo, 'published' => true, 'author_id' => $u->id, 'published_at' => $fecha,
+        ]);
+        $vieja = $mision('Misión vieja', now()->subDays(5));
+        $mision('Misión nueva', now()->subDay());
+
+        $this->post("/admin/contenidos/$vieja", ['content_type_id' => $tipo('MISSION'), 'title' => 'Misión', 'body' => 'Texto recién editado', 'published' => 1])->assertSessionHas('ok');
+        $this->get('/')->assertSee('Texto recién editado')->assertDontSee('Misión nueva');
+
+        $this->post('/admin/contenidos', ['content_type_id' => $tipo('ORG_CHART'), 'title' => 'x', 'body' => 'x'])->assertSessionHasErrors('content_type_id');
+        $this->get('/admin/contenidos/nuevo')->assertSee('Noticia institucional')->assertDontSee('Organigrama');
+    }
+
     public function test_imagenes_del_cms(): void
     {
         \Illuminate\Support\Facades\Storage::fake();
