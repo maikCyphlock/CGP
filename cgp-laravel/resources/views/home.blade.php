@@ -591,7 +591,7 @@
           ['Ley Orgánica del Poder Ciudadano', 'G.O. 37.310 (25/10/2011)', $pdf('ley-organica-del-poder-ciudadano.pdf')],
           ['Ley Orgánica de Procedimientos Administrativos', 'Ext. 2.818 (1/7/1981)', $pdf('ley_org_procedimientos_administrativos.pdf')],
           ['Decreto Ley Orgánica de la Administración Pública', 'Ext. 6.147 (17/11/2010)', $pdf('Ley-Organica-de-Administracion-Publica.pdf')],
-          ['Ley Orgánica de los Consejos Comunales', 'Ext. 6.759 (15/7/2022)', 'https://mppp.gob.ve/wp-content/uploads/2023/07/Ley-organica-de-los-Consejos-Comunales.pdf'],
+          ['Ley Orgánica de los consejos Comunales', 'Ext. 6.759 (15/7/2022)', 'https://mppp.gob.ve/wp-content/uploads/2023/07/Ley-organica-de-los-Consejos-Comunales.pdf'],
           ['Ley Orgánica del Poder Popular', 'Ext. 6.812 (6/6/2024)', $pdf('ley_organica_del_poder_popular.pdf')],
           ['Ley Orgánica de las Comunas', 'Ext. 6.872 (30/12/2024)', $pdf('ley_organica_de_las_comunas.pdf')],
           ['Ley Orgánica de Planificación Pública y Popular', 'Ext. 6.148 (18/11/2014)', $pdf('Ley-Orgánica-de-Planificación-Pública-y-Popular.pdf')],

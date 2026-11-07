@@ -974,7 +974,7 @@
                     Ubicación Geográfica del Señalado <span class="required" style="color:#1565c0;">*</span>
                   </label>
                   <input type="text" id="sen-ubicacion" class="form-control"
-                    placeholder="Dirección, Parroquia, Consejo Comunal...">
+                    placeholder="Dirección, Parroquia, consejo Comunal...">
                   <span class="error-msg" id="sen-ubicacion-err">Ingrese la ubicación del señalado.</span>
                 </div>
               </div>
