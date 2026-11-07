@@ -49,11 +49,99 @@ class PanelAdminTest extends TestCase
                 'sexo' => 'F', 'correo' => 'ana@example.com', 'telf_cel' => '04141234567',
                 'direccion' => 'Calle 1, Acarigua, Portuguesa',
             ],
+            'senalados' => [['tipo' => 'persona_natural', 'campos' => ['pn-nombres' => 'Luis Pérez']]],
+            'ubicacion_senalado' => 'Plaza Bolívar, Acarigua',
             'narracion' => str_repeat('Hechos narrados por la ciudadana. ', 3),
             'acepta_declaracion' => true,
         ])])->assertCreated();
 
         return CaseFile::where('case_number', $r->json('case_number'))->firstOrFail();
+    }
+
+    public function test_el_servidor_valida_el_envio_publico(): void
+    {
+        \Illuminate\Support\Facades\Storage::fake();
+        $datos = [
+            'tipo_tramite' => 'denuncia',
+            'ciudadano' => [
+                'tipo_doc' => 'V', 'nro_doc' => '12345678', 'primer_nombre' => 'Ana', 'primer_apellido' => 'Díaz',
+                'sexo' => 'F', 'correo' => 'ana@example.com', 'telf_cel' => '04141234567',
+                'direccion' => 'Calle 1, Acarigua, Portuguesa',
+            ],
+            'senalados' => [['tipo' => 'persona_natural', 'campos' => ['pn-nombres' => 'Luis Pérez']]],
+            'ubicacion_senalado' => 'Plaza Bolívar, Acarigua',
+            'narracion' => str_repeat('Hechos narrados por la ciudadana. ', 3),
+            'acepta_declaracion' => true,
+        ];
+        $enviar = fn ($d, $f = []) => $this->post('/denuncias', ['datos' => json_encode($d)] + $f, ['Accept' => 'application/json']);
+        // Archivo real: el falso de Laravel se identifica por el nombre y no por el contenido.
+        $archivo = function ($n, $c) {
+            $ruta = tempnam(sys_get_temp_dir(), 'ev');
+            file_put_contents($ruta, $c);
+
+            return new \Illuminate\Http\UploadedFile($ruta, $n, null, null, true);
+        };
+
+        $mal = $datos;
+        $mal['ciudadano']['nro_doc'] = '12AB';
+        $enviar($mal)->assertUnprocessable()->assertJsonValidationErrors('ciudadano.nro_doc');
+
+        $mal = $datos;
+        unset($mal['senalados'], $mal['ubicacion_senalado']);
+        $enviar($mal)->assertUnprocessable()->assertJsonValidationErrors('senalados');
+
+        $enviar($datos, ['evidencias' => ['otros_docs' => [$archivo('virus.exe', "MZ\x90\0".str_repeat("\0", 200))]]])->assertUnprocessable();
+        $enviar($datos, ['evidencias' => ['fotografias' => [$archivo('virus.pdf', "MZ\x90\0".str_repeat("\0", 200))]]])->assertUnprocessable();
+
+        // Los tipos que no piden señalado (petición) y los archivos permitidos siguen entrando.
+        $peticion = $datos;
+        $peticion['tipo_tramite'] = 'peticion';
+        unset($peticion['senalados'], $peticion['ubicacion_senalado']);
+        $enviar($peticion)->assertCreated();
+        $enviar($datos, ['evidencias' => ['ci_denunciante' => [$archivo('cedula.pdf', "%PDF-1.4\n%prueba\n")]]])->assertCreated();
+    }
+
+    public function test_no_permite_senalados_con_mismo_rif_situr_o_documento(): void
+    {
+        $base = [
+            'tipo_tramite' => 'denuncia',
+            'ciudadano' => [
+                'tipo_doc' => 'V', 'nro_doc' => '12345678', 'primer_nombre' => 'Ana', 'primer_apellido' => 'Díaz',
+                'sexo' => 'F', 'correo' => 'ana@example.com', 'telf_cel' => '04141234567',
+                'direccion' => 'Calle 1, Acarigua, Portuguesa',
+            ],
+            'ubicacion_senalado' => 'Plaza Bolívar, Acarigua',
+            'narracion' => str_repeat('Hechos narrados por la ciudadana. ', 3),
+            'acepta_declaracion' => true,
+        ];
+        $enviar = fn ($d) => $this->post('/denuncias', ['datos' => json_encode($d)], ['Accept' => 'application/json']);
+
+        // 1. Mismo número de documento entre personas naturales
+        $malDoc = $base + [
+            'senalados' => [
+                ['tipo' => 'persona_natural', 'campos' => ['pn-nombres' => 'Luis Pérez', 'pn-nro-doc' => '87654321', 'pn-tipo-doc' => 'V']],
+                ['tipo' => 'persona_natural', 'campos' => ['pn-nombres' => 'Carlos Pérez', 'pn-nro-doc' => '87654321', 'pn-tipo-doc' => 'V']],
+            ],
+        ];
+        $enviar($malDoc)->assertUnprocessable()->assertJsonValidationErrors('senalados.1.campos.pn-nro-doc');
+
+        // 2. Mismo RIF entre personas jurídicas / entes
+        $malRif = $base + [
+            'senalados' => [
+                ['tipo' => 'persona_juridica', 'campos' => ['pj-razon' => 'Empresa Alfa', 'pj-rif' => 'J-12345678-9']],
+                ['tipo' => 'persona_juridica', 'campos' => ['pj-razon' => 'Empresa Beta', 'pj-rif' => 'J-12345678-9']],
+            ],
+        ];
+        $enviar($malRif)->assertUnprocessable()->assertJsonValidationErrors('senalados.1.campos.pj-rif');
+
+        // 3. Mismo código SITUR entre comunas
+        $malSitur = $base + [
+            'senalados' => [
+                ['tipo' => 'comuna', 'campos' => ['cm-nombre' => 'Comuna Alfa', 'cm-parroquia' => 'Acarigua', 'cm-municipio' => 'Páez', 'cm-situr' => 'C-URB-2014-11-0001']],
+                ['tipo' => 'comuna', 'campos' => ['cm-nombre' => 'Comuna Beta', 'cm-parroquia' => 'Payara', 'cm-municipio' => 'Páez', 'cm-situr' => 'C-URB-2014-11-0001']],
+            ],
+        ];
+        $enviar($malSitur)->assertUnprocessable()->assertJsonValidationErrors('senalados.1.campos.cm-situr');
     }
 
     private function actuar(CaseFile $e, array $datos)
@@ -337,6 +425,23 @@ class PanelAdminTest extends TestCase
             ->assertSee('Misión desde el CMS')
             ->assertDontSee('Borrador secreto')->assertDontSee('Juramentación del nuevo Contralor')
             ->assertSee('A cinco años ejerceremos'); // visión sin publicar: texto fijo
+    }
+
+    public function test_editar_mision_antigua_actualiza_la_portada_y_tipos_sin_lugar_no_se_ofrecen(): void
+    {
+        $this->actingAs($u = $this->usuario());
+        $tipo = fn (string $c) => DB::table('cms_content_type')->where('code', $c)->value('id');
+        $mision = fn (string $titulo, $fecha) => DB::table('cms_content')->insertGetId([
+            'content_type_id' => $tipo('MISSION'), 'title' => $titulo, 'body' => $titulo, 'published' => true, 'author_id' => $u->id, 'published_at' => $fecha,
+        ]);
+        $vieja = $mision('Misión vieja', now()->subDays(5));
+        $mision('Misión nueva', now()->subDay());
+
+        $this->post("/admin/contenidos/$vieja", ['content_type_id' => $tipo('MISSION'), 'title' => 'Misión', 'body' => 'Texto recién editado', 'published' => 1])->assertSessionHas('ok');
+        $this->get('/')->assertSee('Texto recién editado')->assertDontSee('Misión nueva');
+
+        $this->post('/admin/contenidos', ['content_type_id' => $tipo('ORG_CHART'), 'title' => 'x', 'body' => 'x'])->assertSessionHasErrors('content_type_id');
+        $this->get('/admin/contenidos/nuevo')->assertSee('Noticia institucional')->assertDontSee('Organigrama');
     }
 
     public function test_imagenes_del_cms(): void

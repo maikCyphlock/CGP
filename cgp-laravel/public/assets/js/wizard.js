@@ -1362,7 +1362,12 @@ function eliminarSenalado(idTarjeta) {
     var lista = document.getElementById('lista-senalados');
     if (lista.children.length <= 1) return;
     var tarjeta = document.getElementById('senalado-card-' + idTarjeta);
-    if (tarjeta) tarjeta.remove();
+    if (tarjeta) {
+        tarjeta.remove();
+        if (typeof revalidarCamposClaveOtrosSenalados === 'function') {
+            revalidarCamposClaveOtrosSenalados(null);
+        }
+    }
 }
 
 /**
@@ -1387,6 +1392,10 @@ function onTipoSenaladoCheckboxChange(checkbox) {
     var contenedorCampos = tarjeta.querySelector('.senalado-card-campos');
     var marcado = tarjeta.querySelector('[data-campo="tipo-senalado"]:checked');
     contenedorCampos.innerHTML = marcado ? construirHtmlPlantillaSenalado(marcado.value) : '';
+
+    if (typeof revalidarCamposClaveOtrosSenalados === 'function') {
+        revalidarCamposClaveOtrosSenalados(null);
+    }
 }
 
 /**
@@ -1434,6 +1443,49 @@ function validarBloquesSenaladoDinamicos() {
             errores.push(msg);
         }
     });
+
+    // Validación cruzada entre señalados: no puede existir el mismo RIF, código SITUR, número de documento
+    var tarjetasSen = document.querySelectorAll('#lista-senalados .senalado-card');
+    for (var i = 0; i < tarjetasSen.length; i++) {
+        var tA = tarjetasSen[i];
+        var rifA = obtenerRifDeTarjeta(tA);
+        var siturA = obtenerSiturDeTarjeta(tA);
+        var docA = obtenerDocDeTarjeta(tA);
+
+        for (var j = i + 1; j < tarjetasSen.length; j++) {
+            var tB = tarjetasSen[j];
+            var rifB = obtenerRifDeTarjeta(tB);
+            var siturB = obtenerSiturDeTarjeta(tB);
+            var docB = obtenerDocDeTarjeta(tB);
+
+            if (rifA && rifB && rifA.norm === rifB.norm) {
+                var msgR = 'No puede existir el mismo R.I.F. entre señalados (' + rifB.valor + ').';
+                rifA.campo.classList.add('invalid');
+                mostrarEstadoVivo(rifA.campo, msgR);
+                rifB.campo.classList.add('invalid');
+                mostrarEstadoVivo(rifB.campo, msgR);
+                if (errores.indexOf(msgR) === -1) errores.push(msgR);
+            }
+
+            if (siturA && siturB && siturA.norm === siturB.norm) {
+                var msgS = 'No puede existir el mismo código SITUR entre señalados (' + siturB.valor + ').';
+                siturA.campo.classList.add('invalid');
+                mostrarEstadoVivo(siturA.campo, msgS);
+                siturB.campo.classList.add('invalid');
+                mostrarEstadoVivo(siturB.campo, msgS);
+                if (errores.indexOf(msgS) === -1) errores.push(msgS);
+            }
+
+            if (docA && docB && docA.norm.length >= 5 && docA.norm === docB.norm && (!docA.tipo || !docB.tipo || docA.tipo === docB.tipo)) {
+                var msgD = 'No puede existir el mismo número de documento entre señalados (' + docB.valor + ').';
+                docA.campo.classList.add('invalid');
+                mostrarEstadoVivo(docA.campo, msgD);
+                docB.campo.classList.add('invalid');
+                mostrarEstadoVivo(docB.campo, msgD);
+                if (errores.indexOf(msgD) === -1) errores.push(msgD);
+            }
+        }
+    }
 
     // Validación de nombres y apellidos del señalado (solo letras)
     var reSoloLetrasSenalado = /^[a-zA-ZáéíóúÁÉÍÓÚñÑüÜ\s,]+$/;
@@ -2188,6 +2240,141 @@ var REGLAS_VIVO = {
     'cual-instancia': { req: true, check: msgMinimo(3) }
 };
 
+function normalizarRifSenalado(rif) {
+    return (rif || '').toUpperCase().replace(/[^A-Z0-9]/g, '');
+}
+
+function normalizarSiturSenalado(situr) {
+    return (situr || '').trim().toUpperCase();
+}
+
+function normalizarDocSenalado(doc) {
+    return (doc || '').replace(/\D/g, '');
+}
+
+function obtenerRifDeTarjeta(tarjeta) {
+    if (!tarjeta) return null;
+    var cPj = tarjeta.querySelector('[data-campo="pj-rif"]');
+    if (cPj && cPj.value.trim() && RE_RIF.test(cPj.value.trim())) return { campo: cPj, valor: cPj.value.trim(), norm: normalizarRifSenalado(cPj.value.trim()) };
+    var cOe = tarjeta.querySelector('[data-campo="oe-rif"]');
+    if (cOe && cOe.value.trim() && RE_RIF.test(cOe.value.trim())) return { campo: cOe, valor: cOe.value.trim(), norm: normalizarRifSenalado(cOe.value.trim()) };
+    var cCc = tarjeta.querySelector('[data-campo="cc-rif"]');
+    if (cCc && cCc.value.trim() && RE_RIF.test(cCc.value.trim())) return { campo: cCc, valor: cCc.value.trim(), norm: normalizarRifSenalado(cCc.value.trim()) };
+    var cOt = tarjeta.querySelector('[data-campo="ot-documento"]');
+    if (cOt && cOt.value.trim() && RE_RIF.test(cOt.value.trim())) {
+        return { campo: cOt, valor: cOt.value.trim(), norm: normalizarRifSenalado(cOt.value.trim()) };
+    }
+    return null;
+}
+
+function obtenerSiturDeTarjeta(tarjeta) {
+    if (!tarjeta) return null;
+    var cCm = tarjeta.querySelector('[data-campo="cm-situr"]');
+    if (cCm && cCm.value.trim() && !msgSitur(cCm.value.trim())) return { campo: cCm, valor: cCm.value.trim(), norm: normalizarSiturSenalado(cCm.value.trim()) };
+    var cCc = tarjeta.querySelector('[data-campo="cc-situr"]');
+    if (cCc && cCc.value.trim() && !msgSitur(cCc.value.trim())) return { campo: cCc, valor: cCc.value.trim(), norm: normalizarSiturSenalado(cCc.value.trim()) };
+    return null;
+}
+
+function obtenerDocDeTarjeta(tarjeta) {
+    if (!tarjeta) return null;
+    var cPn = tarjeta.querySelector('[data-campo="pn-nro-doc"]');
+    if (cPn && cPn.value.trim()) {
+        var tPn = tarjeta.querySelector('[data-campo="pn-tipo-doc"]');
+        var digitsPn = normalizarDocSenalado(cPn.value.trim());
+        if (digitsPn.length >= 5) {
+            return { campo: cPn, valor: cPn.value.trim(), tipo: tPn ? tPn.value.trim() : '', norm: digitsPn };
+        }
+    }
+    var cJp = tarjeta.querySelector('[data-campo="jp-nro-doc"]');
+    if (cJp && cJp.value.trim()) {
+        var tJp = tarjeta.querySelector('[data-campo="jp-tipo-doc"]');
+        var digitsJp = normalizarDocSenalado(cJp.value.trim());
+        if (digitsJp.length >= 5) {
+            return { campo: cJp, valor: cJp.value.trim(), tipo: tJp ? tJp.value.trim() : '', norm: digitsJp };
+        }
+    }
+    var cOt = tarjeta.querySelector('[data-campo="ot-documento"]');
+    if (cOt && cOt.value.trim() && !/^[JjGgCc]/.test(cOt.value.trim())) {
+        var digitsOt = normalizarDocSenalado(cOt.value.trim());
+        if (digitsOt.length >= 5) {
+            return { campo: cOt, valor: cOt.value.trim(), tipo: '', norm: digitsOt };
+        }
+    }
+    return null;
+}
+
+function buscarDuplicadoDocSenalado(campo, v) {
+    var tarjeta = campo ? campo.closest('.senalado-card') : null;
+    if (!tarjeta) return '';
+    var norm = normalizarDocSenalado(v);
+    if (norm.length < 5) return '';
+    var tipo = '';
+    if (campo.dataset.campo === 'pn-nro-doc') {
+        tipo = (tarjeta.querySelector('[data-campo="pn-tipo-doc"]')?.value || '').trim();
+    } else if (campo.dataset.campo === 'jp-nro-doc') {
+        tipo = (tarjeta.querySelector('[data-campo="jp-tipo-doc"]')?.value || '').trim();
+    }
+    var tarjetas = document.querySelectorAll('#lista-senalados .senalado-card');
+    for (var i = 0; i < tarjetas.length; i++) {
+        var otra = tarjetas[i];
+        if (otra === tarjeta) continue;
+        var info = obtenerDocDeTarjeta(otra);
+        if (info && info.norm === norm && (!tipo || !info.tipo || tipo === info.tipo)) {
+            return 'No puede existir el mismo número de documento entre señalados.';
+        }
+    }
+    return '';
+}
+
+function buscarDuplicadoRifSenalado(campo, v) {
+    var tarjeta = campo ? campo.closest('.senalado-card') : null;
+    if (!tarjeta) return '';
+    var norm = normalizarRifSenalado(v);
+    if (norm.length < 8) return '';
+    var tarjetas = document.querySelectorAll('#lista-senalados .senalado-card');
+    for (var i = 0; i < tarjetas.length; i++) {
+        var otra = tarjetas[i];
+        if (otra === tarjeta) continue;
+        var info = obtenerRifDeTarjeta(otra);
+        if (info && info.norm === norm) {
+            return 'No puede existir el mismo R.I.F. entre señalados.';
+        }
+    }
+    return '';
+}
+
+function buscarDuplicadoSiturSenalado(campo, v) {
+    var tarjeta = campo ? campo.closest('.senalado-card') : null;
+    if (!tarjeta) return '';
+    var norm = normalizarSiturSenalado(v);
+    if (!norm) return '';
+    var tarjetas = document.querySelectorAll('#lista-senalados .senalado-card');
+    for (var i = 0; i < tarjetas.length; i++) {
+        var otra = tarjetas[i];
+        if (otra === tarjeta) continue;
+        var info = obtenerSiturDeTarjeta(otra);
+        if (info && info.norm === norm) {
+            return 'No puede existir el mismo código SITUR entre señalados.';
+        }
+    }
+    return '';
+}
+
+function revalidarCamposClaveOtrosSenalados(campoOrigen) {
+    var campos = document.querySelectorAll(
+        '#lista-senalados [data-campo="pn-nro-doc"], #lista-senalados [data-campo="jp-nro-doc"], ' +
+        '#lista-senalados [data-campo="pj-rif"], #lista-senalados [data-campo="oe-rif"], ' +
+        '#lista-senalados [data-campo="cc-rif"], #lista-senalados [data-campo="cm-situr"], ' +
+        '#lista-senalados [data-campo="cc-situr"], #lista-senalados [data-campo="ot-documento"]'
+    );
+    campos.forEach(function (c) {
+        if (c !== campoOrigen && c.value && c.value.trim()) {
+            validarCampoVivo(c, true);
+        }
+    });
+}
+
 /** Campos opcionales del señalado: solo se validan si se llenan. */
 var REGLAS_SENALADO_OPCIONAL = {
     'pn-nro-doc': function (v, final, campo) {
@@ -2203,6 +2390,10 @@ var REGLAS_SENALADO_OPCIONAL = {
             if (!senTipo || !citTipo || senTipo === citTipo) {
                 return 'El señalado no puede tener la misma cédula que el denunciante.';
             }
+        }
+        if (final && campo) {
+            var dup = buscarDuplicadoDocSenalado(campo, v);
+            if (dup) return dup;
         }
         return '';
     },
@@ -2220,13 +2411,54 @@ var REGLAS_SENALADO_OPCIONAL = {
                 return 'El juez de paz señalado no puede tener la misma cédula que el denunciante.';
             }
         }
+        if (final && campo) {
+            var dup = buscarDuplicadoDocSenalado(campo, v);
+            if (dup) return dup;
+        }
         return '';
     },
-    'pj-rif': function (v, final) { return (final && !RE_RIF.test(v)) ? 'Formato de R.I.F. no válido. Ej.: J-12345678-9' : ''; },
-    'oe-rif': function (v, final) { return (final && !RE_RIF.test(v)) ? 'Formato de R.I.F. no válido. Ej.: G-20001628-0' : ''; },
-    'cm-situr': msgSitur,
-    'cc-situr': msgSitur,
-    'cc-rif': function (v, final) { return (final && !RE_RIF.test(v)) ? 'Formato de R.I.F. no válido. Ej.: J-12345678-9' : ''; },
+    'pj-rif': function (v, final, campo) {
+        if (final && !RE_RIF.test(v)) return 'Formato de R.I.F. no válido. Ej.: J-12345678-9';
+        if (final && campo) {
+            var dup = buscarDuplicadoRifSenalado(campo, v);
+            if (dup) return dup;
+        }
+        return '';
+    },
+    'oe-rif': function (v, final, campo) {
+        if (final && !RE_RIF.test(v)) return 'Formato de R.I.F. no válido. Ej.: G-20001628-0';
+        if (final && campo) {
+            var dup = buscarDuplicadoRifSenalado(campo, v);
+            if (dup) return dup;
+        }
+        return '';
+    },
+    'cm-situr': function (v, final, campo) {
+        var err = msgSitur(v);
+        if (err) return err;
+        if (final && campo) {
+            var dup = buscarDuplicadoSiturSenalado(campo, v);
+            if (dup) return dup;
+        }
+        return '';
+    },
+    'cc-situr': function (v, final, campo) {
+        var err = msgSitur(v);
+        if (err) return err;
+        if (final && campo) {
+            var dup = buscarDuplicadoSiturSenalado(campo, v);
+            if (dup) return dup;
+        }
+        return '';
+    },
+    'cc-rif': function (v, final, campo) {
+        if (final && !RE_RIF.test(v)) return 'Formato de R.I.F. no válido. Ej.: J-12345678-9';
+        if (final && campo) {
+            var dup = buscarDuplicadoRifSenalado(campo, v);
+            if (dup) return dup;
+        }
+        return '';
+    },
     'ot-documento': function (v, final, campo) {
         if (final && !(RE_DOC_SENALADO.test(v) || RE_RIF.test(v)))
             return 'Ingrese una cédula (solo números) o un R.I.F. válido. Ej.: J-12345678-9';
@@ -2235,6 +2467,15 @@ var REGLAS_SENALADO_OPCIONAL = {
         var num = v.replace(/\D/g, '');
         if (citDoc && num === citDoc && !/^[JjGgCc]/.test(v)) {
             return 'El documento del señalado no puede coincidir con la cédula del denunciante.';
+        }
+        if (final && campo) {
+            if (RE_RIF.test(v)) {
+                var dupR = buscarDuplicadoRifSenalado(campo, v);
+                if (dupR) return dupR;
+            } else {
+                var dupD = buscarDuplicadoDocSenalado(campo, v);
+                if (dupD) return dupD;
+            }
         }
         return '';
     }
@@ -2339,6 +2580,16 @@ function validarCampoVivo(campo, alSalir) {
         var opcional = REGLAS_SENALADO_OPCIONAL[campo.dataset.campo];
         if (opcional) {
             mostrarEstadoVivo(campo, v ? (opcional(v, alSalir, campo) || null) : null);
+            if (!campo._revalidandoOtros && (
+                campo.dataset.campo === 'pn-nro-doc' || campo.dataset.campo === 'jp-nro-doc' ||
+                campo.dataset.campo === 'pj-rif' || campo.dataset.campo === 'oe-rif' ||
+                campo.dataset.campo === 'cc-rif' || campo.dataset.campo === 'cm-situr' ||
+                campo.dataset.campo === 'cc-situr' || campo.dataset.campo === 'ot-documento'
+            )) {
+                campo._revalidandoOtros = true;
+                revalidarCamposClaveOtrosSenalados(campo);
+                campo._revalidandoOtros = false;
+            }
         } else if (campo.dataset.campo === 'pn-tipo-doc' || campo.dataset.campo === 'jp-tipo-doc') {
             var tarjeta = campo.closest('.senalado-card');
             var campoDoc = tarjeta ? tarjeta.querySelector('[data-campo="pn-nro-doc"], [data-campo="jp-nro-doc"]') : null;

@@ -61,7 +61,7 @@ class DenunciaController extends Controller
             'tipo_tramite' => ['required', Rule::in(array_keys(self::TIPOS_TRAMITE))],
             'es_consulta' => 'boolean',
             'ciudadano.tipo_doc' => ['required', Rule::in(array_keys(self::TIPOS_DOC))],
-            'ciudadano.nro_doc' => 'required|string|max:12',
+            'ciudadano.nro_doc' => ['required', 'string', 'regex:/^\d{5,10}$/'],
             'ciudadano.primer_nombre' => 'required|string|max:40',
             'ciudadano.segundo_nombre' => 'nullable|string|max:39',
             'ciudadano.primer_apellido' => 'required|string|max:40',
@@ -81,7 +81,7 @@ class DenunciaController extends Controller
             'ciudadano.parroquia' => 'nullable|string|max:80',
             'ciudadano.municipio' => 'nullable|string|max:80',
             'ciudadano.ciudad' => 'nullable|string|max:80',
-            'senalados' => 'array',
+            'senalados' => 'required_if:tipo_tramite,denuncia,queja|array',
             'senalados.*.tipo' => ['required', Rule::in(array_keys(self::TIPOS_SENALADO))],
             'senalados.*.campos' => 'array',
             'senalados.*.campos.*' => 'nullable|string|max:250',
@@ -119,6 +119,8 @@ class DenunciaController extends Controller
             'gt' => 'El :attribute debe ser mayor que cero.',
             'regex' => 'El código SITUR no es válido. Ej.: C-URB-2014-11-0001 o CEC-ZU-205.',
             'accepted' => 'Debe aceptar la declaración jurada.',
+            'ciudadano.nro_doc.regex' => 'El número de documento debe tener entre 5 y 10 dígitos.',
+            'senalados.required_if' => 'Debe agregar al menos un señalado.',
         ], [
             'tipo_tramite' => 'tipo de trámite',
             'ciudadano.tipo_doc' => 'tipo de documento',
@@ -162,12 +164,138 @@ class DenunciaController extends Controller
                     }
                 }
             }
+
+            // Validación entre señalados: no puede existir el mismo RIF, código SITUR, número de documento
+            $senalados = $datos['senalados'] ?? [];
+            $count = count($senalados);
+            for ($i = 0; $i < $count; $i++) {
+                $cA = $senalados[$i]['campos'] ?? [];
+
+                // 1. RIF A
+                $rifFieldA = null;
+                $rifA = '';
+                if (!empty($cA['pj-rif'])) {
+                    $rifFieldA = 'pj-rif';
+                    $rifA = $cA['pj-rif'];
+                } elseif (!empty($cA['oe-rif'])) {
+                    $rifFieldA = 'oe-rif';
+                    $rifA = $cA['oe-rif'];
+                } elseif (!empty($cA['cc-rif'])) {
+                    $rifFieldA = 'cc-rif';
+                    $rifA = $cA['cc-rif'];
+                } elseif (!empty($cA['ot-documento']) && preg_match('/^[JGVECjgvec]-?\d{8,9}-?\d?$/', trim($cA['ot-documento']))) {
+                    $rifFieldA = 'ot-documento';
+                    $rifA = trim($cA['ot-documento']);
+                }
+                $normRifA = $rifA !== '' ? strtoupper(preg_replace('/[^A-Za-z0-9]/', '', $rifA)) : '';
+
+                // 2. SITUR A
+                $siturFieldA = null;
+                $siturA = '';
+                if (!empty($cA['cm-situr'])) {
+                    $siturFieldA = 'cm-situr';
+                    $siturA = trim($cA['cm-situr']);
+                } elseif (!empty($cA['cc-situr'])) {
+                    $siturFieldA = 'cc-situr';
+                    $siturA = trim($cA['cc-situr']);
+                }
+                $normSiturA = $siturA !== '' ? strtoupper(trim($siturA)) : '';
+
+                // 3. Documento A
+                $docFieldA = null;
+                $docA = '';
+                $tipoDocA = '';
+                if (!empty($cA['pn-nro-doc'])) {
+                    $docFieldA = 'pn-nro-doc';
+                    $docA = $cA['pn-nro-doc'];
+                    $tipoDocA = trim($cA['pn-tipo-doc'] ?? '');
+                } elseif (!empty($cA['jp-nro-doc'])) {
+                    $docFieldA = 'jp-nro-doc';
+                    $docA = $cA['jp-nro-doc'];
+                    $tipoDocA = trim($cA['jp-tipo-doc'] ?? '');
+                } elseif (!empty($cA['ot-documento']) && !preg_match('/^[JjGgCc]/', trim($cA['ot-documento']))) {
+                    $docFieldA = 'ot-documento';
+                    $docA = trim($cA['ot-documento']);
+                    $tipoDocA = '';
+                }
+                $normDocA = preg_replace('/\D/', '', $docA);
+
+                for ($j = $i + 1; $j < $count; $j++) {
+                    $cB = $senalados[$j]['campos'] ?? [];
+
+                    // RIF B
+                    $rifFieldB = null;
+                    $rifB = '';
+                    if (!empty($cB['pj-rif'])) {
+                        $rifFieldB = 'pj-rif';
+                        $rifB = $cB['pj-rif'];
+                    } elseif (!empty($cB['oe-rif'])) {
+                        $rifFieldB = 'oe-rif';
+                        $rifB = $cB['oe-rif'];
+                    } elseif (!empty($cB['cc-rif'])) {
+                        $rifFieldB = 'cc-rif';
+                        $rifB = $cB['cc-rif'];
+                    } elseif (!empty($cB['ot-documento']) && preg_match('/^[JGVECjgvec]-?\d{8,9}-?\d?$/', trim($cB['ot-documento']))) {
+                        $rifFieldB = 'ot-documento';
+                        $rifB = trim($cB['ot-documento']);
+                    }
+                    $normRifB = $rifB !== '' ? strtoupper(preg_replace('/[^A-Za-z0-9]/', '', $rifB)) : '';
+
+                    if ($normRifA !== '' && $normRifB !== '' && $normRifA === $normRifB) {
+                        $validator->errors()->add("senalados.{$j}.campos.{$rifFieldB}", "No puede existir el mismo R.I.F. ({$rifB}) entre señalados.");
+                    }
+
+                    // SITUR B
+                    $siturFieldB = null;
+                    $siturB = '';
+                    if (!empty($cB['cm-situr'])) {
+                        $siturFieldB = 'cm-situr';
+                        $siturB = trim($cB['cm-situr']);
+                    } elseif (!empty($cB['cc-situr'])) {
+                        $siturFieldB = 'cc-situr';
+                        $siturB = trim($cB['cc-situr']);
+                    }
+                    $normSiturB = $siturB !== '' ? strtoupper(trim($siturB)) : '';
+
+                    if ($normSiturA !== '' && $normSiturB !== '' && $normSiturA === $normSiturB) {
+                        $validator->errors()->add("senalados.{$j}.campos.{$siturFieldB}", "No puede existir el mismo código SITUR ({$siturB}) entre señalados.");
+                    }
+
+                    // Documento B
+                    $docFieldB = null;
+                    $docB = '';
+                    $tipoDocB = '';
+                    if (!empty($cB['pn-nro-doc'])) {
+                        $docFieldB = 'pn-nro-doc';
+                        $docB = $cB['pn-nro-doc'];
+                        $tipoDocB = trim($cB['pn-tipo-doc'] ?? '');
+                    } elseif (!empty($cB['jp-nro-doc'])) {
+                        $docFieldB = 'jp-nro-doc';
+                        $docB = $cB['jp-nro-doc'];
+                        $tipoDocB = trim($cB['jp-tipo-doc'] ?? '');
+                    } elseif (!empty($cB['ot-documento']) && !preg_match('/^[JjGgCc]/', trim($cB['ot-documento']))) {
+                        $docFieldB = 'ot-documento';
+                        $docB = trim($cB['ot-documento']);
+                        $tipoDocB = '';
+                    }
+                    $normDocB = preg_replace('/\D/', '', $docB);
+
+                    if ($normDocA !== '' && $normDocB !== '' && strlen($normDocA) >= 5 && $normDocA === $normDocB && (empty($tipoDocA) || empty($tipoDocB) || $tipoDocA === $tipoDocB)) {
+                        $validator->errors()->add("senalados.{$j}.campos.{$docFieldB}", "No puede existir el mismo número de documento ({$docB}) entre señalados.");
+                    }
+                }
+            }
         });
 
         $request->validate([
             'evidencias' => 'array',
             'evidencias.*' => 'array',
-            'evidencias.*.*' => 'file|max:10240',
+            // Formatos que ofrece el formulario; `mimes` revisa el contenido, no solo la extensión.
+            'evidencias.*.*' => 'file|max:10240|mimes:pdf,png,jpg,jpeg,doc,docx,mp4,avi,mov,qt,mkv,webm,mp3,mpga,wav,ogg,oga,m4a,aac',
+        ], [
+            'evidencias.*.*.uploaded' => 'El archivo no se pudo cargar: el máximo es de 10 MB.',
+            'evidencias.*.*.max' => 'El archivo supera el máximo de 10 MB.',
+            'evidencias.*.*.mimes' => 'Formato no permitido. Se admiten PDF, Word, imagen, video o audio.',
         ]);
 
         $d = $v->validate();

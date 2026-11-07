@@ -6,6 +6,7 @@ use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Str;
+use Illuminate\Validation\Rule;
 
 /** Contenido de la página web (noticias, misión, visión…) con historial de versiones. */
 class ContenidoController extends Controller
@@ -64,7 +65,8 @@ class ContenidoController extends Controller
             ]);
             DB::table('cms_content')->where('id', $id)->update($d + [
                 // Al publicar, o al cambiar de tipo (p. ej. Misión → Noticia), cuenta como publicación nueva.
-                'published_at' => $d['published'] && (! $actual->published || $d['content_type_id'] != $actual->content_type_id) ? now() : $actual->published_at,
+                // Misión y Visión muestran un solo registro (el más reciente): editarlas siempre lo pone al frente.
+                'published_at' => $d['published'] && (! $actual->published || $d['content_type_id'] != $actual->content_type_id || $this->esUnico($d['content_type_id'])) ? now() : $actual->published_at,
                 'unpublished_at' => $actual->published && ! $d['published'] ? now() : $actual->unpublished_at,
             ]);
         });
@@ -75,7 +77,7 @@ class ContenidoController extends Controller
     private function validar(Request $request): array
     {
         $d = $request->validate([
-            'content_type_id' => 'required|exists:cms_content_type,id',
+            'content_type_id' => ['required', Rule::in($this->tipos()->pluck('id'))],
             'title' => 'required|string|max:200',
             'body' => 'required|string|max:50000',
         ], [
@@ -89,7 +91,13 @@ class ContenidoController extends Controller
 
     private function tipos()
     {
-        return DB::table('cms_content_type')->orderBy('name')->get();
+        // Solo los tipos que la portada muestra; organigrama, cartelera y guía no salen del CMS.
+        return DB::table('cms_content_type')->whereIn('code', ['NEWS', 'MISSION', 'VISION'])->orderBy('name')->get();
+    }
+
+    private function esUnico($tipoId): bool
+    {
+        return DB::table('cms_content_type')->where('id', $tipoId)->whereIn('code', ['MISSION', 'VISION'])->exists();
     }
 
     private function buscar(string $id): object
