@@ -101,6 +101,49 @@ class PanelAdminTest extends TestCase
         $enviar($datos, ['evidencias' => ['ci_denunciante' => [$archivo('cedula.pdf', "%PDF-1.4\n%prueba\n")]]])->assertCreated();
     }
 
+    public function test_no_permite_senalados_con_mismo_rif_situr_o_documento(): void
+    {
+        $base = [
+            'tipo_tramite' => 'denuncia',
+            'ciudadano' => [
+                'tipo_doc' => 'V', 'nro_doc' => '12345678', 'primer_nombre' => 'Ana', 'primer_apellido' => 'Díaz',
+                'sexo' => 'F', 'correo' => 'ana@example.com', 'telf_cel' => '04141234567',
+                'direccion' => 'Calle 1, Acarigua, Portuguesa',
+            ],
+            'ubicacion_senalado' => 'Plaza Bolívar, Acarigua',
+            'narracion' => str_repeat('Hechos narrados por la ciudadana. ', 3),
+            'acepta_declaracion' => true,
+        ];
+        $enviar = fn ($d) => $this->post('/denuncias', ['datos' => json_encode($d)], ['Accept' => 'application/json']);
+
+        // 1. Mismo número de documento entre personas naturales
+        $malDoc = $base + [
+            'senalados' => [
+                ['tipo' => 'persona_natural', 'campos' => ['pn-nombres' => 'Luis Pérez', 'pn-nro-doc' => '87654321', 'pn-tipo-doc' => 'V']],
+                ['tipo' => 'persona_natural', 'campos' => ['pn-nombres' => 'Carlos Pérez', 'pn-nro-doc' => '87654321', 'pn-tipo-doc' => 'V']],
+            ],
+        ];
+        $enviar($malDoc)->assertUnprocessable()->assertJsonValidationErrors('senalados.1.campos.pn-nro-doc');
+
+        // 2. Mismo RIF entre personas jurídicas / entes
+        $malRif = $base + [
+            'senalados' => [
+                ['tipo' => 'persona_juridica', 'campos' => ['pj-razon' => 'Empresa Alfa', 'pj-rif' => 'J-12345678-9']],
+                ['tipo' => 'persona_juridica', 'campos' => ['pj-razon' => 'Empresa Beta', 'pj-rif' => 'J-12345678-9']],
+            ],
+        ];
+        $enviar($malRif)->assertUnprocessable()->assertJsonValidationErrors('senalados.1.campos.pj-rif');
+
+        // 3. Mismo código SITUR entre comunas
+        $malSitur = $base + [
+            'senalados' => [
+                ['tipo' => 'comuna', 'campos' => ['cm-nombre' => 'Comuna Alfa', 'cm-parroquia' => 'Acarigua', 'cm-municipio' => 'Páez', 'cm-situr' => 'C-URB-2014-11-0001']],
+                ['tipo' => 'comuna', 'campos' => ['cm-nombre' => 'Comuna Beta', 'cm-parroquia' => 'Payara', 'cm-municipio' => 'Páez', 'cm-situr' => 'C-URB-2014-11-0001']],
+            ],
+        ];
+        $enviar($malSitur)->assertUnprocessable()->assertJsonValidationErrors('senalados.1.campos.cm-situr');
+    }
+
     private function actuar(CaseFile $e, array $datos)
     {
         return $this->from(route('oac.expedientes.show', $e))

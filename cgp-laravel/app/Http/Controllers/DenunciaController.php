@@ -164,6 +164,127 @@ class DenunciaController extends Controller
                     }
                 }
             }
+
+            // Validación entre señalados: no puede existir el mismo RIF, código SITUR, número de documento
+            $senalados = $datos['senalados'] ?? [];
+            $count = count($senalados);
+            for ($i = 0; $i < $count; $i++) {
+                $cA = $senalados[$i]['campos'] ?? [];
+
+                // 1. RIF A
+                $rifFieldA = null;
+                $rifA = '';
+                if (!empty($cA['pj-rif'])) {
+                    $rifFieldA = 'pj-rif';
+                    $rifA = $cA['pj-rif'];
+                } elseif (!empty($cA['oe-rif'])) {
+                    $rifFieldA = 'oe-rif';
+                    $rifA = $cA['oe-rif'];
+                } elseif (!empty($cA['cc-rif'])) {
+                    $rifFieldA = 'cc-rif';
+                    $rifA = $cA['cc-rif'];
+                } elseif (!empty($cA['ot-documento']) && preg_match('/^[JGVECjgvec]-?\d{8,9}-?\d?$/', trim($cA['ot-documento']))) {
+                    $rifFieldA = 'ot-documento';
+                    $rifA = trim($cA['ot-documento']);
+                }
+                $normRifA = $rifA !== '' ? strtoupper(preg_replace('/[^A-Za-z0-9]/', '', $rifA)) : '';
+
+                // 2. SITUR A
+                $siturFieldA = null;
+                $siturA = '';
+                if (!empty($cA['cm-situr'])) {
+                    $siturFieldA = 'cm-situr';
+                    $siturA = trim($cA['cm-situr']);
+                } elseif (!empty($cA['cc-situr'])) {
+                    $siturFieldA = 'cc-situr';
+                    $siturA = trim($cA['cc-situr']);
+                }
+                $normSiturA = $siturA !== '' ? strtoupper(trim($siturA)) : '';
+
+                // 3. Documento A
+                $docFieldA = null;
+                $docA = '';
+                $tipoDocA = '';
+                if (!empty($cA['pn-nro-doc'])) {
+                    $docFieldA = 'pn-nro-doc';
+                    $docA = $cA['pn-nro-doc'];
+                    $tipoDocA = trim($cA['pn-tipo-doc'] ?? '');
+                } elseif (!empty($cA['jp-nro-doc'])) {
+                    $docFieldA = 'jp-nro-doc';
+                    $docA = $cA['jp-nro-doc'];
+                    $tipoDocA = trim($cA['jp-tipo-doc'] ?? '');
+                } elseif (!empty($cA['ot-documento']) && !preg_match('/^[JjGgCc]/', trim($cA['ot-documento']))) {
+                    $docFieldA = 'ot-documento';
+                    $docA = trim($cA['ot-documento']);
+                    $tipoDocA = '';
+                }
+                $normDocA = preg_replace('/\D/', '', $docA);
+
+                for ($j = $i + 1; $j < $count; $j++) {
+                    $cB = $senalados[$j]['campos'] ?? [];
+
+                    // RIF B
+                    $rifFieldB = null;
+                    $rifB = '';
+                    if (!empty($cB['pj-rif'])) {
+                        $rifFieldB = 'pj-rif';
+                        $rifB = $cB['pj-rif'];
+                    } elseif (!empty($cB['oe-rif'])) {
+                        $rifFieldB = 'oe-rif';
+                        $rifB = $cB['oe-rif'];
+                    } elseif (!empty($cB['cc-rif'])) {
+                        $rifFieldB = 'cc-rif';
+                        $rifB = $cB['cc-rif'];
+                    } elseif (!empty($cB['ot-documento']) && preg_match('/^[JGVECjgvec]-?\d{8,9}-?\d?$/', trim($cB['ot-documento']))) {
+                        $rifFieldB = 'ot-documento';
+                        $rifB = trim($cB['ot-documento']);
+                    }
+                    $normRifB = $rifB !== '' ? strtoupper(preg_replace('/[^A-Za-z0-9]/', '', $rifB)) : '';
+
+                    if ($normRifA !== '' && $normRifB !== '' && $normRifA === $normRifB) {
+                        $validator->errors()->add("senalados.{$j}.campos.{$rifFieldB}", "No puede existir el mismo R.I.F. ({$rifB}) entre señalados.");
+                    }
+
+                    // SITUR B
+                    $siturFieldB = null;
+                    $siturB = '';
+                    if (!empty($cB['cm-situr'])) {
+                        $siturFieldB = 'cm-situr';
+                        $siturB = trim($cB['cm-situr']);
+                    } elseif (!empty($cB['cc-situr'])) {
+                        $siturFieldB = 'cc-situr';
+                        $siturB = trim($cB['cc-situr']);
+                    }
+                    $normSiturB = $siturB !== '' ? strtoupper(trim($siturB)) : '';
+
+                    if ($normSiturA !== '' && $normSiturB !== '' && $normSiturA === $normSiturB) {
+                        $validator->errors()->add("senalados.{$j}.campos.{$siturFieldB}", "No puede existir el mismo código SITUR ({$siturB}) entre señalados.");
+                    }
+
+                    // Documento B
+                    $docFieldB = null;
+                    $docB = '';
+                    $tipoDocB = '';
+                    if (!empty($cB['pn-nro-doc'])) {
+                        $docFieldB = 'pn-nro-doc';
+                        $docB = $cB['pn-nro-doc'];
+                        $tipoDocB = trim($cB['pn-tipo-doc'] ?? '');
+                    } elseif (!empty($cB['jp-nro-doc'])) {
+                        $docFieldB = 'jp-nro-doc';
+                        $docB = $cB['jp-nro-doc'];
+                        $tipoDocB = trim($cB['jp-tipo-doc'] ?? '');
+                    } elseif (!empty($cB['ot-documento']) && !preg_match('/^[JjGgCc]/', trim($cB['ot-documento']))) {
+                        $docFieldB = 'ot-documento';
+                        $docB = trim($cB['ot-documento']);
+                        $tipoDocB = '';
+                    }
+                    $normDocB = preg_replace('/\D/', '', $docB);
+
+                    if ($normDocA !== '' && $normDocB !== '' && strlen($normDocA) >= 5 && $normDocA === $normDocB && (empty($tipoDocA) || empty($tipoDocB) || $tipoDocA === $tipoDocB)) {
+                        $validator->errors()->add("senalados.{$j}.campos.{$docFieldB}", "No puede existir el mismo número de documento ({$docB}) entre señalados.");
+                    }
+                }
+            }
         });
 
         // Igual que en wizard.js: C.I. y carta son obligatorias salvo en la sugerencia.
