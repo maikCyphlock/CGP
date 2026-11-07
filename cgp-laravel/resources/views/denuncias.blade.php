@@ -2106,7 +2106,6 @@
       const contEvidenciaWrapper = document.getElementById('contenido-evidencia-wrapper');
       const contEvidenciaNoAplica = document.getElementById('evidencia-no-aplica');
       const textoNotaEvidencia = document.getElementById('texto-nota-evidencia');
-      const camposRequeridosCiudadano = document.querySelectorAll('#paso-2 .required');
 
       // Limpia el aviso y el borde rojo de la selección
       document.getElementById('tipo-tramite-err').classList.remove('visible');
@@ -2118,7 +2117,6 @@
       if (contSenaladoNoAplica) contSenaladoNoAplica.style.display = 'none';
       contEvidenciaWrapper.style.display = 'block';
       if (contEvidenciaNoAplica) contEvidenciaNoAplica.style.display = 'none';
-      camposRequeridosCiudadano.forEach(el => el.style.display = 'inline');
 
       if (tipo === 'denuncia') {
         bloqueConsulta.style.display = 'block';
@@ -2144,7 +2142,6 @@
         if (contSenaladoNoAplica) contSenaladoNoAplica.style.display = 'block';
         contEvidenciaWrapper.style.display = 'none';
         if (contEvidenciaNoAplica) contEvidenciaNoAplica.style.display = 'block';
-        camposRequeridosCiudadano.forEach(el => el.style.display = 'none');
       }
 
       const tipoNombres = {

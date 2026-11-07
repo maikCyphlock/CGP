@@ -166,12 +166,19 @@ class DenunciaController extends Controller
             }
         });
 
+        // Igual que en wizard.js: C.I. y carta son obligatorias salvo en la sugerencia.
+        $exigeDocs = Rule::requiredIf(($datos['tipo_tramite'] ?? '') !== 'sugerencia');
+
         $request->validate([
             'evidencias' => 'array',
             'evidencias.*' => 'array',
+            'evidencias.ci_denunciante' => $exigeDocs,
+            'evidencias.carta_exposicion' => $exigeDocs,
             // Formatos que ofrece el formulario; `mimes` revisa el contenido, no solo la extensión.
             'evidencias.*.*' => 'file|max:10240|mimes:pdf,png,jpg,jpeg,doc,docx,mp4,avi,mov,qt,mkv,webm,mp3,mpga,wav,ogg,oga,m4a,aac',
         ], [
+            'evidencias.ci_denunciante.required' => 'Falta la copia de la cédula de identidad.',
+            'evidencias.carta_exposicion.required' => 'Falta la carta de exposición de motivos.',
             'evidencias.*.*.uploaded' => 'El archivo no se pudo cargar: el máximo es de 10 MB.',
             'evidencias.*.*.max' => 'El archivo supera el máximo de 10 MB.',
             'evidencias.*.*.mimes' => 'Formato no permitido. Se admiten PDF, Word, imagen, video o audio.',
