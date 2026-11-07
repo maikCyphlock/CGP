@@ -2288,6 +2288,68 @@
         }
       }
 
+      // Validar que entre señalado y señalado no puede existir el mismo RIF, código SITUR, número de documento
+      const normRif = r => (r || '').toUpperCase().replace(/[^A-Z0-9]/g, '');
+      const normSitur = s => (s || '').trim().toUpperCase();
+      const normDoc = d => (d || '').replace(/\D/g, '');
+
+      for (let i = 0; i < senalados.length; i++) {
+        const cA = senalados[i].campos || {};
+
+        let rifA = cA['pj-rif'] || cA['oe-rif'] || cA['cc-rif'] || '';
+        if (!rifA && cA['ot-documento'] && /^[JGVECjgvec]-?\d{8,9}-?\d?$/.test(cA['ot-documento'].trim())) {
+          rifA = cA['ot-documento'].trim();
+        }
+        const nRifA = normRif(rifA);
+
+        const siturA = (cA['cm-situr'] || cA['cc-situr'] || '').trim();
+        const nSiturA = normSitur(siturA);
+
+        let docA = cA['pn-nro-doc'] || cA['jp-nro-doc'] || '';
+        let tipoA = (cA['pn-tipo-doc'] || cA['jp-tipo-doc'] || '').trim();
+        if (!docA && cA['ot-documento'] && !/^[JjGgCc]/.test(cA['ot-documento'].trim())) {
+          docA = cA['ot-documento'].trim();
+          tipoA = '';
+        }
+        const nDocA = normDoc(docA);
+
+        for (let j = i + 1; j < senalados.length; j++) {
+          const cB = senalados[j].campos || {};
+
+          let rifB = cB['pj-rif'] || cB['oe-rif'] || cB['cc-rif'] || '';
+          if (!rifB && cB['ot-documento'] && /^[JGVECjgvec]-?\d{8,9}-?\d?$/.test(cB['ot-documento'].trim())) {
+            rifB = cB['ot-documento'].trim();
+          }
+          const nRifB = normRif(rifB);
+
+          if (nRifA && nRifB && nRifA === nRifB) {
+            alert(`Error en el formulario:\n\n• No puede existir el mismo R.I.F. (${rifB}) entre señalados.`);
+            return;
+          }
+
+          const siturB = (cB['cm-situr'] || cB['cc-situr'] || '').trim();
+          const nSiturB = normSitur(siturB);
+
+          if (nSiturA && nSiturB && nSiturA === nSiturB) {
+            alert(`Error en el formulario:\n\n• No puede existir el mismo código SITUR (${siturB}) entre señalados.`);
+            return;
+          }
+
+          let docB = cB['pn-nro-doc'] || cB['jp-nro-doc'] || '';
+          let tipoB = (cB['pn-tipo-doc'] || cB['jp-tipo-doc'] || '').trim();
+          if (!docB && cB['ot-documento'] && !/^[JjGgCc]/.test(cB['ot-documento'].trim())) {
+            docB = cB['ot-documento'].trim();
+            tipoB = '';
+          }
+          const nDocB = normDoc(docB);
+
+          if (nDocA && nDocB && nDocA.length >= 5 && nDocA === nDocB && (!tipoA || !tipoB || tipoA === tipoB)) {
+            alert(`Error en el formulario:\n\n• No puede existir el mismo número de documento (${docB}) entre señalados.`);
+            return;
+          }
+        }
+      }
+
       const datos = {
         tipo_tramite: radio('tipo_tramite'),
         es_consulta: radio('tipo_tramite') === 'denuncia' && radio('es_consulta') === 'si',
