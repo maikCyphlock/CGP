@@ -1559,12 +1559,12 @@ function obtenerEtiquetaPrimerSenalado() {
 /** Documentos de evidencia, en el orden en que se solicitan. */
 var EVIDENCIAS_ITEMS = [
     // Documentos obligatorios
-    { valor: 'ci_denunciante', etiqueta: 'Copia C.I. del denunciante', opcional: false, tipo: 'imagen',
+    { valor: 'ci_denunciante', etiqueta: 'Imagen de la C.I. del denunciante', opcional: false, tipo: 'imagen',
       nota: 'Adjunte una copia legible de su cédula de identidad (ambas caras) o de su pasaporte vigente. <strong>Formatos admitidos: PDF, PNG, JPG.</strong>' },
     { valor: 'carta_exposicion', etiqueta: 'Carta de exposición de motivo', opcional: false, tipo: 'imagen',
       nota: 'Carta firmada en la que expone los motivos de su trámite. Puede adjuntarla en PDF, Word o imagen. <strong>Formatos admitidos: PDF, PNG, JPG.</strong>' },
     // Documentos que el denunciante puede omitir
-    { valor: 'ci_testigo', etiqueta: 'Copia C.I. del testigo', opcional: true, tipo: 'imagen',
+    { valor: 'ci_testigo', etiqueta: 'Imagen de la C.I. del testigo', opcional: true, tipo: 'imagen',
       nota: 'Solo si existe un testigo de los hechos. Copia legible de su cédula de identidad. <strong>Formatos admitidos: PDF, PNG, JPG.</strong>' },
     { valor: 'fotografias', etiqueta: 'Fotografías', opcional: true, tipo: 'imagen',
       nota: 'Formatos de imagen (JPG, PNG) o PDF. Procure que muestren con claridad los hechos denunciados. <strong>Formatos admitidos: PDF, PNG, JPG.</strong>' },
@@ -1710,7 +1710,7 @@ function renderSecuenciaEvidencias() {
 
         if (esNoDenuncia) {
             if (item.valor === 'ci_denunciante') {
-                etiquetaMostrada = 'Copia C.I. del ciudadano';
+                etiquetaMostrada = 'Imagen de la C.I. del ciudadano';
                 notaMostrada = 'Adjunte una copia legible de su cédula de identidad (ambas caras) o de su pasaporte vigente. <strong>Formatos admitidos: PDF, PNG, JPG.</strong>';
             } else if (item.valor === 'carta_exposicion') {
                 notaMostrada = 'Carta firmada en la que expone los motivos de su solicitud. Puede adjuntarla en PDF, Word o imagen. <strong>Formatos admitidos: PDF, PNG, JPG.</strong>';
@@ -2680,7 +2680,7 @@ function obtenerEvidenciasCargadas() {
     EVIDENCIAS_ITEMS.forEach(function (it) {
         var nombreDoc = it.etiqueta;
         if (esNoDenuncia && it.valor === 'ci_denunciante') {
-            nombreDoc = 'Copia C.I. del ciudadano';
+            nombreDoc = 'Imagen C.I. del ciudadano';
         }
         (archivosPorDocumento[it.valor] || []).forEach(function (a) {
             items.push({ doc: nombreDoc, nombre: a.name });

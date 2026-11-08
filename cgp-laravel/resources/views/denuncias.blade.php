@@ -1,4 +1,4 @@
-<!DOCTYPE html>
+﻿<!DOCTYPE html>
 <html lang="es">
 
 <head>
@@ -424,7 +424,8 @@
             <div class="print-row"><div class="print-label">Expediente:</div><div class="print-val" id="res-est-codigo">-</div></div>
             <div class="print-row"><div class="print-label">Tipo de Trámite:</div><div class="print-val" id="res-est-tipo">-</div></div>
             <div class="print-row"><div class="print-label">Fecha de Registro:</div><div class="print-val" id="res-est-fecha">-</div></div>
-            <div class="print-row" style="border-bottom: none;"><div class="print-label">Estado Actual:</div><div class="print-val" id="res-est-estado" style="font-weight: bold; color: #2e7d32;">-</div></div>
+            <div class="print-row"><div class="print-label">Estado Actual:</div><div class="print-val" id="res-est-estado" style="font-weight: bold; color: #2e7d32;">-</div></div>
+            <div class="print-row" id="fila-est-observacion" style="border-bottom: none;"><div class="print-label">Observación:</div><div class="print-val" id="res-est-observacion" style="white-space: pre-wrap;">-</div></div>
           </div>
         </div>
       </div>
@@ -766,8 +767,22 @@
                     <tbody>
                       <tr>
                         <td>
-                          <input type="text" id="cit-lugar-nac" class="form-control" placeholder="Ej. Acarigua, Portuguesa">
-                        </td>
+                           {{-- Selectores en cascada: Estado → Municipio → Parroquia (Lugar de Nacimiento) --}}
+                           <select id="cit-lugar-nac-estado" class="form-select mb-1" onchange="geoActualizarMunicipio()">
+                             <option value="">-- Estado --</option>
+                             <option value="Extranjero">Extranjero (nacido en el exterior)</option>
+                             {{-- Los estados de Venezuela se inyectan dinámicamente por JS --}}
+                           </select>
+                           <select id="cit-lugar-nac-municipio" class="form-select mb-1" disabled onchange="geoActualizarParroquia()">
+                             <option value="">-- Municipio --</option>
+                           </select>
+                           <select id="cit-lugar-nac-parroquia" class="form-select" disabled onchange="geoActualizarHiddenNac()">
+                             <option value="">-- Parroquia --</option>
+                           </select>
+                           {{-- Campo oculto que agrupa el valor final enviado al backend --}}
+                           <input type="hidden" id="cit-lugar-nac" value="">
+                           <span class="error-msg" id="cit-lugar-nac-err">Seleccione el lugar de nacimiento.</span>
+                         </td>
                         <td>
                           <select id="cit-edu" class="form-select">
                             <option value="">-- Seleccione --</option>
@@ -1587,7 +1602,7 @@
         </div>
         <div class="modal-body" style="padding: 25px 20px; background: #fdfdfd; color: #333;">
           <p id="modal-texto-pregunta" style="font-size: 0.95rem; margin-bottom: 0; text-align: justify; line-height: 1.5;">
-            ¿Verificó correctamente los datos ingresados en este paso antes de continuar al siguiente nivel?
+            ¿Verificó correctamente los datos ingresados en este paso antes de continuar con el proceso?
           </p>
         </div>
         <div class="modal-footer" style="justify-content: center; flex-wrap: nowrap; gap: 10px; background: #f7f9fd; border-bottom-left-radius: 8px; border-bottom-right-radius: 8px; padding: 12px 20px; border-top: 1px solid #eef1f7;">
@@ -1659,6 +1674,8 @@
   </footer>
 
   <script src="https://cdnjs.cloudflare.com/ajax/libs/bootstrap/5.3.2/js/bootstrap.bundle.min.js"></script>
+  {{-- Datos geográficos de Venezuela para los selectores de Lugar de Nacimiento --}}
+  <script src="{{ asset('assets/js/venezuela_geo.js') }}?v={{ filemtime(public_path('assets/js/venezuela_geo.js')) }}"></script>
   <script src="{{ asset('assets/js/wizard.js') }}?v={{ filemtime(public_path('assets/js/wizard.js')) }}"></script>
   
   <script>
@@ -1666,6 +1683,124 @@
     let instanciaModal = null;
 
     const NOMBRES_PASOS = ["Tipo de Trámite", "Datos del Ciudadano", "Datos del Señalado", "Descripción de los Hechos", "Documentos y Evidencias"];
+
+    /* ══════════════════════════════════════════════════════════════
+       Selectores en cascada para Lugar de Nacimiento
+       Usa window.VENEZUELA_GEO cargado desde venezuela_geo.js
+       ══════════════════════════════════════════════════════════════ */
+
+    /** Rellena el select de Estados al cargar la página */
+    function geoInicializar() {
+      var selEst = document.getElementById('cit-lugar-nac-estado');
+      if (!selEst || !window.VENEZUELA_GEO) return;
+      var estados = Object.keys(window.VENEZUELA_GEO).sort(function(a, b) {
+        return a.localeCompare(b, 'es');
+      });
+      estados.forEach(function(est) {
+        var opt = document.createElement('option');
+        opt.value = est;
+        opt.textContent = est;
+        selEst.appendChild(opt);
+      });
+    }
+
+    /** Cuando cambia el Estado: recarga municipios y limpia parroquias */
+    function geoActualizarMunicipio() {
+      var estado  = document.getElementById('cit-lugar-nac-estado').value;
+      var selMun  = document.getElementById('cit-lugar-nac-municipio');
+      var selPar  = document.getElementById('cit-lugar-nac-parroquia');
+      var hidden  = document.getElementById('cit-lugar-nac');
+
+      selMun.innerHTML = '<option value="">-- Municipio --</option>';
+      selPar.innerHTML = '<option value="">-- Parroquia --</option>';
+      selMun.disabled  = true;
+      selPar.disabled  = true;
+      hidden.value     = '';
+
+      if (!estado) return;
+
+      if (estado === 'Extranjero') {
+        hidden.value = 'Extranjero';
+        return;
+      }
+
+      var municipios = Object.keys(window.VENEZUELA_GEO[estado] || {}).sort(function(a, b) {
+        return a.localeCompare(b, 'es');
+      });
+      municipios.forEach(function(mun) {
+        var opt = document.createElement('option');
+        opt.value = mun;
+        opt.textContent = mun;
+        selMun.appendChild(opt);
+      });
+      selMun.disabled = false;
+    }
+
+    /** Cuando cambia el Municipio: recarga parroquias */
+    function geoActualizarParroquia() {
+      var estado    = document.getElementById('cit-lugar-nac-estado').value;
+      var municipio = document.getElementById('cit-lugar-nac-municipio').value;
+      var selPar    = document.getElementById('cit-lugar-nac-parroquia');
+      var hidden    = document.getElementById('cit-lugar-nac');
+
+      selPar.innerHTML = '<option value="">-- Parroquia --</option>';
+      selPar.disabled  = true;
+      // Valor mínimo aunque no seleccione parroquia
+      hidden.value = municipio ? (municipio + ', ' + estado) : (estado || '');
+
+      if (!estado || !municipio) return;
+
+      var parroquias = (window.VENEZUELA_GEO[estado] || {})[municipio] || [];
+      parroquias.forEach(function(par) {
+        var opt = document.createElement('option');
+        opt.value = par;
+        opt.textContent = par;
+        selPar.appendChild(opt);
+      });
+      if (parroquias.length > 0) selPar.disabled = false;
+    }
+
+    /** Cuando cambia la Parroquia: actualiza el campo oculto con el valor completo */
+    function geoActualizarHiddenNac() {
+      var estado    = document.getElementById('cit-lugar-nac-estado').value;
+      var municipio = document.getElementById('cit-lugar-nac-municipio').value;
+      var parroquia = document.getElementById('cit-lugar-nac-parroquia').value;
+      var hidden    = document.getElementById('cit-lugar-nac');
+
+      if (parroquia && municipio && estado) {
+        hidden.value = parroquia + ', ' + municipio + ', ' + estado;
+      } else if (municipio && estado) {
+        hidden.value = municipio + ', ' + estado;
+      } else {
+        hidden.value = estado || '';
+      }
+    }
+
+    /**
+     * Restaura los tres selectores de lugar de nacimiento a partir de
+     * los valores guardados en el padrón (registro de autocompletado).
+     * Debe llamarse en el orden Estado → Municipio → Parroquia para que
+     * cada nivel cargue sus opciones antes de asignar el valor.
+     */
+    function geoRestaurarSelectores(estado, municipio, parroquia) {
+      var selEst = document.getElementById('cit-lugar-nac-estado');
+      var selMun = document.getElementById('cit-lugar-nac-municipio');
+      var selPar = document.getElementById('cit-lugar-nac-parroquia');
+      if (!selEst) return;
+
+      if (estado) {
+        selEst.value = estado;
+        geoActualizarMunicipio();           // recarga municipios
+        if (municipio && selMun) {
+          selMun.value = municipio;
+          geoActualizarParroquia();         // recarga parroquias
+          if (parroquia && selPar) {
+            selPar.value = parroquia;
+            geoActualizarHiddenNac();       // actualiza campo oculto
+          }
+        }
+      }
+    }
 
     /* ── Monto en bolívares: 1.250.000,50 mientras se escribe y al perder el foco ── */
     function formatearMonto(el) {
@@ -1746,6 +1881,8 @@
     window.addEventListener('beforeunload', guardarBorrador);
 
     document.addEventListener('DOMContentLoaded', function () {
+      // Inicializar selectores geográficos de Lugar de Nacimiento
+      geoInicializar();
       restaurarBorrador();
       const elementoModal = document.getElementById('modalConfirmacionPaso');
       if (elementoModal && window.bootstrap) {
@@ -1991,13 +2128,13 @@
 
       if (esSugerencia && paso === 5) {
         document.getElementById('modal-texto-pregunta').innerHTML =
-          `¿Confirma que ha revisado correctamente los datos correspondientes al <strong>Paso 5</strong> y desea avanzar al siguiente nivel?`;
+          `¿Confirma que ha revisado correctamente los datos correspondientes al <strong>Paso 5</strong> y desea continuar con el proceso?`;
       } else if (!pasoAplica(3) && (paso === 3 || paso === 4)) {
         document.getElementById('modal-texto-pregunta').innerHTML =
-          `¿Confirma que ha revisado correctamente los datos correspondientes al <strong>Paso ${paso}</strong> y desea avanzar al siguiente nivel?`;
+          `¿Confirma que ha revisado correctamente los datos correspondientes al <strong>Paso ${paso}</strong> y desea continuar con el proceso?`;
       } else {
         document.getElementById('modal-texto-pregunta').innerHTML =
-          `¿Confirma que ha revisado correctamente los datos correspondientes al <strong>Paso ${paso} (${NOMBRES_PASOS[paso - 1]})</strong> y desea avanzar al siguiente nivel?`;
+          `¿Confirma que ha revisado correctamente los datos correspondientes al <strong>Paso ${paso} (${NOMBRES_PASOS[paso - 1]})</strong> y desea continuar con el proceso?`;
       }
 
       if (instanciaModal) instanciaModal.show();
@@ -2045,6 +2182,8 @@
       document.getElementById('resultado-estado-container').style.display = 'none';
       document.getElementById('input-codigo-consulta').value = '';
       document.getElementById('err-codigo-consulta').classList.remove('visible');
+      const elObs = document.getElementById('res-est-observacion');
+      if (elObs) elObs.textContent = '-';
     }
 
     async function consultarEstadoTramite() {
@@ -2091,6 +2230,23 @@
       } else {
         elEstado.textContent = r.estatus;
         elEstado.style.color = r.cerrado ? '#2e7d32' : '#1565c0';
+      }
+
+      const elObs = document.getElementById('res-est-observacion');
+      if (elObs) {
+        if (r.observaciones && r.observaciones.length > 1) {
+          elObs.innerHTML = r.observaciones.map(o => `• <span style="font-weight:600; color:#1a2340;">[${escaparHtml(o.fecha)}]:</span> ${escaparHtml(o.texto)}`).join('<br><br>');
+          elObs.style.fontStyle = 'normal';
+          elObs.style.color = '#333';
+        } else if (r.observacion) {
+          elObs.textContent = r.observacion;
+          elObs.style.fontStyle = 'normal';
+          elObs.style.color = '#333';
+        } else {
+          elObs.textContent = 'Sin observaciones registradas a la fecha.';
+          elObs.style.fontStyle = 'italic';
+          elObs.style.color = '#666';
+        }
       }
 
       containerRes.style.display = 'block';

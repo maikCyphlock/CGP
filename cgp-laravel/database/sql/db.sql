@@ -157,8 +157,8 @@ CREATE TABLE physical_doc_type (
     active  BOOLEAN      NOT NULL DEFAULT TRUE
 );
 INSERT INTO physical_doc_type (code, name) VALUES
-    ('WITNESS_ID',      'Copia C.I. del testigo'),
-    ('CLAIMANT_ID',     'Copia C.I. del denunciante'),
+    ('WITNESS_ID',      'Imagen de la C.I. del testigo'),
+    ('CLAIMANT_ID',     'Imagen de la C.I. del denunciante'),
     ('COVER_LETTER',    'Carta de exposición de motivos'),
     ('PHOTOS',          'Fotografías'),
     ('VIDEO',           'Video'),

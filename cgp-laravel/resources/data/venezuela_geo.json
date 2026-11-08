@@ -1,0 +1,1871 @@
+{
+  "Amazonas": {
+    "Alto Orinoco": [
+      "La Esmeralda",
+      "Huachamacare",
+      "Marawaka",
+      "Mavaca",
+      "Sierra Parima"
+    ],
+    "Atabapo": [
+      "San Fernando de Atabapo",
+      "Ucata",
+      "Yapacana",
+      "Caname"
+    ],
+    "Atures": [
+      "Fernando Girón Tovar",
+      "Luis Alberto Gómez",
+      "Parhueña",
+      "Platanillal"
+    ],
+    "Autana": [
+      "Isla Ratón",
+      "Samariapo",
+      "Sipapo",
+      "Munduapo",
+      "Guayapo"
+    ],
+    "Manapiare": [
+      "San Juan de Manapiare",
+      "Alto Ventuari",
+      "Medio Ventuari",
+      "Bajo Ventuari"
+    ],
+    "Maroa": [
+      "Maroa",
+      "Victorino",
+      "Comunidad"
+    ],
+    "Río Negro": [
+      "San Carlos de Río Negro",
+      "Solano",
+      "Casiquiare",
+      "Cocuy"
+    ]
+  },
+  "Anzoátegui": {
+    "Anaco": [
+      "Anaco",
+      "San Joaquín",
+      "Buena Vista"
+    ],
+    "Aragua": [
+      "Aragua de Barcelona",
+      "Cachipo"
+    ],
+    "Diego Bautista Urbaneja": [
+      "Lechería",
+      "El Morro"
+    ],
+    "Fernando de Peñalver": [
+      "Puerto Píritu",
+      "San Miguel",
+      "Sucre"
+    ],
+    "Francisco de Miranda": [
+      "Pariaguán",
+      "Atapirire",
+      "Boca del Pao",
+      "El Pao"
+    ],
+    "Francisco del Carmen Carvajal": [
+      "Valle de Guanape",
+      "Santa Bárbara"
+    ],
+    "Guanta": [
+      "Guanta",
+      "Chorrerón"
+    ],
+    "Independencia": [
+      "Soledad",
+      "Mamo"
+    ],
+    "José Gregorio Monagas": [
+      "Mapire",
+      "Piar",
+      "Santa Clara",
+      "San Diego de Cabrutica",
+      "Uverito",
+      "Zuata"
+    ],
+    "Juan Antonio Sotillo": [
+      "Puerto La Cruz",
+      "Pozuelos"
+    ],
+    "Juan Manuel Cajigal": [
+      "Onoto",
+      "San Pablo"
+    ],
+    "Libertad": [
+      "San Mateo",
+      "El Carito",
+      "Santa Inés"
+    ],
+    "Manuel Ezequiel Bruzual": [
+      "Clarines",
+      "Guanape",
+      "Sabana de Uchire"
+    ],
+    "Pedro María Freites": [
+      "Cantaura",
+      "Libertador",
+      "Santa Rosa",
+      "Urica"
+    ],
+    "Píritu": [
+      "Píritu",
+      "San Francisco"
+    ],
+    "San José de Guanipa": [
+      "San José de Guanipa"
+    ],
+    "San Juan de Capistrano": [
+      "Boca de Uchire",
+      "Boca de Chávez"
+    ],
+    "Santa Ana": [
+      "Santa Ana",
+      "Pueblo Nuevo"
+    ],
+    "Simón Bolívar": [
+      "Barcelona",
+      "El Carmen",
+      "San Cristóbal",
+      "Bergantín",
+      "Caigua",
+      "El Pilar",
+      "Naricual"
+    ],
+    "Simón Rodríguez": [
+      "El Tigre",
+      "Edmundo Barrios",
+      "Miguel Otero Silva"
+    ],
+    "Sir Arthur McGregor": [
+      "El Chaparro",
+      "Tomás Alfaro Calatrava"
+    ]
+  },
+  "Apure": {
+    "Achaguas": [
+      "Achaguas",
+      "Apurito",
+      "El Yagual",
+      "Guachara",
+      "Mucuritas",
+      "Queseras del Medio"
+    ],
+    "Biruaca": [
+      "Biruaca"
+    ],
+    "Muñoz": [
+      "Bruzual",
+      "Mantecal",
+      "Quintero",
+      "Rincón Hondo",
+      "San Vicente"
+    ],
+    "Páez": [
+      "Guasdualito",
+      "Aramendi",
+      "El Amparo",
+      "San Camilo",
+      "Urdaneta"
+    ],
+    "Pedro Camejo": [
+      "San Juan de Payara",
+      "Codazzi",
+      "Cunaviche"
+    ],
+    "Rómulo Gallegos": [
+      "Elorza",
+      "La Trinidad"
+    ],
+    "San Fernando": [
+      "San Fernando",
+      "El Recreo",
+      "Peñalver",
+      "San Rafael de Atamaica"
+    ]
+  },
+  "Aragua": {
+    "Bolívar": [
+      "San Mateo"
+    ],
+    "Camatagua": [
+      "Camatagua",
+      "Carmen de Cura"
+    ],
+    "Francisco Linares Alcántara": [
+      "Santa Rita",
+      "Francisco de Miranda",
+      "Monseñor Feliciano González"
+    ],
+    "Girardot": [
+      "Maracay",
+      "Pedro José Ovalles",
+      "Joaquín Crespo",
+      "José Casanova Godoy",
+      "Madre María de San José",
+      "Andrés Eloy Blanco",
+      "Los Tacarigua",
+      "Las Delicias",
+      "Choroní"
+    ],
+    "José Ángel Lamas": [
+      "Santa Cruz"
+    ],
+    "José Félix Ribas": [
+      "La Victoria",
+      "Castor Nieves Ríos",
+      "Las Guacamayas",
+      "Pao de Zárate",
+      "Zuata"
+    ],
+    "José Rafael Revenga": [
+      "El Consejo"
+    ],
+    "Libertador": [
+      "Palo Negro",
+      "San Martín de Porres"
+    ],
+    "Mario Briceño Iragorry": [
+      "El Limón",
+      "Caña de Azúcar"
+    ],
+    "Ocumare de la Costa de Oro": [
+      "Ocumare de la Costa"
+    ],
+    "San Casimiro": [
+      "San Casimiro",
+      "Güiripa",
+      "Ollas de Caramacate",
+      "Valle Morín"
+    ],
+    "San Sebastián": [
+      "San Sebastián"
+    ],
+    "Santiago Mariño": [
+      "Turmero",
+      "Arévalo Aponte",
+      "Chuao",
+      "Samán de Güere",
+      "Alfredo Pacheco Miranda"
+    ],
+    "Santos Michelena": [
+      "Las Tejerías",
+      "Tiara"
+    ],
+    "Sucre": [
+      "Cagua",
+      "Bella Vista"
+    ],
+    "Tovar": [
+      "Colonia Tovar"
+    ],
+    "Urdaneta": [
+      "Barbacoas",
+      "Las Peñitas",
+      "San Francisco de Cara",
+      "Taguay"
+    ],
+    "Zamora": [
+      "Villa de Cura",
+      "Magdalena",
+      "San Francisco de Asís",
+      "Valles de Tucutunemo",
+      "Augusto Mijares"
+    ]
+  },
+  "Barinas": {
+    "Alberto Arvelo Torrealba": [
+      "Sabaneta",
+      "Rodríguez Domínguez"
+    ],
+    "Andrés Eloy Blanco": [
+      "El Cantón",
+      "Santa Cruz de Guacas",
+      "Puerto Vivas"
+    ],
+    "Antonio José de Sucre": [
+      "Socopó",
+      "Nicolás Pulido",
+      "Andrés Bello"
+    ],
+    "Arismendi": [
+      "Arismendi",
+      "Guadarrama",
+      "La Unión",
+      "San Antonio"
+    ],
+    "Barinas": [
+      "Barinas",
+      "Alfredo Arvelo Larriva",
+      "San Silvestre",
+      "Santa Inés",
+      "Santa Lucía",
+      "Torunos",
+      "El Carmen",
+      "Rómulo Betancourt",
+      "Corazón de Jesús",
+      "Alto Barinas",
+      "Manuel Palacio Fajardo",
+      "Juan Antonio Rodríguez Domínguez",
+      "Dominga Ortiz de Páez"
+    ],
+    "Bolívar": [
+      "Barinitas",
+      "Altamira de Cáceres",
+      "Calderas"
+    ],
+    "Cruz Paredes": [
+      "Barrancas",
+      "El Socorro",
+      "Masparrito"
+    ],
+    "Ezequiel Zamora": [
+      "Santa Bárbara",
+      "Pedro Briceño Méndez",
+      "Ramón Ignacio Méndez",
+      "José Ignacio del Pumar"
+    ],
+    "Obispos": [
+      "Obispos",
+      "Guasimitos",
+      "El Real",
+      "La Luz"
+    ],
+    "Pedraza": [
+      "Ciudad Bolivia",
+      "Ignacio Briceño",
+      "José Félix Ribas",
+      "Páez"
+    ],
+    "Rojas": [
+      "Libertad",
+      "Dolores",
+      "Palacios Fajardo",
+      "Santa Rosa",
+      "Simón Rodríguez"
+    ],
+    "Sosa": [
+      "Ciudad de Nutrias",
+      "El Regalo",
+      "Puerto Nutrias",
+      "Santa Catalina"
+    ]
+  },
+  "Bolívar": {
+    "Angostura del Orinoco": [
+      "Catedral",
+      "Agua Salada",
+      "Vista Hermosa",
+      "La Sabanita",
+      "Marhuanta",
+      "José Antonio Páez",
+      "Orinoco",
+      "Panapana",
+      "Zea"
+    ],
+    "Caroní": [
+      "Cachamay",
+      "Chirica",
+      "Dalla Costa",
+      "Once de Abril",
+      "Simón Bolívar",
+      "Unare",
+      "Universidad",
+      "Vista al Sol",
+      "Pozo Verde",
+      "Yocoima",
+      "5 de Julio"
+    ],
+    "Cedeño": [
+      "Caicara del Orinoco",
+      "Altagracia",
+      "Ascensión Farreras",
+      "Guaniamo",
+      "La Urbana",
+      "Pijiguaos"
+    ],
+    "El Callao": [
+      "El Callao"
+    ],
+    "Gran Sabana": [
+      "Santa Elena de Uairén",
+      "Ikabarú"
+    ],
+    "Padre Pedro Chien": [
+      "El Palmar"
+    ],
+    "Piar": [
+      "Upata",
+      "Andrés Eloy Blanco",
+      "Pedro Cova"
+    ],
+    "Bolivariano Angostura": [
+      "Ciudad Piar",
+      "San Francisco",
+      "Barceloneta",
+      "Santa Bárbara"
+    ],
+    "Roscio": [
+      "Guasipati",
+      "Salóm"
+    ],
+    "Sifontes": [
+      "Tumeremo",
+      "Dalla Costa",
+      "San Isidro"
+    ],
+    "Sucre": [
+      "Maripa",
+      "Aripao",
+      "Guarataro",
+      "Las Majadas",
+      "Moitaco"
+    ]
+  },
+  "Carabobo": {
+    "Bejuma": [
+      "Bejuma",
+      "Canoabo",
+      "Simón Bolívar"
+    ],
+    "Carlos Arvelo": [
+      "Güigüe",
+      "Belén",
+      "Tacarigua"
+    ],
+    "Diego Ibarra": [
+      "Mariara",
+      "Aguas Calientes"
+    ],
+    "Guacara": [
+      "Guacara",
+      "Ciudad Alianza",
+      "Yagua"
+    ],
+    "Juan José Mora": [
+      "Morón",
+      "Urama"
+    ],
+    "Libertador": [
+      "Tocuyito",
+      "Independencia"
+    ],
+    "Los Guayos": [
+      "Los Guayos"
+    ],
+    "Miranda": [
+      "Miranda"
+    ],
+    "Montalbán": [
+      "Montalbán"
+    ],
+    "Naguanagua": [
+      "Naguanagua"
+    ],
+    "Puerto Cabello": [
+      "Bartolomé Salóm",
+      "Democracia",
+      "Fraternidad",
+      "Goaigoaza",
+      "Juan José Flores",
+      "Unión",
+      "Borburata",
+      "Patanemo"
+    ],
+    "San Diego": [
+      "San Diego"
+    ],
+    "San Joaquín": [
+      "San Joaquín"
+    ],
+    "Valencia": [
+      "Candelaria",
+      "Catedral",
+      "El Socorro",
+      "Miguel Peña",
+      "Rafael Urdaneta",
+      "San Blas",
+      "San José",
+      "Santa Rosa",
+      "Negro Primero"
+    ]
+  },
+  "Cojedes": {
+    "Anzoátegui": [
+      "Cojedes",
+      "Juan de Mata Suárez"
+    ],
+    "Girardot": [
+      "El Baúl",
+      "Sucre"
+    ],
+    "Lima Blanco": [
+      "Macapo",
+      "La Aguadita"
+    ],
+    "Pao de San Juan Bautista": [
+      "El Pao"
+    ],
+    "Ricaurte": [
+      "Libertad",
+      "El Amparo"
+    ],
+    "Rómulo Gallegos": [
+      "Las Vegas"
+    ],
+    "San Carlos": [
+      "San Carlos de Austria",
+      "Juan Ángel Bravo",
+      "Manuel Manrique"
+    ],
+    "Tinaco": [
+      "Tinaco"
+    ],
+    "Tinaquillo": [
+      "Tinaquillo"
+    ]
+  },
+  "Delta Amacuro": {
+    "Antonio Díaz": [
+      "Curiapo",
+      "Almirante Luis Brión",
+      "Francisco Aniceto Lugo",
+      "Manuel Renaud",
+      "Padre Barral",
+      "Santos de Abelgas"
+    ],
+    "Casacoima": [
+      "Sierra Imataca",
+      "Cinco de Julio",
+      "Juan Bautista Arismendi",
+      "Manuel Piar",
+      "Rómulo Gallegos"
+    ],
+    "Pedernales": [
+      "Pedernales",
+      "Capure"
+    ],
+    "Tucupita": [
+      "San José",
+      "José Vidal Marcano",
+      "Juan Millán",
+      "Leonardo Ruíz Pineda",
+      "Mariscal Antonio José de Sucre",
+      "Monseñor Argimiro García",
+      "San Rafael",
+      "Virgen del Valle"
+    ]
+  },
+  "Distrito Capital": {
+    "Libertador": [
+      "Altagracia",
+      "Antímano",
+      "Candelaria",
+      "Caricuao",
+      "Catedral",
+      "Coche",
+      "El Junquito",
+      "El Paraíso",
+      "El Recreo",
+      "El Valle",
+      "La Pastora",
+      "La Vega",
+      "Macarao",
+      "San Agustín",
+      "San Bernardino",
+      "San José",
+      "San Juan",
+      "San Pedro",
+      "Santa Rosalía",
+      "Santa Teresa",
+      "Sucre (Catia)",
+      "23 de Enero"
+    ]
+  },
+  "Falcón": {
+    "Acosta": [
+      "San Juan de los Cayos",
+      "Capadare",
+      "La Pastora",
+      "Libertador"
+    ],
+    "Bolívar": [
+      "San Luis",
+      "Aracua",
+      "La Peña"
+    ],
+    "Buchivacoa": [
+      "Capatárida",
+      "Bariro",
+      "Borojó",
+      "Guajiro",
+      "Seque",
+      "Valle de Eroa",
+      "Zazárida"
+    ],
+    "Cacique Manaure": [
+      "Yaracal"
+    ],
+    "Carirubana": [
+      "Carirubana",
+      "Punta Cardón",
+      "Santa Ana",
+      "Norte"
+    ],
+    "Colina": [
+      "La Vela de Coro",
+      "Acurigua",
+      "Guaibacoa",
+      "Las Calderas",
+      "Macoruca"
+    ],
+    "Dabajuro": [
+      "Dabajuro"
+    ],
+    "Democracia": [
+      "Pedregal",
+      "Agua Clara",
+      "Avaria",
+      "Piedra Grande",
+      "Purureche"
+    ],
+    "Falcón": [
+      "Pueblo Nuevo",
+      "Adícora",
+      "Baraived",
+      "Buena Vista",
+      "Jadacaquiva",
+      "Moruy",
+      "El Vínculo",
+      "El Hato",
+      "Adaure"
+    ],
+    "Federación": [
+      "Churuguara",
+      "Agua Larga",
+      "El Paují",
+      "Independencia",
+      "Mapararí"
+    ],
+    "Jacura": [
+      "Jacura",
+      "Agua Linda",
+      "Araurima"
+    ],
+    "Los Taques": [
+      "Santa Cruz de Los Taques",
+      "Judibana"
+    ],
+    "Mauroa": [
+      "Mene de Mauroa",
+      "San Félix",
+      "Casigua"
+    ],
+    "Miranda": [
+      "Santa Ana de Coro",
+      "Guzmán Guillermo",
+      "Mitare",
+      "Río Seco",
+      "Sabaneta",
+      "San Antonio",
+      "San Gabriel"
+    ],
+    "Monseñor Iturriza": [
+      "Chichiriviche",
+      "Boca de Tocuyo",
+      "Tocuyo de la Costa"
+    ],
+    "Palmasola": [
+      "Palmasola"
+    ],
+    "Petit": [
+      "Cabure",
+      "Colina",
+      "Curimagua"
+    ],
+    "Píritu": [
+      "Píritu",
+      "San José de la Costa"
+    ],
+    "San Francisco": [
+      "Mirimire"
+    ],
+    "Silva": [
+      "Tucacas",
+      "Boca de Aroa"
+    ],
+    "Sucre": [
+      "La Cruz de Taratara",
+      "Pecaya"
+    ],
+    "Tocópero": [
+      "Tocópero"
+    ],
+    "Unión": [
+      "Santa Cruz de Bucaral",
+      "El Charal",
+      "Las Vegas del Tuy"
+    ],
+    "Urumaco": [
+      "Urumaco",
+      "Bruzual"
+    ],
+    "Zamora": [
+      "Puerto Cumarebo",
+      "La Ciénaga",
+      "La Soledad",
+      "Pueblo Cumarebo",
+      "Zazárida"
+    ]
+  },
+  "Guárico": {
+    "Camaguán": [
+      "Camaguán",
+      "Puerto Miranda",
+      "Uverito"
+    ],
+    "Chaguaramas": [
+      "Chaguaramas"
+    ],
+    "El Socorro": [
+      "El Socorro"
+    ],
+    "Francisco de Miranda": [
+      "Calabozo",
+      "El Calvario",
+      "El Rastro",
+      "Guardatinajas"
+    ],
+    "José Félix Ribas": [
+      "Tucupido",
+      "San Rafael de Laya"
+    ],
+    "José Tadeo Monagas": [
+      "Altagracia de Orituco",
+      "San Rafael de Orituco",
+      "San Francisco de Macaira",
+      "Libertad de Orituco",
+      "Paso Real de Macaira",
+      "Soublette",
+      "Lezama"
+    ],
+    "Juan Germán Roscio": [
+      "San Juan de los Morros",
+      "Cantagral",
+      "Parapara"
+    ],
+    "Julián Mellado": [
+      "El Sombrero",
+      "Sosa"
+    ],
+    "Las Mercedes": [
+      "Las Mercedes",
+      "Cabruta",
+      "Santa Rita de Manapire"
+    ],
+    "Leonardo Infante": [
+      "Valle de la Pascua",
+      "Espino"
+    ],
+    "Ortiz": [
+      "Ortiz",
+      "San Francisco de Tiznados",
+      "San José de Tiznados",
+      "San Lorenzo de Tiznados"
+    ],
+    "Pedro Zaraza": [
+      "Zaraza",
+      "San José de Unare"
+    ],
+    "San Gerónimo de Guayabal": [
+      "Guayabal",
+      "Cazorla"
+    ],
+    "San José de Guaribe": [
+      "San José de Guaribe"
+    ],
+    "Santa María de Ipire": [
+      "Santa María de Ipire",
+      "Altamira"
+    ]
+  },
+  "La Guaira": {
+    "Vargas": [
+      "Caraballeda",
+      "Carayaca",
+      "Carlos Soublette",
+      "Caruao",
+      "Catia La Mar",
+      "El Junko",
+      "La Guaira",
+      "Macuto",
+      "Maiquetía",
+      "Naiguatá",
+      "Urimare"
+    ]
+  },
+  "Lara": {
+    "Andrés Eloy Blanco": [
+      "Sanare",
+      "Pío Tamayo",
+      "Yacambú"
+    ],
+    "Crespo": [
+      "Duaca",
+      "Freitez",
+      "José María Blanco"
+    ],
+    "Iribarren": [
+      "Catedral",
+      "Concepción",
+      "El Cují",
+      "Juan de Villegas (Ana Soto)",
+      "Santa Rosa",
+      "Tamaca",
+      "Unión",
+      "Águedo Felipe Alvarado",
+      "Buena Vista",
+      "Juárez"
+    ],
+    "Jiménez": [
+      "Quíbor",
+      "Juan Bautista Rodríguez",
+      "Cuara",
+      "Diego de Lozada",
+      "Paraíso de San José",
+      "San Miguel",
+      "Tintorero",
+      "José Bernardo Dorante",
+      "Coronel Mariano Peraza"
+    ],
+    "Morán": [
+      "El Tocuyo",
+      "Anzoátegui",
+      "Guárico",
+      "Hilario Luna y Luna",
+      "Humocaro Alto",
+      "Humocaro Bajo",
+      "La Candelaria",
+      "Morán"
+    ],
+    "Palavecino": [
+      "Cabudare",
+      "José Gregorio Bastidas",
+      "Agua Viva"
+    ],
+    "Simón Planas": [
+      "Sarare",
+      "Buría",
+      "Gustavo Vegas León"
+    ],
+    "Torres": [
+      "Trinidad Samuel (Carora)",
+      "Antonio Díaz",
+      "Camacaro",
+      "Castañeda",
+      "Cecilio Zubillaga",
+      "Chiquinquirá",
+      "El Blanco",
+      "Espinoza de los Monteros",
+      "Lara",
+      "Las Mercedes",
+      "Manuel Morillo",
+      "Montaña Verde",
+      "Montes de Oca",
+      "Torres",
+      "Heriberto Arroyo",
+      "Reyes Vargas",
+      "Altagracia"
+    ],
+    "Urdaneta": [
+      "Siquisique",
+      "Moroturo",
+      "San Miguel",
+      "Xaguas"
+    ]
+  },
+  "Mérida": {
+    "Alberto Adriani": [
+      "Presidente Betancourt (El Vigía)",
+      "Presidente Páez",
+      "Presidente Rómulo Gallegos",
+      "Gabriel Picón González",
+      "Héctor Amable Mora",
+      "José Nucete Sardi",
+      "Pulido Méndez"
+    ],
+    "Andrés Bello": [
+      "La Azulita"
+    ],
+    "Antonio Pinto Salinas": [
+      "Santa Cruz de Mora",
+      "Mesa Bolívar",
+      "Mesa de Las Palmas"
+    ],
+    "Aricagua": [
+      "Aricagua",
+      "San Antonio"
+    ],
+    "Arzobispo Chacón": [
+      "Canaguá",
+      "Capurí",
+      "Chacantá",
+      "El Molino",
+      "Guaimaral",
+      "Mucutuy",
+      "Mucuchachí"
+    ],
+    "Campo Elías": [
+      "Fernández Peña (Ejido)",
+      "Matriz",
+      "Montalbán",
+      "Acequias",
+      "Jají",
+      "La Mesa",
+      "San José del Sur"
+    ],
+    "Caracciolo Parra Olmedo": [
+      "Tucaní",
+      "Florencio Ramírez"
+    ],
+    "Cardenal Quintero": [
+      "Santo Domingo",
+      "Las Piedras"
+    ],
+    "Guaraque": [
+      "Guaraque",
+      "Mesa de Quintero",
+      "Río Negro"
+    ],
+    "Julio César Salas": [
+      "Arapuey",
+      "Palmira"
+    ],
+    "Justo Briceño": [
+      "Torondoy",
+      "San Cristóbal de Torondoy"
+    ],
+    "Libertador": [
+      "Antonio Spinetti Dini",
+      "Arias",
+      "Caracciolo Parra Olmedo",
+      "Domingo Peña",
+      "El Llano",
+      "Gonzalo Picón Febres",
+      "Jacinto Plaza",
+      "Juan Rodríguez Suárez",
+      "Lasso de la Vega",
+      "Mariano Picón Salas",
+      "Milla",
+      "Osuna Rodríguez",
+      "Sagrario"
+    ],
+    "Miranda": [
+      "Timotes",
+      "Andrés Eloy Blanco",
+      "Piñango",
+      "La Venta"
+    ],
+    "Obispo Ramos de Lora": [
+      "Santa Elena de Arenales",
+      "Eloy Paredes",
+      "San Rafael de Alcázar"
+    ],
+    "Padre Noguera": [
+      "Santa María de Caparo"
+    ],
+    "Pueblo Llano": [
+      "Pueblo Llano"
+    ],
+    "Rangel": [
+      "Mucuchíes",
+      "Cacute",
+      "La Toma",
+      "Mucurubá",
+      "San Rafael"
+    ],
+    "Rivas Dávila": [
+      "Bailadores",
+      "Gerónimo Maldonado"
+    ],
+    "Santos Marquina": [
+      "Tabay"
+    ],
+    "Sucre": [
+      "Lagunillas",
+      "Chiguará",
+      "Estánquez",
+      "San Juan",
+      "Pueblo Nuevo del Sur"
+    ],
+    "Tovar": [
+      "Tovar",
+      "El Amparo",
+      "San Francisco",
+      "El Llano"
+    ],
+    "Tulio Febres Cordero": [
+      "Nueva Bolivia",
+      "Independencia",
+      "María de la Concepción Palacios Blanco",
+      "Santa Apolonia"
+    ],
+    "Zea": [
+      "Zea",
+      "Caño El Tigre"
+    ]
+  },
+  "Miranda": {
+    "Acevedo": [
+      "Caucagua",
+      "Aragüita",
+      "Arévalo González",
+      "Capaya",
+      "El Café",
+      "Marizapa",
+      "Panaquire",
+      "Ribas"
+    ],
+    "Andrés Bello": [
+      "San José de Barlovento",
+      "Cumbo"
+    ],
+    "Baruta": [
+      "Baruta",
+      "El Cafetal",
+      "Las Minas de Baruta"
+    ],
+    "Brión": [
+      "Higuerote",
+      "Curiepe",
+      "Tacarigua de Brión"
+    ],
+    "Buroz": [
+      "Mamporal"
+    ],
+    "Carrizal": [
+      "Carrizal"
+    ],
+    "Chacao": [
+      "Chacao"
+    ],
+    "Cristóbal Rojas": [
+      "Charallave",
+      "Las Brisas"
+    ],
+    "El Hatillo": [
+      "El Hatillo"
+    ],
+    "Guaicaipuro": [
+      "Los Teques",
+      "Altagracia de la Montaña",
+      "Cecilio Acosta",
+      "El Jarillo",
+      "Paracotos",
+      "San Pedro",
+      "Tácata"
+    ],
+    "Independencia": [
+      "Santa Teresa del Tuy",
+      "El Cartanal"
+    ],
+    "Los Salias": [
+      "San Antonio de los Altos"
+    ],
+    "Páez": [
+      "Río Chico",
+      "El Guapo",
+      "Laguna de Tacarigua",
+      "Paparo",
+      "Tacarigua de la Laguna"
+    ],
+    "Paz Castillo": [
+      "Santa Lucía"
+    ],
+    "Pedro Gual": [
+      "Cúpira",
+      "Machurucuto"
+    ],
+    "Plaza": [
+      "Guarenas"
+    ],
+    "Simón Bolívar": [
+      "San Francisco de Yare",
+      "San Antonio de Yare"
+    ],
+    "Sucre": [
+      "Petare",
+      "Caucagüita",
+      "Fila de Mariches",
+      "La Dolorita",
+      "Leoncio Martínez"
+    ],
+    "Tomás Lander": [
+      "Ocumare del Tuy",
+      "La Democracia",
+      "Santa Bárbara"
+    ],
+    "Urdaneta": [
+      "Cúa",
+      "Nueva Cúa"
+    ],
+    "Zamora": [
+      "Guatire",
+      "Bolívar"
+    ]
+  },
+  "Monagas": {
+    "Acosta": [
+      "San Antonio de Capayacuar",
+      "San Francisco"
+    ],
+    "Aguasay": [
+      "Aguasay"
+    ],
+    "Bolívar": [
+      "Caripito"
+    ],
+    "Caripe": [
+      "Caripe",
+      "El Guácharo",
+      "La Guanota",
+      "Sabana de Piedra",
+      "San Agustín",
+      "Teresén"
+    ],
+    "Cedeño": [
+      "Caicara de Maturín",
+      "Areo",
+      "San Félix",
+      "Viento Fresco"
+    ],
+    "Ezequiel Zamora": [
+      "Punta de Mata",
+      "El Tejero"
+    ],
+    "Libertador": [
+      "Temblador",
+      "Chaguaramas",
+      "Las Alhuacas",
+      "Tabasca"
+    ],
+    "Maturín": [
+      "Alto de los Godos",
+      "Boquerón",
+      "Las Cocuizas",
+      "San Simón",
+      "Santa Cruz",
+      "El Corozo",
+      "El Furrial",
+      "Jusepín",
+      "La Pica",
+      "San Vicente"
+    ],
+    "Piar": [
+      "Aragua de Maturín",
+      "Aparicio",
+      "Chaguaramal",
+      "El Pinto",
+      "Guanaguana",
+      "La Toscana",
+      "Taguaya"
+    ],
+    "Punceres": [
+      "Quiriquire",
+      "Cachipo"
+    ],
+    "Santa Bárbara": [
+      "Santa Bárbara"
+    ],
+    "Sotillo": [
+      "Barrancas del Orinoco",
+      "Los Barrancos de Fajardo"
+    ],
+    "Uracoa": [
+      "Uracoa"
+    ]
+  },
+  "Nueva Esparta": {
+    "Antolín del Campo": [
+      "La Plaza de Paraguachí"
+    ],
+    "Arismendi": [
+      "La Asunción"
+    ],
+    "Díaz": [
+      "San Juan Bautista",
+      "Zabala"
+    ],
+    "García": [
+      "El Valle del Espíritu Santo",
+      "Francisco Fajardo"
+    ],
+    "Gómez": [
+      "Santa Ana",
+      "Bolívar",
+      "Guevara",
+      "Matasiete",
+      "Sucre"
+    ],
+    "Maneiro": [
+      "Pampatar",
+      "Aguirre"
+    ],
+    "Marcano": [
+      "Juan Griego",
+      "Adrián"
+    ],
+    "Mariño": [
+      "Porlamar"
+    ],
+    "Península de Macanao": [
+      "Boca de Río",
+      "San Francisco"
+    ],
+    "Tubores": [
+      "Punta de Piedras",
+      "Los Baleales"
+    ],
+    "Villalba": [
+      "San Pedro de Coche",
+      "Vicente Fuentes"
+    ]
+  },
+  "Portuguesa": {
+    "Agua Blanca": [
+      "Agua Blanca"
+    ],
+    "Araure": [
+      "Araure",
+      "Río Acarigua"
+    ],
+    "Esteller": [
+      "Píritu",
+      "Uveral"
+    ],
+    "Guanare": [
+      "Guanare",
+      "Córdoba",
+      "San José de la Montaña",
+      "San Juan de Guanaguanare",
+      "Virgen de la Coromoto"
+    ],
+    "Guanarito": [
+      "Guanarito",
+      "Trinidad de la Capilla",
+      "Divina Pastora"
+    ],
+    "Monseñor José Vicente de Unda": [
+      "Chabasquén",
+      "Peña Blanca"
+    ],
+    "Ospino": [
+      "Ospino",
+      "Aparición",
+      "La Estación"
+    ],
+    "Páez": [
+      "Acarigua",
+      "Payara",
+      "Pimpinela",
+      "Ramón Peraza"
+    ],
+    "Papelón": [
+      "Papelón",
+      "Caño Delgadito"
+    ],
+    "San Genaro de Boconoíto": [
+      "Boconoíto",
+      "Antolín Tovar"
+    ],
+    "San Rafael de Onoto": [
+      "San Rafael de Onoto",
+      "Santa Fe",
+      "Thermo Morles"
+    ],
+    "Santa Rosalía": [
+      "El Playón",
+      "Florida"
+    ],
+    "Sucre": [
+      "Biscucuy",
+      "Concepción",
+      "San Rafael de Palo Alzado",
+      "Uvencio Antonio Velásquez",
+      "San José de Saguaz",
+      "Villa Rosa"
+    ],
+    "Turén": [
+      "Villa Bruzual",
+      "Canelones",
+      "Santa Cruz",
+      "San Isidro Labrador"
+    ]
+  },
+  "Sucre": {
+    "Andrés Eloy Blanco": [
+      "Casanay",
+      "Mariño",
+      "Rómulo Gallegos"
+    ],
+    "Andrés Mata": [
+      "San José de Aerocuar",
+      "Tavera Acosta"
+    ],
+    "Arismendi": [
+      "Río Caribe",
+      "Antonio José de Sucre",
+      "El Morro de Puerto Santo",
+      "Puerto Santo",
+      "San Juan de las Galdonas"
+    ],
+    "Benítez": [
+      "El Pilar",
+      "El Rincón",
+      "General Francisco Antonio Vásquez",
+      "Guaraúnos",
+      "Tunapuicito",
+      "Unión"
+    ],
+    "Bermúdez": [
+      "Carúpano",
+      "Santa Catalina",
+      "Santa Rosa",
+      "Bolívar",
+      "Macarapana",
+      "Santa Inés"
+    ],
+    "Bolívar": [
+      "Marigüitar"
+    ],
+    "Cajigal": [
+      "Yaguaraparo",
+      "El Paujil",
+      "Yoco"
+    ],
+    "Cruz Salmerón Acosta": [
+      "Araya",
+      "Chacopata",
+      "Manicuare"
+    ],
+    "Libertador": [
+      "Tunapuy",
+      "Campo Elías"
+    ],
+    "Mariño": [
+      "Irapa",
+      "Campo Claro",
+      "Marabal",
+      "San Antonio de Irapa",
+      "Soro"
+    ],
+    "Mejía": [
+      "San Antonio del Golfo"
+    ],
+    "Montes": [
+      "Cumanacoa",
+      "Arenas",
+      "Aricagua",
+      "Cocollar",
+      "San Fernando",
+      "San Lorenzo"
+    ],
+    "Ribero": [
+      "Cariaco",
+      "Catuaro",
+      "Rendón",
+      "Santa Cruz",
+      "Santa María"
+    ],
+    "Sucre": [
+      "Cumaná",
+      "Altagracia",
+      "Santa Inés",
+      "Valentín Valiente",
+      "Ayacucho",
+      "San Juan",
+      "Raúl Leoni",
+      "Gran Mariscal"
+    ],
+    "Valdez": [
+      "Güiria",
+      "Bideau",
+      "Cristóbal Colón",
+      "Punta de Piedras"
+    ]
+  },
+  "Táchira": {
+    "Andrés Bello": [
+      "Cordero"
+    ],
+    "Antonio Rómulo Costa": [
+      "Las Mesas"
+    ],
+    "Ayacucho": [
+      "San Juan de Colón",
+      "Rivas Berti",
+      "San Pedro del Río"
+    ],
+    "Bolívar": [
+      "San Antonio del Táchira",
+      "Palotal",
+      "Juan Vicente Gómez",
+      "Isaías Medina Angarita"
+    ],
+    "Cárdenas": [
+      "Táriba",
+      "Amenodoro Rangel Lamús",
+      "La Florida"
+    ],
+    "Córdoba": [
+      "Santa Ana del Táchira"
+    ],
+    "Fernández Feo": [
+      "San Rafael del Piñal",
+      "Alberto Adriani",
+      "Santo Domingo"
+    ],
+    "Francisco de Miranda": [
+      "San José de Bolívar"
+    ],
+    "García de Hevia": [
+      "La Fría",
+      "Boca de Grita",
+      "José Antonio Páez"
+    ],
+    "Guásimos": [
+      "Palmira"
+    ],
+    "Independencia": [
+      "Capacho Nuevo",
+      "Juan Germán Roscio",
+      "Román Cárdenas"
+    ],
+    "Jáuregui": [
+      "La Grita",
+      "Emilio Constantino Guerrero",
+      "Monseñor Miguel Antonio Salas"
+    ],
+    "José María Vargas": [
+      "El Cobre"
+    ],
+    "Junín": [
+      "Rubio",
+      "Bramón",
+      "La Petrólea",
+      "Quinimarí"
+    ],
+    "Libertad": [
+      "Capacho Viejo",
+      "Cipriano Castro",
+      "Manuel Felipe Rugeles"
+    ],
+    "Libertador": [
+      "Abejales",
+      "Doradas",
+      "Emeterio Ochoa",
+      "San Joaquín de Navay"
+    ],
+    "Lobatera": [
+      "Lobatera",
+      "Constitución"
+    ],
+    "Michelena": [
+      "Michelena"
+    ],
+    "Panamericano": [
+      "Coloncito",
+      "La Palmita"
+    ],
+    "Pedro María Ureña": [
+      "Ureña",
+      "Nueva Arcadia"
+    ],
+    "Rafael Urdaneta": [
+      "Delicias"
+    ],
+    "Samuel Darío Maldonado": [
+      "La Tendida",
+      "Boconó",
+      "Hernández"
+    ],
+    "San Cristóbal": [
+      "San Juan Bautista",
+      "La Concordia",
+      "Pedro María Morantes",
+      "San Sebastián",
+      "Francisco Romero Lobo"
+    ],
+    "Seboruco": [
+      "Seboruco"
+    ],
+    "Simón Rodríguez": [
+      "San Simón"
+    ],
+    "Sucre": [
+      "Queniquea",
+      "Eleazar López Contreras",
+      "San Pablo"
+    ],
+    "Torbes": [
+      "San Josecito"
+    ],
+    "Uribante": [
+      "Pregonero",
+      "Cárdenas",
+      "Juan Pablo Peñaloza",
+      "Potosí"
+    ],
+    "San Judas Tadeo": [
+      "Umuquena"
+    ]
+  },
+  "Trujillo": {
+    "Andrés Bello": [
+      "Santa Isabel",
+      "Araguaney",
+      "El Jagüito",
+      "La Esperanza"
+    ],
+    "Boconó": [
+      "Boconó",
+      "El Carmen",
+      "Mosquey",
+      "San José",
+      "San Miguel",
+      "Vega de Guaramacal",
+      "Burbusay",
+      "General Ribas",
+      "Guaramacal",
+      "Monseñor Jáuregui",
+      "Rafael Rangel",
+      "San Rafael"
+    ],
+    "Bolívar": [
+      "Sabana Grande",
+      "Cheregüé",
+      "Granados"
+    ],
+    "Candelaria": [
+      "Chejendé",
+      "Carrillo",
+      "Cegarra",
+      "Manuel Salvador Ulloa",
+      "San José",
+      "Bolivia"
+    ],
+    "Carache": [
+      "Carache",
+      "Cuicas",
+      "La Concepción",
+      "Panamericana",
+      "Santa Cruz"
+    ],
+    "Escuque": [
+      "Escuque",
+      "La Unión",
+      "Santa Rita",
+      "Sabana Libre"
+    ],
+    "José Felipe Márquez Cañizalez": [
+      "El Paradero",
+      "Antonio Nicolás Briceño",
+      "José Félix Ribas"
+    ],
+    "Juan Vicente Campo Elías": [
+      "Campo Elías",
+      "Arnoldo Gabaldón"
+    ],
+    "La Ceiba": [
+      "Santa Apolonia",
+      "El Progreso",
+      "La Ceiba",
+      "Tres de Febrero"
+    ],
+    "Miranda": [
+      "El Dividive",
+      "Agua Santa",
+      "Agua Caliente",
+      "El Cenizo",
+      "Valerita"
+    ],
+    "Monte Carmelo": [
+      "Monte Carmelo",
+      "Buena Vista",
+      "Santa María del Palmar"
+    ],
+    "Motatán": [
+      "Motatán",
+      "El Baño",
+      "Jalisco"
+    ],
+    "Pampán": [
+      "Pampán",
+      "Flor de Patria",
+      "La Paz",
+      "Santa Ana"
+    ],
+    "Pampanito": [
+      "Pampanito",
+      "La Concepción",
+      "Pampanito II"
+    ],
+    "Rafael Rangel": [
+      "Betijoque",
+      "José Gregorio Hernández",
+      "La Pueblita",
+      "Los Cedros"
+    ],
+    "San Rafael de Carvajal": [
+      "Carvajal",
+      "Campo Alegre",
+      "Antonio Nicolás Briceño",
+      "José Leonardo Suárez"
+    ],
+    "Sucre": [
+      "Sabana de Mendoza",
+      "Junín",
+      "Valmore Rodríguez",
+      "El Paraíso"
+    ],
+    "Trujillo": [
+      "Trujillo (Matriz)",
+      "Chiquinquirá",
+      "Cristóbal Mendoza",
+      "Cruz Carrillo",
+      "Monseñor Carrillo",
+      "Andrés Linares",
+      "La Quebrada"
+    ],
+    "Urdaneta": [
+      "La Quebrada",
+      "Cabimbú",
+      "Jajó",
+      "La Mesa de Esnujaque",
+      "Santiago",
+      "Tuñame"
+    ],
+    "Valera": [
+      "Valera",
+      "Juan Ignacio Montilla",
+      "La Beatriz",
+      "La Puerta",
+      "Mendoza del Valle de Momboy",
+      "Mercedes Díaz",
+      "San Luis"
+    ]
+  },
+  "Yaracuy": {
+    "Arístides Bastidas": [
+      "San Pablo"
+    ],
+    "Bolívar": [
+      "Aroa"
+    ],
+    "Bruzual": [
+      "Chivacoa",
+      "Campo Elías"
+    ],
+    "Cocorote": [
+      "Cocorote"
+    ],
+    "Independencia": [
+      "Independencia"
+    ],
+    "José Antonio Páez": [
+      "Sabana de Parra"
+    ],
+    "La Trinidad": [
+      "Boraure"
+    ],
+    "Manuel Monge": [
+      "Yumare"
+    ],
+    "Nirgua": [
+      "Nirgua",
+      "Salóm",
+      "Temerla"
+    ],
+    "Peña": [
+      "Yaritagua",
+      "San Andrés"
+    ],
+    "San Felipe": [
+      "San Felipe",
+      "Albarico",
+      "San Javier"
+    ],
+    "Sucre": [
+      "Guama"
+    ],
+    "Urachiche": [
+      "Urachiche"
+    ],
+    "Veroes": [
+      "Farriar",
+      "El Guayabo"
+    ]
+  },
+  "Zulia": {
+    "Almirante Padilla": [
+      "El Toro",
+      "Isla de Toas"
+    ],
+    "Baralt": [
+      "San Timoteo",
+      "General Urdaneta",
+      "Libertador",
+      "Marcelino Briceño",
+      "Pueblo Nuevo",
+      "Manuel Guanipa Matos"
+    ],
+    "Cabimas": [
+      "Ambrosio",
+      "Carmen Herrera",
+      "La Rosa",
+      "Germán Ríos Linares",
+      "San Benito",
+      "Rómulo Betancourt",
+      "Jorge Hernández",
+      "Punta Gorda",
+      "Arístides Calvani"
+    ],
+    "Catatumbo": [
+      "Encontrados",
+      "Udón Pérez"
+    ],
+    "Colón": [
+      "San Carlos del Zulia",
+      "Santa Cruz del Zulia",
+      "Santa Bárbara",
+      "El Moralito",
+      "Urribarrí"
+    ],
+    "Francisco Javier Pulgar": [
+      "Pueblo Nuevo El Chivo",
+      "Agustín Codazzi",
+      "Carlos Quevedo",
+      "Francisco Javier Pulgar",
+      "Simón Rodríguez"
+    ],
+    "Jesús Enrique Lossada": [
+      "La Concepción",
+      "San José",
+      "Mariano Parra León",
+      "José Ramón Yépez"
+    ],
+    "Jesús María Semprún": [
+      "Casigua El Cubo",
+      "Barí"
+    ],
+    "La Cañada de Urdaneta": [
+      "Concepción",
+      "Andrés Bello",
+      "Chiquinquirá",
+      "El Carmelo",
+      "Potreritos"
+    ],
+    "Lagunillas": [
+      "Ciudad Ojeda",
+      "Alonso de Ojeda",
+      "Libertad",
+      "Campo Lara",
+      "Eleazar López Contreras",
+      "Venezuela"
+    ],
+    "Machiques de Perijá": [
+      "Machiques",
+      "San José de Perijá",
+      "Bartolomé de las Casas",
+      "Río Negro"
+    ],
+    "Mara": [
+      "San Rafael de El Moján",
+      "La Sierrita",
+      "Las Parcelas",
+      "Luis de Vicente",
+      "Monseñor Marcos Sergio Godoy",
+      "Ricaurte",
+      "Tamare"
+    ],
+    "Maracaibo": [
+      "Bolívar",
+      "Cacique Mara",
+      "Caracciolo Borjas",
+      "Cecilio Acosta",
+      "Cristo de Aranza",
+      "Coquivacoa",
+      "Chiquinquirá",
+      "Francisco Eugenio Bustamante",
+      "Idelfonso Vásquez",
+      "Juana de Ávila",
+      "Luis Hurtado Higuera",
+      "Manuel Dagnino",
+      "Olegario Villalobos",
+      "Raúl Leoni",
+      "Santa Lucía",
+      "San Isidro",
+      "Venancio Pulgar"
+    ],
+    "Miranda": [
+      "Los Puertos de Altagracia",
+      "Altagracia",
+      "Faría",
+      "Ana María Campos",
+      "San Antonio",
+      "San José"
+    ],
+    "Guajira": [
+      "Sinamaica",
+      "Alta Guajira",
+      "Elías Sánchez Rubio",
+      "Guajira"
+    ],
+    "Rosario de Perijá": [
+      "La Villa del Rosario",
+      "El Rosario",
+      "Donaldo García",
+      "Sixto Zambrano"
+    ],
+    "San Francisco": [
+      "San Francisco",
+      "El Bajo",
+      "Domitila Flores",
+      "Francisco Ochoa",
+      "Los Cortijos",
+      "Marcial Hernández",
+      "José Domingo Rus"
+    ],
+    "Santa Rita": [
+      "Santa Rita",
+      "El Mene",
+      "Pedro Lucas Urribarrí",
+      "José Cenobio Urribarrí"
+    ],
+    "Simón Bolívar": [
+      "Tía Juana",
+      "Manuel Manrique",
+      "Rafael María Baralt",
+      "Rafael Urdaneta"
+    ],
+    "Sucre": [
+      "Bobures",
+      "El Batey",
+      "Gibraltar",
+      "Heras",
+      "Monseñor Arturo Celestino Álvarez",
+      "Rómulo Gallegos"
+    ],
+    "Valmore Rodríguez": [
+      "Bachaquero",
+      "Rafael Urdaneta",
+      "La Victoria",
+      "Raúl Cuenca"
+    ]
+  }
+}
