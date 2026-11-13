@@ -75,7 +75,7 @@ class DenunciaController extends Controller
             'ciudadano.profesion' => ['nullable', 'string', 'max:80', Rule::exists('profesiones', 'nombre')->where('activo', true)],
             'ciudadano.ocupacion' => 'nullable|string|max:80',
             'ciudadano.correo' => 'required|email|max:150',
-            'ciudadano.telf_cel' => 'nullabel|string|max:15',
+            'ciudadano.telf_cel' => 'nullable|string|max:15',
             'ciudadano.telf_hab' => 'nullable|string|max:15',
             'ciudadano.direccion' => 'required|string|min:10|max:250',
             'ciudadano.parroquia' => 'nullable|string|max:80',
