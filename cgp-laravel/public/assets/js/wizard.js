@@ -927,13 +927,6 @@ function validarPaso(numeroPaso) {
             marcarError('cit-segundo-apellido', 'cit-segundo-apellido-err');
         }
 
-        // Profesión (opcional, pero solo letras si se introduce)
-        var prof = document.getElementById('cit-profesion').value.trim();
-        if (prof && !reSoloLetras.test(prof)) {
-            errores.push('Profesión (solo se permiten letras)');
-            marcarError('cit-profesion', 'cit-profesion-err');
-        }
-
         // Ocupación (opcional, pero solo letras si se introduce)
         var ocup = document.getElementById('cit-ocupacion').value.trim();
         if (ocup && !reSoloLetras.test(ocup)) {
@@ -990,7 +983,7 @@ function validarPaso(numeroPaso) {
         // Teléfono celular (código de operadora + número)
         var telfCelCod = document.getElementById('cit-telf-cel-cod').value;
         var telfCelNum = document.getElementById('cit-telf-cel-num').value.trim();
-        if (!telfCelCod || !/^\d{7}$/.test(telfCelNum)) {
+            if ((telfCelCod || telfCelNum) && (!telfCelCod || !/^\d{7}$/.test(telfCelNum))) {
             errores.push('Teléfono Celular');
             marcarError('cit-telf-cel-num', 'cit-telf-cel-err');
             document.getElementById('cit-telf-cel-cod').classList.toggle('invalid', !telfCelCod);
@@ -2184,7 +2177,6 @@ var REGLAS_VIVO = {
         }
     },
     'cit-telf-cel-num': {
-        req: true,
         check: function (v, final) {
             if (/\D/.test(v)) return 'Solo se permiten números (7 dígitos).';
             if (!final) return '';
@@ -2609,7 +2601,7 @@ function validarCampoVivo(campo, alSalir) {
         });
     }
 
-    var camposCiudadanoTexto = ['cit-primer-nombre', 'cit-segundo-nombre', 'cit-primer-apellido', 'cit-segundo-apellido', 'cit-profesion', 'cit-ocupacion'];
+    var camposCiudadanoTexto = ['cit-primer-nombre', 'cit-segundo-nombre', 'cit-primer-apellido', 'cit-segundo-apellido', 'cit-ocupacion'];
     if (camposCiudadanoTexto.indexOf(campo.id) !== -1) {
         if (aplicarSanitizacionSoloLetras(campo, false)) return;
     }

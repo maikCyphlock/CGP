@@ -794,8 +794,12 @@
                           </select>
                         </td>
                         <td>
-                          <input type="text" id="cit-profesion" class="form-control" placeholder="Ej. Docente">
-                          <span class="error-msg" id="cit-profesion-err">Solo se permiten letras.</span>
+                          <select id="cit-profesion" class="form-select">
+                            @foreach(\App\Models\Profesion::nombresParaSelect() as $profesion)
+                              <option value="{{ $profesion }}" @selected($profesion === \App\Models\Profesion::NINGUNA)>{{ $profesion }}</option>
+                            @endforeach
+                          </select>
+                          <span class="error-msg" id="cit-profesion-err">Seleccione una profesión.</span>
                         </td>
                         <td>
                           <input type="text" id="cit-ocupacion" class="form-control" placeholder="Ej. Comerciante">
@@ -833,7 +837,7 @@
                 </div>
                 <div class="col-md-4">
                   <div class="form-group">
-                    <label class="form-label">Teléfono Celular <span class="required" style="color:#1565c0;">*</span></label>
+                    <label class="form-label">Teléfono Celular</label>
                     <div style="display:flex;gap:6px;">
                       <select id="cit-telf-cel-cod" class="form-select" style="max-width:110px;flex-shrink:0;">
                         <option value="">Cód.</option>
@@ -1894,7 +1898,6 @@
         'cit-segundo-nombre',
         'cit-primer-apellido',
         'cit-segundo-apellido',
-        'cit-profesion',
         'cit-ocupacion'
       ];
 
@@ -2363,7 +2366,6 @@
       document.getElementById('res-correo').textContent = document.getElementById('cit-correo').value;
       const codTel = document.getElementById('cit-telf-cel-cod').value;
       const numTel = document.getElementById('cit-telf-cel-num').value;
-      document.getElementById('res-telf').textContent = (codTel && numTel) ? `${codTel}-${numTel}` : numTel;
       document.getElementById('res-hechos').textContent = document.getElementById('narracion').value || 'Sin descripción';
 
       const parr = document.getElementById('cit-parroquia').value || 'No especificó';

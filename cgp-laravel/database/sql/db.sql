@@ -301,7 +301,7 @@ CREATE TABLE citizen (
 
     -- Contacto primario — obligatorio en todos los trámites
     email           VARCHAR(150) NOT NULL,
-    mobile_phone    VARCHAR(15)  NOT NULL,       -- formato venezolano 04XX-XXXXXXX
+    mobile_phone    VARCHAR(15),       -- formato venezolano 04XX-XXXXXXX
 
     -- Dirección — obligatoria, raramente cambia
     address         VARCHAR(250) NOT NULL        CHECK (char_length(address) >= 10),

@@ -142,7 +142,7 @@
         <td style="width:33%"><span class="label">18. Telf. Hab.:</span><div class="val">{{ $cd['home_phone'] ?? '' }}</div></td>
         <td style="width:27%; padding:0">
             <table class="nb" style="margin:0"><tr>
-                <td style="width:50%; border-right:1px solid #444"><span class="label">19. Telf. Celular:</span>{{ $c->mobile_phone }}</td>
+                <td style="width:50%; border-right:1px solid #444"><span class="label">19. Telf. Celular:</span>{{ $c->mobile_phone ?: 'No posee' }}</td>
                 <td><span class="label">20. Telf. Trabajo:</span>{{ $cd['work_phone'] ?? '' }}</td>
             </tr></table>
         </td>
