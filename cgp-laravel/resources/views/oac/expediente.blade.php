@@ -31,7 +31,15 @@
         {!! $dato('Irregularidad', $irregularidad ?? 'Sin clasificar') !!}
         @if ($e->referral_letter_url) <div class="col-sm-6 col-lg-4"><div class="text-muted small">Oficio de derivación</div><a class="fw-semibold" href="{{ $e->referral_letter_url }}" target="_blank" rel="noopener noreferrer">Ver oficio</a></div> @endif
         @if ($e->analyst_notes) <div class="col-12"><div class="text-muted small">Notas del analista</div><div style="white-space: pre-wrap;">{{ $e->analyst_notes }}</div></div> @endif
-        {!! $dato('Otra instancia', $e->other_instance ? ($e->other_instance_name ?: 'Sí') : 'No') !!}
+        @php
+          $otraInstTexto = 'No';
+          if ($e->other_instance && $e->other_instance_name !== 'No sé') {
+              $otraInstTexto = $e->other_instance_name ? 'Sí ('.$e->other_instance_name.')' : 'Sí';
+          } elseif ($e->other_instance_name === 'No sé') {
+              $otraInstTexto = 'No sé';
+          }
+        @endphp
+        {!! $dato('Otra instancia', $otraInstTexto) !!}
         <div class="col-12">
           <div class="text-muted small">Narración de los hechos</div>
           <div class="border rounded p-3 bg-light" style="white-space: pre-wrap;">{{ $e->narrative }}</div>
@@ -78,7 +86,7 @@
         <div class="card-header bg-white fw-bold text-primary-cgp">Proyecto de Consulta Popular</div>
         <div class="card-body row g-3">
           {!! $dato('Proyecto', $consulta->project_name) !!}
-          {!! $dato('Fecha de aprobación', \Illuminate\Support\Carbon::parse($consulta->approval_date)->format('d/m/Y')) !!}
+          {!! $dato('Fecha estimada de aprobación', \Illuminate\Support\Carbon::parse($consulta->approval_date)->format('d/m/Y')) !!}
           {!! $dato('Monto', number_format($consulta->project_amount, 2, ',', '.')) !!}
           {!! $dato('Ente financiador', $consulta->funding_entity) !!}
           {!! $dato('Código SITUR', $consulta->situr_code) !!}

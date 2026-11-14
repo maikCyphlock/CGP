@@ -67,10 +67,10 @@ COMMENT ON TABLE case_status IS
 INSERT INTO case_status (code, name, sort_order, is_terminal) VALUES
     ('RECEIVED',    'Recibido',     1, FALSE),
     ('IN_REVIEW',   'En Revisión',  2, FALSE),
-    ('PROCESSED',   'Procesado',    3, FALSE),
+    ('PROCESSED',   'Procesando',   3, FALSE),
     ('REFERRED',    'Derivado',     4, FALSE),
-    ('ARCHIVED',    'Archivado',    5, TRUE),
-    ('INVALIDATED', 'Invalidado',   6, TRUE);
+    ('INVALIDATED', 'Invalidado',   5, TRUE),
+    ('ARCHIVED',    'Archivado',    6, TRUE);
 
 
 -- 1.4 Unidades de derivación

@@ -1042,9 +1042,9 @@ function validarPaso(numeroPaso) {
             }
             var valFechaProy = document.getElementById('proy-fecha').value;
             if (!valFechaProy) {
-                errores.push('Fecha de Aprobación del Proyecto');
+                errores.push('Fecha estimada de aprobación del proyecto');
                 var errF = document.getElementById('proy-fecha-err');
-                if (errF) errF.textContent = 'Seleccione la fecha de aprobación.';
+                if (errF) errF.textContent = 'Seleccione la fecha estimada de aprobación.';
                 marcarError('proy-fecha', 'proy-fecha-err');
             } else {
                 var dHoy = new Date();
@@ -1054,14 +1054,14 @@ function validarPaso(numeroPaso) {
                 var minFecha = dMin.getFullYear() + '-' + String(dMin.getMonth() + 1).padStart(2, '0') + '-' + String(dMin.getDate()).padStart(2, '0');
 
                 if (valFechaProy > hoy) {
-                    errores.push('Fecha de Aprobación del Proyecto (no puede ser una fecha futura)');
+                    errores.push('Fecha estimada de aprobación del proyecto (no puede ser una fecha futura)');
                     var errF = document.getElementById('proy-fecha-err');
-                    if (errF) errF.textContent = 'La fecha de aprobación no puede ser una fecha futura.';
+                    if (errF) errF.textContent = 'La fecha estimada de aprobación no puede ser una fecha futura.';
                     marcarError('proy-fecha', 'proy-fecha-err');
                 } else if (valFechaProy < minFecha) {
-                    errores.push('Fecha de Aprobación del Proyecto (no puede exceder los 5 años de antigüedad)');
+                    errores.push('Fecha estimada de aprobación del proyecto (no puede exceder los 5 años de antigüedad)');
                     var errF = document.getElementById('proy-fecha-err');
-                    if (errF) errF.textContent = 'La fecha de aprobación no puede exceder los 5 años de antigüedad.';
+                    if (errF) errF.textContent = 'La fecha estimada de aprobación no puede exceder los 5 años de antigüedad.';
                     marcarError('proy-fecha', 'proy-fecha-err');
                 }
             }
@@ -1087,14 +1087,14 @@ function validarPaso(numeroPaso) {
             errores.push('Narración de los Hechos (mínimo 50 caracteres)');
             marcarError('narracion', 'narracion-err');
         }
-        // ¿Presentada ante otra instancia?
+        // ¿Presentada ante otra instancia / organismo?
         var otraInst = document.querySelector('input[name="otra_instancia"]:checked');
         if (!otraInst) {
-            errores.push('Indicar si fue presentada ante otra instancia');
+            errores.push('Indicar si la situación irregular ya fue denunciada ante otro organismo');
             document.getElementById('otra-inst-err').classList.add('visible');
         } else if (otraInst.value === 'si') {
             if (document.getElementById('cual-instancia').value.trim().length < 3) {
-                errores.push('Nombre de la instancia anterior');
+                errores.push('Nombre del organismo o instancia anterior');
                 marcarError('cual-instancia', 'cual-instancia-err');
             }
         }
@@ -1949,7 +1949,7 @@ function poblarResumen() {
         if (valMontoRes && !valMontoRes.includes(',')) valMontoRes += ',00';
         document.getElementById('res-proyecto').textContent =
             'Denominación: ' + (document.getElementById('proy-nombre').value.trim() || '—') + '\n' +
-            'Fecha de aprobación: ' + (document.getElementById('proy-fecha').value || '—') + '\n' +
+            'Fecha estimada de aprobación: ' + (document.getElementById('proy-fecha').value || '—') + '\n' +
             'Monto: Bs. ' + (valMontoRes || '—') + '\n' +
             'Ente financiador: ' + (document.getElementById('proy-financiador').value.trim() || '—') +
             (document.getElementById('proy-situr').value.trim() ? '\nCódigo SITUR: ' + document.getElementById('proy-situr').value.trim() : '');
@@ -1958,8 +1958,17 @@ function poblarResumen() {
     }
 
     var otra = document.querySelector('input[name="otra_instancia"]:checked');
-    document.getElementById('res-otra-instancia').textContent = !otra ? '—'
-        : (otra.value === 'si' ? 'Sí — ' + (document.getElementById('cual-instancia').value.trim() || 'instancia no especificada') : 'No');
+    var textoOtra = '—';
+    if (otra) {
+        if (otra.value === 'si') {
+            textoOtra = 'Sí — ' + (document.getElementById('cual-instancia').value.trim() || 'organismo no especificado');
+        } else if (otra.value === 'no_se') {
+            textoOtra = 'No sé';
+        } else {
+            textoOtra = 'No';
+        }
+    }
+    document.getElementById('res-otra-instancia').textContent = textoOtra;
 
     // Las tarjetas de señalado y evidencias solo aplican a ciertos trámites
     document.getElementById('rev-card-senalado').style.display = pasoAplica(3) ? '' : 'none';
@@ -2201,15 +2210,15 @@ var REGLAS_VIVO = {
     'proy-fecha': {
         req: true,
         check: function (v) {
-            if (!v) return 'Seleccione la fecha de aprobación.';
+            if (!v) return 'Seleccione la fecha estimada de aprobación.';
             var dHoy = new Date();
             var hoy = dHoy.getFullYear() + '-' + String(dHoy.getMonth() + 1).padStart(2, '0') + '-' + String(dHoy.getDate()).padStart(2, '0');
             var dMin = new Date(dHoy);
             dMin.setFullYear(dMin.getFullYear() - 5);
             var minFecha = dMin.getFullYear() + '-' + String(dMin.getMonth() + 1).padStart(2, '0') + '-' + String(dMin.getDate()).padStart(2, '0');
 
-            if (v > hoy) return 'La fecha de aprobación no puede ser una fecha futura.';
-            if (v < minFecha) return 'La fecha de aprobación no puede exceder los 5 años de antigüedad.';
+            if (v > hoy) return 'La fecha estimada de aprobación no puede ser una fecha futura.';
+            if (v < minFecha) return 'La fecha estimada de aprobación no puede exceder los 5 años de antigüedad.';
             return '';
         }
     },

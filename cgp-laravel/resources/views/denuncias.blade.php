@@ -1,4 +1,4 @@
-﻿<!DOCTYPE html>
+<!DOCTYPE html>
 <html lang="es">
 
 <head>
@@ -1020,10 +1020,10 @@
                     <div class="col-md-3">
                       <div class="form-group">
                         <label class="form-label">
-                          Fecha de Aprobación <span class="required" style="color:#1565c0;">*</span>
+                          Fecha estimada de aprobación <span class="required" style="color:#1565c0;">*</span>
                         </label>
                         <input type="date" id="proy-fecha" class="form-control" min="{{ date('Y-m-d', strtotime('-5 years')) }}" max="{{ date('Y-m-d') }}" onchange="validarFechaProyecto(this)" oninput="validarFechaProyecto(this)">
-                        <span class="error-msg" id="proy-fecha-err">Seleccione la fecha de aprobación.</span>
+                        <span class="error-msg" id="proy-fecha-err">Seleccione la fecha estimada de aprobación.</span>
                       </div>
                     </div>
                     <div class="col-md-3">
@@ -1133,7 +1133,7 @@
 
               <div class="form-group" style="margin-top:20px;">
                 <label class="form-label">
-                  ¿Esta situación ha sido presentada ante otra instancia anteriormente?
+                  ¿Esta situación irregular ya fue denunciada ante otro organismo?
                   <span class="required" style="color:#1565c0;">*</span>
                 </label>
                 <div class="check-group" style="margin-top:8px;">
@@ -1145,17 +1145,21 @@
                     <input type="radio" name="otra_instancia" value="no" onchange="toggleOtraInstancia('no')">
                     <label>No</label>
                   </label>
+                  <label class="check-item">
+                    <input type="radio" name="otra_instancia" value="no_se" onchange="toggleOtraInstancia('no_se')">
+                    <label>No sé</label>
+                  </label>
                 </div>
-                <span class="error-msg" id="otra-inst-err">Debe indicar si fue presentada ante otra instancia.</span>
+                <span class="error-msg" id="otra-inst-err">Debe indicar si la situación irregular ya fue denunciada ante otro organismo.</span>
               </div>
 
               <div class="form-group" id="campo-cual-instancia" style="display:none;">
                 <label class="form-label">
-                  ¿Ante cuál instancia? <span class="required" style="color:#1565c0;">*</span>
+                  ¿Ante cuál organismo o instancia? <span class="required" style="color:#1565c0;">*</span>
                 </label>
                 <input type="text" id="cual-instancia" class="form-control"
-                  placeholder="Nombre de la institución">
-                <span class="error-msg" id="cual-instancia-err">Especifique la instancia.</span>
+                  placeholder="Nombre de la institución u organismo">
+                <span class="error-msg" id="cual-instancia-err">Especifique el organismo o instancia.</span>
               </div>
             </div>
 
@@ -1539,7 +1543,7 @@
                    <div class="print-val" id="print-proy-nombre">—</div>
                  </div>
                  <div class="print-row">
-                   <div class="print-label">Fecha de Aprobación:</div>
+                   <div class="print-label">Fecha estimada de aprobación:</div>
                    <div class="print-val" id="print-proy-fecha">—</div>
                  </div>
                  <div class="print-row">
@@ -2023,14 +2027,14 @@
       }
     });
 
-    /* ── Validación en tiempo real para la fecha de aprobación del proyecto (no futura y máx. 5 años atrás) ── */
+    /* ── Validación en tiempo real para la fecha estimada de aprobación del proyecto (no futura y máx. 5 años atrás) ── */
     function validarFechaProyecto(input) {
       if (!input) return;
       const err = document.getElementById('proy-fecha-err');
       const val = input.value;
       if (!val) {
         if (err) {
-          err.textContent = 'Seleccione la fecha de aprobación.';
+          err.textContent = 'Seleccione la fecha estimada de aprobación.';
         }
         return;
       }
@@ -2042,21 +2046,21 @@
 
       if (val > hoy) {
         if (err) {
-          err.textContent = 'La fecha de aprobación no puede ser una fecha futura.';
+          err.textContent = 'La fecha estimada de aprobación no puede ser una fecha futura.';
           err.classList.add('visible');
           err.style.display = 'block';
         }
         input.classList.add('invalid');
       } else if (val < minFecha) {
         if (err) {
-          err.textContent = 'La fecha de aprobación no puede exceder los 5 años de antigüedad.';
+          err.textContent = 'La fecha estimada de aprobación no puede exceder los 5 años de antigüedad.';
           err.classList.add('visible');
           err.style.display = 'block';
         }
         input.classList.add('invalid');
       } else {
         if (err) {
-          err.textContent = 'Seleccione la fecha de aprobación.';
+          err.textContent = 'Seleccione la fecha estimada de aprobación.';
           err.classList.remove('visible');
           err.style.display = 'none';
         }
@@ -2529,8 +2533,8 @@
           financiador: val('proy-financiador'), situr: val('proy-situr'),
         },
         narracion: val('narracion'),
-        otra_instancia: radio('otra_instancia') === 'si',
-        cual_instancia: val('cual-instancia'),
+        otra_instancia: radio('otra_instancia'),
+        cual_instancia: radio('otra_instancia') === 'si' ? val('cual-instancia') : null,
         acepta_declaracion: true,
       };
 
@@ -2664,9 +2668,13 @@
       document.getElementById('print-hechos').textContent = document.getElementById('narracion').value || '';
       const instaRadio = document.querySelector('input[name="otra_instancia"]:checked');
       if (instaRadio) {
-        document.getElementById('print-otra-instancia').textContent = instaRadio.value === 'si'
-          ? `Presentado previamente en: ${document.getElementById('cual-instancia').value || 'Instancia no especificada'}`
-          : 'Trámite originario (No se ha presentado en otra instancia)';
+        if (instaRadio.value === 'si') {
+          document.getElementById('print-otra-instancia').textContent = `Denunciada previamente en: ${document.getElementById('cual-instancia').value || 'Organismo no especificado'}`;
+        } else if (instaRadio.value === 'no_se') {
+          document.getElementById('print-otra-instancia').textContent = 'No sabe si ha sido denunciada ante otro organismo';
+        } else {
+          document.getElementById('print-otra-instancia').textContent = 'Trámite originario (No se ha presentado ante otro organismo)';
+        }
       } else {
         document.getElementById('print-otra-instancia').textContent = 'No indicó';
       }

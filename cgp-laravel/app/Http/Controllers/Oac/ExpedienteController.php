@@ -14,7 +14,7 @@ class ExpedienteController extends Controller
     // Único flujo permitido entre estatus. Lo que no está aquí se rechaza en el servidor.
     const TRANSICIONES = [
         'RECEIVED' => ['IN_REVIEW', 'INVALIDATED'],
-        'IN_REVIEW' => ['PROCESSED', 'REFERRED', 'ARCHIVED', 'INVALIDATED'],
+        'IN_REVIEW' => ['PROCESSED', 'REFERRED', 'INVALIDATED', 'ARCHIVED'],
         'PROCESSED' => ['REFERRED', 'ARCHIVED'],
         'REFERRED' => ['ARCHIVED'],
     ];
@@ -22,10 +22,10 @@ class ExpedienteController extends Controller
     // Texto del botón/opción para cada estatus destino.
     const ACCIONES = [
         'IN_REVIEW' => 'Protocolizar (pasa a En Revisión)',
-        'PROCESSED' => 'Marcar como Procesado',
+        'PROCESSED' => 'Marcar como Procesando',
         'REFERRED' => 'Derivar a otra unidad',
-        'ARCHIVED' => 'Archivar (cierra el expediente)',
         'INVALIDATED' => 'Invalidar (cierra el expediente)',
+        'ARCHIVED' => 'Archivar (cierra el expediente)',
     ];
 
     public function inicio(Request $request)

@@ -100,8 +100,8 @@ class DenunciaController extends Controller
             'proyecto.financiador' => 'exclude_unless:es_consulta,true|required|string|min:3|max:200',
             'proyecto.situr' => ['nullable', 'string', 'regex:'.self::RE_SITUR],
             'narracion' => 'required|string|min:50|max:3500',
-            'otra_instancia' => 'boolean',
-            'cual_instancia' => 'required_if:otra_instancia,true|nullable|string|max:200',
+            'otra_instancia' => ['required', Rule::in(['si', 'no', 'no_se', true, false, 1, 0, '1', '0'])],
+            'cual_instancia' => 'required_if:otra_instancia,si,true,1|nullable|string|max:200',
             'acepta_declaracion' => 'accepted',
         ], [
             'required' => 'Falta el campo :attribute.',
@@ -126,7 +126,7 @@ class DenunciaController extends Controller
             'ciudadano.tipo_doc' => 'tipo de documento',
             'ciudadano.fecha_nac' => 'nacimiento',
             'proyecto.nombre' => 'nombre del proyecto',
-            'proyecto.fecha' => 'aprobación del proyecto',
+            'proyecto.fecha' => 'fecha estimada de aprobación',
             'proyecto.monto' => 'monto del proyecto',
             'proyecto.financiador' => 'ente financiador',
             'ciudadano.nro_doc' => 'número de documento',
@@ -138,7 +138,7 @@ class DenunciaController extends Controller
             'ciudadano.direccion' => 'dirección de habitación',
             'ubicacion_senalado' => 'ubicación del señalado',
             'narracion' => 'narración de los hechos',
-            'cual_instancia' => 'instancia',
+            'cual_instancia' => 'instancia u organismo',
         ]);
 
         $v->after(function ($validator) use ($datos) {
@@ -367,6 +367,10 @@ class DenunciaController extends Controller
             $citizen->id ??= (string) Str::uuid();
             $citizen->save();
 
+            $otraInstVal = $d['otra_instancia'] ?? 'no';
+            $isOtraInstanciaSi = ($otraInstVal === 'si' || $otraInstVal === true || $otraInstVal === 1 || $otraInstVal === '1');
+            $isOtraInstanciaNoSe = ($otraInstVal === 'no_se');
+
             $case = CaseFile::create([
                 'id' => (string) Str::uuid(),
                 'claim_type_id' => $this->catalogId('claim_type', self::TIPOS_TRAMITE[$d['tipo_tramite']]),
@@ -374,8 +378,8 @@ class DenunciaController extends Controller
                 'citizen_id' => $citizen->id,
                 'narrative' => $d['narracion'],
                 'incident_location' => $d['ubicacion_senalado'] ?? null,
-                'other_instance' => $d['otra_instancia'] ?? false,
-                'other_instance_name' => ($d['otra_instancia'] ?? false) ? $d['cual_instancia'] : null,
+                'other_instance' => $isOtraInstanciaSi,
+                'other_instance_name' => $isOtraInstanciaSi ? ($d['cual_instancia'] ?? null) : ($isOtraInstanciaNoSe ? 'No sé' : null),
                 'is_popular_consultation' => $esConsulta,
                 'sworn_declaration' => true,
                 'declaration_date' => now(),

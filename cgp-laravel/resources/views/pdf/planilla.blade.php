@@ -194,7 +194,7 @@
 <table>
     <tr>
         <td style="width:75%"><span class="label">28. Nombre del Proyecto:</span><div class="val">{{ $consulta?->project_name }}</div></td>
-        <td style="width:25%"><span class="label">29. Fecha de aprobación</span><div class="val">{{ $consulta ? \Carbon\Carbon::parse($consulta->approval_date)->format('d/m/Y') : '' }}</div></td>
+        <td style="width:25%"><span class="label">29. Fecha estimada de aprobación</span><div class="val">{{ $consulta ? \Carbon\Carbon::parse($consulta->approval_date)->format('d/m/Y') : '' }}</div></td>
     </tr>
 </table>
 <table>
@@ -213,12 +213,12 @@
 </table>
 <table>
     <tr>
-        <td style="width:80%"><span class="label" style="margin:0">33. ¿Esta situación y/o problemática ha sido presentada ante otra instancia en fecha anterior o en la presente fecha?</span></td>
-        <td class="center middle" style="width:20%; font-size:9px">{!! $chk($case->other_instance, 'SÍ') !!}{!! $chk(! $case->other_instance, 'NO') !!}</td>
+        <td style="width:70%"><span class="label" style="margin:0">33. ¿Esta situación y/o problemática ha sido presentada ante otra instancia en fecha anterior o en la presente fecha?</span></td>
+        <td class="center middle" style="width:30%; font-size:9px">{!! $chk($case->other_instance && $case->other_instance_name !== 'No sé', 'SÍ') !!}{!! $chk(! $case->other_instance && $case->other_instance_name !== 'No sé', 'NO') !!}{!! $chk($case->other_instance_name === 'No sé', 'NO SÉ') !!}</td>
     </tr>
 </table>
 <table>
-    <tr><td colspan="3"><span class="label">34. Indique a cuál:</span><div class="val">{{ $case->other_instance_name }}</div></td></tr>
+    <tr><td colspan="3"><span class="label">34. Indique a cuál:</span><div class="val">{{ $case->other_instance && $case->other_instance_name !== 'No sé' ? $case->other_instance_name : '' }}</div></td></tr>
 </table>
 <table>
     <tr>

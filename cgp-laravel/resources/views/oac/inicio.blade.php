@@ -52,7 +52,7 @@
       <div class="kpi-title">En trámite</div>
       <div class="kpi-value">{{ $kpi['revision'] }}</div>
       <div class="kpi-bar"><div style="width: {{ round(100 * $kpi['revision'] / $total) }}%"></div></div>
-      <p class="kpi-desc">Expedientes en revisión, procesados o derivados a otra unidad.</p>
+      <p class="kpi-desc">Expedientes en revisión, procesando o derivados a otra unidad.</p>
     </a>
   </div>
   <div class="col-xl-3 col-md-6">
