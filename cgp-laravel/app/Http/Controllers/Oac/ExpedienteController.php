@@ -337,9 +337,11 @@ class ExpedienteController extends Controller
             $e->respondents()->whereNotIn('id', $idsConservados)->delete();
 
             // 5. Registrar actuación en el historial
-            $this->registrar($e, $request->user(), 'EDITION', [
+            $this->registrar($e, $request->user(), 'NOTE', [
+                'tipo_accion' => 'EDITION',
                 'nota' => $d['nota_edicion'],
                 'usuario' => $request->user()->nombre,
+                'fecha' => now()->toIso8601String(),
             ]);
         });
 
@@ -354,8 +356,10 @@ class ExpedienteController extends Controller
         $motivo = $request->input('motivo') ?: 'Eliminado lógico realizado desde el panel OAC';
 
         DB::transaction(function () use ($expediente, $request, $motivo) {
-            $this->registrar($expediente, $request->user(), 'SOFT_DELETED', [
+            $this->registrar($expediente, $request->user(), 'NOTE', [
+                'tipo_accion' => 'SOFT_DELETED',
                 'motivo' => $motivo,
+                'nota' => "Expediente eliminado lógicamente. Motivo: {$motivo}",
                 'fecha' => now()->toIso8601String(),
             ]);
             $expediente->delete(); // Soft delete: asigna deleted_at
@@ -373,7 +377,9 @@ class ExpedienteController extends Controller
 
         DB::transaction(function () use ($expediente, $request) {
             $expediente->restore();
-            $this->registrar($expediente, $request->user(), 'RESTORED', [
+            $this->registrar($expediente, $request->user(), 'NOTE', [
+                'tipo_accion' => 'RESTORED',
+                'nota' => 'Expediente restaurado a las listas activas.',
                 'fecha' => now()->toIso8601String(),
             ]);
         });
