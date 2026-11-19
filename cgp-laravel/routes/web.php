@@ -86,6 +86,8 @@ Route::middleware(['auth', 'modulo:oac'])->prefix('oac')->name('oac.')->group(fu
     Route::middleware('permiso:CATALOGS,write')->group(function () {
         Route::post('/catalogos/{slug}', [CatalogoController::class, 'store'])->name('catalogos.store');
         Route::post('/catalogos/{slug}/{id}', [CatalogoController::class, 'update'])->whereNumber('id')->name('catalogos.update');
+        Route::post('/catalogos/{slug}/{id}/toggle', [CatalogoController::class, 'toggle'])->whereNumber('id')->name('catalogos.toggle');
+        Route::post('/catalogos/{slug}/{id}/eliminar', [CatalogoController::class, 'destroy'])->whereNumber('id')->name('catalogos.destroy');
     });
 });
 
@@ -122,6 +124,8 @@ Route::middleware(['auth', 'modulo:admin'])->prefix('admin')->name('admin.')->gr
     Route::middleware('permiso:USERS,write')->group(function () {
         Route::post('/catalogos/{slug}', [CatalogoController::class, 'store'])->name('catalogos.store');
         Route::post('/catalogos/{slug}/{id}', [CatalogoController::class, 'update'])->whereNumber('id')->name('catalogos.update');
+        Route::post('/catalogos/{slug}/{id}/toggle', [CatalogoController::class, 'toggle'])->whereNumber('id')->name('catalogos.toggle');
+        Route::post('/catalogos/{slug}/{id}/eliminar', [CatalogoController::class, 'destroy'])->whereNumber('id')->name('catalogos.destroy');
     });
 
     // Contenido de la página web

@@ -7,36 +7,64 @@ use Illuminate\Support\Facades\DB;
 use Illuminate\Validation\Rule;
 
 /**
- * CRUD genérico de las listas maestras. Para añadir un catálogo basta una entrada en CATALOGOS.
- * Nunca se borra: se desactiva (los expedientes históricos siguen apuntando al registro).
- * El `code` no se puede cambiar después de creado: el código de la aplicación depende de él.
- * No se exponen case_status ni id_document_type: la lógica de estatus y el formulario usan sus códigos fijos.
+ * CRUD de listas maestras con borrado lógico y paginación.
  */
 class CatalogoController extends Controller
 {
     const CATALOGOS = [
-        'tipos-tramite' => ['tabla' => 'claim_type', 'titulo' => 'Tipos de trámite', 'campos' => [
-            ['code', 'Código', 'text', 30], ['name', 'Nombre', 'text', 80],
-            ['validation_level', 'Nivel de validación', 'select', ['STRICT' => 'Estricto', 'BASIC' => 'Básico', 'AUTOMATED' => 'Automático']],
-        ]],
-        'irregularidades' => ['tabla' => 'irregularity_type', 'titulo' => 'Tipos de irregularidad', 'campos' => [
-            ['code', 'Código', 'text', 40], ['name', 'Nombre', 'text', 120], ['legal_basis', 'Base legal', 'textarea', 1000],
-        ]],
-        'unidades-derivacion' => ['tabla' => 'referral_unit', 'titulo' => 'Unidades de derivación', 'campos' => [
-            ['code', 'Código', 'text', 30], ['name', 'Nombre', 'text', 100],
-        ]],
-        'tipos-senalado' => ['tabla' => 'respondent_type', 'titulo' => 'Tipos de señalado', 'campos' => [
-            ['code', 'Código', 'text', 30], ['name', 'Nombre', 'text', 80], ['field_schema', 'Campos de identificación (JSON)', 'json', null],
-        ]],
-        'documentos-fisicos' => ['tabla' => 'physical_doc_type', 'titulo' => 'Documentos físicos consignados', 'campos' => [
-            ['code', 'Código', 'text', 40], ['name', 'Nombre', 'text', 80],
-        ]],
-        'cargos' => ['tabla' => 'job_position', 'titulo' => 'Cargos del personal', 'campos' => [
-            ['title', 'Cargo', 'text', 100], ['description', 'Descripción', 'textarea', 500],
-        ]],
+        'tipos-tramite' => [
+            'tabla' => 'claim_type',
+            'titulo' => 'Tipos de trámite',
+            'campos' => [
+                ['code', 'Código', 'text', 30],
+                ['name', 'Nombre', 'text', 80],
+                ['validation_level', 'Nivel de validación', 'select', ['STRICT' => 'Estricto', 'BASIC' => 'Básico', 'AUTOMATED' => 'Automático']],
+            ],
+        ],
+        'irregularidades' => [
+            'tabla' => 'irregularity_type',
+            'titulo' => 'Tipos de irregularidad',
+            'campos' => [
+                ['code', 'Código', 'text', 40],
+                ['name', 'Nombre', 'text', 120],
+                ['legal_basis', 'Base legal', 'textarea', 1000],
+            ],
+        ],
+        'unidades-derivacion' => [
+            'tabla' => 'referral_unit',
+            'titulo' => 'Unidades de derivación',
+            'campos' => [
+                ['code', 'Código', 'text', 30],
+                ['name', 'Nombre', 'text', 100],
+            ],
+        ],
+        'tipos-senalado' => [
+            'tabla' => 'respondent_type',
+            'titulo' => 'Tipos de señalado',
+            'campos' => [
+                ['code', 'Código', 'text', 30],
+                ['name', 'Nombre', 'text', 80],
+                ['field_schema', 'Campos de identificación (JSON)', 'json', null],
+            ],
+        ],
+        'documentos-fisicos' => [
+            'tabla' => 'physical_doc_type',
+            'titulo' => 'Documentos físicos consignados',
+            'campos' => [
+                ['code', 'Código', 'text', 40],
+                ['name', 'Nombre', 'text', 80],
+            ],
+        ],
+        'cargos' => [
+            'tabla' => 'job_position',
+            'titulo' => 'Cargos del personal',
+            'campos' => [
+                ['title', 'Cargo', 'text', 100],
+                ['description', 'Descripción', 'textarea', 500],
+            ],
+        ],
     ];
 
-    /** Qué listas administra cada módulo: la OAC las suyas; Administración, los cargos del personal. */
     const POR_MODULO = [
         'oac' => ['tipos-tramite', 'irregularidades', 'unidades-derivacion', 'tipos-senalado', 'documentos-fisicos'],
         'admin' => ['cargos'],
@@ -44,28 +72,75 @@ class CatalogoController extends Controller
 
     public function index(Request $request)
     {
-        return view('panel.catalogos', [
-            'catalogos' => collect(self::CATALOGOS)->only(self::POR_MODULO[$request->segment(1)])->map(fn ($c) => $c + ['total' => DB::table($c['tabla'])->count()]),
-        ]);
+        $mod = $request->segment(1);
+        $permitidos = self::POR_MODULO[$mod] ?? [];
+
+        $catalogos = collect(self::CATALOGOS)->only($permitidos)->map(function ($c) {
+            return $c + [
+                'total' => DB::table($c['tabla'])->count(),
+                'activos' => DB::table($c['tabla'])->where('active', true)->count(),
+                'inactivos' => DB::table($c['tabla'])->where('active', false)->count(),
+            ];
+        });
+
+        return view('panel.catalogos', compact('catalogos'));
     }
 
     public function show(Request $request, string $slug)
     {
         $c = $this->config($request, $slug);
-        $editar = $request->query('editar');
+        $q = trim((string) $request->query('q', ''));
+        $estado = $request->query('estado', 'todos');
+        $editarId = $request->query('editar');
+
+        $query = DB::table($c['tabla']);
+
+        if ($estado === 'activos') {
+            $query->where('active', true);
+        } elseif ($estado === 'inactivos') {
+            $query->where('active', false);
+        }
+
+        if ($q !== '') {
+            $query->where(function ($sub) use ($c, $q) {
+                foreach ($c['campos'] as [$campo, , $tipo]) {
+                    if (in_array($tipo, ['text', 'textarea', 'select'])) {
+                        $sub->orWhere($campo, 'ILIKE', "%{$q}%");
+                    }
+                }
+            });
+        }
+
+        $filas = $query->orderByDesc('active')->orderBy('id')->paginate(10)->withQueryString();
+
+        $conteo = [
+            'total' => DB::table($c['tabla'])->count(),
+            'activos' => DB::table($c['tabla'])->where('active', true)->count(),
+            'inactivos' => DB::table($c['tabla'])->where('active', false)->count(),
+        ];
+
+        $fila = $editarId ? DB::table($c['tabla'])->where('id', (int) $editarId)->first() : null;
 
         return view('panel.catalogo', [
             'slug' => $slug,
             'c' => $c,
-            'filas' => DB::table($c['tabla'])->orderByDesc('active')->orderBy('id')->get(),
-            'fila' => $editar ? DB::table($c['tabla'])->where('id', (int) $editar)->first() : null,
+            'filas' => $filas,
+            'fila' => $fila,
+            'conteo' => $conteo,
+            'filtros' => [
+                'q' => $q,
+                'estado' => $estado,
+            ],
         ]);
     }
 
     public function store(Request $request, string $slug)
     {
         $c = $this->config($request, $slug);
-        DB::table($c['tabla'])->insert($this->datos($request, $c, null) + ['active' => true]);
+        $datos = $this->datos($request, $c, null);
+        $activo = $request->has('active') ? $request->boolean('active') : true;
+
+        DB::table($c['tabla'])->insert($datos + ['active' => $activo]);
 
         return redirect()->route($request->segment(1).'.catalogos.show', $slug)->with('ok', 'Registro creado.');
     }
@@ -81,14 +156,84 @@ class CatalogoController extends Controller
             && DB::table('staff_user')->where('job_position_id', $id)->where('active', true)->exists()) {
             return back()->withInput()->withErrors(['active' => 'No se puede desactivar: hay personal activo con este cargo.']);
         }
+
         try {
             DB::table($c['tabla'])->where('id', $id)->update($datos);
         } catch (\Illuminate\Database\QueryException $e) {
-            // Ej. el trigger de job_position no deja desactivar un cargo con personal activo.
             return back()->withInput()->withErrors(['active' => 'No se puede guardar: '.($e->errorInfo[2] ?? 'el registro está en uso.')]);
         }
 
         return redirect()->route($request->segment(1).'.catalogos.show', $slug)->with('ok', 'Registro actualizado.');
+    }
+
+    public function toggle(Request $request, string $slug, int $id)
+    {
+        $c = $this->config($request, $slug);
+        $actual = DB::table($c['tabla'])->where('id', $id)->first();
+        abort_unless($actual, 404);
+
+        $nuevoEstado = $request->has('active') ? $request->boolean('active') : ! (bool) $actual->active;
+
+        if ($c['tabla'] === 'job_position' && ! $nuevoEstado
+            && DB::table('staff_user')->where('job_position_id', $id)->where('active', true)->exists()) {
+            $msg = 'No se puede desactivar: hay personal activo con este cargo.';
+            if ($request->wantsJson() || $request->ajax()) {
+                return response()->json(['ok' => false, 'error' => $msg], 422);
+            }
+            return back()->withErrors(['active' => $msg]);
+        }
+
+        try {
+            DB::table($c['tabla'])->where('id', $id)->update(['active' => $nuevoEstado]);
+        } catch (\Illuminate\Database\QueryException $e) {
+            $msg = 'Error al cambiar estado: '.($e->errorInfo[2] ?? 'el registro está en uso.');
+            if ($request->wantsJson() || $request->ajax()) {
+                return response()->json(['ok' => false, 'error' => $msg], 422);
+            }
+            return back()->withErrors(['active' => $msg]);
+        }
+
+        $mensaje = $nuevoEstado ? 'Registro activado.' : 'Registro desactivado.';
+
+        if ($request->wantsJson() || $request->ajax()) {
+            return response()->json(['ok' => true, 'active' => $nuevoEstado, 'mensaje' => $mensaje]);
+        }
+
+        return back()->with('ok', $mensaje);
+    }
+
+    public function destroy(Request $request, string $slug, int $id)
+    {
+        $c = $this->config($request, $slug);
+        $actual = DB::table($c['tabla'])->where('id', $id)->first();
+        abort_unless($actual, 404);
+
+        if ($c['tabla'] === 'job_position'
+            && DB::table('staff_user')->where('job_position_id', $id)->where('active', true)->exists()) {
+            $msg = 'No se puede desactivar: hay personal activo con este cargo.';
+            if ($request->wantsJson() || $request->ajax()) {
+                return response()->json(['ok' => false, 'error' => $msg], 422);
+            }
+            return back()->withErrors(['active' => $msg]);
+        }
+
+        try {
+            DB::table($c['tabla'])->where('id', $id)->update(['active' => false]);
+        } catch (\Illuminate\Database\QueryException $e) {
+            $msg = 'Error al desactivar: '.($e->errorInfo[2] ?? 'el registro está en uso.');
+            if ($request->wantsJson() || $request->ajax()) {
+                return response()->json(['ok' => false, 'error' => $msg], 422);
+            }
+            return back()->withErrors(['active' => $msg]);
+        }
+
+        $mensaje = 'Registro desactivado (borrado lógico).';
+
+        if ($request->wantsJson() || $request->ajax()) {
+            return response()->json(['ok' => true, 'active' => false, 'mensaje' => $mensaje]);
+        }
+
+        return back()->with('ok', $mensaje);
     }
 
     private function config(Request $request, string $slug): array
@@ -98,7 +243,6 @@ class CatalogoController extends Controller
         return self::CATALOGOS[$slug];
     }
 
-    /** Valida con las reglas de cada campo y devuelve la fila lista para guardar. */
     private function datos(Request $request, array $c, ?int $id): array
     {
         $reglas = [];
