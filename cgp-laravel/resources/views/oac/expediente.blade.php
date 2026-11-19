@@ -12,11 +12,30 @@
 
 <div class="d-flex flex-wrap justify-content-between align-items-center gap-2 mb-3">
   <a href="{{ url()->previous() !== url()->current() ? url()->previous() : route('oac.expedientes.index') }}" class="btn btn-sm btn-outline-secondary"><i class="fa-solid fa-arrow-left me-1"></i> Volver</a>
-  <div class="d-flex gap-2 align-items-center">
+  <div class="d-flex flex-wrap gap-2 align-items-center">
     <span class="badge badge-estatus fs-6 st-{{ $actual->code }}">{{ $actual->name }}</span>
     <a href="{{ route('denuncias.planilla', $e->tracking_code) }}" class="btn btn-sm btn-outline-dark ver-planilla" data-titulo="{{ $e->case_number }}"><i class="fa-solid fa-file-pdf me-1"></i> Planilla PDF</a>
+    @if ($puedeEscribir && ! $e->trashed())
+      <a href="{{ route('oac.expedientes.edit', $e) }}" class="btn btn-sm btn-outline-warning text-dark fw-semibold"><i class="fa-solid fa-pen-to-square me-1"></i> Editar datos</a>
+      <button type="button" class="btn btn-sm btn-outline-danger btn-eliminar-expediente" data-numero="{{ $e->case_number }}" data-action="{{ route('oac.expedientes.destroy', $e) }}"><i class="fa-solid fa-trash-can me-1"></i> Eliminar</button>
+    @endif
   </div>
 </div>
+
+@if ($e->trashed())
+  <div class="alert alert-danger d-flex flex-wrap align-items-center justify-content-between gap-2 mb-4 shadow-sm rounded-3">
+    <div>
+      <i class="fa-solid fa-trash-can me-2"></i>
+      <strong>Expediente eliminado lógicamente:</strong> Este expediente fue eliminado el {{ $fecha($e->deleted_at) }} y está oculto de las listas activas de la OAC.
+    </div>
+    @if ($puedeEscribir)
+      <form method="POST" action="{{ route('oac.expedientes.restore', $e->id) }}" class="m-0">
+        @csrf
+        <button type="submit" class="btn btn-sm btn-success fw-bold"><i class="fa-solid fa-rotate-left me-1"></i> Restaurar Expediente</button>
+      </form>
+    @endif
+  </div>
+@endif
 
 <div class="row g-4">
   <div class="col-xl-8">
@@ -174,9 +193,10 @@
       <ul class="list-group list-group-flush small">
         @foreach ($historial as $h)
           <li class="list-group-item">
-            <div class="d-flex justify-content-between"><span class="fw-bold">{{ match ($h->action_type) { 'STATUS_CHANGE' => 'Pasó a '.$estatus->firstWhere('code', $h->payload['a'])?->name, 'CLASSIFICATION' => 'Clasificó: '.($h->payload['irregularidad'] ?? 'sin tipo'), default => 'Observación' } }}</span><span class="text-muted">{{ $fecha($h->performed_at) }}</span></div>
+            <div class="d-flex justify-content-between"><span class="fw-bold">{{ match ($h->action_type) { 'STATUS_CHANGE' => 'Pasó a '.$estatus->firstWhere('code', $h->payload['a'])?->name, 'CLASSIFICATION' => 'Clasificó: '.($h->payload['irregularidad'] ?? 'sin tipo'), 'EDITION' => 'Edición de datos', 'SOFT_DELETED' => 'Eliminado lógicamente', 'RESTORED' => 'Restaurado', default => 'Observación' } }}</span><span class="text-muted">{{ $fecha($h->performed_at) }}</span></div>
             @isset($h->payload['unidad']) <div>Unidad: {{ $h->payload['unidad'] }}</div> @endisset
             @isset($h->payload['oficio']) <div><a href="{{ $h->payload['oficio'] }}" target="_blank" rel="noopener noreferrer">Ver oficio</a></div> @endisset
+            @isset($h->payload['motivo']) <div class="text-danger small">Motivo: {{ $h->payload['motivo'] }}</div> @endisset
             <div style="white-space: pre-wrap;">{{ $h->payload['nota'] ?? '' }}</div>
             <div class="text-muted">{{ $h->usuario }}</div>
           </li>
@@ -191,6 +211,7 @@
 </div>
 
 @include('oac._modal_planilla')
+@include('oac._modal_eliminar')
 @endsection
 
 @push('scripts')

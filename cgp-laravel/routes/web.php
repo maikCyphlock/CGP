@@ -70,10 +70,16 @@ Route::middleware(['auth', 'modulo:oac'])->prefix('oac')->name('oac.')->group(fu
 
     Route::middleware('permiso:CASES,read')->group(function () {
         Route::get('/expedientes', [ExpedienteController::class, 'index'])->name('expedientes.index');
-        Route::get('/expedientes/{expediente}', [ExpedienteController::class, 'show'])->whereUuid('expediente')->name('expedientes.show');
+        Route::get('/expedientes/{expediente}', [ExpedienteController::class, 'show'])->withTrashed()->whereUuid('expediente')->name('expedientes.show');
         Route::get('/expedientes/{expediente}/archivos/{archivo}', [ExpedienteController::class, 'archivo'])->whereUuid(['expediente', 'archivo'])->name('expedientes.archivo');
     });
-    Route::post('/expedientes/{expediente}/actuar', [ExpedienteController::class, 'actuar'])->whereUuid('expediente')->middleware('permiso:CASES,write')->name('expedientes.actuar');
+    Route::middleware('permiso:CASES,write')->group(function () {
+        Route::get('/expedientes/{expediente}/editar', [ExpedienteController::class, 'edit'])->whereUuid('expediente')->name('expedientes.edit');
+        Route::post('/expedientes/{expediente}/actualizar', [ExpedienteController::class, 'update'])->whereUuid('expediente')->name('expedientes.update');
+        Route::post('/expedientes/{expediente}/eliminar', [ExpedienteController::class, 'destroy'])->whereUuid('expediente')->name('expedientes.destroy');
+        Route::post('/expedientes/{id}/restaurar', [ExpedienteController::class, 'restore'])->whereUuid('id')->name('expedientes.restore');
+        Route::post('/expedientes/{expediente}/actuar', [ExpedienteController::class, 'actuar'])->whereUuid('expediente')->name('expedientes.actuar');
+    });
     Route::post('/expedientes/{expediente}/clasificar', [ExpedienteController::class, 'clasificar'])->whereUuid('expediente')->middleware('permiso:CLASSIFY,write')->name('expedientes.clasificar');
 
     Route::get('/reportes', [ReporteController::class, 'index'])->middleware('permiso:REPORTS,read')->name('reportes');

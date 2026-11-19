@@ -407,6 +407,7 @@ CREATE TABLE case_file (
 
     created_at          TIMESTAMPTZ  NOT NULL DEFAULT now(),
     updated_at          TIMESTAMPTZ  NOT NULL DEFAULT now(),
+    deleted_at          TIMESTAMPTZ,
 
     CONSTRAINT ck_other_instance_name
         CHECK (other_instance = FALSE OR other_instance_name IS NOT NULL),

@@ -4,10 +4,11 @@ namespace App\Models;
 
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\SoftDeletes;
 
 class CaseFile extends Model
 {
-    use HasFactory;
+    use HasFactory, SoftDeletes;
 
     protected $table = 'case_file';
 
@@ -58,6 +59,7 @@ class CaseFile extends Model
         'physical_docs_submitted' => 'boolean',
         'physical_docs_date' => 'date',
         'referred_at' => 'datetime',
+        'deleted_at' => 'datetime',
     ];
 
     public function citizen()

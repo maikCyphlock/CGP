@@ -442,6 +442,7 @@ class DenunciaController extends Controller
             ->join('claim_type as t', 't.id', '=', 'c.claim_type_id')
             ->join('case_status as s', 's.id', '=', 'c.status_id')
             ->where(fn ($q) => $q->where('c.case_number', $codigo)->orWhere('c.tracking_code', strtolower($codigo)))
+            ->whereNull('c.deleted_at')
             ->first([
                 'c.id',
                 'c.case_number',
