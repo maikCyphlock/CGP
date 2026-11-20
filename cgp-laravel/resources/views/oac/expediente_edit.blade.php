@@ -22,9 +22,8 @@
 </div>
 
 {{-- Banner informativo de campos protegidos --}}
-<div class="alert alert-info border-0 shadow-sm d-flex align-items-center gap-3 mb-4 rounded-3 bg-white border-start border-4 border-info">
-  <i class="fa-solid fa-shield-halved fs-3 text-info"></i>
-  <div>
+<div class="alert alert-info border-0 shadow-sm d-flex align-items-center mb-4 rounded-3 bg-white border-start border-4" style="border-color: #1565c0 !important;">
+    <i class="fa-solid" style="color: #1565c0;"></i><div>
     <h6 class="mb-1 fw-bold text-dark">Campos Institucionales Protegidos</h6>
     <p class="mb-0 text-secondary small">
       Por normativas de auditoría y control de expedientes, el <strong>Número de expediente</strong> y la <strong>Fecha de ingreso</strong> son datos fijos generados por el sistema y <strong>no pueden ser modificados</strong>. Los datos de la denuncia, del ciudadano solicitante, proyecto de consulta y señalados sí pueden ser modificados a continuación.
@@ -35,7 +34,7 @@
 {{-- Card de Identificación Institucional (Solo lectura) --}}
 <div class="card border-0 shadow-sm mb-4 rounded-3">
   <div class="card-header bg-white py-3 fw-bold text-primary-cgp border-bottom d-flex align-items-center justify-content-between">
-    <span><i class="fa-solid fa-lock me-2 text-warning"></i>Identificación Institucional (No Modificable)</span>
+    <span></i>Identificación Institucional (No Modificable)</span>
     <span class="text-muted small fw-normal">Asignados en el registro</span>
   </div>
   <div class="card-body">
@@ -45,7 +44,7 @@
         <div class="input-group">
           <span class="input-group-text bg-light text-muted"><i class="fa-solid fa-folder-closed"></i></span>
           <input type="text" class="form-control bg-light fw-bold text-primary-cgp" value="{{ $e->case_number }}" readonly disabled aria-label="Número de Expediente">
-          <span class="input-group-text bg-light text-muted" title="Campo bloqueado e inmutable"><i class="fa-solid fa-lock text-warning"></i></span>
+          <span class="input-group-text bg-light text-muted" title="Campo bloqueado e inmutable"><i class="fa-solid fa-lock"></i></span>
         </div>
         <div class="form-text text-muted small">Identificador único generado por el correlativo anual de la OAC.</div>
       </div>
@@ -54,7 +53,7 @@
         <div class="input-group">
           <span class="input-group-text bg-light text-muted"><i class="fa-solid fa-calendar-check"></i></span>
           <input type="text" class="form-control bg-light text-secondary" value="{{ $fecha($e->created_at) }}" readonly disabled aria-label="Fecha de Ingreso Oficial">
-          <span class="input-group-text bg-light text-muted" title="Campo bloqueado e inmutable"><i class="fa-solid fa-lock text-warning"></i></span>
+          <span class="input-group-text bg-light text-muted" title="Campo bloqueado e inmutable"><i class="fa-solid fa-lock"></i></span>
         </div>
         <div class="form-text text-muted small">Fecha y hora oficial en que el trámite fue consignado en el sistema.</div>
       </div>
@@ -73,7 +72,7 @@
     <div class="card-body">
       <div class="row g-3">
         <div class="col-md-2">
-          <label class="form-label small fw-semibold">Tipo Doc. <span class="text-danger">*</span></label>
+          <label class="form-label small fw-semibold">Tipo Doc. <span style="color: #1565c0;">*</span></label>
           <select name="ciudadano[id_doc_type_id]" class="form-select form-select-sm" required>
             @foreach ($tiposDoc as $td)
               <option value="{{ $td->id }}" @selected(old('ciudadano.id_doc_type_id', $c->id_doc_type_id) == $td->id)>
@@ -83,20 +82,20 @@
           </select>
         </div>
         <div class="col-md-4">
-          <label class="form-label small fw-semibold">Número de Documento / Cédula <span class="text-danger">*</span></label>
+          <label class="form-label small fw-semibold">Número de Documento / Cédula <span style="color: #1565c0;">*</span></label>
           <input type="text" name="ciudadano[id_doc_number]" class="form-control form-control-sm" value="{{ old('ciudadano.id_doc_number', $c->id_doc_number) }}" required maxlength="10" placeholder="Ej. 12345678">
         </div>
         <div class="col-md-3">
-          <label class="form-label small fw-semibold">Nombres <span class="text-danger">*</span></label>
+          <label class="form-label small fw-semibold">Nombres <span style="color: #1565c0;">*</span></label>
           <input type="text" name="ciudadano[first_name]" class="form-control form-control-sm" value="{{ old('ciudadano.first_name', $c->first_name) }}" required maxlength="80">
         </div>
         <div class="col-md-3">
-          <label class="form-label small fw-semibold">Apellidos <span class="text-danger">*</span></label>
+          <label class="form-label small fw-semibold">Apellidos <span style="color: #1565c0;">*</span></label>
           <input type="text" name="ciudadano[last_name]" class="form-control form-control-sm" value="{{ old('ciudadano.last_name', $c->last_name) }}" required maxlength="80">
         </div>
 
         <div class="col-md-3">
-          <label class="form-label small fw-semibold">Sexo <span class="text-danger">*</span></label>
+          <label class="form-label small fw-semibold">Sexo <span style="color: #1565c0;">*</span></label>
           <select name="ciudadano[sex]" class="form-select form-select-sm" required>
             <option value="M" @selected(old('ciudadano.sex', $c->sex) === 'M')>Masculino</option>
             <option value="F" @selected(old('ciudadano.sex', $c->sex) === 'F')>Femenino</option>
@@ -112,7 +111,7 @@
         </div>
 
         <div class="col-md-4">
-          <label class="form-label small fw-semibold">Correo Electrónico <span class="text-danger">*</span></label>
+          <label class="form-label small fw-semibold">Correo Electrónico <span style="color: #1565c0;">*</span></label>
           <input type="email" name="ciudadano[email]" class="form-control form-control-sm" value="{{ old('ciudadano.email', $c->email) }}" required maxlength="150">
         </div>
         <div class="col-md-4">
@@ -182,7 +181,7 @@
         </div>
 
         <div class="col-12">
-          <label class="form-label small fw-semibold">Dirección de Habitación <span class="text-danger">*</span></label>
+          <label class="form-label small fw-semibold">Dirección de Habitación <span style="color: #1565c0;">*</span></label>
           <textarea name="ciudadano[address]" class="form-control form-control-sm" rows="2" required minlength="5" maxlength="250">{{ old('ciudadano.address', $c->address) }}</textarea>
         </div>
       </div>
@@ -197,7 +196,7 @@
     <div class="card-body">
       <div class="row g-3">
         <div class="col-md-6">
-          <label class="form-label small fw-semibold">Tipo de Trámite <span class="text-danger">*</span></label>
+          <label class="form-label small fw-semibold">Tipo de Trámite <span style="color: #1565c0;">*</span></label>
           <select name="tramite[claim_type_id]" class="form-select form-select-sm" required>
             @foreach ($tiposTramite as $tt)
               <option value="{{ $tt->id }}" @selected(old('tramite.claim_type_id', $e->claim_type_id) == $tt->id)>{{ $tt->name }}</option>
@@ -220,7 +219,7 @@
             }
             $otraInstSeleccionada = old('tramite.other_instance', $otraInstVal);
           @endphp
-          <label class="form-label small fw-semibold d-block">¿Ha presentado este caso ante otra instancia u organismo? <span class="text-danger">*</span></label>
+          <label class="form-label small fw-semibold d-block">¿Ha presentado este caso ante otra instancia u organismo? <span style="color: #1565c0;">*</span></label>
           <div class="d-flex gap-4 mb-2">
             <div class="form-check">
               <input class="form-check-input" type="radio" name="tramite[other_instance]" id="instanciaNo" value="no" @checked($otraInstSeleccionada === 'no') onchange="toggleInstancia(false)">
@@ -242,7 +241,7 @@
         </div>
 
         <div class="col-12">
-          <label class="form-label small fw-semibold">Narración de los Hechos <span class="text-danger">*</span> <span class="text-muted fw-normal">(mínimo 50, máximo 3500 caracteres)</span></label>
+          <label class="form-label small fw-semibold">Narración de los Hechos <span style="color: #1565c0;">*</span> <span class="text-muted fw-normal">(mínimo 50, máximo 3500 caracteres)</span></label>
           <textarea name="tramite[narrative]" id="narrativeText" class="form-control" rows="6" required minlength="50" maxlength="3500" placeholder="Describa con claridad los hechos ocurridos...">{{ old('tramite.narrative', $e->narrative) }}</textarea>
           <div class="d-flex justify-content-between form-text text-muted small mt-1">
             <span>Explique fecha, lugar, personas involucradas y detalles relevantes.</span>
@@ -256,7 +255,7 @@
   {{-- Card 3: Proyecto de Consulta Popular --}}
   <div class="card border-0 shadow-sm mb-4 rounded-3">
     <div class="card-header bg-white py-3 fw-bold text-primary-cgp border-bottom d-flex align-items-center justify-content-between">
-      <span><i class="fa-solid fa-people-roof me-2"></i>Proyecto de Consulta Popular Nacional</span>
+      <span></i>Proyecto de Consulta Popular Nacional</span>
       <div class="form-check form-switch m-0">
         <input class="form-check-input" type="checkbox" name="consulta[es_consulta]" value="1" id="switchConsulta" @checked(old('consulta.es_consulta', $e->is_popular_consultation)) onchange="toggleConsulta(this.checked)">
         <label class="form-check-label small text-muted" for="switchConsulta">¿Aplica a Consulta Popular?</label>
@@ -291,7 +290,7 @@
   {{-- Card 4: Personas u Órganos Señalados --}}
   <div class="card border-0 shadow-sm mb-4 rounded-3">
     <div class="card-header bg-white py-3 fw-bold text-primary-cgp border-bottom d-flex align-items-center justify-content-between">
-      <span><i class="fa-solid fa-users-viewfinder me-2"></i>Personas u Órganos Señalados</span>
+      <span></i>Personas u Órganos Señalados</span>
       <button type="button" class="btn btn-sm btn-outline-primary fw-bold" onclick="agregarSenalado()">
         <i class="fa-solid fa-plus me-1"></i> Agregar Señalado
       </button>
@@ -351,10 +350,10 @@
   {{-- Card 5: Nota u Observación de la Edición --}}
   <div class="card border-0 shadow-sm mb-4 rounded-3">
     <div class="card-header bg-white py-3 fw-bold text-primary-cgp border-bottom">
-      <i class="fa-solid fa-clock-rotate-left me-2"></i>Observación para el Historial <span class="text-danger">*</span>
+      <i class="fa-solid fa-clock-rotate-left me-2"></i>Observación para el Historial <span style="color: #1565c0;">*</span>
     </div>
     <div class="card-body">
-      <label class="form-label small fw-semibold">Motivo o Resumen de la Corrección <span class="text-danger">*</span></label>
+      <label class="form-label small fw-semibold">Motivo o Resumen de la Corrección <span style="color: #1565c0;">*</span></label>
       <input type="text" name="nota_edicion" class="form-control form-control-sm" required minlength="5" maxlength="250" value="{{ old('nota_edicion') }}" placeholder="Ej. Corrección ortográfica en nombres y actualización de dirección a solicitud del ciudadano.">
       <div class="form-text text-muted small">Esta observación es obligatoria y quedará registrada en la bitácora de auditoría junto con su nombre de usuario.</div>
     </div>
