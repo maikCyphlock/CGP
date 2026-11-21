@@ -38,6 +38,7 @@ Route::get('/', function () {
 Route::get('/denuncias', [DenunciaController::class, 'create'])->name('denuncias.create');
 Route::post('/denuncias', [DenunciaController::class, 'store'])->name('denuncias.store');
 Route::get('/denuncias/estado', [DenunciaController::class, 'estado'])->middleware('throttle:30,1')->name('denuncias.estado');
+Route::post('/denuncias/{trackingCode}/confirmar-datos', [DenunciaController::class, 'confirmarDatos'])->name('denuncias.confirmar-datos');
 Route::get('/denuncias/{trackingCode}/planilla', [DenunciaController::class, 'planilla'])->name('denuncias.planilla');
 
 Route::get('/contraloria-escolar', fn () => view('contraloria_escolar', ['informes' => InformeController::publicos('escolar')]));
@@ -75,6 +76,9 @@ Route::middleware(['auth', 'modulo:oac'])->prefix('oac')->name('oac.')->group(fu
     });
     Route::post('/expedientes/{expediente}/actuar', [ExpedienteController::class, 'actuar'])->whereUuid('expediente')->middleware('permiso:CASES,write')->name('expedientes.actuar');
     Route::post('/expedientes/{expediente}/clasificar', [ExpedienteController::class, 'clasificar'])->whereUuid('expediente')->middleware('permiso:CLASSIFY,write')->name('expedientes.clasificar');
+    Route::post('/expedientes/{expediente}/asignar', [ExpedienteController::class, 'asignar'])->whereUuid('expediente')->middleware('permiso:CASES,write')->name('expedientes.asignar');
+    Route::post('/expedientes/{expediente}/derivar', [ExpedienteController::class, 'derivar'])->whereUuid('expediente')->middleware('permiso:CASES,write')->name('expedientes.derivar');
+    Route::post('/expedientes/{expediente}/respuesta-ciudadana', [ExpedienteController::class, 'respuestaCiudadana'])->whereUuid('expediente')->middleware('permiso:CASES,write')->name('expedientes.respuestaCiudadana');
 
     Route::get('/reportes', [ReporteController::class, 'index'])->middleware('permiso:REPORTS,read')->name('reportes');
 

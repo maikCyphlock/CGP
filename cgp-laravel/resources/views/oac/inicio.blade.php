@@ -23,9 +23,9 @@
       </p>
       <div class="d-flex justify-content-center justify-content-lg-start gap-2 flex-wrap">
         @if ($kpi && $kpi['recibidos'])
-          <a href="{{ route('oac.expedientes.index', ['estado' => 'RECEIVED']) }}" class="btn btn-update px-4 py-2 fw-bold"><i class="fa-solid fa-inbox me-2"></i> Revisar pendientes</a>
+          <a href="{{ route('oac.expedientes.index', ['estado' => 'RECEIVED']) }}" class="btn btn-update px-4 py-2 fw-bold">Revisar pendientes</a>
         @endif
-        <button class="btn btn-update px-4 py-2 fw-bold" onclick="location.reload()"><i class="fa-solid fa-rotate me-2"></i> Actualizar bandeja</button>
+        <button class="btn btn-update px-4 py-2 fw-bold" onclick="location.reload()">Actualizar bandeja</button>
       </div>
     </div>
     <div class="col-lg-4 text-center">

@@ -17,6 +17,10 @@
   <link rel="stylesheet" href="{{ asset('assets') }}/css/denuncias.css">
   <link rel="stylesheet" href="{{ asset('assets') }}/css/contraloria.css">
 
+  <!-- Leaflet para Geolocalización y Google Maps Widget -->
+  <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" integrity="sha256-p4NxAoJBhIIN+hmNHrzRCf9tD/miZyoHS5obTRR9BMY=" crossorigin="" />
+  <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js" integrity="sha256-20nQCchB9co0qIjJZRGuk2/Z9VM+kNiyxNV1lvTlZBo=" crossorigin=""></script>
+
   <style>
     /* Estilos adicionales para justificar textos institucionales */
     p, .aviso-anonimato div, .tramite-card-desc, .resumen-valor {
@@ -425,7 +429,41 @@
             <div class="print-row"><div class="print-label">Tipo de Trámite:</div><div class="print-val" id="res-est-tipo">-</div></div>
             <div class="print-row"><div class="print-label">Fecha de Registro:</div><div class="print-val" id="res-est-fecha">-</div></div>
             <div class="print-row"><div class="print-label">Estado Actual:</div><div class="print-val" id="res-est-estado" style="font-weight: bold; color: #2e7d32;">-</div></div>
-            <div class="print-row" id="fila-est-observacion" style="border-bottom: none;"><div class="print-label">Observación:</div><div class="print-val" id="res-est-observacion" style="white-space: pre-wrap;">-</div></div>
+            <div class="print-row" id="fila-est-observacion"><div class="print-label">Observación:</div><div class="print-val" id="res-est-observacion" style="white-space: pre-wrap;">-</div></div>
+
+            <!-- Fila Geolocalización Señalado -->
+            <div class="print-row" id="fila-est-ubicacion" style="display:none;">
+              <div class="print-label">Ubicación Señalado:</div>
+              <div class="print-val" id="res-est-ubicacion">
+                <span id="res-est-ubicacion-texto">-</span>
+                <a id="res-est-gmaps-link" href="#" target="_blank" rel="noopener noreferrer" style="margin-left:8px; color:#1565c0; font-weight:600; text-decoration:none; display:none;">Ver en Google Maps ↗</a>
+              </div>
+            </div>
+
+            <!-- Módulo Regla de Negocio: Lapso de Anticipación para Confirmar Datos -->
+            <div id="bloque-confirmacion-denunciante" style="margin-top:16px; display:none; background:#fff; border:1px solid #bfdbfe; border-left:4px solid #2563eb; border-radius:6px; padding:14px; text-align:justify;">
+              <div style="font-weight:700; color:#1e40af; font-size:0.92rem; margin-bottom:4px;" id="titulo-confirmacion-lapso">
+                Lapso de Anticipación para Confirmar Datos
+              </div>
+              <div style="font-size:0.86rem; color:#1e3a8a; margin-bottom:10px;" id="texto-confirmacion-lapso">
+                —
+              </div>
+              <div id="acciones-confirmacion-datos" style="display:none;">
+                <div style="margin-bottom:8px;">
+                  <textarea id="input-rectificacion-denunciante" class="form-control" rows="2" style="font-size:0.84rem;" placeholder="Si desea rectificar algún dato antes de validar la conformidad, especifíquelo aquí (opcional)..."></textarea>
+                </div>
+                <button type="button" class="btn btn-sm btn-primary" onclick="enviarConfirmacionDatos()" id="btn-confirmar-datos" style="background:#1565c0; font-weight:600;">
+                  Confirmar conformidad de mis datos
+                </button>
+              </div>
+              <div id="feedback-confirmacion-datos" style="font-size:0.84rem; font-weight:600; color:#16a34a; margin-top:8px; display:none;"></div>
+            </div>
+
+            <!-- Respuestas Institucionales de la Contraloría -->
+            <div id="fila-respuesta-ciudadano" style="margin-top:16px; display:none; text-align:justify;">
+              <div style="font-weight:bold; color:#1565c0; border-top:1px solid #dce3ec; padding-top:12px; margin-bottom:8px; font-size:0.95rem;">Respuesta Institucional de la Contraloría</div>
+              <div id="res-respuestas-ciudadano"></div>
+            </div>
           </div>
         </div>
       </div>
@@ -989,12 +1027,42 @@
                 </button>
 
                 <div class="form-group" style="margin-top:20px;">
-                  <label class="form-label">
-                    Ubicación Geográfica del Señalado <span class="required" style="color:#1565c0;">*</span>
+                  <label class="form-label" style="display:flex; justify-content:space-between; align-items:center; flex-wrap:wrap; gap:8px;">
+                    <span>Ubicación Geográfica del Señalado <span class="required" style="color:#1565c0;">*</span></span>
+                    <span style="font-size:0.8rem; font-weight:normal; color:#546e7a;">
+                      Geolocalización interactiva vía Google Maps / Satélite
+                    </span>
                   </label>
-                  <input type="text" id="sen-ubicacion" class="form-control"
-                    placeholder="Dirección, Parroquia, consejo Comunal...">
+                  <div style="display:flex; gap:8px; margin-bottom:8px;">
+                    <input type="text" id="sen-ubicacion" class="form-control"
+                      placeholder="Dirección, Parroquia, Consejo Comunal, punto de referencia...">
+                    <button type="button" class="btn btn-sm btn-outline-secondary" style="white-space:nowrap; font-size:0.82rem; padding:6px 12px;" onclick="buscarDireccionEnMapa()" title="Ubicar dirección en el mapa">
+                      Buscar en mapa
+                    </button>
+                    <button type="button" class="btn btn-sm btn-outline-primary" style="white-space:nowrap; font-size:0.82rem; padding:6px 12px;" onclick="obtenerUbicacionActualGPS()" title="Usar GPS del dispositivo">
+                      Mi ubicación
+                    </button>
+                  </div>
                   <span class="error-msg" id="sen-ubicacion-err">Ingrese la ubicación del señalado.</span>
+
+                  <!-- Componente de Mapa Interactivo Google Maps -->
+                  <div id="contenedor-mapa-senalado" style="margin-top:10px; background:#fff; border:1px solid #dce3ec; border-radius:8px; overflow:hidden; box-shadow:0 1px 4px rgba(0,0,0,0.06);">
+                    <div style="background:#f1f5f9; padding:8px 14px; font-size:0.82rem; color:#475569; display:flex; justify-content:space-between; align-items:center; flex-wrap:wrap; gap:6px; border-bottom:1px solid #e2e8f0;">
+                      <span>Haga clic en el mapa o arrastre el marcador para fijar las coordenadas exactas.</span>
+                      <a id="btn-abrir-google-maps" href="https://maps.google.com" target="_blank" rel="noopener noreferrer" style="color:#1565c0; font-weight:600; text-decoration:none; font-size:0.8rem; display:none;">
+                        Abrir en Google Maps ↗
+                      </a>
+                    </div>
+                    <div id="mapa-senalado" style="height:260px; width:100%; background:#e5e3df;"></div>
+                    <div style="background:#f8fafc; padding:6px 14px; font-size:0.8rem; color:#64748b; display:flex; justify-content:space-between; align-items:center; flex-wrap:wrap; gap:6px;">
+                      <div>
+                        Coordenadas: Lat <strong id="sen-lat-texto" style="color:#0f172a;">—</strong>, Lng <strong id="sen-lng-texto" style="color:#0f172a;">—</strong>
+                      </div>
+                      <span id="sen-geo-status" style="font-size:0.78rem; color:#0284c7;"></span>
+                    </div>
+                  </div>
+                  <input type="hidden" id="sen-lat" name="sen_lat" value="">
+                  <input type="hidden" id="sen-lng" name="sen_lng" value="">
                 </div>
               </div>
 
@@ -1456,6 +1524,20 @@
               <div id="nro-expediente-display" style="background:#1a2340;color:#fff;display:inline-block;padding:8px 24px;
                         border-radius:6px;font-size:1.2rem;font-weight:700;letter-spacing:2px;font-family:monospace;">
                 OAC-2026-0001
+              </div>
+            </div>
+
+            <!-- BANNER REGLA DE NEGOCIO: DÍAS DE ANTICIPACIÓN PARA CONFIRMAR DATOS -->
+            <div id="banner-lapso-confirmacion-exito" style="background:#f0f7ff; border:1px solid #bfdbfe; border-left:4px solid #1d4ed8; border-radius:8px; padding:16px 20px; margin-bottom:24px; text-align:justify;">
+              <div style="display:flex; justify-content:space-between; align-items:center; flex-wrap:wrap; gap:8px; margin-bottom:6px;">
+                <strong style="color:#1e40af; font-size:0.96rem;">Lapso de Anticipación para Confirmación de Datos</strong>
+                <span class="badge bg-primary" id="badge-lapso-dias" style="font-size:0.82rem; padding:5px 10px;">5 Días Hábiles</span>
+              </div>
+              <p style="font-size:0.88rem; color:#1e3a8a; margin:0 0 8px 0; text-align:justify;">
+                De acuerdo con el procedimiento de la Contraloría, se le ha otorgado un lapso de <strong><span id="lapso-dias-display">5</span> días de anticipación</strong> (hasta el <strong id="lapso-fecha-display">—</strong>) para que pueda revisar minuciosamente su planilla, verificar los datos aportados y validar o rectificar cualquier inconsistencia antes de la formalización legal de su expediente.
+              </p>
+              <div style="font-size:0.82rem; color:#475569;">
+                Código de seguimiento: <code id="lapso-tracking-display" style="font-weight:bold; color:#1e40af; font-size:0.88rem;">—</code>. Podrá consultar su estatus y validar la conformidad de sus datos en la sección <em>Consultar Estado de Trámite</em>.
               </div>
             </div>
 
@@ -2172,6 +2254,7 @@
 
       siguientePaso(paso);   // valida y avanza (wizard.js)
       if (pasoActual === paso + 1) {
+        if (pasoActual === 3) setTimeout(inicializarMapaSenalado, 150);
         if (paso === 3) actualizarAvisoContexto();
         if (paso === 5) actualizarResumenFinal();
       }
@@ -2256,7 +2339,266 @@
         }
       }
 
+      // 1. Mostrar Ubicación Geográfica del Señalado y enlace a Google Maps
+      const filaUbicacion = document.getElementById('fila-est-ubicacion');
+      const textoUbicacion = document.getElementById('res-est-ubicacion-texto');
+      const linkGmaps = document.getElementById('res-est-gmaps-link');
+      if (r.incident_location || (r.incident_lat && r.incident_lng)) {
+        let txt = r.incident_location || 'Coordenadas registradas';
+        if (r.incident_lat && r.incident_lng) {
+          txt += ` (Lat: ${Number(r.incident_lat).toFixed(5)}, Lng: ${Number(r.incident_lng).toFixed(5)})`;
+        }
+        textoUbicacion.textContent = txt;
+        if (r.google_maps_url) {
+          linkGmaps.href = r.google_maps_url;
+          linkGmaps.style.display = 'inline-block';
+        } else {
+          linkGmaps.style.display = 'none';
+        }
+        filaUbicacion.style.display = 'flex';
+      } else {
+        filaUbicacion.style.display = 'none';
+      }
+
+      // 2. Módulo de Regla de Negocio: Lapso de Anticipación para Confirmar Datos
+      window.currentTrackingCode = r.tracking_code || codigo;
+      const bloqueLapso = document.getElementById('bloque-confirmacion-denunciante');
+      const titLapso = document.getElementById('titulo-confirmacion-lapso');
+      const txtLapso = document.getElementById('texto-confirmacion-lapso');
+      const accLapso = document.getElementById('acciones-confirmacion-datos');
+      const fdbLapso = document.getElementById('feedback-confirmacion-datos');
+      fdbLapso.style.display = 'none';
+
+      if (r.data_confirmation_deadline) {
+        bloqueLapso.style.display = 'block';
+        if (r.confirmacion_completada) {
+          bloqueLapso.style.borderLeftColor = '#16a34a';
+          titLapso.innerHTML = '<span style="color:#16a34a;">✓ Conformidad de Datos Validada</span>';
+          txtLapso.innerHTML = `El denunciante revisó y validó la conformidad de sus datos registrados el <strong>${escaparHtml(r.data_confirmed_at)}</strong>.`;
+          accLapso.style.display = 'none';
+        } else if (r.confirmacion_vigente) {
+          bloqueLapso.style.borderLeftColor = '#2563eb';
+          titLapso.innerHTML = `Lapso de Anticipación para Confirmar Datos <span style="background:#dbeafe; color:#1d4ed8; font-size:0.8rem; padding:2px 8px; border-radius:4px; font-weight:600;">${r.dias_restantes_confirmacion} día(s) restante(s)</span>`;
+          txtLapso.innerHTML = `De acuerdo con la normativa de la Contraloría, dispone de un lapso hasta el <strong>${escaparHtml(r.data_confirmation_deadline)}</strong> para revisar la información de su solicitud y confirmar su conformidad o registrar rectificaciones antes de que el expediente sea formalizado formalmente.`;
+          accLapso.style.display = 'block';
+        } else {
+          bloqueLapso.style.borderLeftColor = '#64748b';
+          titLapso.innerHTML = '<span style="color:#475569;">Lapso de Anticipación Concluido</span>';
+          txtLapso.innerHTML = `El lapso inicial otorgado al denunciante concluyó el <strong>${escaparHtml(r.data_confirmation_deadline)}</strong>. El trámite continúa en su curso legal de gestión.`;
+          accLapso.style.display = 'none';
+        }
+      } else {
+        bloqueLapso.style.display = 'none';
+      }
+
+      // 3. Respuestas Institucionales de la Contraloría
+      const filaResp = document.getElementById('fila-respuesta-ciudadano');
+      const divResp = document.getElementById('res-respuestas-ciudadano');
+      if (r.respuestas_ciudadano && r.respuestas_ciudadano.length > 0) {
+        divResp.innerHTML = r.respuestas_ciudadano.map(rc => `
+          <div style="background:#f8fafc; border:1px solid #dce3ec; border-radius:6px; padding:12px; margin-bottom:10px;">
+            <div style="font-size:0.82rem; color:#64748b; margin-bottom:4px; font-weight:600;">${escaparHtml(rc.fecha)} · ${escaparHtml(rc.tipo)}</div>
+            <div style="color:#0f172a; white-space:pre-wrap; font-size:0.92rem; line-height:1.4;">${escaparHtml(rc.mensaje)}</div>
+            <div style="font-size:0.8rem; color:#64748b; margin-top:6px; border-top:1px solid #e8edf2; padding-top:4px;">${escaparHtml(rc.firmante)}</div>
+          </div>
+        `).join('');
+        filaResp.style.display = 'block';
+      } else {
+        filaResp.style.display = 'none';
+      }
+
       containerRes.style.display = 'block';
+    }
+
+    async function enviarConfirmacionDatos() {
+      const tracking = window.currentTrackingCode;
+      if (!tracking) return;
+      const btn = document.getElementById('btn-confirmar-datos');
+      const txtRectif = document.getElementById('input-rectificacion-denunciante').value.trim();
+      const feedback = document.getElementById('feedback-confirmacion-datos');
+
+      if (btn) btn.disabled = true;
+      feedback.style.display = 'none';
+
+      try {
+        const url = '{{ route('denuncias.confirmar-datos', ':tracking') }}'.replace(':tracking', encodeURIComponent(tracking));
+        const res = await fetch(url, {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+            'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').content,
+            'Accept': 'application/json',
+          },
+          body: JSON.stringify({ observacion_rectificacion: txtRectif })
+        });
+        const j = await res.json();
+        if (res.ok) {
+          document.getElementById('acciones-confirmacion-datos').style.display = 'none';
+          document.getElementById('titulo-confirmacion-lapso').innerHTML = '<span style="color:#16a34a;">✓ Conformidad de Datos Validada</span>';
+          document.getElementById('texto-confirmacion-lapso').innerHTML = `El denunciante revisó y confirmó la conformidad de sus datos registrados el <strong>${j.data_confirmed_at || 'hoy'}</strong>.`;
+          document.getElementById('bloque-confirmacion-denunciante').style.borderLeftColor = '#16a34a';
+          feedback.textContent = j.mensaje || '¡Conformidad registrada con éxito!';
+          feedback.style.display = 'block';
+        } else {
+          alert(j.mensaje || 'No se pudo registrar la confirmación.');
+          if (btn) btn.disabled = false;
+        }
+      } catch (e) {
+        alert('Error al conectar con el servidor.');
+        if (btn) btn.disabled = false;
+      }
+    }
+
+    /* ── Componente de Geolocalización Interactiva y Google Maps ── */
+    let mapaSenalado = null;
+    let marcadorSenalado = null;
+
+    function inicializarMapaSenalado() {
+      const contenedor = document.getElementById('mapa-senalado');
+      if (!contenedor || typeof L === 'undefined') return;
+
+      if (mapaSenalado) {
+        setTimeout(() => mapaSenalado.invalidateSize(), 200);
+        return;
+      }
+
+      // Coordenadas iniciales: Municipio Páez (Acarigua), Portuguesa
+      const defaultLat = 9.5558;
+      const defaultLng = -69.1994;
+
+      mapaSenalado = L.map('mapa-senalado').setView([defaultLat, defaultLng], 14);
+
+      L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+        maxZoom: 19,
+        attribution: '© OpenStreetMap | Integración Google Maps'
+      }).addTo(mapaSenalado);
+
+      marcadorSenalado = L.marker([defaultLat, defaultLng], {
+        draggable: true,
+        title: 'Arrastre para ajustar la ubicación del señalado'
+      }).addTo(mapaSenalado);
+
+      function actualizarCoordenadas(lat, lng, consultarDireccion = false) {
+        document.getElementById('sen-lat').value = lat.toFixed(7);
+        document.getElementById('sen-lng').value = lng.toFixed(7);
+        document.getElementById('sen-lat-texto').textContent = lat.toFixed(5);
+        document.getElementById('sen-lng-texto').textContent = lng.toFixed(5);
+
+        const btnGmaps = document.getElementById('btn-abrir-google-maps');
+        if (btnGmaps) {
+          btnGmaps.href = `https://www.google.com/maps?q=${lat},${lng}`;
+          btnGmaps.style.display = 'inline-block';
+        }
+
+        if (consultarDireccion) {
+          const st = document.getElementById('sen-geo-status');
+          if (st) st.textContent = 'Obteniendo dirección aproximada...';
+          fetch(`https://nominatim.openstreetmap.org/reverse?format=json&lat=${lat}&lon=${lng}&zoom=18&addressdetails=1`)
+            .then(res => res.json())
+            .then(data => {
+              if (data && data.display_name) {
+                const inputUbic = document.getElementById('sen-ubicacion');
+                if (inputUbic && (!inputUbic.value.trim() || inputUbic.dataset.autofill === '1')) {
+                  inputUbic.value = data.display_name;
+                  inputUbic.dataset.autofill = '1';
+                }
+              }
+              if (st) st.textContent = 'Coordenadas fijadas correctamente';
+            })
+            .catch(() => {
+              if (st) st.textContent = 'Coordenadas fijadas';
+            });
+        }
+      }
+
+      actualizarCoordenadas(defaultLat, defaultLng, false);
+
+      marcadorSenalado.on('dragend', function(e) {
+        const pos = e.target.getLatLng();
+        actualizarCoordenadas(pos.lat, pos.lng, true);
+      });
+
+      mapaSenalado.on('click', function(e) {
+        marcadorSenalado.setLatLng(e.latlng);
+        actualizarCoordenadas(e.latlng.lat, e.latlng.lng, true);
+      });
+    }
+
+    function buscarDireccionEnMapa() {
+      const query = document.getElementById('sen-ubicacion').value.trim();
+      if (!query) {
+        alert('Escriba una dirección o referencia para buscar en el mapa.');
+        return;
+      }
+      const st = document.getElementById('sen-geo-status');
+      if (st) st.textContent = 'Buscando en mapa...';
+      fetch(`https://nominatim.openstreetmap.org/search?format=json&q=${encodeURIComponent(query + ', Portuguesa, Venezuela')}`)
+        .then(r => r.json())
+        .then(data => {
+          if (!data || !data.length) {
+            return fetch(`https://nominatim.openstreetmap.org/search?format=json&q=${encodeURIComponent(query + ', Venezuela')}`).then(r => r.json());
+          }
+          return data;
+        })
+        .then(data => {
+          if (data && data.length) {
+            const item = data[0];
+            const lat = parseFloat(item.lat);
+            const lng = parseFloat(item.lon);
+            if (mapaSenalado && marcadorSenalado) {
+              mapaSenalado.setView([lat, lng], 16);
+              marcadorSenalado.setLatLng([lat, lng]);
+              document.getElementById('sen-lat').value = lat.toFixed(7);
+              document.getElementById('sen-lng').value = lng.toFixed(7);
+              document.getElementById('sen-lat-texto').textContent = lat.toFixed(5);
+              document.getElementById('sen-lng-texto').textContent = lng.toFixed(5);
+              const btnGmaps = document.getElementById('btn-abrir-google-maps');
+              if (btnGmaps) {
+                btnGmaps.href = `https://www.google.com/maps?q=${lat},${lng}`;
+                btnGmaps.style.display = 'inline-block';
+              }
+              if (st) st.textContent = 'Ubicación localizada en el mapa';
+            }
+          } else {
+            if (st) st.textContent = 'No se encontró la dirección exacta. Puede arrastrar el marcador manualmente.';
+          }
+        })
+        .catch(() => {
+          if (st) st.textContent = 'Error al consultar geocodificación.';
+        });
+    }
+
+    function obtenerUbicacionActualGPS() {
+      if (!navigator.geolocation) {
+        alert('La geolocalización no está disponible en su navegador.');
+        return;
+      }
+      const st = document.getElementById('sen-geo-status');
+      if (st) st.textContent = 'Obteniendo GPS...';
+      navigator.geolocation.getCurrentPosition(
+        pos => {
+          const lat = pos.coords.latitude;
+          const lng = pos.coords.longitude;
+          if (mapaSenalado && marcadorSenalado) {
+            mapaSenalado.setView([lat, lng], 16);
+            marcadorSenalado.setLatLng([lat, lng]);
+            document.getElementById('sen-lat').value = lat.toFixed(7);
+            document.getElementById('sen-lng').value = lng.toFixed(7);
+            document.getElementById('sen-lat-texto').textContent = lat.toFixed(5);
+            document.getElementById('sen-lng-texto').textContent = lng.toFixed(5);
+            const btnGmaps = document.getElementById('btn-abrir-google-maps');
+            if (btnGmaps) {
+              btnGmaps.href = `https://www.google.com/maps?q=${lat},${lng}`;
+              btnGmaps.style.display = 'inline-block';
+            }
+            if (st) st.textContent = 'Ubicación GPS fijada';
+          }
+        },
+        () => {
+          if (st) st.textContent = 'No se pudo acceder al GPS.';
+        },
+        { enableHighAccuracy: true, timeout: 8000 }
+      );
     }
 
     /* ── Cambio del tipo de trámite ── */
@@ -2528,6 +2870,8 @@
         },
         senalados,
         ubicacion_senalado: val('sen-ubicacion'),
+        ubicacion_lat: val('sen-lat'),
+        ubicacion_lng: val('sen-lng'),
         proyecto: {
           nombre: val('proy-nombre'), fecha: val('proy-fecha'), monto: val('proy-monto').replace(/[^\d,.]/g, '').replace(/\./g, '').replace(',', '.'),
           financiador: val('proy-financiador'), situr: val('proy-situr'),
@@ -2578,6 +2922,15 @@
         }
         document.getElementById('nro-expediente-display').textContent = json.case_number;
         document.getElementById('btn-descargar-planilla').href = json.planilla_url;
+        if (document.getElementById('lapso-dias-display')) {
+          document.getElementById('lapso-dias-display').textContent = json.dias_confirmacion || 5;
+        }
+        if (document.getElementById('lapso-fecha-display')) {
+          document.getElementById('lapso-fecha-display').textContent = json.fecha_limite_confirmacion || '5 días hábiles';
+        }
+        if (document.getElementById('lapso-tracking-display')) {
+          document.getElementById('lapso-tracking-display').textContent = json.tracking_code || json.case_number;
+        }
         if (typeof guardarSenaladosEnPadron === 'function') guardarSenaladosEnPadron();
         localStorage.removeItem(BORRADOR_KEY);
         mostrarConfirmacion();

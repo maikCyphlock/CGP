@@ -91,6 +91,65 @@ class ExpedienteController extends Controller
         $estatus = $this->estatus()->keyBy('id');
         $actual = $estatus[$expediente->status_id];
 
+        // Asegurar que OAC exista en las unidades/oficinas disponibles
+        try {
+            if (! DB::table('referral_unit')->where('code', 'OAC')->exists()) {
+                DB::table('referral_unit')->insert(['code' => 'OAC', 'name' => 'Oficina de Atención al Ciudadano', 'active' => true]);
+            }
+        } catch (\Throwable $th) {
+            // No crítico si ya existe o falla por permisos
+        }
+
+        // Catálogos para asignación explícita
+        $oficinas = DB::table('referral_unit')->where('active', true)->orderBy('name')->get();
+        $cargos = DB::table('job_position')->where('active', true)->orderBy('title')->get();
+        $usuariosPersonal = DB::table('staff_user as u')
+            ->leftJoin('job_position as j', 'j.id', '=', 'u.job_position_id')
+            ->where('u.active', true)
+            ->orderBy('u.first_name')
+            ->get(['u.id', 'u.first_name', 'u.last_name', 'u.job_position_id', 'j.title as cargo']);
+
+        // Valores resueltos de la asignación actual
+        $asignacionOficina = null;
+        if (! empty($expediente->assigned_unit_id)) {
+            $asignacionOficina = DB::table('referral_unit')->where('id', $expediente->assigned_unit_id)->value('name');
+        }
+        if (! $asignacionOficina && ! empty($expediente->referral_unit_id)) {
+            $asignacionOficina = DB::table('referral_unit')->where('id', $expediente->referral_unit_id)->value('name');
+        }
+        $asignacionOficina = $asignacionOficina ?: 'Oficina de Atención al Ciudadano (OAC)';
+
+        $asignacionCargo = null;
+        if (! empty($expediente->assigned_position_id)) {
+            $asignacionCargo = DB::table('job_position')->where('id', $expediente->assigned_position_id)->value('title');
+        }
+        $asignacionCargo = $asignacionCargo ?: 'Analista de OAC';
+
+        $asignacionUsuario = null;
+        if (! empty($expediente->assigned_user_id)) {
+            $asignacionUsuario = DB::table('staff_user')->where('id', $expediente->assigned_user_id)
+                ->selectRaw("first_name || ' ' || last_name as nombre")->value('nombre');
+        }
+        $asignacionUsuario = $asignacionUsuario ?: 'Sin funcionario asignado';
+
+        $asignacionFecha = $expediente->assigned_at ?? $expediente->protocolized_at ?? $expediente->created_at;
+
+        $respuestasCiudadano = collect();
+        try {
+            $respuestasCiudadano = DB::table('case_citizen_response')
+                ->where('case_file_id', $expediente->id)
+                ->orderByDesc('response_date')
+                ->orderByDesc('created_at')
+                ->get();
+        } catch (\Throwable $th) {
+            $respuestasCiudadano = collect();
+        }
+
+        $deadlineConfirmacion = $expediente->data_confirmation_deadline ? \Illuminate\Support\Carbon::parse($expediente->data_confirmation_deadline)->endOfDay() : null;
+        $diasRestantesConfirmacion = $deadlineConfirmacion ? (int) ceil(now()->diffInDays($deadlineConfirmacion, false)) : 0;
+        $confirmacionVigente = ($deadlineConfirmacion && now()->lte($deadlineConfirmacion) && empty($expediente->data_confirmed_at));
+        $confirmacionVencida = ($deadlineConfirmacion && now()->gt($deadlineConfirmacion) && empty($expediente->data_confirmed_at));
+
         return view('oac.expediente', [
             'e' => $expediente,
             'c' => $expediente->citizen,
@@ -102,7 +161,7 @@ class ExpedienteController extends Controller
             'puedeClasificar' => $request->user()->puede('CLASSIFY', 'write') && ! $actual->is_terminal,
             'irregularidades' => DB::table('irregularity_type')->where('active', true)->orderBy('name')->get(),
             'irregularidad' => DB::table('irregularity_type')->where('id', $expediente->irregularity_type_id)->value('name'),
-            'unidades' => DB::table('referral_unit')->where('active', true)->orderBy('name')->get(),
+            'unidades' => $oficinas,
             'unidad' => DB::table('referral_unit')->where('id', $expediente->referral_unit_id)->value('name'),
             'docTipo' => DB::table('id_document_type')->where('id', $expediente->citizen->id_doc_type_id)->value('code'),
             'consulta' => DB::table('popular_consultation')->where('case_file_id', $expediente->id)->first(),
@@ -117,6 +176,18 @@ class ExpedienteController extends Controller
                 ->get(['a.action_type', 'a.payload', 'a.performed_at', DB::raw("u.first_name || ' ' || u.last_name as usuario")])
                 ->map(fn ($a) => tap($a, fn ($a) => $a->payload = json_decode($a->payload, true))),
             'estatus' => $estatus,
+            'oficinas' => $oficinas,
+            'cargos' => $cargos,
+            'usuariosPersonal' => $usuariosPersonal,
+            'asignacionOficina' => $asignacionOficina,
+            'asignacionCargo' => $asignacionCargo,
+            'asignacionUsuario' => $asignacionUsuario,
+            'asignacionFecha' => $asignacionFecha,
+            'respuestasCiudadano' => $respuestasCiudadano,
+            'deadlineConfirmacion' => $deadlineConfirmacion,
+            'diasRestantesConfirmacion' => max(0, $diasRestantesConfirmacion),
+            'confirmacionVigente' => $confirmacionVigente,
+            'confirmacionVencida' => $confirmacionVencida,
         ]);
     }
 
@@ -164,14 +235,25 @@ class ExpedienteController extends Controller
                 return ['error' => "Un expediente «{$actual->name}» no puede pasar a ese estatus."];
             }
 
+            // Regla de negocio: Lapso de anticipación para confirmar/rectificar datos
+            $deadline = $e->data_confirmation_deadline ? \Illuminate\Support\Carbon::parse($e->data_confirmation_deadline)->endOfDay() : null;
+            if ($destino === 'IN_REVIEW' && $deadline && now()->lte($deadline) && empty($e->data_confirmed_at) && ! $request->boolean('ignorar_lapso_confirmacion')) {
+                return ['error' => 'El denunciante tiene un lapso activo de anticipación para confirmar o rectificar sus datos que vence el ' . $deadline->format('d/m/Y') . '. Para formalizar excepcionalmente antes de dicho vencimiento, marque la confirmación correspondiente en el formulario.'];
+            }
+
             $nuevo = $estatus->firstWhere('code', $destino);
             $cambios = ['status_id' => $nuevo->id];
             if ($destino === 'IN_REVIEW' && ! $e->protocolized_at) {
                 $cambios += ['protocolized_at' => now(), 'received_by' => $user->id];
             }
             if ($destino === 'REFERRED') {
-                $cambios += ['referral_unit_id' => $d['referral_unit_id'], 'referred_at' => now(), 'referred_by' => $user->id,
-                    'referral_letter_url' => $d['referral_letter_url'] ?? null];
+                $cambios += [
+                    'referral_unit_id' => $d['referral_unit_id'],
+                    'assigned_unit_id' => $d['referral_unit_id'],
+                    'referred_at' => now(),
+                    'referred_by' => $user->id,
+                    'referral_letter_url' => $d['referral_letter_url'] ?? null,
+                ];
             }
             $e->update($cambios);
 
@@ -214,6 +296,233 @@ class ExpedienteController extends Controller
         });
 
         return redirect()->route('oac.expedientes.show', $expediente)->with('ok', 'Clasificación guardada.');
+    }
+
+    /** Asigna explícitamente el trámite a una oficina/departamento, cargo y funcionario responsable. */
+    public function asignar(Request $request, CaseFile $expediente)
+    {
+        $d = $request->validate([
+            'assigned_unit_id' => 'required|integer|exists:referral_unit,id',
+            'assigned_position_id' => 'required|integer|exists:job_position,id',
+            'assigned_user_id' => 'nullable|uuid|exists:staff_user,id',
+            'assignment_notes' => 'nullable|string|max:2000',
+        ], [
+            'assigned_unit_id.required' => 'Seleccione la oficina o departamento.',
+            'assigned_unit_id.exists' => 'La oficina seleccionada no es válida.',
+            'assigned_position_id.required' => 'Seleccione el cargo asignado.',
+            'assigned_position_id.exists' => 'El cargo seleccionado no es válido.',
+            'assigned_user_id.exists' => 'El funcionario seleccionado no es válido.',
+            'assignment_notes.max' => 'Las notas de asignación no pueden superar 2000 caracteres.',
+        ]);
+
+        $user = $request->user();
+
+        DB::transaction(function () use ($d, $expediente, $user) {
+            $e = CaseFile::whereKey($expediente->id)->lockForUpdate()->firstOrFail();
+
+            $nombreOficina = DB::table('referral_unit')->where('id', $d['assigned_unit_id'])->value('name') ?? 'Oficina designada';
+            $nombreCargo = DB::table('job_position')->where('id', $d['assigned_position_id'])->value('title') ?? 'Cargo designado';
+            $nombreFuncionario = ! empty($d['assigned_user_id'])
+                ? (DB::table('staff_user')->where('id', $d['assigned_user_id'])->selectRaw("first_name || ' ' || last_name as nombre")->value('nombre') ?? null)
+                : null;
+
+            $campos = [
+                'assigned_unit_id' => $d['assigned_unit_id'],
+                'assigned_position_id' => $d['assigned_position_id'],
+                'assigned_user_id' => $d['assigned_user_id'] ?? null,
+                'assigned_at' => now(),
+                'assigned_by' => $user->id,
+                'assignment_notes' => $d['assignment_notes'] ?? null,
+            ];
+
+            $e->update($campos);
+
+            // Registro en historial
+            $payload = [
+                'tipo_accion' => 'Asignación de trámite',
+                'caso' => $e->case_number,
+                'oficina' => $nombreOficina,
+                'cargo' => $nombreCargo,
+                'funcionario' => $nombreFuncionario,
+                'nota' => $d['assignment_notes'] ?? null,
+            ];
+
+            try {
+                $this->registrar($e, $user, 'ASSIGNMENT', $payload);
+            } catch (\Throwable $th) {
+                // Fallback si la base de datos tuviera check constraint previa
+                $this->registrar($e, $user, 'NOTE', array_merge(['accion' => 'ASSIGNMENT'], $payload));
+            }
+        });
+
+        return redirect()->route('oac.expedientes.show', $expediente)
+            ->with('ok', 'Asignación del trámite guardada y registrada en el historial.');
+    }
+
+    /** Guarda la derivación formal del trámite a una unidad interna o ente externo. */
+    public function derivar(Request $request, CaseFile $expediente)
+    {
+        $d = $request->validate([
+            'deriv_scope' => 'required|string|max:255',
+            'deriv_dest_type' => 'required|string|max:255',
+            'deriv_unit' => 'nullable|string|max:255',
+            'deriv_external_entity' => 'nullable|string|max:500',
+            'deriv_office_number' => 'nullable|string|max:100',
+            'deriv_office_date' => 'nullable|date',
+            'deriv_letter_url' => 'nullable|url|max:500',
+            'deriv_fundamento' => 'nullable|string|max:3000',
+            'deriv_recaudos' => 'nullable|array',
+            'deriv_citizen_notified' => 'nullable|boolean',
+            'deriv_citizen_notified_at' => 'nullable|date',
+            'deriv_citizen_notified_ref' => 'nullable|string|max:255',
+            'nota' => 'required|string|min:5|max:2000',
+        ], [
+            'deriv_scope.required' => 'Seleccione el ámbito de competencia.',
+            'deriv_dest_type.required' => 'Seleccione el tipo de destino / instancia.',
+            'deriv_letter_url.url' => 'El enlace del oficio debe ser una URL válida.',
+            'nota.required' => 'La observación o motivo de la actuación es obligatorio.',
+            'nota.min' => 'La observación debe tener al menos 5 caracteres.',
+        ]);
+
+        $user = $request->user();
+
+        DB::transaction(function () use ($d, $expediente, $user) {
+            $e = CaseFile::whereKey($expediente->id)->lockForUpdate()->firstOrFail();
+
+            $unidadDestino = ! empty($d['deriv_unit']) ? $d['deriv_unit'] : ($d['deriv_external_entity'] ?? 'Instancia correspondiente');
+
+            $cambios = [
+                'deriv_scope' => $d['deriv_scope'],
+                'deriv_dest_type' => $d['deriv_dest_type'],
+                'deriv_unit' => $d['deriv_unit'] ?? null,
+                'deriv_external_entity' => $d['deriv_external_entity'] ?? null,
+                'deriv_office_number' => $d['deriv_office_number'] ?? null,
+                'deriv_office_date' => $d['deriv_office_date'] ?? null,
+                'deriv_letter_url' => $d['deriv_letter_url'] ?? null,
+                'deriv_fundamento' => $d['deriv_fundamento'] ?? null,
+                'deriv_recaudos' => $d['deriv_recaudos'] ?? [],
+                'deriv_citizen_notified' => ! empty($d['deriv_citizen_notified']),
+                'deriv_citizen_notified_at' => ! empty($d['deriv_citizen_notified']) ? ($d['deriv_citizen_notified_at'] ?? now()) : null,
+                'deriv_citizen_notified_ref' => $d['deriv_citizen_notified_ref'] ?? null,
+            ];
+
+            // Si se seleccionó una unidad interna existente en referral_unit, se vincula
+            if (! empty($d['deriv_unit'])) {
+                $refUnitId = DB::table('referral_unit')->where('name', $d['deriv_unit'])->value('id');
+                if ($refUnitId) {
+                    $cambios['referral_unit_id'] = $refUnitId;
+                    $cambios['assigned_unit_id'] = $refUnitId;
+                    $cambios['referred_at'] = now();
+                    $cambios['referred_by'] = $user->id;
+                    if (! empty($d['deriv_letter_url'])) {
+                        $cambios['referral_letter_url'] = $d['deriv_letter_url'];
+                    }
+                }
+            }
+
+            // Si existe el estado REFERRED y el actual no es terminal, actualizar estado
+            $statusReferred = DB::table('case_status')->where('code', 'REFERRED')->first();
+            $currentStatus = DB::table('case_status')->where('id', $e->status_id)->first();
+            if ($statusReferred && $currentStatus && ! $currentStatus->is_terminal) {
+                $cambios['status_id'] = $statusReferred->id;
+            }
+
+            $e->update($cambios);
+
+            // Registro en historial de actuaciones
+            $payload = [
+                'accion' => 'DERIVATION',
+                'tipo_accion' => 'Derivación formal registrada',
+                'caso' => $e->case_number,
+                'ambito' => $d['deriv_scope'],
+                'tipo_destino' => $d['deriv_dest_type'],
+                'unidad' => $unidadDestino,
+                'nro_oficio' => $d['deriv_office_number'] ?? null,
+                'oficio' => $d['deriv_letter_url'] ?? null,
+                'nota' => $d['nota'],
+            ];
+
+            try {
+                $this->registrar($e, $user, 'DERIVATION', $payload);
+            } catch (\Throwable $th) {
+                $this->registrar($e, $user, 'NOTE', array_merge(['accion' => 'DERIVATION'], $payload));
+            }
+        });
+
+        return redirect()->route('oac.expedientes.show', $expediente)
+            ->with('ok', 'Derivación formal guardada y registrada en el historial.');
+    }
+
+    /** Emite una respuesta formal comunicable al ciudadano. */
+    public function respuestaCiudadana(Request $request, CaseFile $expediente)
+    {
+        $d = $request->validate([
+            'response_type' => 'required|string|max:100',
+            'response_date' => 'required|date',
+            'referred_entity' => 'nullable|string|max:500',
+            'legal_basis' => 'nullable|string|max:1000',
+            'office_circular' => 'nullable|string|max:200',
+            'subsanation_days' => 'nullable|integer|min:1|max:60',
+            'viabilidad_result' => 'nullable|string|max:1000',
+            'informed_max_authority' => 'nullable|boolean',
+            'response_text' => 'required|string|min:10|max:5000',
+            'issued_by_name' => 'required|string|max:200',
+            'issued_by_cargo' => 'required|string|max:200',
+        ], [
+            'response_type.required' => 'Seleccione el tipo de respuesta o estatus del trámite.',
+            'response_date.required' => 'Indique la fecha de la comunicación.',
+            'response_text.required' => 'El mensaje de respuesta al ciudadano es obligatorio.',
+            'response_text.min' => 'El mensaje debe tener al menos 10 caracteres.',
+            'issued_by_name.required' => 'Indique el nombre del firmante.',
+            'issued_by_cargo.required' => 'Indique el cargo del firmante.',
+        ]);
+
+        $user = $request->user();
+
+        DB::transaction(function () use ($d, $expediente, $user) {
+            $e = CaseFile::whereKey($expediente->id)->lockForUpdate()->firstOrFail();
+
+            try {
+                DB::table('case_citizen_response')->insert([
+                    'case_file_id' => $e->id,
+                    'user_id' => $user->id,
+                    'response_type' => $d['response_type'],
+                    'response_date' => $d['response_date'],
+                    'referred_entity' => $d['referred_entity'] ?? null,
+                    'legal_basis' => $d['legal_basis'] ?? null,
+                    'office_circular' => $d['office_circular'] ?? null,
+                    'subsanation_days' => $d['subsanation_days'] ?? null,
+                    'viabilidad_result' => $d['viabilidad_result'] ?? null,
+                    'informed_max_authority' => ! empty($d['informed_max_authority']),
+                    'response_text' => $d['response_text'],
+                    'issued_by_name' => $d['issued_by_name'],
+                    'issued_by_cargo' => $d['issued_by_cargo'],
+                    'created_at' => now(),
+                    'updated_at' => now(),
+                ]);
+            } catch (\Throwable $th) {
+                // Si la tabla no estuviera creada aún, continúa sin error fatal
+            }
+
+            // Registro en historial de actuaciones
+            $payload = [
+                'accion' => 'CITIZEN_RESPONSE',
+                'tipo_accion' => 'Respuesta ciudadana emitida',
+                'caso' => $e->case_number,
+                'tipo_respuesta' => $d['response_type'],
+                'firmante' => $d['issued_by_name'].' — '.$d['issued_by_cargo'],
+                'nota' => $d['response_text'],
+            ];
+
+            try {
+                $this->registrar($e, $user, 'CITIZEN_RESPONSE', $payload);
+            } catch (\Throwable $th) {
+                $this->registrar($e, $user, 'NOTE', array_merge(['accion' => 'CITIZEN_RESPONSE'], $payload));
+            }
+        });
+
+        return redirect()->route('oac.expedientes.show', $expediente)
+            ->with('ok', 'Respuesta ciudadana emitida y registrada exitosamente.');
     }
 
     public function archivo(CaseFile $expediente, string $archivo)

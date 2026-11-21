@@ -45,10 +45,38 @@ class CaseFile extends Model
         'referral_letter_url',
         'sigece_reference',
         'received_by',
+        'assigned_unit_id',
+        'assigned_position_id',
+        'assigned_user_id',
+        'assigned_at',
+        'assigned_by',
+        'assignment_notes',
+        'deriv_scope',
+        'deriv_dest_type',
+        'deriv_unit',
+        'deriv_external_entity',
+        'deriv_office_number',
+        'deriv_office_date',
+        'deriv_letter_url',
+        'deriv_fundamento',
+        'deriv_recaudos',
+        'deriv_citizen_notified',
+        'deriv_citizen_notified_at',
+        'deriv_citizen_notified_ref',
+        'incident_lat',
+        'incident_lng',
+        'data_confirmation_days',
+        'data_confirmation_deadline',
+        'data_confirmed_at',
     ];
 
     protected $casts = [
         'incident_date' => 'date',
+        'incident_lat' => 'decimal:7',
+        'incident_lng' => 'decimal:7',
+        'data_confirmation_days' => 'integer',
+        'data_confirmation_deadline' => 'date',
+        'data_confirmed_at' => 'datetime',
         'other_instance' => 'boolean',
         'is_popular_consultation' => 'boolean',
         'sworn_declaration' => 'boolean',
@@ -58,6 +86,11 @@ class CaseFile extends Model
         'physical_docs_submitted' => 'boolean',
         'physical_docs_date' => 'date',
         'referred_at' => 'datetime',
+        'assigned_at' => 'datetime',
+        'deriv_office_date' => 'date',
+        'deriv_citizen_notified' => 'boolean',
+        'deriv_citizen_notified_at' => 'date',
+        'deriv_recaudos' => 'array',
     ];
 
     public function citizen()
@@ -73,5 +106,10 @@ class CaseFile extends Model
     public function respondents()
     {
         return $this->hasMany(Respondent::class, 'case_file_id');
+    }
+
+    public function assignedUser()
+    {
+        return $this->belongsTo(StaffUser::class, 'assigned_user_id');
     }
 }

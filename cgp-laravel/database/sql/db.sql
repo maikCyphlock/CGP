@@ -80,6 +80,7 @@ CREATE TABLE referral_unit (
     name    VARCHAR(100) NOT NULL
 );
 INSERT INTO referral_unit (code, name) VALUES
+    ('OAC', 'Oficina de Atención al Ciudadano'),
     ('SUBSEQUENT_CONTROL', 'Control Posterior'),
     ('INVESTIGATIVE_POWER', 'Potestad Investigativa');
 
@@ -368,6 +369,13 @@ CREATE TABLE case_file (
                             CHECK (char_length(narrative) BETWEEN 50 AND 3500),
     incident_date       DATE         NOT NULL CHECK (incident_date <= CURRENT_DATE),
     incident_location   VARCHAR(250),
+    incident_lat        NUMERIC(10, 7),
+    incident_lng        NUMERIC(10, 7),
+
+    -- Lapso de confirmación y rectificación de datos por el denunciante
+    data_confirmation_days     SMALLINT DEFAULT 5,
+    data_confirmation_deadline DATE,
+    data_confirmed_at          TIMESTAMPTZ,
 
     -- Presentado ante otra instancia
     other_instance      BOOLEAN      NOT NULL DEFAULT FALSE,
@@ -398,6 +406,28 @@ CREATE TABLE case_file (
     referred_at              TIMESTAMPTZ,
     referred_by              UUID     REFERENCES staff_user(id),
     referral_letter_url      TEXT,
+
+    -- Asignación explícita (Caso, Cargo y Oficina)
+    assigned_unit_id         SMALLINT REFERENCES referral_unit(id),
+    assigned_position_id     INT      REFERENCES job_position(id),
+    assigned_user_id         UUID     REFERENCES staff_user(id),
+    assigned_at              TIMESTAMPTZ,
+    assigned_by              UUID     REFERENCES staff_user(id),
+    assignment_notes         TEXT,
+
+    -- Derivación formal
+    deriv_scope              VARCHAR(255),
+    deriv_dest_type          VARCHAR(255),
+    deriv_unit               VARCHAR(255),
+    deriv_external_entity    VARCHAR(500),
+    deriv_office_number      VARCHAR(100),
+    deriv_office_date        DATE,
+    deriv_letter_url         TEXT,
+    deriv_fundamento         TEXT,
+    deriv_recaudos           JSONB DEFAULT '[]'::jsonb,
+    deriv_citizen_notified   BOOLEAN DEFAULT FALSE,
+    deriv_citizen_notified_at DATE,
+    deriv_citizen_notified_ref VARCHAR(255),
 
     -- Integración SIGECE
     sigece_reference         VARCHAR(80),
@@ -546,7 +576,7 @@ CREATE TABLE case_action (
     action_type     VARCHAR(30)  NOT NULL
                         CHECK (action_type IN (
                             'CLASSIFICATION','REFERRAL','STATUS_CHANGE',
-                            'NOTE','DOCUMENT_CHECK','OTHER'
+                            'NOTE','DOCUMENT_CHECK','ASSIGNMENT','OTHER'
                         )),
     payload         JSONB        NOT NULL DEFAULT '{}',
     performed_at    TIMESTAMPTZ  NOT NULL DEFAULT now()

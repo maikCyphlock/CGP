@@ -371,6 +371,12 @@ class DenunciaController extends Controller
             $isOtraInstanciaSi = ($otraInstVal === 'si' || $otraInstVal === true || $otraInstVal === 1 || $otraInstVal === '1');
             $isOtraInstanciaNoSe = ($otraInstVal === 'no_se');
 
+            $diasConfirmacion = 5;
+            $fechaLimiteConfirmacion = now()->addDays($diasConfirmacion)->toDateString();
+
+            $lat = isset($d['ubicacion_lat']) && is_numeric($d['ubicacion_lat']) ? (float) $d['ubicacion_lat'] : (isset($d['sen_lat']) && is_numeric($d['sen_lat']) ? (float) $d['sen_lat'] : null);
+            $lng = isset($d['ubicacion_lng']) && is_numeric($d['ubicacion_lng']) ? (float) $d['ubicacion_lng'] : (isset($d['sen_lng']) && is_numeric($d['sen_lng']) ? (float) $d['sen_lng'] : null);
+
             $case = CaseFile::create([
                 'id' => (string) Str::uuid(),
                 'claim_type_id' => $this->catalogId('claim_type', self::TIPOS_TRAMITE[$d['tipo_tramite']]),
@@ -378,6 +384,11 @@ class DenunciaController extends Controller
                 'citizen_id' => $citizen->id,
                 'narrative' => $d['narracion'],
                 'incident_location' => $d['ubicacion_senalado'] ?? null,
+                'incident_lat' => $lat,
+                'incident_lng' => $lng,
+                'data_confirmation_days' => $diasConfirmacion,
+                'data_confirmation_deadline' => $fechaLimiteConfirmacion,
+                'data_confirmed_at' => null,
                 'other_instance' => $isOtraInstanciaSi,
                 'other_instance_name' => $isOtraInstanciaSi ? ($d['cual_instancia'] ?? null) : ($isOtraInstanciaNoSe ? 'No sé' : null),
                 'is_popular_consultation' => $esConsulta,
@@ -429,8 +440,64 @@ class DenunciaController extends Controller
         return response()->json([
             'case_number' => $case->case_number,
             'tracking_code' => $case->tracking_code,
+            'dias_confirmacion' => $case->data_confirmation_days ?? 5,
+            'fecha_limite_confirmacion' => $case->data_confirmation_deadline ? date('d/m/Y', strtotime($case->data_confirmation_deadline)) : null,
             'planilla_url' => route('denuncias.planilla', $case->tracking_code),
         ], 201);
+    }
+
+    /** Permite al denunciante validar/confirmar la conformidad de sus datos durante el lapso de anticipación. */
+    public function confirmarDatos(Request $request, string $trackingCode)
+    {
+        $case = CaseFile::where('tracking_code', strtolower(trim($trackingCode)))->firstOrFail();
+
+        $status = DB::table('case_status')->where('id', $case->status_id)->first();
+        if ($status && $status->code !== 'RECEIVED') {
+            return response()->json([
+                'ok' => false,
+                'mensaje' => 'El expediente ya se encuentra en fase de ' . $status->name . ', por lo que el lapso inicial de confirmación ha concluido.',
+            ], 422);
+        }
+
+        if ($case->data_confirmed_at) {
+            return response()->json([
+                'ok' => true,
+                'mensaje' => 'Sus datos ya fueron validados anteriormente el ' . date('d/m/Y h:i a', strtotime($case->data_confirmed_at)) . '.',
+                'ya_confirmado' => true,
+            ]);
+        }
+
+        $rectificacion = trim((string) $request->input('observacion_rectificacion', ''));
+
+        $case->update([
+            'data_confirmed_at' => now(),
+        ]);
+
+        $notaHistorial = 'El denunciante revisó y confirmó la conformidad de sus datos registrados.';
+        if ($rectificacion !== '') {
+            $notaHistorial .= ' Detalle de rectificación indicado por el ciudadano: ' . $rectificacion;
+        }
+
+        try {
+            DB::table('case_action')->insert([
+                'case_file_id' => $case->id,
+                'user_id' => DB::table('staff_user')->where('email', 'admin@cgp.gob.ve')->value('id') ?? DB::table('staff_user')->value('id'),
+                'action_type' => 'NOTE',
+                'payload' => json_encode([
+                    'accion' => 'DATA_CONFIRMATION',
+                    'nota' => $notaHistorial,
+                    'fecha_confirmacion' => now()->toIso8601String(),
+                ]),
+            ]);
+        } catch (\Throwable $th) {
+            // Ignorar si falla el insert opcional de auditoría
+        }
+
+        return response()->json([
+            'ok' => true,
+            'mensaje' => '¡Conformidad de datos registrada con éxito! El expediente continuará con su curso administrativo.',
+            'data_confirmed_at' => now()->format('d/m/Y h:i a'),
+        ]);
     }
 
     /** Consulta pública del estatus y observaciones del trámite: tipo, fecha, estatus y observaciones (sin datos sensibles del ciudadano). */
@@ -445,6 +512,7 @@ class DenunciaController extends Controller
             ->first([
                 'c.id',
                 'c.case_number',
+                'c.tracking_code',
                 't.name as tipo',
                 't.code as tipo_codigo',
                 'c.created_at',
@@ -452,6 +520,12 @@ class DenunciaController extends Controller
                 's.code as estatus_codigo',
                 's.is_terminal',
                 'c.analyst_notes',
+                'c.incident_location',
+                'c.incident_lat',
+                'c.incident_lng',
+                'c.data_confirmation_days',
+                'c.data_confirmation_deadline',
+                'c.data_confirmed_at',
             ]);
 
         abort_unless($case, 404, 'No existe un trámite con ese código.');
@@ -483,8 +557,24 @@ class DenunciaController extends Controller
 
         $ultimaObservacion = $observaciones[0]['texto'] ?? null;
 
+        $deadline = $case->data_confirmation_deadline ? \Illuminate\Support\Carbon::parse($case->data_confirmation_deadline)->endOfDay() : null;
+        $diasRestantes = $deadline ? (int) ceil(now()->diffInDays($deadline, false)) : 0;
+        $confirmacionVigente = ($deadline && now()->lte($deadline) && empty($case->data_confirmed_at) && $case->estatus_codigo === 'RECEIVED');
+
+        $respuestasCiudadano = collect();
+        try {
+            $respuestasCiudadano = DB::table('case_citizen_response')
+                ->where('case_file_id', $case->id)
+                ->orderByDesc('response_date')
+                ->orderByDesc('created_at')
+                ->get(['response_type', 'response_date', 'response_text', 'issued_by_name', 'issued_by_cargo']);
+        } catch (\Throwable $th) {
+            $respuestasCiudadano = collect();
+        }
+
         return response()->json([
             'case_number' => $case->case_number,
+            'tracking_code' => $case->tracking_code,
             'tipo' => $case->tipo,
             'tipo_codigo' => $case->tipo_codigo,
             'fecha' => date('d/m/Y', strtotime($case->created_at)),
@@ -493,6 +583,22 @@ class DenunciaController extends Controller
             'cerrado' => (bool) $case->is_terminal,
             'observacion' => $ultimaObservacion,
             'observaciones' => $observaciones,
+            'incident_location' => $case->incident_location,
+            'incident_lat' => $case->incident_lat,
+            'incident_lng' => $case->incident_lng,
+            'google_maps_url' => ($case->incident_lat && $case->incident_lng) ? "https://www.google.com/maps?q={$case->incident_lat},{$case->incident_lng}" : null,
+            'data_confirmation_days' => $case->data_confirmation_days ?? 5,
+            'data_confirmation_deadline' => $case->data_confirmation_deadline ? date('d/m/Y', strtotime($case->data_confirmation_deadline)) : null,
+            'data_confirmed_at' => $case->data_confirmed_at ? date('d/m/Y h:i a', strtotime($case->data_confirmed_at)) : null,
+            'dias_restantes_confirmacion' => max(0, $diasRestantes),
+            'confirmacion_vigente' => $confirmacionVigente,
+            'confirmacion_completada' => ! empty($case->data_confirmed_at),
+            'respuestas_ciudadano' => $respuestasCiudadano->map(fn ($r) => [
+                'tipo' => $r->response_type,
+                'fecha' => date('d/m/Y', strtotime($r->response_date)),
+                'firmante' => trim(($r->issued_by_name ?? '').' — '.($r->issued_by_cargo ?? '')),
+                'mensaje' => $r->response_text,
+            ])->values()->all(),
         ]);
     }
 
