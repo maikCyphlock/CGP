@@ -17,6 +17,8 @@
     'REFERRED'    => 'Remitido / derivado',
     'INVALIDATED' => 'Improcedente / desestimado y archivado',
     'ARCHIVED'    => 'Cerrado / archivado',
+    'IN_REVIEW'   => 'En Revisión',
+    'PROCESSED'   => 'Procesando',
   ];
 
   // Áreas internas de la DAC
@@ -324,7 +326,7 @@
                   <label class="form-label-sm" for="accion">Actuación / Fase del trámite</label>
                   <select name="estatus" id="accion" class="form-select form-select-sm @error('estatus') is-invalid @enderror">
                     <option value="">Constancia / diligencia en el trámite (sin cambiar estado)</option>
-                    @foreach ($etiquetasFaseEstado as $code => $etiqueta)
+                    @foreach ($opciones as $code => $etiqueta)
                       <option value="{{ $code }}" @selected(old('estatus') === $code)>{{ $etiqueta }}</option>
                     @endforeach
                   </select>
@@ -1212,6 +1214,7 @@
     const ayudasPorValor = {
       '': 'Asienta una actuación o nota cronológica conservando el estado actual del expediente.',
       'PROCESSING': 'Cuando el caso fue recibido y está siendo revisado en admisibilidad, requisitos y competencia.',
+      'IN_REVIEW': 'Cuando el caso fue recibido y está siendo revisado en admisibilidad, requisitos y competencia.',
       'SUBSANATION': 'Cuando faltan recaudos o requisitos mínimos (como los criterios del Oficio Circular N° 01-00-499) y corre el lapso de 5 días hábiles para que el solicitante subsane.',
       'REFERRED': 'Cuando se traslada a una dirección/unidad interna o a un órgano o ente con competencia (por ejemplo, cuando no es competencia fiscal de la Contraloría del Municipio Páez).',
       'INVALIDATED': 'Cuando no procede o no se subsana en tiempo, resolviéndose su inadmisión/improcedencia y archivo.',
@@ -1223,7 +1226,7 @@
       const esCierre = ['ARCHIVED', 'INVALIDATED'].includes(accion.value);
       const bloqueLapso = document.getElementById('bloque-aviso-lapso');
 
-      if (bloqueLapso) bloqueLapso.style.display = (accion.value === 'IN_REVIEW') ? 'block' : 'none';
+      if (bloqueLapso) bloqueLapso.style.display = (['PROCESSING', 'IN_REVIEW'].includes(accion.value)) ? 'block' : 'none';
       document.getElementById('bloque-unidad').hidden = !derivar;
       document.getElementById('bloque-oficio').hidden = !derivar;
       if (bloqueAvisoCierre) bloqueAvisoCierre.hidden = !esCierre;
