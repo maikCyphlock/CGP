@@ -65,12 +65,12 @@ COMMENT ON TABLE case_status IS
     'RQF-07.2 — Estados visibles al ciudadano. is_terminal bloquea transiciones desde estados finales.';
 
 INSERT INTO case_status (code, name, sort_order, is_terminal) VALUES
-    ('RECEIVED',    'Recibido',     1, FALSE),
-    ('IN_REVIEW',   'En Revisión',  2, FALSE),
-    ('PROCESSED',   'Procesando',   3, FALSE),
-    ('REFERRED',    'Derivado',     4, FALSE),
-    ('INVALIDATED', 'Invalidado',   5, TRUE),
-    ('ARCHIVED',    'Archivado',    6, TRUE);
+    ('RECEIVED',    'Recibido',                                1, FALSE),
+    ('PROCESSING',  'En tramitación / valoración',             2, FALSE),
+    ('SUBSANATION', 'En subsanación',                          3, FALSE),
+    ('REFERRED',    'Remitido / derivado',                     4, FALSE),
+    ('INVALIDATED', 'Improcedente / desestimado y archivado',  5, TRUE),
+    ('ARCHIVED',    'Cerrado / archivado',                     6, TRUE);
 
 
 -- 1.4 Unidades de derivación

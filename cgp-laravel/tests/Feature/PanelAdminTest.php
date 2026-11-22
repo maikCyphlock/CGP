@@ -232,27 +232,28 @@ class PanelAdminTest extends TestCase
         // Salto no permitido: de Recibido no se puede archivar.
         $this->actuar($e, ['desde' => 'RECEIVED', 'estatus' => 'ARCHIVED'])->assertSessionHasErrors('estatus');
 
-        // Protocolizar.
-        $this->actuar($e, ['desde' => 'RECEIVED', 'estatus' => 'IN_REVIEW'])->assertSessionHas('ok');
+        // Protocolizar (pasa a PROCESSING).
+        $statusInit = DB::table('case_status')->where('code', 'PROCESSING')->exists() ? 'PROCESSING' : 'IN_REVIEW';
+        $this->actuar($e, ['desde' => 'RECEIVED', 'estatus' => $statusInit])->assertSessionHas('ok');
         $e->refresh();
-        $this->assertSame('IN_REVIEW', DB::table('case_status')->where('id', $e->status_id)->value('code'));
+        $this->assertSame($statusInit, DB::table('case_status')->where('id', $e->status_id)->value('code'));
         $this->assertNotNull($e->protocolized_at);
         $this->assertSame($u->id, $e->received_by);
         $this->assertSame($u->id, DB::table('case_status_log')->where('case_file_id', $e->id)->orderByDesc('id')->value('changed_by'));
 
         // Formulario viejo (otra pestaña todavía decía "Recibido"): se rechaza.
-        $this->actuar($e, ['desde' => 'RECEIVED', 'estatus' => 'IN_REVIEW'])->assertSessionHasErrors('estatus');
+        $this->actuar($e, ['desde' => 'RECEIVED', 'estatus' => $statusInit])->assertSessionHasErrors('estatus');
 
         // Derivar exige la unidad.
-        $this->actuar($e, ['desde' => 'IN_REVIEW', 'estatus' => 'REFERRED'])->assertSessionHasErrors('referral_unit_id');
-        $this->actuar($e, ['desde' => 'IN_REVIEW', 'estatus' => 'REFERRED', 'referral_unit_id' => DB::table('referral_unit')->value('id')])->assertSessionHas('ok');
+        $this->actuar($e, ['desde' => $statusInit, 'estatus' => 'REFERRED'])->assertSessionHasErrors('referral_unit_id');
+        $this->actuar($e, ['desde' => $statusInit, 'estatus' => 'REFERRED', 'referral_unit_id' => DB::table('referral_unit')->value('id')])->assertSessionHas('ok');
 
         // Nota sin cambio de estatus, y cierre.
         $this->actuar($e, ['desde' => 'REFERRED'])->assertSessionHas('ok');
         $this->actuar($e, ['desde' => 'REFERRED', 'estatus' => 'ARCHIVED'])->assertSessionHas('ok');
 
         // Archivado es final.
-        $this->actuar($e, ['desde' => 'ARCHIVED', 'estatus' => 'IN_REVIEW'])->assertSessionHasErrors('estatus');
+        $this->actuar($e, ['desde' => 'ARCHIVED', 'estatus' => $statusInit])->assertSessionHasErrors('estatus');
 
         $this->assertSame(
             ['STATUS_CHANGE', 'STATUS_CHANGE', 'NOTE', 'STATUS_CHANGE'],
@@ -273,9 +274,10 @@ class PanelAdminTest extends TestCase
         $this->getJson('/denuncias/estado?codigo=OAC-1999-00001')->assertNotFound();
 
         $this->actingAs($this->usuario());
-        $this->actuar($e, ['desde' => 'RECEIVED', 'estatus' => 'IN_REVIEW'])->assertSessionHas('ok');
+        $statusInit = DB::table('case_status')->where('code', 'PROCESSING')->exists() ? 'PROCESSING' : 'IN_REVIEW';
+        $this->actuar($e, ['desde' => 'RECEIVED', 'estatus' => $statusInit])->assertSessionHas('ok');
         $this->getJson('/denuncias/estado?codigo='.$e->case_number)
-            ->assertJsonPath('estatus', DB::table('case_status')->where('code', 'IN_REVIEW')->value('name'));
+            ->assertJsonPath('estatus', DB::table('case_status')->where('code', $statusInit)->value('name'));
     }
 
     public function test_sin_permiso_se_bloquea_y_se_registra(): void
@@ -289,7 +291,8 @@ class PanelAdminTest extends TestCase
         $this->get('/oac/catalogos')->assertForbidden();
         $this->get('/admin/contenidos')->assertForbidden();
         // Solo lectura: no puede registrar actuaciones ni clasificar.
-        $this->actuar($e, ['desde' => 'RECEIVED', 'estatus' => 'IN_REVIEW'])->assertForbidden();
+        $statusInit = DB::table('case_status')->where('code', 'PROCESSING')->exists() ? 'PROCESSING' : 'IN_REVIEW';
+        $this->actuar($e, ['desde' => 'RECEIVED', 'estatus' => $statusInit])->assertForbidden();
         $this->post(route('oac.expedientes.clasificar', $e), [])->assertForbidden();
         $this->assertSame(5, DB::table('unauthorized_access_log')->where('user_id', $solo->id)->count());
         $this->get('/oac')->assertOk()->assertDontSee('Usuarios y accesos');
@@ -299,8 +302,9 @@ class PanelAdminTest extends TestCase
     {
         $e = $this->expediente();
         $this->actingAs($this->usuario([], ['CASES' => 'write']));
-        $this->actuar($e, ['desde' => 'RECEIVED', 'estatus' => 'IN_REVIEW'])->assertSessionHas('ok');
-        $this->actuar($e, ['desde' => 'IN_REVIEW', 'estatus' => 'REFERRED', 'referral_unit_id' => DB::table('referral_unit')->value('id')])->assertForbidden();
+        $statusInit = DB::table('case_status')->where('code', 'PROCESSING')->exists() ? 'PROCESSING' : 'IN_REVIEW';
+        $this->actuar($e, ['desde' => 'RECEIVED', 'estatus' => $statusInit])->assertSessionHas('ok');
+        $this->actuar($e, ['desde' => $statusInit, 'estatus' => 'REFERRED', 'referral_unit_id' => DB::table('referral_unit')->value('id')])->assertForbidden();
         $this->get(route('oac.expedientes.show', $e))->assertOk()->assertDontSee('Derivar a otra unidad');
     }
 
@@ -315,10 +319,11 @@ class PanelAdminTest extends TestCase
         $this->post(route('oac.expedientes.clasificar', $e), ['irregularity_type_id' => $tipo, 'analyst_notes' => 'Revisar obra'])->assertSessionHas('ok');
         $this->assertSame($tipo, $e->fresh()->irregularity_type_id);
 
-        $this->actuar($e, ['desde' => 'RECEIVED', 'estatus' => 'IN_REVIEW']);
+        $statusInit = DB::table('case_status')->where('code', 'PROCESSING')->exists() ? 'PROCESSING' : 'IN_REVIEW';
+        $this->actuar($e, ['desde' => 'RECEIVED', 'estatus' => $statusInit]);
         $unidad = DB::table('referral_unit')->value('id');
-        $this->actuar($e, ['desde' => 'IN_REVIEW', 'estatus' => 'REFERRED', 'referral_unit_id' => $unidad, 'referral_letter_url' => 'javascript:alert(1)'])->assertSessionHasErrors('referral_letter_url');
-        $this->actuar($e, ['desde' => 'IN_REVIEW', 'estatus' => 'REFERRED', 'referral_unit_id' => $unidad, 'referral_letter_url' => 'https://oficios.test/1.pdf'])->assertSessionHas('ok');
+        $this->actuar($e, ['desde' => $statusInit, 'estatus' => 'REFERRED', 'referral_unit_id' => $unidad, 'referral_letter_url' => 'javascript:alert(1)'])->assertSessionHasErrors('referral_letter_url');
+        $this->actuar($e, ['desde' => $statusInit, 'estatus' => 'REFERRED', 'referral_unit_id' => $unidad, 'referral_letter_url' => 'https://oficios.test/1.pdf'])->assertSessionHas('ok');
         $this->assertSame('https://oficios.test/1.pdf', $e->fresh()->referral_letter_url);
 
         // Cerrado: ya no se clasifica.

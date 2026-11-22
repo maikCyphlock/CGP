@@ -170,7 +170,8 @@ a.kpi-card:hover { box-shadow: 0 10px 25px -5px rgba(30,58,138,.15); color: inhe
 .badge.bg-danger { background: var(--danger-tint) !important; color: var(--danger) !important; }
 .badge.bg-light { background: #f8f9fa !important; color: #212529 !important; border: 1px solid #dee2e6 !important; }
 .st-RECEIVED { background: var(--accent-tint) !important; color: var(--accent) !important; }
-.st-IN_REVIEW { background: var(--brand-tint) !important; color: var(--neon-blue) !important; }
+.st-PROCESSING, .st-IN_REVIEW { background: var(--brand-tint) !important; color: var(--neon-blue) !important; }
+.st-SUBSANATION { background: #fef3c7 !important; color: #b45309 !important; }
 .st-PROCESSED { background: var(--success-tint) !important; color: var(--success) !important; }
 .st-REFERRED { background: var(--primary-color) !important; color: #fff !important; }
 .st-ARCHIVED { background: #e9ecef !important; color: #495057 !important; }

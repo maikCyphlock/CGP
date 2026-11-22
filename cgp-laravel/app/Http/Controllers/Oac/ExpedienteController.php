@@ -16,19 +16,22 @@ class ExpedienteController extends Controller
 
     // Único flujo permitido entre estatus. Lo que no está aquí se rechaza en el servidor.
     const TRANSICIONES = [
-        'RECEIVED' => ['IN_REVIEW', 'INVALIDATED'],
-        'IN_REVIEW' => ['PROCESSED', 'REFERRED', 'INVALIDATED', 'ARCHIVED'],
-        'PROCESSED' => ['REFERRED', 'ARCHIVED'],
-        'REFERRED' => ['ARCHIVED'],
+        'RECEIVED'    => ['PROCESSING', 'INVALIDATED'],
+        'PROCESSING'  => ['SUBSANATION', 'REFERRED', 'INVALIDATED', 'ARCHIVED'],
+        'SUBSANATION' => ['PROCESSING', 'REFERRED', 'INVALIDATED', 'ARCHIVED'],
+        'REFERRED'    => ['ARCHIVED'],
+        // Compatibilidad con expedientes creados antes de la migración
+        'IN_REVIEW'   => ['PROCESSING', 'SUBSANATION', 'REFERRED', 'INVALIDATED', 'ARCHIVED'],
+        'PROCESSED'   => ['PROCESSING', 'SUBSANATION', 'REFERRED', 'INVALIDATED', 'ARCHIVED'],
     ];
 
     // Texto del botón/opción para cada estatus destino.
     const ACCIONES = [
-        'IN_REVIEW' => 'Protocolizar (pasa a En Revisión)',
-        'PROCESSED' => 'Marcar como Procesando',
-        'REFERRED' => 'Derivar a otra unidad',
-        'INVALIDATED' => 'Invalidar (cierra el expediente)',
-        'ARCHIVED' => 'Archivar (cierra el expediente)',
+        'PROCESSING'  => 'En tramitación / valoración',
+        'SUBSANATION' => 'En subsanación',
+        'REFERRED'    => 'Remitido / derivado',
+        'INVALIDATED' => 'Improcedente / desestimado y archivado',
+        'ARCHIVED'    => 'Cerrado / archivado',
     ];
 
     public function inicio(Request $request)
@@ -38,13 +41,25 @@ class ExpedienteController extends Controller
         }
 
         $id = $this->estatus()->pluck('id', 'code');
+        $recibidosId = $id['RECEIVED'] ?? 0;
+        $revisionIds = array_values(array_filter([
+            $id['PROCESSING'] ?? null,
+            $id['SUBSANATION'] ?? null,
+            $id['REFERRED'] ?? null,
+            $id['IN_REVIEW'] ?? null,
+            $id['PROCESSED'] ?? null,
+        ]));
+        $cerradosIds = array_values(array_filter([
+            $id['ARCHIVED'] ?? null,
+            $id['INVALIDATED'] ?? null,
+        ]));
 
         return view('oac.inicio', [
             'kpi' => [
                 'mes' => CaseFile::where('created_at', '>=', now()->startOfMonth())->count(),
-                'recibidos' => CaseFile::where('status_id', $id['RECEIVED'])->count(),
-                'revision' => CaseFile::whereIn('status_id', [$id['IN_REVIEW'], $id['PROCESSED'], $id['REFERRED']])->count(),
-                'cerrados' => CaseFile::whereIn('status_id', [$id['ARCHIVED'], $id['INVALIDATED']])->count(),
+                'recibidos' => CaseFile::where('status_id', $recibidosId)->count(),
+                'revision' => CaseFile::whereIn('status_id', $revisionIds)->count(),
+                'cerrados' => CaseFile::whereIn('status_id', $cerradosIds)->count(),
             ],
             'movimientos' => DB::table('case_status_log as l')
                 ->join('case_file as c', 'c.id', '=', 'l.case_file_id')
@@ -410,7 +425,7 @@ class ExpedienteController extends Controller
             abort(403);
         }
 
-        $mensaje = DB::transaction(function () use ($d, $expediente, $user) {
+        $mensaje = DB::transaction(function () use ($d, $expediente, $user, $request) {
             // Bloquea la fila: dos personas no pueden mover el mismo expediente a la vez.
             $e = CaseFile::whereKey($expediente->id)->lockForUpdate()->firstOrFail();
             $estatus = $this->estatus();
@@ -432,8 +447,12 @@ class ExpedienteController extends Controller
             }
 
             $nuevo = $estatus->firstWhere('code', $destino);
+            if (! $nuevo) {
+                return ['error' => "El estatus destino «{$destino}» no se encuentra disponible en el catálogo del sistema."];
+            }
+
             $cambios = ['status_id' => $nuevo->id];
-            if ($destino === 'IN_REVIEW' && ! $e->protocolized_at) {
+            if (in_array($destino, ['PROCESSING', 'IN_REVIEW'], true) && ! $e->protocolized_at) {
                 $cambios += ['protocolized_at' => now(), 'received_by' => $user->id];
             }
             if ($destino === 'REFERRED') {
