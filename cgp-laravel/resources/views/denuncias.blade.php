@@ -2304,9 +2304,9 @@
       document.getElementById('res-est-tipo').textContent = r.tipo;
       document.getElementById('res-est-fecha').textContent = r.fecha;
 
-      // Verificar si está en revisión (por código IN_REVIEW o por texto)
+      // Verificar si está en tramitación o revisión (por código PROCESSING, IN_REVIEW o por texto)
       const estatusNorm = (r.estatus || '').toLowerCase().normalize('NFD').replace(/[\u0300-\u036f]/g, '');
-      const esEnRevision = (r.estatus_codigo === 'IN_REVIEW') || estatusNorm.includes('revision');
+      const esEnRevision = ['IN_REVIEW', 'PROCESSING'].includes(r.estatus_codigo) || estatusNorm.includes('revision') || estatusNorm.includes('tramitacion');
 
       // Tipos de trámites que requieren o admiten evidencias/documentos (todos excepto la sugerencia)
       const tipoNorm = (r.tipo || '').toLowerCase().normalize('NFD').replace(/[\u0300-\u036f]/g, '');
