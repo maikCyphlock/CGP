@@ -1005,6 +1005,11 @@ function validarPaso(numeroPaso) {
             errores.push('Municipio');
             marcarError('cit-municipio', 'cit-municipio-err');
         }
+        // Ciudad / Estado
+        if (!document.getElementById('cit-ciudad').value.trim()) {
+            errores.push('Ciudad / Estado');
+            marcarError('cit-ciudad', 'cit-ciudad-err');
+        }
         // Dirección
         if (document.getElementById('cit-direccion').value.trim().length < 10) {
             errores.push('Dirección de Habitación');
@@ -2077,11 +2082,15 @@ function nuevaSolicitud() {
         el.checked = false;
     });
 
-    // Resetear los campos fijos (Municipio y Ciudad/Estado) a su valor por defecto
-    var municipio = document.getElementById('cit-municipio');
-    if (municipio) municipio.value = 'Páez';
-    var ciudad = document.getElementById('cit-ciudad');
-    if (ciudad) ciudad.value = 'Acarigua/Portuguesa';
+    // Resetear los campos de geografía a su valor inicial
+    if (typeof inicializarGeografiaVenezuela === 'function') {
+        inicializarGeografiaVenezuela();
+    } else {
+        var ciudad = document.getElementById('cit-ciudad');
+        if (ciudad) ciudad.value = 'Portuguesa';
+        var municipio = document.getElementById('cit-municipio');
+        if (municipio) municipio.value = 'Páez';
+    }
 
     // Restaurar visibilidad de bloques condicionales
     document.getElementById('bloque-consulta-popular').style.display = 'none';
@@ -2204,6 +2213,8 @@ var REGLAS_VIVO = {
         }
     },
     'cit-parroquia': { req: true },
+    'cit-municipio': { req: true },
+    'cit-ciudad': { req: true },
     'cit-direccion': { req: true, check: msgMinimo(10) },
     'sen-ubicacion': { req: true, check: msgMinimo(5) },
     'proy-nombre': { req: true, check: msgMinimo(4) },

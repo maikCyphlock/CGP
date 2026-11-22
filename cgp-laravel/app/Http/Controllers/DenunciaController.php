@@ -50,7 +50,12 @@ class DenunciaController extends Controller
 
     public function create()
     {
-        return view('denuncias');
+        $geoRuta = resource_path('data/venezuela_geo.json');
+        $venezuelaGeo = file_exists($geoRuta) ? json_decode(file_get_contents($geoRuta), true) : [];
+
+        return view('denuncias', [
+            'venezuelaGeo' => $venezuelaGeo,
+        ]);
     }
 
     public function store(Request $request)

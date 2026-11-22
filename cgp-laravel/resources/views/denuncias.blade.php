@@ -859,20 +859,97 @@
                 Dirección y Contacto
               </div>
               <div class="row g-3">
+                {{-- 1. Dirección de Habitación de primero --}}
+                <div class="col-12">
+                  <div class="form-group">
+                    <label class="form-label">Dirección de Habitación <span class="required" style="color:#1565c0;">*</span></label>
+                    <input type="text" id="cit-direccion" class="form-control"
+                      placeholder="Calle, Avenida, Urbanización, Casa/Edificio...">
+                    <span class="error-msg" id="cit-direccion-err">Ingrese su dirección completa.</span>
+                  </div>
+                </div>
+
+                {{-- 2. Ciudad / Estado (primero de la ubicación geográfica) --}}
                 <div class="col-md-4">
+                  <div class="form-group">
+                    <label class="form-label">Ciudad / Estado <span class="required" style="color:#1565c0;">*</span></label>
+                    <select id="cit-ciudad" class="form-select">
+                      <option value="">-- Seleccione Estado --</option>
+                    </select>
+                    <span class="error-msg" id="cit-ciudad-err">Seleccione un estado.</span>
+                  </div>
+                </div>
+
+                {{-- 3. Municipio (luego) --}}
+                <div class="col-md-4">
+                  <div class="form-group">
+                    <label class="form-label">Municipio <span class="required" style="color:#1565c0;">*</span></label>
+                    <select id="cit-municipio" class="form-select">
+                      <option value="">-- Seleccione Municipio --</option>
+                    </select>
+                    <span class="error-msg" id="cit-municipio-err">Seleccione un municipio.</span>
+                  </div>
+                </div>
+
+                {{-- 4. Parroquia (después) --}}
+                <div class="col-md-4">
+                  <div class="form-group">
+                    <label class="form-label">Parroquia <span class="required" style="color:#1565c0;">*</span></label>
+                    <select id="cit-parroquia" class="form-select">
+                      <option value="">-- Seleccione Parroquia --</option>
+                    </select>
+                    <span class="error-msg" id="cit-parroquia-err">Seleccione una parroquia.</span>
+                  </div>
+                </div>
+
+                {{-- 5. Correo electrónico y en la confirmación el autocompletado --}}
+                <div class="col-md-6">
                   <div class="form-group">
                     <label class="form-label">Correo Electrónico <span class="required" style="color:#1565c0;">*</span></label>
                     <input type="email" id="cit-correo" class="form-control" placeholder="ejemplo@gmail.com">
                     <span class="error-msg" id="cit-correo-err">Ingrese un correo válido.</span>
                   </div>
                 </div>
-                <div class="col-md-4">
+                <div class="col-md-6">
                   <div class="form-group">
-                    <label class="form-label">Confirmar Correo <span class="required" style="color:#1565c0;">*</span></label>
-                    <input type="email" id="cit-correo2" class="form-control" placeholder="ejemplo@gmail.com">
+                    <div style="display:flex; justify-content:space-between; align-items:center;">
+                      <label class="form-label" style="margin-bottom:0;">Confirmar Correo <span class="required" style="color:#1565c0;">*</span></label>
+                      <button type="button" class="btn btn-link p-0 text-decoration-none" style="font-size:0.75rem; color:#1565c0;" onclick="autocompletarConfirmacionCorreo()" title="Copiar correo para confirmar">
+                        Autocompletar
+                      </button>
+                    </div>
+                    <input type="email" id="cit-correo2" class="form-control" placeholder="ejemplo@gmail.com" style="margin-top:4px;">
                     <span class="error-msg" id="cit-correo2-err">Los correos no coinciden.</span>
                   </div>
                 </div>
+
+                {{-- 6. Teléfono Habitación --}}
+                <div class="col-md-4">
+                  <div class="form-group">
+                    <label class="form-label">Teléfono Habitación</label>
+                    <div style="display:flex;gap:6px;">
+                      <select id="cit-telf-hab-cod" class="form-select" style="max-width:130px;flex-shrink:0;">
+                        <option value="">Cód.</option>
+                        <option value="0255" selected>0255</option>
+                        <option value="0257">0257</option>
+                        <option value="0212">0212</option>
+                        <option value="0241">0241</option>
+                        <option value="0251">0251</option>
+                        <option value="0273">0273</option>
+                        <option value="0261">0261</option>
+                        <option value="0243">0243</option>
+                        <option value="0274">0274</option>
+                        <option value="0276">0276</option>
+                        <option value="0281">0281</option>
+                        <option value="0286">0286</option>
+                      </select>
+                      <input type="tel" id="cit-telf-hab-num" class="form-control" placeholder="1234567" maxlength="7">
+                    </div>
+                    <span class="error-msg" id="cit-telf-hab-err">Complete el código de área y los 7 dígitos.</span>
+                  </div>
+                </div>
+
+                {{-- 7. Teléfono Celular --}}
                 <div class="col-md-4">
                   <div class="form-group">
                     <label class="form-label">Teléfono Celular</label>
@@ -891,76 +968,26 @@
                     <span class="error-msg" id="cit-telf-cel-err">Complete el número celular.</span>
                   </div>
                 </div>
-                <div class="col-md-4">
-                  <div class="form-group">
-                    <label class="form-label">Teléfono Habitación</label>
-                    <div style="display:flex;gap:6px;">
-                      <select id="cit-telf-hab-cod" class="form-select" style="max-width:130px;flex-shrink:0;">
-                        <option value="">Cód.</option>
-                        <option value="0255">0255</option>
-                        <option value="0257">0257</option>
-                      </select>
-                      <input type="tel" id="cit-telf-hab-num" class="form-control" placeholder="1234567" maxlength="7">
-                    </div>
-                    <span class="error-msg" id="cit-telf-hab-err">Complete el código de área y los 7 dígitos.</span>
-                  </div>
-                </div>
+
+                {{-- 8. Teléfono del Trabajo --}}
                 <div class="col-md-4">
                   <div class="form-group">
                     <label class="form-label">Teléfono del Trabajo</label>
                     <div style="display:flex;gap:6px;">
                       <select id="cit-telf-trab-cod" class="form-select" style="max-width:130px;flex-shrink:0;">
                         <option value="">Cód.</option>
-                        <option value="0255">0255</option>
+                        <option value="0255" selected>0255</option>
+                        <option value="0257">0257</option>
+                        <option value="0212">0212</option>
+                        <option value="0241">0241</option>
+                        <option value="0251">0251</option>
+                        <option value="0273">0273</option>
+                        <option value="0261">0261</option>
+                        <option value="0243">0243</option>
                         <option value="3301">3301</option>
                       </select>
                       <input type="tel" id="cit-telf-trab-num" class="form-control" placeholder="1234567" maxlength="7">
                     </div>
-                  </div>
-                </div>
-                <div class="col-md-3">
-                  <div class="form-group">
-                    <label class="form-label">Parroquia <span class="required" style="color:#1565c0;">*</span></label>
-                    <select id="cit-parroquia" class="form-select">
-                      <option value="">-- Seleccione --</option>
-                      <option>Acarigua</option>
-                      <option>Payara</option>
-                      <option>Pimpinela</option>
-                      <option>Ramón Peraza</option>
-                    </select>
-                    <span class="error-msg" id="cit-parroquia-err">Seleccione una parroquia.</span>
-                  </div>
-                </div>
-                <div class="col-md-3">
-                  <div class="form-group">
-                    <label class="form-label">Municipio <span class="required" style="color:#1565c0;">*</span></label>
-                    <input type="text" id="cit-municipio" class="form-control" value="Páez" readonly tabindex="-1"
-                      style="background:#f2f4f8;color:#5a6474;cursor:not-allowed;">
-                  </div>
-                </div>
-                <div class="col-md-3">
-                  <div class="form-group">
-                    <label class="form-label" style="visibility:hidden;">Nota</label>
-                    <div style="background:#f2f4f8;color:#5a6474;border:1.5px solid #e1e6ee;border-radius:5px;
-                      padding:8px 10px;font-size:0.72rem;line-height:1.35;display:flex;gap:7px;align-items:flex-start;
-                      box-sizing:border-box;height:100%;">
-                      <span>Si el caso no se tramita en Páez, compete a otra contraloría.</span>
-                    </div>
-                  </div>
-                </div>
-                <div class="col-md-3">
-                  <div class="form-group">
-                    <label class="form-label">Ciudad / Estado</label>
-                    <input type="text" id="cit-ciudad" class="form-control" value="Acarigua/Portuguesa" readonly tabindex="-1"
-                      style="background:#f2f4f8;color:#5a6474;cursor:not-allowed;">
-                  </div>
-                </div>
-                <div class="col-12">
-                  <div class="form-group">
-                    <label class="form-label">Dirección de Habitación <span class="required" style="color:#1565c0;">*</span></label>
-                    <input type="text" id="cit-direccion" class="form-control"
-                      placeholder="Calle, Avenida, Urbanización...">
-                    <span class="error-msg" id="cit-direccion-err">Ingrese su dirección completa.</span>
                   </div>
                 </div>
               </div>
@@ -1398,7 +1425,7 @@
                   </div>
                   <div class="col-12">
                     <div class="resumen-item">
-                      <div class="resumen-etiqueta">Ubicación Completa (Estado, Municipio, Parroquia)</div>
+                      <div class="resumen-etiqueta">Ubicación (Dirección, Ciudad/Estado, Municipio, Parroquia)</div>
                       <div class="resumen-valor" id="res-ubicacion" style="font-weight:600; color:#1a2340;">—</div>
                     </div>
                   </div>
@@ -2107,7 +2134,132 @@
         proyFecha.max = hoy;
         proyFecha.min = minFecha;
       }
+
+      // Inicialización de la geografía nacional en cascada y autocompletado de confirmación de correo
+      inicializarGeografiaVenezuela();
+      configurarAutocompletadoCorreo();
     });
+
+    /* ── Geografía de Venezuela (Listas desplegables en cascada para Ciudad/Estado, Municipio y Parroquia) ── */
+    window.venezuelaGeoData = @json($venezuelaGeo ?? []);
+
+    function inicializarGeografiaVenezuela() {
+      const selCiudad = document.getElementById('cit-ciudad');
+      const selMun = document.getElementById('cit-municipio');
+      const selParr = document.getElementById('cit-parroquia');
+      if (!selCiudad || !selMun || !selParr) return;
+
+      const estados = Object.keys(window.venezuelaGeoData || {}).sort();
+
+      selCiudad.innerHTML = '<option value="">-- Seleccione Estado / Ciudad --</option>';
+      estados.forEach(est => {
+        const opt = document.createElement('option');
+        opt.value = est;
+        opt.textContent = est;
+        if (est === 'Portuguesa') opt.selected = true;
+        selCiudad.appendChild(opt);
+      });
+
+      function actualizarMunicipios(estadoSel, munPreseleccionar = null) {
+        selMun.innerHTML = '<option value="">-- Seleccione Municipio --</option>';
+        selParr.innerHTML = '<option value="">-- Seleccione Parroquia --</option>';
+
+        if (!estadoSel || !window.venezuelaGeoData[estadoSel]) return;
+
+        const municipios = Object.keys(window.venezuelaGeoData[estadoSel]).sort();
+        municipios.forEach(m => {
+          const opt = document.createElement('option');
+          opt.value = m;
+          opt.textContent = m;
+          if (munPreseleccionar && m === munPreseleccionar) {
+            opt.selected = true;
+          } else if (!munPreseleccionar && estadoSel === 'Portuguesa' && m === 'Páez') {
+            opt.selected = true;
+          }
+          selMun.appendChild(opt);
+        });
+
+        actualizarParroquias(estadoSel, selMun.value);
+      }
+
+      function actualizarParroquias(estadoSel, munSel, parrPreseleccionar = null) {
+        selParr.innerHTML = '<option value="">-- Seleccione Parroquia --</option>';
+        if (!estadoSel || !munSel || !window.venezuelaGeoData[estadoSel] || !window.venezuelaGeoData[estadoSel][munSel]) {
+          return;
+        }
+
+        const parroquias = window.venezuelaGeoData[estadoSel][munSel];
+        parroquias.forEach(p => {
+          const opt = document.createElement('option');
+          opt.value = p;
+          opt.textContent = p;
+          if (parrPreseleccionar && p === parrPreseleccionar) {
+            opt.selected = true;
+          } else if (!parrPreseleccionar && munSel === 'Páez' && p === 'Acarigua') {
+            opt.selected = true;
+          }
+          selParr.appendChild(opt);
+        });
+      }
+
+      selCiudad.addEventListener('change', function() {
+        actualizarMunicipios(this.value);
+      });
+
+      selMun.addEventListener('change', function() {
+        actualizarParroquias(selCiudad.value, this.value);
+      });
+
+      // Inicialización por defecto en Portuguesa -> Páez -> Acarigua
+      const estadoInicial = selCiudad.value || 'Portuguesa';
+      actualizarMunicipios(estadoInicial, 'Páez');
+    }
+
+    /* ── Autocompletado de confirmación de correo electrónico ── */
+    function autocompletarConfirmacionCorreo() {
+      const c1 = document.getElementById('cit-correo');
+      const c2 = document.getElementById('cit-correo2');
+      if (c1 && c2) {
+        c2.value = c1.value.trim();
+        const err = document.getElementById('cit-correo2-err');
+        if (err) err.classList.remove('visible');
+        c2.classList.remove('invalid');
+        c2.classList.add('valid');
+      }
+    }
+
+    function configurarAutocompletadoCorreo() {
+      const c1 = document.getElementById('cit-correo');
+      const c2 = document.getElementById('cit-correo2');
+      if (!c1 || !c2) return;
+
+      c1.addEventListener('input', function() {
+        if (!c2.dataset.manual || c2.dataset.manual === '0') {
+          c2.value = c1.value;
+          const err = document.getElementById('cit-correo2-err');
+          if (err && c2.value.trim() === c1.value.trim()) {
+            err.classList.remove('visible');
+            c2.classList.remove('invalid');
+          }
+        }
+      });
+
+      c2.addEventListener('input', function() {
+        c2.dataset.manual = '1';
+      });
+
+      c1.addEventListener('blur', function() {
+        if (!c2.value.trim() || c2.dataset.manual !== '1') {
+          c2.value = c1.value.trim();
+          c2.dataset.manual = '0';
+          const err = document.getElementById('cit-correo2-err');
+          if (err && c2.value.trim() === c1.value.trim()) {
+            err.classList.remove('visible');
+            c2.classList.remove('invalid');
+          }
+        }
+      });
+    }
 
     /* ── Validación en tiempo real para la fecha estimada de aprobación del proyecto (no futura y máx. 5 años atrás) ── */
     function validarFechaProyecto(input) {
@@ -2720,7 +2872,7 @@
       const dir = escaparHtml(document.getElementById('cit-direccion').value || '');
       const contenedorUbicacion = document.getElementById('res-ubicacion');
       if (contenedorUbicacion) {
-        contenedorUbicacion.innerHTML = `<strong>Ciudad/Estado:</strong> ${ciu} <br><strong>Municipio:</strong> ${mun} <br><strong>Parroquia:</strong> ${parr} <br><strong>Dirección:</strong> ${dir}`;
+        contenedorUbicacion.innerHTML = `<strong>Dirección:</strong> ${dir} <br><strong>Ciudad/Estado:</strong> ${ciu} <br><strong>Municipio:</strong> ${mun} <br><strong>Parroquia:</strong> ${parr}`;
       }
 
       // Evidencias cargadas (desde la secuencia por documentos)
