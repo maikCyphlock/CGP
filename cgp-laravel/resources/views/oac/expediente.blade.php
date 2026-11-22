@@ -11,7 +11,7 @@
 @endphp
 
 <div class="d-flex flex-wrap justify-content-between align-items-center gap-2 mb-3">
-  <a href="{{ url()->previous() !== url()->current() ? url()->previous() : route('oac.expedientes.index') }}" class="btn btn-sm btn-outline-secondary"><i class="fa-solid fa-arrow-left me-1"></i> Volver</a>
+  <a href="{{ route('oac.expedientes.index') }}" class="btn btn-sm btn-outline-secondary"><i class="fa-solid fa-arrow-left me-1"></i> Volver</a>
   <div class="d-flex flex-wrap gap-2 align-items-center">
     <span class="badge badge-estatus fs-6 st-{{ $actual->code }}">{{ $actual->name }}</span>
     <a href="{{ route('denuncias.planilla', $e->tracking_code) }}" class="btn btn-sm btn-outline-dark ver-planilla" data-titulo="{{ $e->case_number }}"><i class="fa-solid fa-file-pdf me-1"></i> Planilla PDF</a>
