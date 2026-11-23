@@ -905,20 +905,41 @@
                 {{-- 5. Correo electrónico y en la confirmación el autocompletado --}}
                 <div class="col-md-6">
                   <div class="form-group">
-                    <label class="form-label">Correo Electrónico <span class="required" style="color:#1565c0;">*</span></label>
-                    <input type="email" id="cit-correo" class="form-control" placeholder="ejemplo@gmail.com">
-                    <span class="error-msg" id="cit-correo-err">Ingrese un correo válido.</span>
+                    <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:4px;">
+                      <label class="form-label" style="margin-bottom:0;">
+                        Correo Electrónico <span class="required" style="color:#1565c0;">*</span>
+                      </label>
+                      <button type="button" class="btn btn-link p-0 text-decoration-none" style="font-size:0.75rem; color:#1565c0; display:inline-flex; align-items:center; gap:4px; font-weight:500;" data-bs-toggle="modal" data-bs-target="#modalAvisoGmail" title="Ver motivo legal por el cual debe ser Gmail">
+                        <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
+                          <circle cx="12" cy="12" r="10"></circle>
+                          <line x1="12" y1="16" x2="12" y2="12"></line>
+                          <line x1="12" y1="8" x2="12.01" y2="8"></line>
+                        </svg>
+                        <span>Debe ser Gmail</span>
+                      </button>
+                    </div>
+                    <div class="input-group">
+                      <input type="email" id="cit-correo" class="form-control" placeholder="ejemplo@gmail.com">
+                      <button type="button" class="btn btn-outline-primary" data-bs-toggle="modal" data-bs-target="#modalAvisoGmail" title="Abrir ventanita informativa: El correo debe ser Gmail por ley" style="border-color:#1565c0; color:#1565c0; background:#f0f7ff; display:inline-flex; align-items:center; justify-content:center; padding: 0 12px;">
+                        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-label="Ventanita informativa">
+                          <rect x="3" y="3" width="18" height="18" rx="2" ry="2"></rect>
+                          <line x1="3" y1="9" x2="21" y2="9"></line>
+                          <line x1="9" y1="21" x2="9" y2="9"></line>
+                        </svg>
+                      </button>
+                    </div>
+                    <span class="error-msg" id="cit-correo-err">El correo electrónico a utilizar debe ser exclusivamente Gmail (@gmail.com).</span>
                   </div>
                 </div>
                 <div class="col-md-6">
                   <div class="form-group">
-                    <div style="display:flex; justify-content:space-between; align-items:center;">
+                    <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:4px;">
                       <label class="form-label" style="margin-bottom:0;">Confirmar Correo <span class="required" style="color:#1565c0;">*</span></label>
                       <button type="button" class="btn btn-link p-0 text-decoration-none" style="font-size:0.75rem; color:#1565c0;" onclick="autocompletarConfirmacionCorreo()" title="Copiar correo para confirmar">
                         Autocompletar
                       </button>
                     </div>
-                    <input type="email" id="cit-correo2" class="form-control" placeholder="ejemplo@gmail.com" style="margin-top:4px;">
+                    <input type="email" id="cit-correo2" class="form-control" placeholder="ejemplo@gmail.com">
                     <span class="error-msg" id="cit-correo2-err">Los correos no coinciden.</span>
                   </div>
                 </div>
@@ -1706,6 +1727,61 @@
 
     </div><!-- /denuncias-inner -->
   </section>
+
+  <!-- MODAL FLOTANTE: AVISO LEGAL SOBRE EL USO EXCLUSIVO DE CORREO GMAIL -->
+  <div class="modal fade" id="modalAvisoGmail" tabindex="-1" aria-labelledby="modalAvisoGmailLabel" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered">
+      <div class="modal-content" style="border: none; border-radius: 10px; box-shadow: 0 12px 30px rgba(0,0,0,0.2); overflow: hidden;">
+        <div class="modal-header" style="background: #0f2340; color: #fff; padding: 16px 20px; border-bottom: 3px solid #1565c0;">
+          <h5 class="modal-title" id="modalAvisoGmailLabel" style="font-size: 1.05rem; font-weight: bold; display: flex; align-items: center; gap: 9px; margin: 0;">
+            Uso Obligatorio de Correo Gmail
+          </h5>
+          <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Cerrar"></button>
+        </div>
+        <div class="modal-body" style="padding: 22px 20px; background: #ffffff; color: #333;">
+          <div style="background: #e8f4fd; border-left: 4px solid #1565c0; border-radius: 6px; padding: 12px 16px; margin-bottom: 16px;">
+            <strong style="color: #0d47a1; display: block; margin-bottom: 4px; font-size: 0.95rem;">
+              Notificación Oficial
+            </strong>
+            <p style="margin: 0; font-size: 0.9rem; line-height: 1.5; text-align: justify; color: #1e3a5f;">
+             <strong>El correo electrónico a utilizar en este formulario debe pertenecer obligatoriamente al servicio Gmail (@gmail.com)</strong>.
+            </p>
+          </div>
+
+          <h6 style="font-size: 0.92rem; font-weight: 700; color: #0f2340; margin-bottom: 8px;">
+            ¿Por qué se exige una cuenta de Gmail?
+          </h6>
+          <ul style="font-size: 0.88rem; line-height: 1.6; color: #495057; padding-left: 20px; margin-bottom: 16px; text-align: justify;">
+            <li style="margin-bottom: 6px;">
+              <strong>Garantía de Entrega y Celeridad Procesal:</strong> Asegura la recepción inmediata y sin bloqueos de los comprobantes oficiales con código QR, números de folio y seguimiento de su trámite.
+            </li>
+            <li style="margin-bottom: 6px;">
+              <strong>Seguridad y Compatibilidad Tecnológica:</strong> Otros proveedores presentan filtros de correo no deseado (SPAM) que impiden o retrasan la entrega de las resoluciones y respuestas emitidas por la Contraloría.
+            </li>
+            <li>
+              <strong>Validez del Expediente Electrónico:</strong> Permite autenticar de manera fidedigna los canales de contacto legalmente vinculantes con el ciudadano solicitante.
+            </li>
+          </ul>
+
+          <div style="background: #fff8e1; border: 1px solid #ffe082; border-radius: 6px; padding: 10px 14px; font-size: 0.85rem; color: #795548; display: flex; align-items: center; gap: 10px;">
+            <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="#f57c00" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="flex-shrink:0;">
+              <path d="M10.29 3.86L1.82 18a2 2 0 0 0 1.71 3h16.94a2 2 0 0 0 1.71-3L13.71 3.86a2 2 0 0 0-3.42 0z"/>
+              <line x1="12" y1="9" x2="12" y2="13"/>
+              <line x1="12" y1="17" x2="12.01" y2="17"/>
+            </svg>
+            <div>
+              Si actualmente no cuenta con una dirección de Gmail, puede registrarla de forma gratuita en <strong>www.gmail.com</strong> para completar su trámite sin inconvenientes.
+            </div>
+          </div>
+        </div>
+        <div class="modal-footer" style="background: #f7f9fd; border-top: 1px solid #eef1f7; padding: 12px 20px; justify-content: flex-end;">
+          <button type="button" class="btn btn-primary" data-bs-dismiss="modal" style="background: #1565c0; border-color: #1565c0; font-size: 0.88rem; font-weight: 600; padding: 7px 22px; border-radius: 6px;">
+            Entendido
+          </button>
+        </div>
+      </div>
+    </div>
+  </div>
 
   <!-- MODAL FLOTANTE DE CONFIRMACIÓN DE DATOS (Bootstrap Custom) -->
   <div class="modal fade" id="modalConfirmacionPaso" tabindex="-1" aria-labelledby="modalConfirmacionLabel" aria-hidden="true" data-bs-backdrop="static" data-bs-keyboard="false">

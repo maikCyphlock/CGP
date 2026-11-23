@@ -283,20 +283,14 @@ var configTipo = {
 
 
 /* ═══════════════════════════════════════════════════════════
-   DOMINIOS DE CORREO ACEPTADOS
-   Se valida todo lo que sigue al "@". Se permiten los
-   proveedores más comunes en Venezuela, además de cualquier
-   dominio institucional que termine en .gob.ve
+   DOMINIO DE CORREO ACEPTADO (EXCLUSIVAMENTE GMAIL POR LEY)
+   Por disposición legal y directrices institucionales de
+   notificación electrónica, únicamente se acepta @gmail.com
    ═══════════════════════════════════════════════════════════ */
-var DOMINIOS_CORREO_VALIDOS = [
-    'gmail.com', 'hotmail.com', 'outlook.com', 'yahoo.com',
-    'yahoo.es', 'live.com', 'icloud.com', 'aol.com', 'gob.ve',
-    'cantv.net'
-];
+var DOMINIOS_CORREO_VALIDOS = ['gmail.com'];
 
 /**
- * Valida que el dominio del correo (lo que sigue al @) esté en la
- * lista de dominios aceptados, o que sea un subdominio .gob.ve
+ * Valida que el dominio del correo (lo que sigue al @) sea exclusivamente gmail.com
  * @param {string} correo
  * @returns {boolean}
  */
@@ -304,8 +298,7 @@ function validarDominioCorreo(correo) {
     var partes = correo.split('@');
     if (partes.length !== 2) return false;
     var dominio = partes[1].toLowerCase().trim();
-    if (dominio.endsWith('.gob.ve')) return true;
-    return DOMINIOS_CORREO_VALIDOS.indexOf(dominio) !== -1;
+    return dominio === 'gmail.com';
 }
 
 
@@ -911,10 +904,10 @@ function validarPaso(numeroPaso) {
             errores.push('Correo Electrónico');
             marcarError('cit-correo', 'cit-correo-err');
         } else if (!validarDominioCorreo(correo)) {
-            errores.push('Dominio de correo no reconocido');
+            errores.push('Correo debe ser Gmail (@gmail.com)');
             marcarError('cit-correo', 'cit-correo-err');
             document.getElementById('cit-correo-err').textContent =
-                'Dominio no reconocido. Use gmail.com, hotmail.com, outlook.com, yahoo.com u otro dominio institucional (.gob.ve).';
+                'Por ley, el correo a utilizar debe ser exclusivamente Gmail (@gmail.com).';
         }
         // Confirmar correo
         var correo2 = document.getElementById('cit-correo2').value.trim();
@@ -1892,9 +1885,18 @@ var REGLAS_VIVO = {
         req: true,
         check: function (v, final) {
             if (/\s/.test(v)) return 'El correo no puede contener espacios.';
-            if (!final) return '';
-            if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(v)) return 'Ingrese un correo válido. Ej.: nombre@gmail.com';
-            if (!validarDominioCorreo(v)) return 'Dominio no reconocido. Use gmail.com, hotmail.com, outlook.com, yahoo.com u otro dominio institucional (.gob.ve).';
+            if (!final) {
+                var atIdx = v.indexOf('@');
+                if (atIdx !== -1 && v.indexOf('.', atIdx) !== -1) {
+                    var dom = v.slice(atIdx + 1).toLowerCase().trim();
+                    if (dom && dom !== 'gmail.com' && !'gmail.com'.startsWith(dom)) {
+                        return 'Por ley, el correo a utilizar debe ser Gmail (@gmail.com).';
+                    }
+                }
+                return '';
+            }
+            if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(v)) return 'Ingrese un correo válido. Ej.: ejemplo@gmail.com';
+            if (!validarDominioCorreo(v)) return 'Por ley, el correo a utilizar debe ser Gmail (@gmail.com).';
             return '';
         }
     },
