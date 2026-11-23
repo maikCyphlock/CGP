@@ -403,7 +403,7 @@ var CODIGOS_FIJOS = [
 var PLANTILLAS_SENALADO = {
     persona_natural: {
         titulo: 'Datos de la Persona Natural Señalada',
-        etiquetaOpcional: '+ Agregar cédula o documento (opcional)',
+        etiquetaOpcional: '+ Agregar documento de identidad (opcional)',
         camposObligatorios:
             '<div class="row g-3">' +
             '  <div class="col-md-6"><div class="form-group">' +
@@ -537,7 +537,7 @@ var PLANTILLAS_SENALADO = {
     },
     juez_paz: {
         titulo: 'Datos del Juez o Jueza de Paz Señalado(a)',
-        etiquetaOpcional: '+ Agregar cédula o documento (opcional)',
+        etiquetaOpcional: '+ Agregar documento de identidad (opcional)',
         camposObligatorios:
             '<div class="row g-3">' +
             '  <div class="col-md-4"><div class="form-group">' +
