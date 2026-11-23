@@ -79,7 +79,7 @@ class DenunciaController extends Controller
             'ciudadano.nivel_educativo' => 'nullable|string|max:40',
             'ciudadano.profesion' => ['nullable', 'string', 'max:80', Rule::exists('profesiones', 'nombre')->where('activo', true)],
             'ciudadano.ocupacion' => 'nullable|string|max:80',
-            'ciudadano.correo' => 'required|email|max:150',
+            'ciudadano.correo' => ['required', 'email', 'max:150', 'regex:/^[a-zA-Z0-9._%+-]+@gmail\.com$/i'],
             'ciudadano.telf_cel' => 'nullable|string|max:15',
             'ciudadano.telf_hab' => 'nullable|string|max:15',
             'ciudadano.direccion' => 'required|string|min:10|max:250',
@@ -125,6 +125,7 @@ class DenunciaController extends Controller
             'regex' => 'El código SITUR no es válido. Ej.: C-URB-2014-11-0001 o CEC-ZU-205.',
             'accepted' => 'Debe aceptar la declaración jurada.',
             'ciudadano.nro_doc.regex' => 'El número de documento debe tener entre 5 y 10 dígitos.',
+            'ciudadano.correo.regex' => 'Por ley, el correo electrónico a utilizar debe pertenecer al dominio @gmail.com.',
             'senalados.required_if' => 'Debe agregar al menos un señalado.',
         ], [
             'tipo_tramite' => 'tipo de trámite',
