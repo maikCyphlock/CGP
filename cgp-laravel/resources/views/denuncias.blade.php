@@ -988,6 +988,7 @@
                       </select>
                       <input type="tel" id="cit-telf-trab-num" class="form-control" placeholder="1234567" maxlength="7">
                     </div>
+                    <span class="error-msg" id="cit-telf-trab-err">Complete el código de área y los 7 dígitos.</span>
                   </div>
                 </div>
               </div>

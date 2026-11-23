@@ -995,6 +995,13 @@ function validarPaso(numeroPaso) {
             errores.push('Teléfono de Habitación');
             marcarError('cit-telf-hab-num', 'cit-telf-hab-err');
         }
+        // Teléfono del trabajo (opcional, pero si se llena el número debe tener código)
+        var telfTrabCod = document.getElementById('cit-telf-trab-cod').value;
+        var telfTrabNum = document.getElementById('cit-telf-trab-num').value.trim();
+        if (telfTrabNum && (!telfTrabCod || !/^\d{7}$/.test(telfTrabNum))) {
+            errores.push('Teléfono del Trabajo');
+            marcarError('cit-telf-trab-num', 'cit-telf-trab-err');
+        }
         // Parroquia
         if (!document.getElementById('cit-parroquia').value) {
             errores.push('Parroquia');
@@ -2212,6 +2219,15 @@ var REGLAS_VIVO = {
             return '';
         }
     },
+    'cit-telf-trab-num': {
+        check: function (v, final) {
+            if (/\D/.test(v)) return 'Solo se permiten números (7 dígitos).';
+            if (!final) return '';
+            if (v.length !== 7) return 'El número debe tener 7 dígitos.';
+            if (!document.getElementById('cit-telf-trab-cod').value) return 'Seleccione el código de área.';
+            return '';
+        }
+    },
     'cit-parroquia': { req: true },
     'cit-municipio': { req: true },
     'cit-ciudad': { req: true },
@@ -2502,7 +2518,11 @@ function mensajeCampoOpcionalSenalado(campo) {
 
 /** Localiza (o crea) el aviso de error de un campo. */
 function obtenerAvisoVivo(campo) {
-    var mapa = { 'cit-telf-cel-num': 'cit-telf-cel-err', 'cit-telf-hab-num': 'cit-telf-hab-err' };
+    var mapa = {
+        'cit-telf-cel-num': 'cit-telf-cel-err',
+        'cit-telf-hab-num': 'cit-telf-hab-err',
+        'cit-telf-trab-num': 'cit-telf-trab-err'
+    };
     if (campo.id) {
         var err = document.getElementById(mapa[campo.id] || (campo.id + '-err'));
         if (err) return err;
@@ -2645,6 +2665,7 @@ function validarCampoVivo(campo, alSalir) {
         // Los selectores de código revalidan el número de teléfono asociado
         if (el.id === 'cit-telf-cel-cod') el = document.getElementById('cit-telf-cel-num');
         if (el.id === 'cit-telf-hab-cod') el = document.getElementById('cit-telf-hab-num');
+        if (el.id === 'cit-telf-trab-cod') el = document.getElementById('cit-telf-trab-num');
 
         validarCampoVivo(el, alSalir || el !== e.target);
 
