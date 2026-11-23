@@ -772,6 +772,21 @@ function mostrarPaso(numeroPaso) {
     var pasoEl = document.getElementById('paso-' + numeroPaso);
     if (pasoEl) pasoEl.style.display = 'block';
 
+    // Si es el paso 3 (señalado), forzar inicialización y redibujado del mapa
+    if (numeroPaso === 3 && typeof inicializarMapaSenalado === 'function') {
+        setTimeout(function () {
+            inicializarMapaSenalado();
+            if (typeof mapaSenalado !== 'undefined' && mapaSenalado) {
+                mapaSenalado.invalidateSize();
+            }
+        }, 150);
+        setTimeout(function () {
+            if (typeof mapaSenalado !== 'undefined' && mapaSenalado) {
+                mapaSenalado.invalidateSize();
+            }
+        }, 500);
+    }
+
     // Actualizar barra de progreso
     document.querySelectorAll('.paso-item').forEach(function (item) {
         var n = parseInt(item.dataset.paso, 10);

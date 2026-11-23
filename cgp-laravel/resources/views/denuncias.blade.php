@@ -859,13 +859,42 @@
                 Dirección y Contacto
               </div>
               <div class="row g-3">
-                {{-- 1. Dirección de Habitación de primero --}}
+                {{-- 1. Dirección de Habitación con Mapa Interactivo y Autocompletado --}}
                 <div class="col-12">
                   <div class="form-group">
-                    <label class="form-label">Dirección de Habitación <span class="required" style="color:#1565c0;">*</span></label>
+                    <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:4px; flex-wrap:wrap; gap:6px;">
+                      <label class="form-label" style="margin-bottom:0;">Dirección de Habitación <span class="required" style="color:#1565c0;">*</span></label>
+                      <div style="display:flex; gap:6px;">
+                        <button type="button" class="btn btn-sm btn-outline-secondary" style="white-space:nowrap; font-size:0.8rem; padding:3px 10px; border-radius:12px;" onclick="buscarDireccionCiudadanoEnMapa()" title="Ubicar dirección escrita en el mapa">
+                          Buscar en mapa
+                        </button>
+                        <button type="button" class="btn btn-sm btn-outline-primary" style="white-space:nowrap; font-size:0.8rem; padding:3px 10px; border-radius:12px;" onclick="obtenerUbicacionCiudadanoGPS()" title="Usar GPS actual del dispositivo">
+                          Mi ubicación
+                        </button>
+                      </div>
+                    </div>
                     <input type="text" id="cit-direccion" class="form-control"
                       placeholder="Calle, Avenida, Urbanización, Casa/Edificio...">
                     <span class="error-msg" id="cit-direccion-err">Ingrese su dirección completa.</span>
+
+                    <!-- Componente de Mapa Interactivo para la Dirección del Ciudadano -->
+                    <div id="contenedor-mapa-ciudadano" style="margin-top:10px; background:#fff; border:1px solid #dce3ec; border-radius:8px; overflow:hidden; box-shadow:0 1px 4px rgba(0,0,0,0.06);">
+                      <div style="background:#f1f5f9; padding:8px 14px; font-size:0.82rem; color:#475569; display:flex; justify-content:space-between; align-items:center; flex-wrap:wrap; gap:6px; border-bottom:1px solid #e2e8f0;">
+                        <span><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#1565c0" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" style="vertical-align:middle;margin-right:4px;"><path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"/><circle cx="12" cy="10" r="3"/></svg> Haga clic en el mapa o arrastre el marcador para autocompletar Estado, Municipio y Parroquia.</span>
+                        <a id="btn-abrir-google-maps-ciudadano" href="https://maps.google.com" target="_blank" rel="noopener noreferrer" style="color:#1565c0; font-weight:600; text-decoration:none; font-size:0.8rem; display:none;">
+                          Abrir en Google Maps 
+                        </a>
+                      </div>
+                      <div id="mapa-ciudadano" style="height:250px; width:100%; background:#e5e3df;"></div>
+                      <div style="background:#f8fafc; padding:6px 14px; font-size:0.8rem; color:#64748b; display:flex; justify-content:space-between; align-items:center; flex-wrap:wrap; gap:6px;">
+                        <div>
+                          Coordenadas: Lat <strong id="cit-lat-texto" style="color:#0f172a;">—</strong>, Lng <strong id="cit-lng-texto" style="color:#0f172a;">—</strong>
+                        </div>
+                        <span id="cit-geo-status" style="font-size:0.78rem; color:#0284c7; font-weight:500;">Haga clic en el mapa para fijar su ubicación</span>
+                      </div>
+                    </div>
+                    <input type="hidden" id="cit-lat" name="cit_lat" value="">
+                    <input type="hidden" id="cit-lng" name="cit_lng" value="">
                   </div>
                 </div>
 
@@ -1098,7 +1127,7 @@
                     <div style="background:#f1f5f9; padding:8px 14px; font-size:0.82rem; color:#475569; display:flex; justify-content:space-between; align-items:center; flex-wrap:wrap; gap:6px; border-bottom:1px solid #e2e8f0;">
                       <span>Haga clic en el mapa o arrastre el marcador para fijar las coordenadas exactas.</span>
                       <a id="btn-abrir-google-maps" href="https://maps.google.com" target="_blank" rel="noopener noreferrer" style="color:#1565c0; font-weight:600; text-decoration:none; font-size:0.8rem; display:none;">
-                        Abrir en Google Maps ↗
+                        Abrir en Google Maps 
                       </a>
                     </div>
                     <div id="mapa-senalado" style="height:260px; width:100%; background:#e5e3df;"></div>
@@ -2214,6 +2243,9 @@
       // Inicialización de la geografía nacional en cascada y autocompletado de confirmación de correo
       inicializarGeografiaVenezuela();
       configurarAutocompletadoCorreo();
+      setTimeout(function() {
+        if (typeof inicializarMapaCiudadano === 'function') inicializarMapaCiudadano();
+      }, 250);
     });
 
     /* ── Geografía de Venezuela (Listas desplegables en cascada para Ciudad/Estado, Municipio y Parroquia) ── */
@@ -2225,7 +2257,8 @@
       const selParr = document.getElementById('cit-parroquia');
       if (!selCiudad || !selMun || !selParr) return;
 
-      const estados = Object.keys(window.venezuelaGeoData || {}).sort();
+      const geo = (window.venezuelaGeoData && Object.keys(window.venezuelaGeoData).length) ? window.venezuelaGeoData : (window.VENEZUELA_GEO || {});
+      const estados = Object.keys(geo).sort();
 
       selCiudad.innerHTML = '<option value="">-- Seleccione Estado / Ciudad --</option>';
       estados.forEach(est => {
@@ -2236,13 +2269,14 @@
         selCiudad.appendChild(opt);
       });
 
-      function actualizarMunicipios(estadoSel, munPreseleccionar = null) {
+      function actualizarMunicipios(estadoSel, munPreseleccionar = null, parrPreseleccionar = null) {
         selMun.innerHTML = '<option value="">-- Seleccione Municipio --</option>';
         selParr.innerHTML = '<option value="">-- Seleccione Parroquia --</option>';
 
-        if (!estadoSel || !window.venezuelaGeoData[estadoSel]) return;
+        const g = (window.venezuelaGeoData && Object.keys(window.venezuelaGeoData).length) ? window.venezuelaGeoData : (window.VENEZUELA_GEO || {});
+        if (!estadoSel || !g[estadoSel]) return;
 
-        const municipios = Object.keys(window.venezuelaGeoData[estadoSel]).sort();
+        const municipios = Object.keys(g[estadoSel]).sort();
         municipios.forEach(m => {
           const opt = document.createElement('option');
           opt.value = m;
@@ -2255,16 +2289,17 @@
           selMun.appendChild(opt);
         });
 
-        actualizarParroquias(estadoSel, selMun.value);
+        actualizarParroquias(estadoSel, selMun.value, parrPreseleccionar);
       }
 
       function actualizarParroquias(estadoSel, munSel, parrPreseleccionar = null) {
         selParr.innerHTML = '<option value="">-- Seleccione Parroquia --</option>';
-        if (!estadoSel || !munSel || !window.venezuelaGeoData[estadoSel] || !window.venezuelaGeoData[estadoSel][munSel]) {
+        const g = (window.venezuelaGeoData && Object.keys(window.venezuelaGeoData).length) ? window.venezuelaGeoData : (window.VENEZUELA_GEO || {});
+        if (!estadoSel || !munSel || !g[estadoSel] || !g[estadoSel][munSel]) {
           return;
         }
 
-        const parroquias = window.venezuelaGeoData[estadoSel][munSel];
+        const parroquias = g[estadoSel][munSel];
         parroquias.forEach(p => {
           const opt = document.createElement('option');
           opt.value = p;
@@ -2278,17 +2313,32 @@
         });
       }
 
+      window.actualizarMunicipiosCiudadano = actualizarMunicipios;
+      window.actualizarParroquiasCiudadano = actualizarParroquias;
+
       selCiudad.addEventListener('change', function() {
         actualizarMunicipios(this.value);
+        this.classList.remove('invalid');
+        const err = document.getElementById('cit-ciudad-err');
+        if (err) err.classList.remove('visible');
       });
 
       selMun.addEventListener('change', function() {
         actualizarParroquias(selCiudad.value, this.value);
+        this.classList.remove('invalid');
+        const err = document.getElementById('cit-municipio-err');
+        if (err) err.classList.remove('visible');
+      });
+
+      selParr.addEventListener('change', function() {
+        this.classList.remove('invalid');
+        const err = document.getElementById('cit-parroquia-err');
+        if (err) err.classList.remove('visible');
       });
 
       // Inicialización por defecto en Portuguesa -> Páez -> Acarigua
       const estadoInicial = selCiudad.value || 'Portuguesa';
-      actualizarMunicipios(estadoInicial, 'Páez');
+      actualizarMunicipios(estadoInicial, 'Páez', 'Acarigua');
     }
 
     /* ── Autocompletado de confirmación de correo electrónico ── */
@@ -2482,6 +2532,7 @@
 
       siguientePaso(paso);   // valida y avanza (wizard.js)
       if (pasoActual === paso + 1) {
+        if (pasoActual === 2) setTimeout(inicializarMapaCiudadano, 150);
         if (pasoActual === 3) setTimeout(inicializarMapaSenalado, 150);
         if (paso === 3) actualizarAvisoContexto();
         if (paso === 5) actualizarResumenFinal();
@@ -2677,6 +2728,341 @@
       }
     }
 
+    /* ── Componente de Geolocalización Interactiva para el Ciudadano (Paso 2) ── */
+    let mapaCiudadano = null;
+    let marcadorCiudadano = null;
+
+    function inicializarMapaCiudadano() {
+      const contenedor = document.getElementById('mapa-ciudadano');
+      if (!contenedor || typeof L === 'undefined') return;
+
+      if (mapaCiudadano) {
+        setTimeout(() => mapaCiudadano.invalidateSize(), 100);
+        setTimeout(() => mapaCiudadano.invalidateSize(), 400);
+        return;
+      }
+
+      // Coordenadas iniciales: Municipio Páez (Acarigua), Portuguesa
+      const defaultLat = 9.5558;
+      const defaultLng = -69.1994;
+
+      mapaCiudadano = L.map('mapa-ciudadano').setView([defaultLat, defaultLng], 14);
+
+      L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+        maxZoom: 19,
+        attribution: '© OpenStreetMap | Integración Google Maps'
+      }).addTo(mapaCiudadano);
+
+      setTimeout(() => { if (mapaCiudadano) mapaCiudadano.invalidateSize(); }, 200);
+      setTimeout(() => { if (mapaCiudadano) mapaCiudadano.invalidateSize(); }, 600);
+
+      marcadorCiudadano = L.marker([defaultLat, defaultLng], {
+        draggable: true,
+        title: 'Arrastre el marcador para fijar su ubicación y autocompletar Estado, Municipio y Parroquia'
+      }).addTo(mapaCiudadano);
+
+      function actualizarCoordenadasCiudadano(lat, lng, consultarGeocodificacion = false) {
+        const inputLat = document.getElementById('cit-lat');
+        const inputLng = document.getElementById('cit-lng');
+        const textoLat = document.getElementById('cit-lat-texto');
+        const textoLng = document.getElementById('cit-lng-texto');
+
+        if (inputLat) inputLat.value = lat.toFixed(7);
+        if (inputLng) inputLng.value = lng.toFixed(7);
+        if (textoLat) textoLat.textContent = lat.toFixed(5);
+        if (textoLng) textoLng.textContent = lng.toFixed(5);
+
+        const btnGmaps = document.getElementById('btn-abrir-google-maps-ciudadano');
+        if (btnGmaps) {
+          btnGmaps.href = `https://www.google.com/maps?q=${lat},${lng}`;
+          btnGmaps.style.display = 'inline-block';
+        }
+
+        if (consultarGeocodificacion) {
+          const st = document.getElementById('cit-geo-status');
+          if (st) st.textContent = 'Detectando Estado, Municipio y Parroquia...';
+
+          fetch(`https://nominatim.openstreetmap.org/reverse?format=json&lat=${lat}&lon=${lng}&zoom=18&addressdetails=1`)
+            .then(res => res.json())
+            .then(data => {
+              autocompletarUbicacionCiudadanoDesdeGeo(data, lat, lng);
+            })
+            .catch(() => {
+              if (st) st.textContent = 'Coordenadas fijadas';
+            });
+        }
+      }
+
+      marcadorCiudadano.on('dragend', function(e) {
+        const pos = e.target.getLatLng();
+        actualizarCoordenadasCiudadano(pos.lat, pos.lng, true);
+      });
+
+      mapaCiudadano.on('click', function(e) {
+        marcadorCiudadano.setLatLng(e.latlng);
+        actualizarCoordenadasCiudadano(e.latlng.lat, e.latlng.lng, true);
+      });
+
+      actualizarCoordenadasCiudadano(defaultLat, defaultLng, false);
+    }
+
+    function autocompletarUbicacionCiudadanoDesdeGeo(data, lat, lng) {
+      if (!data) return;
+      const addr = data.address || {};
+      const geo = (window.venezuelaGeoData && Object.keys(window.venezuelaGeoData).length) ? window.venezuelaGeoData : (window.VENEZUELA_GEO || {});
+      const estados = Object.keys(geo);
+
+      function normalizar(str) {
+        if (!str) return '';
+        return str.toString()
+          .normalize('NFD')
+          .replace(/[\u0300-\u036f]/g, '')
+          .toLowerCase()
+          .replace(/\b(estado|municipio|parroquia|de|del|la|las|los|el)\b/gi, '')
+          .replace(/[^a-z0-9]/g, '')
+          .trim();
+      }
+
+      const rawState = addr.state || '';
+      const rawMun = addr.county || addr.municipality || addr.city || addr.town || '';
+      const rawParr = addr.suburb || addr.quarter || addr.neighbourhood || addr.village || addr.city_district || addr.town || addr.city || '';
+
+      const normState = normalizar(rawState);
+      const normMun = normalizar(rawMun);
+      const normParr = normalizar(rawParr);
+
+      // 1. Detectar Estado
+      let estadoEncontrado = estados.find(e => {
+        const ne = normalizar(e);
+        return ne === normState || normState.includes(ne) || ne.includes(normState);
+      });
+
+      if (!estadoEncontrado) {
+        if (lat >= 8.5 && lat <= 10.0 && lng >= -70.5 && lng <= -68.5) {
+          estadoEncontrado = 'Portuguesa';
+        } else {
+          estadoEncontrado = document.getElementById('cit-ciudad').value || 'Portuguesa';
+        }
+      }
+
+      // 2. Detectar Municipio
+      let municipioEncontrado = null;
+      let parroquiaEncontrada = null;
+
+      if (estadoEncontrado && geo[estadoEncontrado]) {
+        const municipios = Object.keys(geo[estadoEncontrado]);
+        municipioEncontrado = municipios.find(m => {
+          const nm = normalizar(m);
+          return nm === normMun || normMun.includes(nm) || nm.includes(normMun);
+        });
+
+        if (!municipioEncontrado) {
+          municipioEncontrado = municipios.find(m => {
+            const nm = normalizar(m);
+            return nm === normParr || normParr.includes(nm);
+          });
+        }
+
+        if (!municipioEncontrado && estadoEncontrado === 'Portuguesa') {
+          if (lat >= 9.45 && lat <= 9.65 && lng >= -69.30 && lng <= -69.10) {
+            municipioEncontrado = 'Páez';
+          } else if (lat >= 9.50 && lat <= 9.65 && lng >= -69.35 && lng <= -69.20) {
+            municipioEncontrado = 'Araure';
+          } else {
+            municipioEncontrado = 'Páez';
+          }
+        }
+
+        // 3. Detectar Parroquia
+        if (municipioEncontrado && geo[estadoEncontrado][municipioEncontrado]) {
+          const parroquias = geo[estadoEncontrado][municipioEncontrado];
+          parroquiaEncontrada = parroquias.find(p => {
+            const np = normalizar(p);
+            return np === normParr || normParr.includes(np) || np.includes(normParr);
+          });
+
+          if (!parroquiaEncontrada) {
+            if (municipioEncontrado === 'Páez') parroquiaEncontrada = 'Acarigua';
+            else if (parroquias.length > 0) parroquiaEncontrada = parroquias[0];
+          }
+        }
+      }
+
+      // Asignar a selectores
+      const selCiudad = document.getElementById('cit-ciudad');
+      const selMun = document.getElementById('cit-municipio');
+      const selParr = document.getElementById('cit-parroquia');
+
+      if (selCiudad && estadoEncontrado) {
+        selCiudad.value = estadoEncontrado;
+        selCiudad.classList.remove('invalid');
+        const errC = document.getElementById('cit-ciudad-err');
+        if (errC) errC.classList.remove('visible');
+
+        if (typeof window.actualizarMunicipiosCiudadano === 'function') {
+          window.actualizarMunicipiosCiudadano(estadoEncontrado, municipioEncontrado, parroquiaEncontrada);
+        }
+
+        if (selMun && municipioEncontrado) {
+          selMun.value = municipioEncontrado;
+          selMun.classList.remove('invalid');
+          const errM = document.getElementById('cit-municipio-err');
+          if (errM) errM.classList.remove('visible');
+        }
+
+        if (selParr && parroquiaEncontrada) {
+          selParr.value = parroquiaEncontrada;
+          selParr.classList.remove('invalid');
+          const errP = document.getElementById('cit-parroquia-err');
+          if (errP) errP.classList.remove('visible');
+        }
+      }
+
+      const st = document.getElementById('cit-geo-status');
+      if (st) {
+        st.textContent = `✓ Ubicado: ${parroquiaEncontrada || 'Parroquia'}, ${municipioEncontrado || 'Municipio'}, ${estadoEncontrado}`;
+      }
+
+      // Sugerir dirección en campo si está vacío o autollenado
+      const inputDir = document.getElementById('cit-direccion');
+      if (inputDir && (!inputDir.value.trim() || inputDir.dataset.autofill === '1')) {
+        const partes = [];
+        if (addr.road) partes.push(addr.road);
+        if (addr.neighbourhood || addr.suburb || addr.quarter) partes.push(addr.neighbourhood || addr.suburb || addr.quarter);
+        if (addr.residential) partes.push(addr.residential);
+
+        const resDir = partes.length > 0 ? partes.join(', ') : (data.display_name ? data.display_name.split(',').slice(0, 3).join(',') : '');
+        if (resDir) {
+          inputDir.value = resDir.trim();
+          inputDir.dataset.autofill = '1';
+          inputDir.classList.remove('invalid');
+          const errD = document.getElementById('cit-direccion-err');
+          if (errD) errD.classList.remove('visible');
+        }
+      }
+    }
+
+    function buscarDireccionCiudadanoEnMapa() {
+      const inputDir = document.getElementById('cit-direccion');
+      const query = inputDir ? inputDir.value.trim() : '';
+      const st = document.getElementById('cit-geo-status');
+
+      if (!query) {
+        alert('Escriba una dirección o referencia para buscar en el mapa.');
+        if (inputDir) inputDir.focus();
+        return;
+      }
+
+      if (st) st.textContent = 'Buscando ubicación...';
+
+      const selCiudad = document.getElementById('cit-ciudad');
+      const selMun = document.getElementById('cit-municipio');
+      const estado = selCiudad && selCiudad.value ? selCiudad.value : 'Portuguesa';
+      const mun = selMun && selMun.value ? selMun.value : '';
+      const searchQuery = `${query}, ${mun ? mun + ', ' : ''}${estado}, Venezuela`;
+
+      fetch(`https://nominatim.openstreetmap.org/search?format=json&q=${encodeURIComponent(searchQuery)}&limit=1&addressdetails=1`)
+        .then(res => res.json())
+        .then(data => {
+          if (data && data.length > 0) {
+            const item = data[0];
+            const lat = parseFloat(item.lat);
+            const lng = parseFloat(item.lon);
+
+            if (mapaCiudadano && marcadorCiudadano) {
+              mapaCiudadano.setView([lat, lng], 15);
+              marcadorCiudadano.setLatLng([lat, lng]);
+              setTimeout(() => mapaCiudadano.invalidateSize(), 150);
+            }
+            autocompletarUbicacionCiudadanoDesdeGeo(item, lat, lng);
+            if (st) st.textContent = '✓ Ubicación localizada en el mapa';
+          } else {
+            // Reintentar con solo Portuguesa o Venezuela
+            fetch(`https://nominatim.openstreetmap.org/search?format=json&q=${encodeURIComponent(query + ', Venezuela')}&limit=1&addressdetails=1`)
+              .then(r => r.json())
+              .then(data2 => {
+                if (data2 && data2.length > 0) {
+                  const item = data2[0];
+                  const lat = parseFloat(item.lat);
+                  const lng = parseFloat(item.lon);
+                  if (mapaCiudadano && marcadorCiudadano) {
+                    mapaCiudadano.setView([lat, lng], 15);
+                    marcadorCiudadano.setLatLng([lat, lng]);
+                    setTimeout(() => mapaCiudadano.invalidateSize(), 150);
+                  }
+                  autocompletarUbicacionCiudadanoDesdeGeo(item, lat, lng);
+                  if (st) st.textContent = '✓ Ubicación localizada en el mapa';
+                } else if (st) {
+                  st.textContent = 'No se encontró la dirección exacta. Haga clic directo en el mapa.';
+                }
+              });
+          }
+        })
+        .catch(() => {
+          if (st) st.textContent = 'Error al buscar dirección. Haga clic en el mapa.';
+        });
+    }
+
+    function obtenerUbicacionCiudadanoGPS() {
+      const st = document.getElementById('cit-geo-status');
+      if (!navigator.geolocation) {
+        if (st) st.textContent = 'Su navegador no soporta geolocalización.';
+        return;
+      }
+
+      if (st) st.textContent = 'Obteniendo coordenadas GPS...';
+
+      navigator.geolocation.getCurrentPosition(
+        function(position) {
+          const lat = position.coords.latitude;
+          const lng = position.coords.longitude;
+
+          if (mapaCiudadano && marcadorCiudadano) {
+            mapaCiudadano.setView([lat, lng], 16);
+            marcadorCiudadano.setLatLng([lat, lng]);
+            setTimeout(() => mapaCiudadano.invalidateSize(), 150);
+          }
+
+          const inputLat = document.getElementById('cit-lat');
+          const inputLng = document.getElementById('cit-lng');
+          const textoLat = document.getElementById('cit-lat-texto');
+          const textoLng = document.getElementById('cit-lng-texto');
+
+          if (inputLat) inputLat.value = lat.toFixed(7);
+          if (inputLng) inputLng.value = lng.toFixed(7);
+          if (textoLat) textoLat.textContent = lat.toFixed(5);
+          if (textoLng) textoLng.textContent = lng.toFixed(5);
+
+          const btnGmaps = document.getElementById('btn-abrir-google-maps-ciudadano');
+          if (btnGmaps) {
+            btnGmaps.href = `https://www.google.com/maps?q=${lat},${lng}`;
+            btnGmaps.style.display = 'inline-block';
+          }
+
+          if (st) st.textContent = 'Detectando Estado, Municipio y Parroquia...';
+
+          fetch(`https://nominatim.openstreetmap.org/reverse?format=json&lat=${lat}&lon=${lng}&zoom=18&addressdetails=1`)
+            .then(res => res.json())
+            .then(data => {
+              autocompletarUbicacionCiudadanoDesdeGeo(data, lat, lng);
+            })
+            .catch(() => {
+              if (st) st.textContent = '✓ Coordenadas GPS fijadas';
+            });
+        },
+        function(err) {
+          if (st) {
+            if (err.code === err.PERMISSION_DENIED) {
+              st.textContent = 'Permiso GPS denegado. Puede hacer clic en el mapa.';
+            } else {
+              st.textContent = 'No se pudo obtener señal GPS. Haga clic en el mapa.';
+            }
+          }
+        },
+        { enableHighAccuracy: true, timeout: 10000, maximumAge: 0 }
+      );
+    }
+
     /* ── Componente de Geolocalización Interactiva y Google Maps ── */
     let mapaSenalado = null;
     let marcadorSenalado = null;
@@ -2686,7 +3072,8 @@
       if (!contenedor || typeof L === 'undefined') return;
 
       if (mapaSenalado) {
-        setTimeout(() => mapaSenalado.invalidateSize(), 200);
+        setTimeout(() => mapaSenalado.invalidateSize(), 100);
+        setTimeout(() => mapaSenalado.invalidateSize(), 400);
         return;
       }
 
@@ -2700,6 +3087,9 @@
         maxZoom: 19,
         attribution: '© OpenStreetMap | Integración Google Maps'
       }).addTo(mapaSenalado);
+
+      setTimeout(() => { if (mapaSenalado) mapaSenalado.invalidateSize(); }, 200);
+      setTimeout(() => { if (mapaSenalado) mapaSenalado.invalidateSize(); }, 600);
 
       marcadorSenalado = L.marker([defaultLat, defaultLng], {
         draggable: true,
