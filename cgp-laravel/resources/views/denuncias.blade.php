@@ -899,10 +899,10 @@
                   </div>
                 </div>
 
-                {{-- 2. Ciudad / Estado (primero de la ubicación geográfica) --}}
+                {{-- 2. Estado (primero de la ubicación geográfica) --}}
                 <div class="col-md-4">
                   <div class="form-group">
-                    <label class="form-label">Ciudad / Estado <span class="required" style="color:#1565c0;">*</span></label>
+                    <label class="form-label"> Estado <span class="required" style="color:#1565c0;">*</span></label>
                     <select id="cit-ciudad" class="form-select">
                       <option value="">-- Seleccione Estado --</option>
                     </select>

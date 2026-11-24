@@ -1079,9 +1079,9 @@ function validarPaso(numeroPaso) {
             errores.push('Municipio');
             marcarError('cit-municipio', 'cit-municipio-err');
         }
-        // Ciudad / Estado
+        // Estado
         if (!document.getElementById('cit-ciudad').value.trim()) {
-            errores.push('Ciudad / Estado');
+            errores.push('Estado');
             marcarError('cit-ciudad', 'cit-ciudad-err');
         }
         // Dirección
