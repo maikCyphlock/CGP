@@ -996,6 +996,7 @@
   white-space: nowrap;
 }
 .btn-evidencia-link:hover { color: #0d3f7a; }
+.btn-ejemplo-doc:hover { background: #e8f4fd !important; border-color: #0d47a1 !important; }
 
 
 /* ─── ZONA DE CARGA DE ARCHIVOS ─── */

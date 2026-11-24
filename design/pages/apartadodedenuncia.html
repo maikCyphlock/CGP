@@ -26,7 +26,7 @@
     p, .aviso-anonimato div, .tramite-card-desc, .resumen-valor, 
     .form-body, .wizard-paso, .print-card-box, .print-row, .print-val, .print-label,
     .nota-info, .aviso-menor-edad div, div[style*="background:#cdcdcd"], span[style*="font-size:0.82rem"],
-    .form-section-title, .form-label, .modal-body p {
+    .form-section-title, .form-label, .modal-body p, .modal-body div, .modal-body ul, .modal-body li {
       text-align: justify !important;
     }
 
@@ -890,11 +890,18 @@
                         <td data-label="Nivel Educativo">
                           <select id="cit-edu" class="form-select">
                             <option value="">-- Seleccione --</option>
+                            <option>Sin instrucción / Ninguno</option>
+                            <option>Educación Inicial / Preescolar</option>
                             <option>Primaria</option>
-                            <option>Secundaria</option>
-                            <option>Técnico</option>
+                            <option>Secundaria / Bachillerato</option>
+                            <option>Técnico Medio</option>
+                            <option>Técnico Superior Universitario (TSU)</option>
                             <option>Universitario</option>
                             <option>Postgrado</option>
+                            <option>Especialización</option>
+                            <option>Maestría</option>
+                            <option>Doctorado</option>
+                            <option>Formación Profesional / Oficios</option>
                           </select>
                         </td>
                         <td data-label="Profesión">
@@ -1161,11 +1168,27 @@
                         <span class="error-msg" id="proy-financiador-err">Ingrese el ente financiador.</span>
                       </div>
                     </div>
-                    <div class="col-md-3">
+                    <div class="col-md-6">
                       <div class="form-group">
-                        <label class="form-label">Código SITUR</label>
-                        <input type="text" id="proy-situr" class="form-control mayusculas" placeholder="Ej. SITUR-POR-001234"
-                          oninput="this.value=this.value.toUpperCase()">
+                        <label class="form-label">Código SITUR <span class="text-muted" style="font-weight:normal;font-size:0.8rem;">(Opcional)</span></label>
+                        <div class="input-group">
+                          <select id="proy-situr-tipo" class="form-select situr-tipo-selector" style="max-width: 145px; font-weight: 600; font-size: 0.82rem; background-color: #f8fafc; border-color: #cdd5e0;" onchange="actualizarPrefijoSitur('proy-situr')">
+                            <option value="">Formato...</option>
+                            <option value="C-URB-">C-URB- (Comuna Urbana)</option>
+                            <option value="C-RUR-">C-RUR- (Comuna Rural)</option>
+                            <option value="C-MIX-">C-MIX- (Comuna Mixta)</option>
+                            <option value="CEC-POR-">CEC-POR- (Circuito Páez)</option>
+                            <option value="CEC-">CEC- (Circuito Nacional)</option>
+                            <option value="18-04-">18-04- (Territorial Páez)</option>
+                            <option value="OTRO">Otro / Completo</option>
+                          </select>
+                          <input type="text" id="proy-situr-num" class="form-control mayusculas" placeholder="Seleccione formato o escriba..." oninput="manejarEntradaSitur('proy-situr')" onblur="validarSiturAlSalir('proy-situr')">
+                        </div>
+                        <input type="hidden" id="proy-situr" value="">
+                        <small class="form-text text-muted" id="proy-situr-guia" style="display:block; font-size:0.75rem; margin-top:3px; color:#555;">
+                          Elija el formato e ingrese solo los números correspondientes.
+                        </small>
+                        <span class="error-msg" id="proy-situr-err">Código SITUR no válido. Ej.: C-URB-2014-11-0001 o CEC-ZU-205</span>
                       </div>
                     </div>
                   </div>
@@ -1732,7 +1755,7 @@
           <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Cerrar"></button>
         </div>
         <div class="modal-body" style="padding: 22px 20px; background: #ffffff; color: #333;">
-          <div style="background: #e8f4fd; border-left: 4px solid #1565c0; border-radius: 6px; padding: 12px 16px; margin-bottom: 16px;">
+          <div style="background: #e8f4fd; border-radius: 6px; padding: 12px 16px; margin-bottom: 16px;">
             <strong style="color: #0d47a1; display: block; margin-bottom: 4px; font-size: 0.95rem;">
               Notificación Oficial y Disposición Legal
             </strong>
@@ -1770,6 +1793,165 @@
         <div class="modal-footer" style="background: #f7f9fd; border-top: 1px solid #eef1f7; padding: 12px 20px; justify-content: flex-end;">
           <button type="button" class="btn btn-primary" data-bs-dismiss="modal" style="background: #1565c0; border-color: #1565c0; font-size: 0.88rem; font-weight: 600; padding: 7px 22px; border-radius: 6px;">
             Entendido
+          </button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- MODAL: EJEMPLOS DE FORMATOS DIGITALIZADOS (C.I. Y TESTIMONIO CON FIRMA Y HUELLA) -->
+  <div class="modal fade" id="modalEjemploDocumento" tabindex="-1" aria-labelledby="modalEjemploTitulo" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered modal-lg">
+      <div class="modal-content" style="border: none; border-radius: 12px; box-shadow: 0 16px 36px rgba(0,0,0,0.22); overflow: hidden;">
+        <div class="modal-header" style="background: #0f2340; color: #fff; padding: 15px 20px; border-bottom: 3px solid #1565c0;">
+          <h5 class="modal-title" id="modalEjemploTitulo" style="font-size: 1.05rem; font-weight: bold; display: flex; align-items: center; gap: 9px; margin: 0;">
+            Ejemplo de Formato Digitalizado
+          </h5>
+          <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Cerrar"></button>
+        </div>
+        <div class="modal-body" style="padding: 22px 20px; background: #f8fafc; color: #333;">
+
+          <!-- SECCIÓN 1: EJEMPLO DE CÉDULA DE IDENTIDAD -->
+          <div id="ejemplo-doc-ci" style="display: none;">
+            <div style="background: #e8f4fd; border-radius: 8px; padding: 12px 16px; margin-bottom: 18px; display: flex; align-items: flex-start; gap: 12px;">
+              <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="#1565c0" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" style="flex-shrink:0; margin-top:2px;">
+                <circle cx="12" cy="12" r="10"/><line x1="12" y1="16" x2="12" y2="12"/><line x1="12" y1="8" x2="12.01" y2="8"/>
+              </svg>
+              <div style="font-size: 0.88rem; color: #1e3a5f; line-height: 1.45; text-align: justify;">
+                <strong>¿Cómo debe ser la imagen o escaneo de la C.I.?</strong><br>
+                Debe ser una copia legible en color o blanco y negro, donde se aprecien claramente todos los datos de identidad (anverso y reverso).
+              </div>
+            </div>
+
+            <!-- MOCKUP VISUAL DE CÉDULA DIGITALIZADA -->
+            <div style="background: #ffffff; border: 2px dashed #b0bec5; border-radius: 10px; padding: 20px; margin-bottom: 18px; text-align: center; box-shadow: 0 2px 8px rgba(0,0,0,0.04);">
+              <div style="display: inline-block; font-size: 0.75rem; font-weight: 700; color: #2e7d32; background: #e8f5e9; border: 1px solid #c8e6c9; border-radius: 20px; padding: 3px 12px; margin-bottom: 12px;">
+                ✔ FORMATO DE MUESTRA CORRECTO (ANVERSO Y REVERSO)
+              </div>
+
+              <div style="display: flex; justify-content: center; align-items: center; flex-wrap: wrap; gap: 20px;">
+                <!-- ANVERSO C.I. REAL -->
+                <div style="max-width: 330px; background: #fff; border: 1.5px solid #1565c0; border-radius: 10px; overflow: hidden; box-shadow: 0 4px 12px rgba(0,0,0,0.1); text-align: center;">
+                  <div style="background: #0f2340; color: #fff; font-size: 0.72rem; font-weight: 700; padding: 6px 10px; letter-spacing: 0.5px;">
+                    ANVERSO (FRENTE)
+                  </div>
+                  <img src="../assets/img/ejemplo-ci-frente.jpg" alt="Ejemplo de Cédula de Identidad Frente" style="width: 100%; height: auto; display: block; object-fit: contain;">
+                </div>
+
+                <!-- REVERSO C.I. REAL -->
+                <div style="max-width: 330px; background: #fff; border: 1.5px solid #1565c0; border-radius: 10px; overflow: hidden; box-shadow: 0 4px 12px rgba(0,0,0,0.1); text-align: center;">
+                  <div style="background: #0f2340; color: #fff; font-size: 0.72rem; font-weight: 700; padding: 6px 10px; letter-spacing: 0.5px;">
+                    REVERSO (POSTERIOR)
+                  </div>
+                  <img src="../assets/img/ejemplo-ci-reverso.png" alt="Ejemplo de Cédula de Identidad Reverso" style="width: 100%; height: auto; display: block; object-fit: contain;">
+                </div>
+              </div>
+            </div>
+
+            <!-- CRITERIOS CLAVE -->
+            <div style="background: #ffffff; border: 1px solid #e2e8f0; border-radius: 8px; padding: 14px 16px;">
+              <h6 style="font-size: 0.88rem; font-weight: 700; color: #0f2340; margin-bottom: 8px;">Requisitos indispensables para su C.I.:</h6>
+              <ul style="font-size: 0.83rem; line-height: 1.6; color: #475569; margin: 0; padding-left: 18px; text-align: justify;">
+                <li><strong>Claridad total:</strong> El número de documento y los nombres deben ser 100% legibles.</li>
+                <li><strong>Sin recortes:</strong> Todo el marco de la cédula debe quedar dentro de la fotografía.</li>
+                <li><strong>Sin reflejos ni brillos:</strong> Evite utilizar flash directo que ciegue el número de cédula o la foto.</li>
+                <li><strong>Archivos admitidos:</strong> Imagen nítida (JPG, PNG) o documento escaneado en PDF (máximo 10 MB).</li>
+              </ul>
+            </div>
+          </div>
+
+          <!-- SECCIÓN 2: EJEMPLO DE TESTIMONIO / CARTA CON FIRMA Y HUELLA -->
+          <div id="ejemplo-doc-testimonio" style="display: none;">
+            <div style="background: #e8f4fd; border-radius: 8px; padding: 12px 16px; margin-bottom: 18px; display: flex; align-items: flex-start; gap: 12px;">
+              <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="#1565c0" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" style="flex-shrink:0; margin-top:2px;">
+                <circle cx="12" cy="12" r="10"/><line x1="12" y1="16" x2="12" y2="12"/><line x1="12" y1="8" x2="12.01" y2="8"/>
+              </svg>
+              <div style="font-size: 0.88rem; color: #1e3a5f; line-height: 1.45; text-align: justify;">
+                <strong>¿Cómo debe consignarse el Testimonio Escrito o Carta de Exposición?</strong><br>
+                Debe ser un documento escrito (a mano con letra clara o en computadora impreso), donde se expongan los motivos o hechos, y que contenga obligatoriamente la <strong>firma autógrafa</strong> y la <strong>huella dactilar</strong> del declarante.
+              </div>
+            </div>
+
+            <!-- MOCKUP VISUAL DE CARTA CON FIRMA Y HUELLA -->
+            <div style="background: #ffffff; border: 2px dashed #b0bec5; border-radius: 10px; padding: 20px; margin-bottom: 18px; text-align: center; box-shadow: 0 2px 8px rgba(0,0,0,0.04);">
+              <div style="display: inline-block; font-size: 0.75rem; font-weight: 700; color: #2e7d32; background: #e8f5e9; border: 1px solid #c8e6c9; border-radius: 20px; padding: 3px 12px; margin-bottom: 12px;">
+                ✔ FORMATO DE MUESTRA CORRECTO (CON FIRMA Y HUELLA)
+              </div>
+
+              <!-- HOJA DE CARTA DIGITALIZADA -->
+              <div style="max-width: 480px; margin: 0 auto; background: #ffffff; border: 1px solid #cbd5e1; border-radius: 6px; padding: 22px 24px; box-shadow: 0 6px 14px rgba(0,0,0,0.08); text-align: left; font-size: 0.75rem; color: #334155; line-height: 1.5;">
+                <div style="text-align: right; color: #64748b; font-size: 0.7rem; margin-bottom: 12px;">
+                  Acarigua, Portuguesa, 24 de Noviembre de 2026
+                </div>
+                
+                <div style="font-weight: 700; color: #0f2340; margin-bottom: 10px;">
+                  Ciudadano(a):<br>
+                  Contralor(a) del Municipio Páez<br>
+                  Oficina de Atención al Ciudadano (OAC)<br>
+                  <span style="font-size: 0.7rem; color: #64748b; font-weight: normal;">Su Despacho. —</span>
+                </div>
+
+                <div style="text-align: justify; margin-bottom: 10px;">
+                  Yo, <strong>Juan Carlos Pérez Pérez</strong>, titular de la Cédula de Identidad N° <strong>V-12.345.678</strong>, domiciliado en el Municipio Páez, mediante la presente expongo de manera voluntaria los hechos ocurridos con fecha [dd/mm/aaaa], en la comunidad [Nombre de la Comunidad]...
+                </div>
+
+                <div style="height: 1px; background: #f1f5f9; margin: 15px 0;"></div>
+
+                <!-- SECCIÓN DE FIRMA Y HUELLA -->
+                <div style="display: flex; justify-content: space-between; align-items: flex-end; padding: 10px 14px; background: #f8fafc; border: 1.5px solid #cbd5e1; border-radius: 6px;">
+                  <!-- FIRMA -->
+                  <div style="flex: 1; text-align: center; padding-right: 15px;">
+                    <div style="height: 45px; display: flex; align-items: flex-end; justify-content: center;">
+                      <span style="font-family: cursive; font-size: 1.15rem; color: #0d47a1; font-weight: 600;">Juan C. Pérez</span>
+                    </div>
+                    <div style="border-top: 1.5px solid #334155; margin-top: 4px; padding-top: 4px; font-size: 0.68rem; line-height: 1.3;">
+                      <strong>FIRMA DEL DECLARANTE</strong><br>
+                      C.I.: V-12.345.678<br>
+                      Teléfono: 0414-1234567
+                    </div>
+                  </div>
+
+                  <!-- HUELLA DACTILAR -->
+                  <div style="width: 110px; text-align: center; border-left: 1px dashed #cbd5e1; padding-left: 15px;">
+                    <div style="width: 58px; height: 68px; margin: 0 auto; background: #fff; border: 1.5px solid #0d47a1; border-radius: 6px; display: flex; flex-direction: column; align-items: center; justify-content: center; position: relative;">
+                      <!-- SVG HUELLA DACTILAR -->
+                      <svg width="40" height="52" viewBox="0 0 24 24" fill="none" stroke="#0d47a1" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" style="opacity: 0.85;">
+                        <path d="M12 10a2 2 0 0 0-2 2c0 1.02-.1 2.51-.26 4"/>
+                        <path d="M14 13.12c0 2.38 0 6.38-1 8.88"/>
+                        <path d="M17.29 21.02c.12-.6.43-2.3.5-3.02"/>
+                        <path d="M2 12a10 10 0 0 1 18-6"/>
+                        <path d="M2 16h.01"/>
+                        <path d="M21.8 16c.2-2 .131-5.354 0-6"/>
+                        <path d="M5 19.5C5.5 18 6 15 6 12a6 6 0 0 1 .34-2"/>
+                        <path d="M8.65 22c.21-.66.45-1.32.57-2"/>
+                        <path d="M9 6.8a6 6 0 0 1 9 5.2v2"/>
+                      </svg>
+                    </div>
+                    <div style="margin-top: 4px; font-size: 0.65rem; font-weight: 700; color: #0d47a1; text-transform: uppercase;">
+                      HUELLA DACTILAR<br>
+                      <span style="font-size: 0.58rem; color: #64748b; font-weight: normal;">(Pulgar Derecho)</span>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            <!-- CRITERIOS CLAVE -->
+            <div style="background: #ffffff; border: 1px solid #e2e8f0; border-radius: 8px; padding: 14px 16px;">
+              <h6 style="font-size: 0.88rem; font-weight: 700; color: #0f2340; margin-bottom: 8px;">Requisitos indispensables para la Carta o Testimonio:</h6>
+              <ul style="font-size: 0.83rem; line-height: 1.6; color: #475569; margin: 0; padding-left: 18px; text-align: justify;">
+                <li><strong>Firma manuscrita original:</strong> Realizada con bolígrafo de tinta negra o azul.</li>
+                <li><strong>Huella dactilar nítida:</strong> Estampar la huella (preferiblemente del pulgar derecho) con tinta para huellas; no debe verse borrosa ni manchada.</li>
+                <li><strong>Página completa y vertical:</strong> Asegúrese de fotografiar o escanear toda la hoja, sin doblar esquinas ni recortar los márgenes.</li>
+                <li><strong>Archivos admitidos:</strong> Puede subir el archivo en formato PDF, imagen (JPG, PNG) o documento de Word escaneado.</li>
+              </ul>
+            </div>
+          </div>
+
+        </div>
+        <div class="modal-footer" style="background: #f7f9fd; border-top: 1px solid #eef1f7; padding: 12px 20px; justify-content: flex-end;">
+          <button type="button" class="btn btn-primary" data-bs-dismiss="modal" style="background: #1565c0; border-color: #1565c0; font-size: 0.88rem; font-weight: 600; padding: 7px 22px; border-radius: 6px;">
+            Entendido, volver al formulario
           </button>
         </div>
       </div>

@@ -13,8 +13,8 @@ use Illuminate\Validation\Rule;
 
 class DenunciaController extends Controller
 {
-    // Código SITUR (Ministerio de las Comunas): comuna, circuito comunal o formato legado. Igual que RE_SITUR en wizard.js.
-    const RE_SITUR = '/^(?:C-(?:MIX|RUR|URB)-(?:19|20)\d{2}-(?:0[1-9]|1[0-2])-\d{4}|CEC-[A-Z]{2,3}-\d{3,4}|(?:0[1-9]|1\d|2[0-5])-(?:0[1-9]|[1-9]\d)-\d{4})$/';
+    // Código SITUR (Ministerio de las Comunas): comuna, circuito comunal, consejo comunal o formato territorial.
+    const RE_SITUR = '/^(?:C-(?:MIX|RUR|URB)-(?:19|20)\d{2}-(?:0[1-9]|1[0-2])-\d{4}|CC-(?:MIX|RUR|URB)-(?:19|20)\d{2}-\d{2,4}-\d{4}|CEC-[A-Z]{2,3}-\d{3,4}|(?:0[1-9]|1\d|2[0-5])-(?:0[1-9]|[1-9]\d)(?:-\d{2,4}){1,3})$/';
 
     // Valores del formulario → códigos de catálogo en la base de datos.
     const TIPOS_TRAMITE = [
@@ -122,7 +122,7 @@ class DenunciaController extends Controller
             'after_or_equal' => 'La fecha de :attribute no puede exceder los 5 años de antigüedad.',
             'numeric' => 'El :attribute debe ser un número.',
             'gt' => 'El :attribute debe ser mayor que cero.',
-            'regex' => 'El código SITUR no es válido. Ej.: C-URB-2014-11-0001 o CEC-ZU-205.',
+            'regex' => 'El código SITUR no es válido. Ej.: C-URB-2014-11-0001, CEC-POR-015 o 18-04-0001.',
             'accepted' => 'Debe aceptar la declaración jurada.',
             'ciudadano.nro_doc.regex' => 'El número de documento debe tener entre 5 y 10 dígitos.',
             'ciudadano.correo.regex' => 'Por ley, el correo electrónico a utilizar debe pertenecer al dominio @gmail.com.',

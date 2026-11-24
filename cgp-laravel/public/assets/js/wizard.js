@@ -501,9 +501,19 @@ var PLANTILLAS_SENALADO = {
             '    <select class="form-select" data-campo="cm-tipo-doc" disabled>' +
             construirOpcionesTipoDoc(TIPOS_DOCUMENTO_ENTIDAD, false) +
             '    </select></div></div>' +
-            '  <div class="col-md-4"><div class="form-group">' +
-            '    <label class="form-label">Código SITUR</label>' +
-            '    <input type="text" class="form-control mayusculas" data-campo="cm-situr" placeholder="CÓDIGO SITUR" oninput="this.value=this.value.toUpperCase()"></div></div>' +
+            '  <div class="col-md-5"><div class="form-group">' +
+            '    <label class="form-label">Código SITUR <span class="text-muted" style="font-size:0.75rem;">(Opcional)</span></label>' +
+            '    <div class="input-group">' +
+            '      <select class="form-select situr-tipo-dinamico" style="max-width:110px;font-size:0.8rem;background:#f8fafc;font-weight:600;" onchange="actualizarSiturDinamico(this)">' +
+            '        <option value="">Tipo...</option>' +
+            '        <option value="C-URB-">C-URB-</option>' +
+            '        <option value="C-RUR-">C-RUR-</option>' +
+            '        <option value="C-MIX-">C-MIX-</option>' +
+            '        <option value="OTRO">Otro</option>' +
+            '      </select>' +
+            '      <input type="text" class="form-control mayusculas situr-num-dinamico" placeholder="Ej. 2014-11-0001" oninput="manejarSiturDinamico(this)">' +
+            '    </div>' +
+            '    <input type="hidden" data-campo="cm-situr" value=""></div></div>' +
             '</div>'
     },
     consejo_comunal: {
@@ -527,9 +537,19 @@ var PLANTILLAS_SENALADO = {
             '    <select class="form-select" data-campo="cc-tipo-doc" disabled>' +
             construirOpcionesTipoDoc(TIPOS_DOCUMENTO_ENTIDAD, false) +
             '    </select></div></div>' +
-            '  <div class="col-md-4"><div class="form-group">' +
-            '    <label class="form-label">Código SITUR</label>' +
-            '    <input type="text" class="form-control mayusculas" data-campo="cc-situr" placeholder="CÓDIGO SITUR" oninput="this.value=this.value.toUpperCase()"></div></div>' +
+            '  <div class="col-md-5"><div class="form-group">' +
+            '    <label class="form-label">Código SITUR <span class="text-muted" style="font-size:0.75rem;">(Opcional)</span></label>' +
+            '    <div class="input-group">' +
+            '      <select class="form-select situr-tipo-dinamico" style="max-width:110px;font-size:0.8rem;background:#f8fafc;font-weight:600;" onchange="actualizarSiturDinamico(this)">' +
+            '        <option value="">Tipo...</option>' +
+            '        <option value="18-04-">18-04-</option>' +
+            '        <option value="CC-URB-">CC-URB-</option>' +
+            '        <option value="CC-RUR-">CC-RUR-</option>' +
+            '        <option value="OTRO">Otro</option>' +
+            '      </select>' +
+            '      <input type="text" class="form-control mayusculas situr-num-dinamico" placeholder="Ej. 0001" oninput="manejarSiturDinamico(this)">' +
+            '    </div>' +
+            '    <input type="hidden" data-campo="cc-situr" value=""></div></div>' +
             '  <div class="col-md-4"><div class="form-group">' +
             '    <label class="form-label">R.I.F. (si lo posee)</label>' +
             '    <input type="text" class="form-control" data-campo="cc-rif" placeholder="J-XXXXXXXX-X"></div></div>' +
@@ -1070,18 +1090,27 @@ function validarPaso(numeroPaso) {
             marcarError('cit-telf-trab-num', 'cit-telf-trab-err');
         }
         // Parroquia
-        if (!document.getElementById('cit-parroquia').value) {
+        var citParrEl = document.getElementById('cit-parroquia');
+        var citParrVal = (citParrEl ? citParrEl.value : '').trim();
+        var citParrOtra = (document.getElementById('cit-parroquia-otra') ? document.getElementById('cit-parroquia-otra').value : '').trim();
+        if (!citParrVal || (citParrVal === 'Otra' && !citParrOtra)) {
             errores.push('Parroquia');
             marcarError('cit-parroquia', 'cit-parroquia-err');
         }
         // Municipio
-        if (!document.getElementById('cit-municipio').value.trim()) {
+        var citMunEl = document.getElementById('cit-municipio');
+        var citMunVal = (citMunEl ? citMunEl.value : '').trim();
+        var citMunOtro = (document.getElementById('cit-municipio-otro') ? document.getElementById('cit-municipio-otro').value : '').trim();
+        if (!citMunVal || (citMunVal === 'Otro' && !citMunOtro)) {
             errores.push('Municipio');
             marcarError('cit-municipio', 'cit-municipio-err');
         }
-        // Estado
-        if (!document.getElementById('cit-ciudad').value.trim()) {
-            errores.push('Estado');
+        // Ciudad
+        var citCiudadEl = document.getElementById('cit-ciudad');
+        var citCiudadVal = (citCiudadEl ? citCiudadEl.value : '').trim();
+        var citCiudadOtra = (document.getElementById('cit-ciudad-otra') ? document.getElementById('cit-ciudad-otra').value : '').trim();
+        if (!citCiudadVal || (citCiudadVal === 'Otra' && !citCiudadOtra)) {
+            errores.push('Ciudad');
             marcarError('cit-ciudad', 'cit-ciudad-err');
         }
         // Dirección
@@ -1263,7 +1292,11 @@ function validarPaso(numeroPaso) {
 function marcarError(campoId, errId) {
     var campo = document.getElementById(campoId);
     var err = document.getElementById(errId);
-    if (campo) campo.classList.add('invalid');
+    if (campo) {
+        campo.classList.add('invalid');
+        var campoVis = document.getElementById(campoId + '-num');
+        if (campoVis) campoVis.classList.add('invalid');
+    }
     if (err) {
         if (err.dataset.orig) err.textContent = err.dataset.orig;
         err.classList.add('visible');
@@ -1696,12 +1729,15 @@ function obtenerEtiquetaPrimerSenalado() {
 var EVIDENCIAS_ITEMS = [
     // Documentos obligatorios
     { valor: 'ci_denunciante', etiqueta: 'Imagen de la C.I. del denunciante', opcional: false, tipo: 'imagen',
-      nota: 'Adjunte una copia legible de su cédula de identidad (ambas caras) o de su pasaporte vigente. <strong>Formatos admitidos: PDF, PNG, JPG.</strong>' },
+      nota: 'Adjunte una copia legible de su cédula de identidad (ambas caras) o de su pasaporte vigente. <strong>Formatos admitidos: PDF, PNG, JPG.</strong>',
+      ejemplo: 'ci' },
     { valor: 'carta_exposicion', etiqueta: 'Carta de exposición de motivo', opcional: false, tipo: 'imagen',
-      nota: 'Carta firmada en la que expone los motivos de su trámite. Puede adjuntarla en PDF, Word o imagen. <strong>Formatos admitidos: PDF, PNG, JPG.</strong>' },
+      nota: 'Carta firmada en la que expone los motivos de su trámite. Puede adjuntarla en PDF, Word o imagen. <strong>Formatos admitidos: PDF, PNG, JPG.</strong>',
+      ejemplo: 'testimonio' },
     // Documentos que el denunciante puede omitir
     { valor: 'ci_testigo', etiqueta: 'Imagen de la C.I. del testigo', opcional: true, tipo: 'imagen',
-      nota: 'Solo si existe un testigo de los hechos. Copia legible de su cédula de identidad. <strong>Formatos admitidos: PDF, PNG, JPG.</strong>' },
+      nota: 'Solo si existe un testigo de los hechos. Copia legible de su cédula de identidad. <strong>Formatos admitidos: PDF, PNG, JPG.</strong>',
+      ejemplo: 'ci' },
     { valor: 'fotografias', etiqueta: 'Fotografías', opcional: true, tipo: 'imagen',
       nota: 'Formatos de imagen (JPG, PNG) o PDF. Procure que muestren con claridad los hechos denunciados. <strong>Formatos admitidos: PDF, PNG, JPG.</strong>' },
     { valor: 'video', etiqueta: 'Video', opcional: true, tipo: 'video',
@@ -1709,7 +1745,8 @@ var EVIDENCIAS_ITEMS = [
     { valor: 'grabacion_voz', etiqueta: 'Grabación de voz', opcional: true, tipo: 'audio',
       nota: 'Formatos de audio (MP3, WAV, OGG, M4A, AAC). Máximo 10 MB por archivo. <strong>Solo se permiten archivos de audio.</strong>' },
     { valor: 'testimonio_escrito', etiqueta: 'Testimonio escrito con firma y huella', opcional: true, tipo: 'imagen',
-      nota: 'Documento firmado y con huella dactilar del declarante, escaneado o fotografiado. <strong>Formatos admitidos: PDF, PNG, JPG.</strong>' },
+      nota: 'Documento firmado y con huella dactilar del declarante, escaneado o fotografiado. <strong>Formatos admitidos: PDF, PNG, JPG.</strong>',
+      ejemplo: 'testimonio' },
     { valor: 'otros_docs', etiqueta: 'Otros documentos', opcional: true, tipo: 'general',
       nota: 'Cualquier otro anexo que respalde su trámite (PDF, Word, imagen, video o audio).' }
 ];
@@ -1885,9 +1922,26 @@ function renderSecuenciaEvidencias() {
                 }
             }
 
+            var botonEjemplo = '';
+            if (item.ejemplo === 'ci') {
+                botonEjemplo =
+                    '<div style="margin-top:8px;">' +
+                    '<button type="button" class="btn-ejemplo-doc" onclick="abrirModalEjemploDoc(\'ci\')" style="background:#fff;border:1.5px solid #1565c0;color:#0d47a1;border-radius:6px;padding:5px 12px;font-size:0.8rem;font-weight:600;display:inline-flex;align-items:center;gap:6px;cursor:pointer;box-shadow:0 1px 3px rgba(0,0,0,0.05);transition:all 0.2s;">' +
+                    '<span>Ver formato de ejemplo de C.I.</span>' +
+                    '</button>' +
+                    '</div>';
+            } else if (item.ejemplo === 'testimonio') {
+                botonEjemplo =
+                    '<div style="margin-top:8px;">' +
+                    '<button type="button" class="btn-ejemplo-doc" onclick="abrirModalEjemploDoc(\'testimonio\')" style="background:#fff;border:1.5px solid #1565c0;color:#0d47a1;border-radius:6px;padding:5px 12px;font-size:0.8rem;font-weight:600;display:inline-flex;align-items:center;gap:6px;cursor:pointer;box-shadow:0 1px 3px rgba(0,0,0,0.05);transition:all 0.2s;">' +
+                    '<span>Ver formato de ejemplo (con firma y huella)</span>' +
+                    '</button>' +
+                    '</div>';
+            }
+
             cuerpo =
                 '<div class="evidencia-item-cuerpo">' +
-                '<div class="nota-info" style="margin-bottom:12px;">' + notaMostrada + '</div>' +
+                '<div class="nota-info" style="margin-bottom:12px;">' + notaMostrada + botonEjemplo + '</div>' +
                 '<div class="file-drop" onclick="document.getElementById(\'archivo-input-' + item.valor + '\').click()" ' +
                 'ondragover="event.preventDefault();this.style.borderColor=\'#1565c0\'" ' +
                 'ondragleave="this.style.borderColor=\'\'" ' +
@@ -1971,6 +2025,35 @@ function manejarDropArchivosDocumento(evento, valorDoc) {
     evento.currentTarget.style.borderColor = '';
     if (evento.dataTransfer && evento.dataTransfer.files) {
         agregarArchivosDocumento(valorDoc, evento.dataTransfer.files);
+    }
+}
+
+/** Abre el modal con el formato de ejemplo digitalizado (C.I. o Testimonio con firma y huella). */
+function abrirModalEjemploDoc(tipo) {
+    var modalEl = document.getElementById('modalEjemploDocumento');
+    if (!modalEl) return;
+
+    var secCi = document.getElementById('ejemplo-doc-ci');
+    var secTestimonio = document.getElementById('ejemplo-doc-testimonio');
+    var tituloEl = document.getElementById('modalEjemploTitulo');
+
+    if (tipo === 'ci') {
+        if (secCi) secCi.style.display = 'block';
+        if (secTestimonio) secTestimonio.style.display = 'none';
+        if (tituloEl) tituloEl.textContent = 'Ejemplo de Documento: Cédula de Identidad Digitalizada';
+    } else {
+        if (secCi) secCi.style.display = 'none';
+        if (secTestimonio) secTestimonio.style.display = 'block';
+        if (tituloEl) tituloEl.textContent = 'Ejemplo de Formato: Testimonio con Firma y Huella Dactilar';
+    }
+
+    if (window.bootstrap && window.bootstrap.Modal) {
+        var m = window.bootstrap.Modal.getInstance(modalEl) || new window.bootstrap.Modal(modalEl);
+        m.show();
+    } else {
+        modalEl.classList.add('show');
+        modalEl.style.display = 'block';
+        document.body.classList.add('modal-open');
     }
 }
 
@@ -2225,7 +2308,7 @@ function nuevaSolicitud() {
         inicializarGeografiaVenezuela();
     } else {
         var ciudad = document.getElementById('cit-ciudad');
-        if (ciudad) ciudad.value = 'Portuguesa';
+        if (ciudad) ciudad.value = 'Acarigua';
         var municipio = document.getElementById('cit-municipio');
         if (municipio) municipio.value = 'Páez';
     }
@@ -2274,11 +2357,155 @@ function nuevaSolicitud() {
 
 var RE_RIF = /^[JGVECjgvec]-?\d{8,9}-?\d?$/;
 var RE_DOC_SENALADO = /^\d{5,10}$/;
-// SITUR (Ministerio de las Comunas): comuna C-URB-2014-11-0001, circuito CEC-ZU-205 o legado 23-13-0004.
-// ponytail: el formato de los consejos comunales no está publicado; agregarlo aquí y en DenunciaController::RE_SITUR.
-var RE_SITUR = /^(?:C-(?:MIX|RUR|URB)-(?:19|20)\d{2}-(?:0[1-9]|1[0-2])-\d{4}|CEC-[A-Z]{2,3}-\d{3,4}|(?:0[1-9]|1\d|2[0-5])-(?:0[1-9]|[1-9]\d)-\d{4})$/;
+// SITUR (Ministerio de las Comunas): comuna C-URB-2014-11-0001, circuito CEC-POR-015 / CEC-ZU-205, consejo comunal o territorial 18-04-0001.
+var RE_SITUR = /^(?:C-(?:MIX|RUR|URB)-(?:19|20)\d{2}-(?:0[1-9]|1[0-2])-\d{4}|CC-(?:MIX|RUR|URB)-(?:19|20)\d{2}-\d{2,4}-\d{4}|CEC-[A-Z]{2,3}-\d{3,4}|(?:0[1-9]|1\d|2[0-5])-(?:0[1-9]|[1-9]\d)(?:-\d{2,4}){1,3})$/;
 function msgSitur(v) {
-    return !RE_SITUR.test(v.trim().toUpperCase()) ? 'Código SITUR no válido. Ej.: C-URB-2014-11-0001 o CEC-ZU-205' : '';
+    return !RE_SITUR.test(v.trim().toUpperCase()) ? 'Código SITUR no válido. Ej.: C-URB-2014-11-0001, CEC-POR-015 o 18-04-0001' : '';
+}
+
+/* ── Asistentes para selector de formato SITUR (Opción B) ── */
+function formatearCuerpoComuna(val) {
+    var nums = (val || '').replace(/\D/g, '');
+    if (nums.length <= 4) return nums;
+    if (nums.length <= 6) return nums.substring(0, 4) + '-' + nums.substring(4);
+    return nums.substring(0, 4) + '-' + nums.substring(4, 6) + '-' + nums.substring(6, 10);
+}
+
+function actualizarPrefijoSitur(baseId) {
+    var sel = document.getElementById(baseId + '-tipo');
+    var inp = document.getElementById(baseId + '-num');
+    var guia = document.getElementById(baseId + '-guia');
+    if (!sel || !inp) return;
+
+    var tipo = sel.value;
+    if (tipo === 'C-URB-' || tipo === 'C-RUR-' || tipo === 'C-MIX-') {
+        inp.placeholder = 'AAAA-MM-XXXX (ej. 2014-11-0001)';
+        inp.maxLength = 12;
+        if (guia) guia.textContent = 'Ingrese Año, Mes y Correlativo (ej. 2014-11-0001). Los guiones se insertan solos.';
+    } else if (tipo === 'CEC-POR-') {
+        inp.placeholder = '015 (3 o 4 dígitos)';
+        inp.maxLength = 4;
+        if (guia) guia.textContent = 'Ingrese el número del Circuito Comunal en Portuguesa (ej. 015).';
+    } else if (tipo === 'CEC-') {
+        inp.placeholder = 'EDO-XXX (ej. ZU-205)';
+        inp.maxLength = 8;
+        if (guia) guia.textContent = 'Ingrese el código de estado y número de circuito (ej. ZU-205).';
+    } else if (tipo === '18-04-') {
+        inp.placeholder = '0001 (Correlativo)';
+        inp.maxLength = 10;
+        if (guia) guia.textContent = 'Ingrese el correlativo del registro territorial en Páez (ej. 0001).';
+    } else if (tipo === 'OTRO') {
+        inp.placeholder = 'CÓDIGO COMPLETO (ej. C-URB-2014-11-0001)';
+        inp.maxLength = 35;
+        if (guia) guia.textContent = 'Escriba o pegue el código SITUR completo tal como aparece en su certificado.';
+    } else {
+        inp.placeholder = 'Seleccione formato o escriba...';
+        inp.maxLength = 35;
+        if (guia) guia.textContent = 'Elija el formato e ingrese solo los números correspondientes.';
+    }
+
+    manejarEntradaSitur(baseId);
+}
+
+function manejarEntradaSitur(baseId) {
+    var sel = document.getElementById(baseId + '-tipo');
+    var inp = document.getElementById(baseId + '-num');
+    var hidden = document.getElementById(baseId);
+    if (!inp || !hidden) return;
+
+    var raw = inp.value.trim().toUpperCase();
+
+    // Detección automática al pegar o escribir código completo
+    if (/^C-(?:URB|RUR|MIX)-/i.test(raw)) {
+        var pref = raw.substring(0, 6).toUpperCase();
+        if (sel) sel.value = pref;
+        var resto = raw.substring(6);
+        inp.value = formatearCuerpoComuna(resto);
+    } else if (/^CEC-POR-/i.test(raw)) {
+        if (sel) sel.value = 'CEC-POR-';
+        inp.value = raw.substring(8).replace(/\D/g, '').substring(0, 4);
+    } else if (/^CEC-[A-Z]{2,3}-\d+/i.test(raw)) {
+        if (sel) sel.value = 'CEC-';
+        inp.value = raw.substring(4);
+    } else if (/^18-04-/i.test(raw)) {
+        if (sel) sel.value = '18-04-';
+        inp.value = raw.substring(6);
+    }
+
+    var tipo = sel ? sel.value : '';
+    var valInp = inp.value.toUpperCase();
+
+    if (tipo === 'C-URB-' || tipo === 'C-RUR-' || tipo === 'C-MIX-') {
+        valInp = formatearCuerpoComuna(valInp);
+        inp.value = valInp;
+        hidden.value = valInp ? (tipo + valInp) : '';
+    } else if (tipo === 'CEC-POR-') {
+        valInp = valInp.replace(/\D/g, '').substring(0, 4);
+        inp.value = valInp;
+        hidden.value = valInp ? (tipo + valInp) : '';
+    } else if (tipo === '18-04-' || tipo === 'CEC-') {
+        inp.value = valInp;
+        hidden.value = valInp ? (tipo + valInp) : '';
+    } else {
+        hidden.value = valInp;
+    }
+
+    hidden.dispatchEvent(new Event('input', { bubbles: true }));
+}
+
+function validarSiturAlSalir(baseId) {
+    var hidden = document.getElementById(baseId);
+    if (hidden && typeof validarCampoVivo === 'function') {
+        validarCampoVivo(hidden, true);
+    }
+}
+
+function actualizarSiturDinamico(sel) {
+    var grupo = sel.closest('.form-group');
+    if (!grupo) return;
+    var inp = grupo.querySelector('.situr-num-dinamico');
+    if (inp) manejarSiturDinamico(inp);
+}
+
+function manejarSiturDinamico(inp) {
+    var grupo = inp.closest('.form-group');
+    if (!grupo) return;
+    var sel = grupo.querySelector('.situr-tipo-dinamico');
+    var hidden = grupo.querySelector('[data-campo="cm-situr"], [data-campo="cc-situr"]');
+    if (!hidden) return;
+
+    var raw = inp.value.trim().toUpperCase();
+
+    // Detección automática al pegar
+    if (/^C-(?:URB|RUR|MIX)-/i.test(raw)) {
+        var pref = raw.substring(0, 6).toUpperCase();
+        if (sel) sel.value = pref;
+        var resto = raw.substring(6);
+        inp.value = formatearCuerpoComuna(resto);
+    } else if (/^18-04-/i.test(raw)) {
+        if (sel) sel.value = '18-04-';
+        inp.value = raw.substring(6);
+    } else if (/^CC-(?:URB|RUR)-/i.test(raw)) {
+        var prefCc = raw.substring(0, 7).toUpperCase();
+        if (sel) sel.value = prefCc;
+        inp.value = raw.substring(7);
+    }
+
+    var tipo = sel ? sel.value : '';
+    var valInp = inp.value.toUpperCase();
+
+    if (tipo === 'C-URB-' || tipo === 'C-RUR-' || tipo === 'C-MIX-') {
+        valInp = formatearCuerpoComuna(valInp);
+        inp.value = valInp;
+        hidden.value = valInp ? (tipo + valInp) : '';
+    } else if (tipo === '18-04-' || tipo === 'CC-URB-' || tipo === 'CC-RUR-') {
+        inp.value = valInp;
+        hidden.value = valInp ? (tipo + valInp) : '';
+    } else {
+        hidden.value = valInp;
+    }
+
+    hidden.dispatchEvent(new Event('input', { bubbles: true }));
 }
 
 function msgMinimo(n) {
@@ -2690,8 +2917,10 @@ function mostrarEstadoVivo(campo, mensaje) {
     }
     var err = obtenerAvisoVivo(campo);
     if (err && err.dataset.orig === undefined) err.dataset.orig = err.textContent;
+    var campoVis = campo.id ? document.getElementById(campo.id + '-num') : (campo.parentElement ? campo.parentElement.querySelector('.situr-num-dinamico') : null);
     if (mensaje === null) {
         campo.classList.remove('invalid');
+        if (campoVis) campoVis.classList.remove('invalid');
         if (err) {
             err.classList.remove('visible');
             err.style.display = 'none';
@@ -2699,6 +2928,7 @@ function mostrarEstadoVivo(campo, mensaje) {
         return;
     }
     campo.classList.add('invalid');
+    if (campoVis) campoVis.classList.add('invalid');
     if (err) {
         err.textContent = mensaje || err.dataset.orig || 'Revise este campo.';
         err.classList.add('visible');

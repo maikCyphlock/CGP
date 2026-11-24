@@ -23,7 +23,9 @@
 
   <style>
     /* Estilos adicionales para justificar textos institucionales */
-    p, .aviso-anonimato div, .tramite-card-desc, .resumen-valor {
+    p, .aviso-anonimato div, .tramite-card-desc, .resumen-valor,
+    .nota-info, .aviso-menor-edad, #banner-contexto-aviso, #banner-tramite-seleccionado,
+    .modal-body p, .modal-body div, .modal-body ul, .modal-body li {
       text-align: justify;
     }
     #header {
@@ -769,7 +771,9 @@
                       <option>Casado(a)</option>
                       <option>Divorciado(a)</option>
                       <option>Viudo(a)</option>
+                      <option value="Otro">Otro</option>
                     </select>
+                    <input type="text" id="cit-ecivil-otro" class="form-control mt-1" placeholder="Especifique estado civil..." style="display:none;" maxlength="40">
                     <span class="error-msg" id="cit-ecivil-err">Seleccione su estado civil.</span>
                   </div>
                 </div>
@@ -824,11 +828,18 @@
                         <td>
                           <select id="cit-edu" class="form-select">
                             <option value="">-- Seleccione --</option>
+                            <option>Sin instrucción / Ninguno</option>
+                            <option>Educación Inicial / Preescolar</option>
                             <option>Primaria</option>
-                            <option>Secundaria</option>
-                            <option>Técnico</option>
+                            <option>Secundaria / Bachillerato</option>
+                            <option>Técnico Medio</option>
+                            <option>Técnico Superior Universitario (TSU)</option>
                             <option>Universitario</option>
                             <option>Postgrado</option>
+                            <option>Especialización</option>
+                            <option>Maestría</option>
+                            <option>Doctorado</option>
+                            <option>Formación Profesional / Oficios</option>
                           </select>
                         </td>
                         <td>
@@ -836,7 +847,9 @@
                             @foreach(\App\Models\Profesion::nombresParaSelect() as $profesion)
                               <option value="{{ $profesion }}" @selected($profesion === \App\Models\Profesion::NINGUNA)>{{ $profesion }}</option>
                             @endforeach
+                            <option value="Otra">Otra</option>
                           </select>
+                          <input type="text" id="cit-profesion-otra" class="form-control mt-1" placeholder="Especifique su profesión..." style="display:none;" maxlength="80">
                           <span class="error-msg" id="cit-profesion-err">Seleccione una profesión.</span>
                         </td>
                         <td>
@@ -880,7 +893,7 @@
                     <!-- Componente de Mapa Interactivo para la Dirección del Ciudadano -->
                     <div id="contenedor-mapa-ciudadano" style="margin-top:10px; background:#fff; border:1px solid #dce3ec; border-radius:8px; overflow:hidden; box-shadow:0 1px 4px rgba(0,0,0,0.06);">
                       <div style="background:#f1f5f9; padding:8px 14px; font-size:0.82rem; color:#475569; display:flex; justify-content:space-between; align-items:center; flex-wrap:wrap; gap:6px; border-bottom:1px solid #e2e8f0;">
-                        <span><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#1565c0" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" style="vertical-align:middle;margin-right:4px;"><path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"/><circle cx="12" cy="10" r="3"/></svg> Haga clic en el mapa o arrastre el marcador para autocompletar Estado, Municipio y Parroquia.</span>
+                        <span><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#1565c0" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" style="vertical-align:middle;margin-right:4px;"><path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"/><circle cx="12" cy="10" r="3"/></svg> Haga clic en el mapa o arrastre el marcador para autocompletar Ciudad, Municipio y Parroquia.</span>
                         <a id="btn-abrir-google-maps-ciudadano" href="https://maps.google.com" target="_blank" rel="noopener noreferrer" style="color:#1565c0; font-weight:600; text-decoration:none; font-size:0.8rem; display:none;">
                           Abrir en Google Maps 
                         </a>
@@ -899,14 +912,15 @@
                   </div>
                 </div>
 
-                {{-- 2. Estado (primero de la ubicación geográfica) --}}
+                {{-- 2. Ciudad (primero de la ubicación geográfica) --}}
                 <div class="col-md-4">
                   <div class="form-group">
-                    <label class="form-label"> Estado <span class="required" style="color:#1565c0;">*</span></label>
+                    <label class="form-label">Ciudad <span class="required" style="color:#1565c0;">*</span></label>
                     <select id="cit-ciudad" class="form-select">
-                      <option value="">-- Seleccione Estado --</option>
+                      <option value="">-- Seleccione Ciudad --</option>
                     </select>
-                    <span class="error-msg" id="cit-ciudad-err">Seleccione un estado.</span>
+                    <input type="text" id="cit-ciudad-otra" class="form-control mt-1" placeholder="Especifique su ciudad..." style="display:none;" maxlength="80">
+                    <span class="error-msg" id="cit-ciudad-err">Seleccione o indique su ciudad.</span>
                   </div>
                 </div>
 
@@ -917,6 +931,7 @@
                     <select id="cit-municipio" class="form-select">
                       <option value="">-- Seleccione Municipio --</option>
                     </select>
+                    <input type="text" id="cit-municipio-otro" class="form-control mt-1" placeholder="Especifique municipio..." style="display:none;" maxlength="80">
                     <span class="error-msg" id="cit-municipio-err">Seleccione un municipio.</span>
                   </div>
                 </div>
@@ -928,6 +943,7 @@
                     <select id="cit-parroquia" class="form-select">
                       <option value="">-- Seleccione Parroquia --</option>
                     </select>
+                    <input type="text" id="cit-parroquia-otra" class="form-control mt-1" placeholder="Especifique parroquia..." style="display:none;" maxlength="80">
                     <span class="error-msg" id="cit-parroquia-err">Seleccione una parroquia.</span>
                   </div>
                 </div>
@@ -1193,11 +1209,26 @@
                         <span class="error-msg" id="proy-financiador-err">Ingrese el ente financiador.</span>
                       </div>
                     </div>
-                    <div class="col-md-3">
+                    <div class="col-md-6">
                       <div class="form-group">
-                        <label class="form-label">Código SITUR</label>
-                        <input type="text" id="proy-situr" class="form-control mayusculas" placeholder="SITUR"
-                          oninput="this.value=this.value.toUpperCase()">
+                        <label class="form-label">Código SITUR <span class="text-muted" style="font-weight:normal;font-size:0.8rem;">(Opcional)</span></label>
+                        <div class="input-group">
+                          <select id="proy-situr-tipo" class="form-select situr-tipo-selector" style="max-width: 145px; font-weight: 600; font-size: 0.82rem; background-color: #f8fafc; border-color: #cdd5e0;" onchange="actualizarPrefijoSitur('proy-situr')">
+                            <option value="">Formato...</option>
+                            <option value="C-URB-">C-URB- (Comuna Urbana)</option>
+                            <option value="C-RUR-">C-RUR- (Comuna Rural)</option>
+                            <option value="C-MIX-">C-MIX- (Comuna Mixta)</option>
+                            <option value="CEC-POR-">CEC-POR- (Circuito Páez)</option>
+                            <option value="CEC-">CEC- (Circuito Nacional)</option>
+                            <option value="18-04-">18-04- (Territorial Páez)</option>
+                            <option value="OTRO">Otro / Completo</option>
+                          </select>
+                          <input type="text" id="proy-situr-num" class="form-control mayusculas" placeholder="Seleccione formato o escriba..." oninput="manejarEntradaSitur('proy-situr')" onblur="validarSiturAlSalir('proy-situr')">
+                        </div>
+                        <input type="hidden" id="proy-situr" value="">
+                        <small class="form-text text-muted" id="proy-situr-guia" style="display:block; font-size:0.75rem; margin-top:3px; color:#555;">
+                          Elija el formato e ingrese solo los números correspondientes.
+                        </small>
                         <span class="error-msg" id="proy-situr-err">Código SITUR no válido. Ej.: C-URB-2014-11-0001 o CEC-ZU-205</span>
                       </div>
                     </div>
@@ -1771,7 +1802,7 @@
           <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Cerrar"></button>
         </div>
         <div class="modal-body" style="padding: 22px 20px; background: #ffffff; color: #333;">
-          <div style="background: #e8f4fd; border-left: 4px solid #1565c0; border-radius: 6px; padding: 12px 16px; margin-bottom: 16px;">
+          <div style="background: #e8f4fd; border-radius: 6px; padding: 12px 16px; margin-bottom: 16px;">
             <strong style="color: #0d47a1; display: block; margin-bottom: 4px; font-size: 0.95rem;">
               Notificación Oficial
             </strong>
@@ -1801,7 +1832,7 @@
               <line x1="12" y1="9" x2="12" y2="13"/>
               <line x1="12" y1="17" x2="12.01" y2="17"/>
             </svg>
-            <div>
+            <div style="text-align: justify;">
               Si actualmente no cuenta con una dirección de Gmail, puede registrarla de forma gratuita en <strong>www.gmail.com</strong> para completar su trámite sin inconvenientes.
             </div>
           </div>
@@ -1809,6 +1840,159 @@
         <div class="modal-footer" style="background: #f7f9fd; border-top: 1px solid #eef1f7; padding: 12px 20px; justify-content: flex-end;">
           <button type="button" class="btn btn-primary" data-bs-dismiss="modal" style="background: #1565c0; border-color: #1565c0; font-size: 0.88rem; font-weight: 600; padding: 7px 22px; border-radius: 6px;">
             Entendido
+          </button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- MODAL: EJEMPLOS DE FORMATOS DIGITALIZADOS (C.I. Y TESTIMONIO CON FIRMA Y HUELLA) -->
+  <div class="modal fade" id="modalEjemploDocumento" tabindex="-1" aria-labelledby="modalEjemploTitulo" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered modal-lg">
+      <div class="modal-content" style="border: none; border-radius: 12px; box-shadow: 0 16px 36px rgba(0,0,0,0.22); overflow: hidden;">
+        <div class="modal-header" style="background: #0f2340; color: #fff; padding: 15px 20px; border-bottom: 3px solid #1565c0;">
+          <h5 class="modal-title" id="modalEjemploTitulo" style="font-size: 1.05rem; font-weight: bold; display: flex; align-items: center; gap: 9px; margin: 0;">
+            Ejemplo de Formato Digitalizado
+          </h5>
+          <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Cerrar"></button>
+        </div>
+        <div class="modal-body" style="padding: 22px 20px; background: #f8fafc; color: #333;">
+
+          <!-- SECCIÓN 1: EJEMPLO DE CÉDULA DE IDENTIDAD -->
+          <div id="ejemplo-doc-ci" style="display: none;">
+            <div style="background: #e8f4fd; border-radius: 8px; padding: 12px 16px; margin-bottom: 18px; display: flex; align-items: flex-start; gap: 12px;">
+              <div style="font-size: 0.88rem; color: #1e3a5f; line-height: 1.45; text-align: justify;">
+                <strong>¿Cómo debe ser la imagen o escaneo de la C.I.?</strong><br>
+                Debe ser una copia legible en color o blanco y negro, donde se aprecien claramente todos los datos de identidad (anverso y reverso).
+              </div>
+            </div>
+
+            <!-- MOCKUP VISUAL DE CÉDULA DIGITALIZADA -->
+            <div style="background: #ffffff; border: 2px dashed #b0bec5; border-radius: 10px; padding: 20px; margin-bottom: 18px; text-align: center; box-shadow: 0 2px 8px rgba(0,0,0,0.04);">
+              <div style="display: inline-block; font-size: 0.75rem; font-weight: 700; color: #2e7d32; background: #e8f5e9; border: 1px solid #c8e6c9; border-radius: 20px; padding: 3px 12px; margin-bottom: 12px;">
+               FORMATO DE MUESTRA CORRECTO (ANVERSO Y REVERSO)
+              </div>
+
+              <div style="display: flex; justify-content: center; align-items: center; flex-wrap: wrap; gap: 20px;">
+                <!-- ANVERSO C.I. REAL -->
+                <div style="max-width: 330px; background: #fff; border: 1.5px solid #1565c0; border-radius: 10px; overflow: hidden; box-shadow: 0 4px 12px rgba(0,0,0,0.1); text-align: center;">
+                  <div style="background: #0f2340; color: #fff; font-size: 0.72rem; font-weight: 700; padding: 6px 10px; letter-spacing: 0.5px;">
+                    ANVERSO (FRENTE)
+                  </div>
+                  <img src="{{ asset('assets/img/ejemplo-ci-frente.jpg') }}" alt="Ejemplo de Cédula de Identidad Frente" style="width: 100%; height: auto; display: block; object-fit: contain;">
+                </div>
+
+                <!-- REVERSO C.I. REAL -->
+                <div style="max-width: 330px; background: #fff; border: 1.5px solid #1565c0; border-radius: 10px; overflow: hidden; box-shadow: 0 4px 12px rgba(0,0,0,0.1); text-align: center;">
+                  <div style="background: #0f2340; color: #fff; font-size: 0.72rem; font-weight: 700; padding: 6px 10px; letter-spacing: 0.5px;">
+                    REVERSO (POSTERIOR)
+                  </div>
+                  <img src="{{ asset('assets/img/ejemplo-ci-reverso.png') }}" alt="Ejemplo de Cédula de Identidad Reverso" style="width: 100%; height: auto; display: block; object-fit: contain;">
+                </div>
+              </div>
+            </div>
+
+            <!-- CRITERIOS CLAVE -->
+            <div style="background: #ffffff; border: 1px solid #e2e8f0; border-radius: 8px; padding: 14px 16px;">
+              <h6 style="font-size: 0.88rem; font-weight: 700; color: #0f2340; margin-bottom: 8px;">Requisitos indispensables para su C.I.:</h6>
+              <ul style="font-size: 0.83rem; line-height: 1.6; color: #475569; margin: 0; padding-left: 18px; text-align: justify;">
+                <li><strong>Claridad total:</strong> El número de documento y los nombres deben ser 100% legibles.</li>
+                <li><strong>Sin recortes:</strong> Todo el marco de la cédula debe quedar dentro de la fotografía.</li>
+                <li><strong>Sin reflejos ni brillos:</strong> Evite utilizar flash directo que ciegue el número de cédula o la foto.</li>
+                <li><strong>Archivos admitidos:</strong> Imagen nítida (JPG, PNG) o documento escaneado en PDF (máximo 10 MB).</li>
+              </ul>
+            </div>
+          </div>
+
+          <!-- SECCIÓN 2: EJEMPLO DE TESTIMONIO / CARTA CON FIRMA Y HUELLA -->
+          <div id="ejemplo-doc-testimonio" style="display: none;">
+            <div style="background: #e8f4fd; border-radius: 8px; padding: 12px 16px; margin-bottom: 18px; display: flex; align-items: flex-start; gap: 12px;">
+              <div style="font-size: 0.88rem; color: #1e3a5f; line-height: 1.45; text-align: justify;">
+                <strong>¿Cómo debe consignarse el Testimonio Escrito o Carta de Exposición?</strong><br>
+                Debe ser un documento escrito (a mano con letra clara o en computadora impreso), donde se expongan los motivos o hechos, y que contenga obligatoriamente la <strong>firma autógrafa</strong> y la <strong>huella dactilar</strong> del declarante.
+              </div>
+            </div>
+
+            <!-- MOCKUP VISUAL DE CARTA CON FIRMA Y HUELLA -->
+            <div style="background: #ffffff; border: 2px dashed #b0bec5; border-radius: 10px; padding: 20px; margin-bottom: 18px; text-align: center; box-shadow: 0 2px 8px rgba(0,0,0,0.04);">
+              <div style="display: inline-block; font-size: 0.75rem; font-weight: 700; color: #2e7d32; background: #e8f5e9; border: 1px solid #c8e6c9; border-radius: 20px; padding: 3px 12px; margin-bottom: 12px;">
+                FORMATO DE MUESTRA CORRECTO (CON FIRMA Y HUELLA)
+              </div>
+
+              <!-- HOJA DE CARTA DIGITALIZADA -->
+              <div style="max-width: 480px; margin: 0 auto; background: #ffffff; border: 1px solid #cbd5e1; border-radius: 6px; padding: 22px 24px; box-shadow: 0 6px 14px rgba(0,0,0,0.08); text-align: left; font-size: 0.75rem; color: #334155; line-height: 1.5;">
+                <div style="text-align: right; color: #64748b; font-size: 0.7rem; margin-bottom: 12px;">
+                  Acarigua, Portuguesa, 24 de Noviembre de 2026
+                </div>
+                
+                <div style="font-weight: 700; color: #0f2340; margin-bottom: 10px;">
+                  Ciudadano(a):<br>
+                  Contralor(a) del Municipio Páez<br>
+                  Oficina de Atención al Ciudadano (OAC)<br>
+                  <span style="font-size: 0.7rem; color: #64748b; font-weight: normal;">Su Despacho. —</span>
+                </div>
+
+                <div style="text-align: justify; margin-bottom: 10px;">
+                  Yo, <strong>Juan Carlos Pérez Pérez</strong>, titular de la Cédula de Identidad N° <strong>V-12.345.678</strong>, domiciliado en el Municipio Páez, mediante la presente expongo de manera voluntaria los hechos ocurridos con fecha [dd/mm/aaaa], en la comunidad [Nombre de la Comunidad]...
+                </div>
+
+                <div style="height: 1px; background: #f1f5f9; margin: 15px 0;"></div>
+
+                <!-- SECCIÓN DE FIRMA Y HUELLA -->
+                <div style="display: flex; justify-content: space-between; align-items: flex-end; padding: 10px 14px; background: #f8fafc; border: 1.5px solid #cbd5e1; border-radius: 6px;">
+                  <!-- FIRMA -->
+                  <div style="flex: 1; text-align: center; padding-right: 15px;">
+                    <div style="height: 45px; display: flex; align-items: flex-end; justify-content: center;">
+                      <span style="font-family: cursive; font-size: 1.15rem; color: #0d47a1; font-weight: 600;">Juan C. Pérez</span>
+                    </div>
+                    <div style="border-top: 1.5px solid #334155; margin-top: 4px; padding-top: 4px; font-size: 0.68rem; line-height: 1.3;">
+                      <strong>FIRMA DEL DECLARANTE</strong><br>
+                      C.I.: V-12.345.678<br>
+                      Teléfono: 0414-1234567
+                    </div>
+                  </div>
+
+                  <!-- HUELLA DACTILAR -->
+                  <div style="width: 110px; text-align: center; border-left: 1px dashed #cbd5e1; padding-left: 15px;">
+                    <div style="width: 58px; height: 68px; margin: 0 auto; background: #fff; border: 1.5px solid #0d47a1; border-radius: 6px; display: flex; flex-direction: column; align-items: center; justify-content: center; position: relative;">
+                      <!-- SVG HUELLA DACTILAR -->
+                      <svg width="40" height="52" viewBox="0 0 24 24" fill="none" stroke="#0d47a1" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" style="opacity: 0.85;">
+                        <path d="M12 10a2 2 0 0 0-2 2c0 1.02-.1 2.51-.26 4"/>
+                        <path d="M14 13.12c0 2.38 0 6.38-1 8.88"/>
+                        <path d="M17.29 21.02c.12-.6.43-2.3.5-3.02"/>
+                        <path d="M2 12a10 10 0 0 1 18-6"/>
+                        <path d="M2 16h.01"/>
+                        <path d="M21.8 16c.2-2 .131-5.354 0-6"/>
+                        <path d="M5 19.5C5.5 18 6 15 6 12a6 6 0 0 1 .34-2"/>
+                        <path d="M8.65 22c.21-.66.45-1.32.57-2"/>
+                        <path d="M9 6.8a6 6 0 0 1 9 5.2v2"/>
+                      </svg>
+                    </div>
+                    <div style="margin-top: 4px; font-size: 0.65rem; font-weight: 700; color: #0d47a1; text-transform: uppercase;">
+                      HUELLA DACTILAR<br>
+                      <span style="font-size: 0.58rem; color: #64748b; font-weight: normal;">(Pulgar Derecho)</span>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            <!-- CRITERIOS CLAVE -->
+            <div style="background: #ffffff; border: 1px solid #e2e8f0; border-radius: 8px; padding: 14px 16px;">
+              <h6 style="font-size: 0.88rem; font-weight: 700; color: #0f2340; margin-bottom: 8px;">Requisitos indispensables para la Carta o Testimonio:</h6>
+              <ul style="font-size: 0.83rem; line-height: 1.6; color: #475569; margin: 0; padding-left: 18px; text-align: justify;">
+                <li><strong>Firma manuscrita original:</strong> Realizada con bolígrafo de tinta negra o azul.</li>
+                <li><strong>Huella dactilar nítida:</strong> Estampar la huella (preferiblemente del pulgar derecho) con tinta para huellas; no debe verse borrosa ni manchada.</li>
+                <li><strong>Página completa y vertical:</strong> Asegúrese de fotografiar o escanear toda la hoja, sin doblar esquinas ni recortar los márgenes.</li>
+                <li><strong>Archivos admitidos:</strong> Puede subir el archivo en formato PDF, imagen (JPG, PNG) o documento de Word escaneado.</li>
+              </ul>
+            </div>
+          </div>
+
+        </div>
+        <div class="modal-footer" style="background: #f7f9fd; border-top: 1px solid #eef1f7; padding: 12px 20px; justify-content: flex-end;">
+          <button type="button" class="btn btn-primary" data-bs-dismiss="modal" style="background: #1565c0; border-color: #1565c0; font-size: 0.88rem; font-weight: 600; padding: 7px 22px; border-radius: 6px;">
+            Entendido, volver al formulario
           </button>
         </div>
       </div>
@@ -2245,14 +2429,140 @@
 
       // Inicialización de la geografía nacional en cascada y autocompletado de confirmación de correo
       inicializarGeografiaVenezuela();
+      configurarOpcionesOtras();
       configurarAutocompletadoCorreo();
       setTimeout(function() {
         if (typeof inicializarMapaCiudadano === 'function') inicializarMapaCiudadano();
       }, 250);
     });
 
-    /* ── Geografía de Venezuela (Listas desplegables en cascada para Ciudad/Estado, Municipio y Parroquia) ── */
+    /* ── Geografía de Venezuela (Ciudades de Venezuela, Municipios y Parroquias) ── */
     window.venezuelaGeoData = @json($venezuelaGeo ?? []);
+
+    window.CIUDADES_VENEZUELA = [
+      // Portuguesa (Ámbito principal)
+      { ciudad: 'Acarigua', estado: 'Portuguesa', municipio: 'Páez', parroquia: 'Acarigua' },
+      { ciudad: 'Araure', estado: 'Portuguesa', municipio: 'Araure', parroquia: 'Araure' },
+      { ciudad: 'Guanare', estado: 'Portuguesa', municipio: 'Guanare', parroquia: 'Guanare' },
+      { ciudad: 'Agua Blanca', estado: 'Portuguesa', municipio: 'Agua Blanca', parroquia: 'Agua Blanca' },
+      { ciudad: 'Biscucuy', estado: 'Portuguesa', municipio: 'Sucre', parroquia: 'Biscucuy' },
+      { ciudad: 'Chabasquén', estado: 'Portuguesa', municipio: 'Monseñor José Vicente de Unda', parroquia: 'Chabasquén' },
+      { ciudad: 'Guanarito', estado: 'Portuguesa', municipio: 'Guanarito', parroquia: 'Guanarito' },
+      { ciudad: 'Ospino', estado: 'Portuguesa', municipio: 'Ospino', parroquia: 'Ospino' },
+      { ciudad: 'Papelón', estado: 'Portuguesa', municipio: 'Papelón', parroquia: 'Papelón' },
+      { ciudad: 'Píritu', estado: 'Portuguesa', municipio: 'Esteller', parroquia: 'Píritu' },
+      { ciudad: 'San Genaro de Boconoíto', estado: 'Portuguesa', municipio: 'San Genaro de Boconoíto', parroquia: 'Boconoíto' },
+      { ciudad: 'San Rafael de Onoto', estado: 'Portuguesa', municipio: 'San Rafael de Onoto', parroquia: 'San Rafael de Onoto' },
+      { ciudad: 'Santa Rosalía (El Playón)', estado: 'Portuguesa', municipio: 'Santa Rosalía', parroquia: 'El Playón' },
+      { ciudad: 'Turén (Villa Bruzual)', estado: 'Portuguesa', municipio: 'Turén', parroquia: 'Villa Bruzual' },
+
+      // Principales Ciudades y Capitales de Venezuela
+      { ciudad: 'Caracas', estado: 'Distrito Capital', municipio: 'Libertador', parroquia: 'Catedral' },
+      { ciudad: 'Maracaibo', estado: 'Zulia', municipio: 'Maracaibo', parroquia: 'Chiquinquirá' },
+      { ciudad: 'Valencia', estado: 'Carabobo', municipio: 'Valencia', parroquia: 'San José' },
+      { ciudad: 'Barquisimeto', estado: 'Lara', municipio: 'Iribarren', parroquia: 'Catedral' },
+      { ciudad: 'Maracay', estado: 'Aragua', municipio: 'Girardot', parroquia: 'Madre María de San José' },
+      { ciudad: 'Ciudad Guayana (Puerto Ordaz)', estado: 'Bolívar', municipio: 'Caroní', parroquia: 'Cachamay' },
+      { ciudad: 'San Cristóbal', estado: 'Táchira', municipio: 'San Cristóbal', parroquia: 'San Juan Bautista' },
+      { ciudad: 'Barcelona', estado: 'Anzoátegui', municipio: 'Simón Bolívar', parroquia: 'El Carmen' },
+      { ciudad: 'Puerto La Cruz', estado: 'Anzoátegui', municipio: 'Juan Antonio Sotillo', parroquia: 'Puerto La Cruz' },
+      { ciudad: 'Lechería', estado: 'Anzoátegui', municipio: 'Diego Bautista Urbaneja', parroquia: 'Lechería' },
+      { ciudad: 'Maturín', estado: 'Monagas', municipio: 'Maturín', parroquia: 'San Simón' },
+      { ciudad: 'Ciudad Bolívar', estado: 'Bolívar', municipio: 'Angostura del Orinoco', parroquia: 'Catedral' },
+      { ciudad: 'Cumaná', estado: 'Sucre', municipio: 'Sucre', parroquia: 'Santa Inés' },
+      { ciudad: 'Barinas', estado: 'Barinas', municipio: 'Barinas', parroquia: 'Barinas' },
+      { ciudad: 'Cabimas', estado: 'Zulia', municipio: 'Cabimas', parroquia: 'Carmen Herrera' },
+      { ciudad: 'Punto Fijo', estado: 'Falcón', municipio: 'Carirubana', parroquia: 'Carirubana' },
+      { ciudad: 'Coro', estado: 'Falcón', municipio: 'Miranda', parroquia: 'San Gabriel' },
+      { ciudad: 'Los Teques', estado: 'Miranda', municipio: 'Guaicaipuro', parroquia: 'Los Teques' },
+      { ciudad: 'Mérida', estado: 'Mérida', municipio: 'Libertador', parroquia: 'Sagrario' },
+      { ciudad: 'Guarenas', estado: 'Miranda', municipio: 'Plaza', parroquia: 'Guarenas' },
+      { ciudad: 'Guatire', estado: 'Miranda', municipio: 'Zamora', parroquia: 'Guatire' },
+      { ciudad: 'Carúpano', estado: 'Sucre', municipio: 'Bermúdez', parroquia: 'Santa Rosa' },
+      { ciudad: 'El Tigre', estado: 'Anzoátegui', municipio: 'Simón Rodríguez', parroquia: 'Edmundo Barrios' },
+      { ciudad: 'Anaco', estado: 'Anzoátegui', municipio: 'Anaco', parroquia: 'Anaco' },
+      { ciudad: 'San Fernando de Apure', estado: 'Apure', municipio: 'San Fernando', parroquia: 'San Fernando' },
+      { ciudad: 'San Felipe', estado: 'Yaracuy', municipio: 'San Felipe', parroquia: 'San Felipe' },
+      { ciudad: 'Cabudare', estado: 'Lara', municipio: 'Palavecino', parroquia: 'Cabudare' },
+      { ciudad: 'Carora', estado: 'Lara', municipio: 'Torres', parroquia: 'Trinidad Samuel' },
+      { ciudad: 'El Tocuyo', estado: 'Lara', municipio: 'Morán', parroquia: 'Bolívar' },
+      { ciudad: 'Quíbor', estado: 'Lara', municipio: 'Jiménez', parroquia: 'Juan Bautista Rodríguez' },
+      { ciudad: 'San Juan de los Morros', estado: 'Guárico', municipio: 'Juan Germán Roscio', parroquia: 'San Juan de los Morros' },
+      { ciudad: 'Calabozo', estado: 'Guárico', municipio: 'Francisco de Miranda', parroquia: 'Calabozo' },
+      { ciudad: 'Valle de la Pascua', estado: 'Guárico', municipio: 'Leonardo Infante', parroquia: 'Valle de la Pascua' },
+      { ciudad: 'Zaraza', estado: 'Guárico', municipio: 'Pedro Zaraza', parroquia: 'Zaraza' },
+      { ciudad: 'Valera', estado: 'Trujillo', municipio: 'Valera', parroquia: 'Mercedes Díaz' },
+      { ciudad: 'Trujillo', estado: 'Trujillo', municipio: 'Trujillo', parroquia: 'Chiquinquirá' },
+      { ciudad: 'Boconó', estado: 'Trujillo', municipio: 'Boconó', parroquia: 'Boconó' },
+      { ciudad: 'Ocumare del Tuy', estado: 'Miranda', municipio: 'Tomás Lander', parroquia: 'Ocumare del Tuy' },
+      { ciudad: 'Cúa', estado: 'Miranda', municipio: 'Urdaneta', parroquia: 'Cúa' },
+      { ciudad: 'Charallave', estado: 'Miranda', municipio: 'Cristóbal Rojas', parroquia: 'Charallave' },
+      { ciudad: 'Santa Teresa del Tuy', estado: 'Miranda', municipio: 'Independencia', parroquia: 'Santa Teresa del Tuy' },
+      { ciudad: 'Higuerote', estado: 'Miranda', municipio: 'Brión', parroquia: 'Higuerote' },
+      { ciudad: 'San Antonio de los Altos', estado: 'Miranda', municipio: 'Los Salias', parroquia: 'San Antonio de los Altos' },
+      { ciudad: 'Puerto Ayacucho', estado: 'Amazonas', municipio: 'Atures', parroquia: 'Fernando Girón Tovar' },
+      { ciudad: 'Tucupita', estado: 'Delta Amacuro', municipio: 'Tucupita', parroquia: 'San José' },
+      { ciudad: 'San Carlos', estado: 'Cojedes', municipio: 'Ezequiel Zamora', parroquia: 'San Carlos de Austria' },
+      { ciudad: 'Tinaquillo', estado: 'Cojedes', municipio: 'Tinaquillo', parroquia: 'Tinaquillo' },
+      { ciudad: 'Ciudad Ojeda', estado: 'Zulia', municipio: 'Lagunillas', parroquia: 'Alonso de Ojeda' },
+      { ciudad: 'Machiques', estado: 'Zulia', municipio: 'Machiques de Perijá', parroquia: 'Libertad' },
+      { ciudad: 'Santa Rita', estado: 'Zulia', municipio: 'Santa Rita', parroquia: 'Santa Rita' },
+      { ciudad: 'Villa del Rosario', estado: 'Zulia', municipio: 'Rosario de Perijá', parroquia: 'El Rosario' },
+      { ciudad: 'El Vigía', estado: 'Mérida', municipio: 'Alberto Adriani', parroquia: 'Presidente Betancourt' },
+      { ciudad: 'Tovar', estado: 'Mérida', municipio: 'Tovar', parroquia: 'Tovar' },
+      { ciudad: 'Ejido', estado: 'Mérida', municipio: 'Campo Elías', parroquia: 'Matriz' },
+      { ciudad: 'La Grita', estado: 'Táchira', municipio: 'Jáuregui', parroquia: 'La Grita' },
+      { ciudad: 'Rubio', estado: 'Táchira', municipio: 'Junín', parroquia: 'Rubio' },
+      { ciudad: 'San Antonio del Táchira', estado: 'Táchira', municipio: 'Bolívar', parroquia: 'Bolívar' },
+      { ciudad: 'Táriba', estado: 'Táchira', municipio: 'Cárdenas', parroquia: 'Táriba' },
+      { ciudad: 'Cagua', estado: 'Aragua', municipio: 'Sucre', parroquia: 'Cagua' },
+      { ciudad: 'La Victoria', estado: 'Aragua', municipio: 'José Félix Ribas', parroquia: 'La Victoria' },
+      { ciudad: 'Turmero', estado: 'Aragua', municipio: 'Santiago Mariño', parroquia: 'Turmero' },
+      { ciudad: 'Villa de Cura', estado: 'Aragua', municipio: 'Zamora', parroquia: 'Villa de Cura' },
+      { ciudad: 'Palo Negro', estado: 'Aragua', municipio: 'Libertador', parroquia: 'Palo Negro' },
+      { ciudad: 'Santa Cruz de Aragua', estado: 'Aragua', municipio: 'José Ángel Lamas', parroquia: 'Santa Cruz' },
+      { ciudad: 'El Limón', estado: 'Aragua', municipio: 'Mario Briceño Iragorry', parroquia: 'El Limón' },
+      { ciudad: 'Puerto Cabello', estado: 'Carabobo', municipio: 'Puerto Cabello', parroquia: 'Fraternidad' },
+      { ciudad: 'Guacara', estado: 'Carabobo', municipio: 'Guacara', parroquia: 'Guacara' },
+      { ciudad: 'Mariara', estado: 'Carabobo', municipio: 'Diego Ibarra', parroquia: 'Mariara' },
+      { ciudad: 'San Joaquín', estado: 'Carabobo', municipio: 'San Joaquín', parroquia: 'San Joaquín' },
+      { ciudad: 'Bejuma', estado: 'Carabobo', municipio: 'Bejuma', parroquia: 'Bejuma' },
+      { ciudad: 'Morón', estado: 'Carabobo', municipio: 'Juan José Mora', parroquia: 'Morón' },
+      { ciudad: 'Upata', estado: 'Bolívar', municipio: 'Piar', parroquia: 'Upata' },
+      { ciudad: 'Caicara del Orinoco', estado: 'Bolívar', municipio: 'Cedeño', parroquia: 'Caicara del Orinoco' },
+      { ciudad: 'Guasipati', estado: 'Bolívar', municipio: 'Roscio', parroquia: 'Guasipati' },
+      { ciudad: 'Tumeremo', estado: 'Bolívar', municipio: 'Sifontes', parroquia: 'Tumeremo' },
+      { ciudad: 'Santa Elena de Uairén', estado: 'Bolívar', municipio: 'Gran Sabana', parroquia: 'Santa Elena de Uairén' },
+      { ciudad: 'Chivacoa', estado: 'Yaracuy', municipio: 'Bruzual', parroquia: 'Chivacoa' },
+      { ciudad: 'Yaritagua', estado: 'Yaracuy', municipio: 'Peña', parroquia: 'Yaritagua' },
+      { ciudad: 'Nirgua', estado: 'Yaracuy', municipio: 'Nirgua', parroquia: 'Nirgua' },
+      { ciudad: 'Guasdualito', estado: 'Apure', municipio: 'Páez', parroquia: 'Guasdualito' },
+      { ciudad: 'Achaguas', estado: 'Apure', municipio: 'Achaguas', parroquia: 'Achaguas' },
+      { ciudad: 'Santa Bárbara de Barinas', estado: 'Barinas', municipio: 'Ezequiel Zamora', parroquia: 'Santa Bárbara' },
+      { ciudad: 'Socopó', estado: 'Barinas', municipio: 'Antonio José de Sucre', parroquia: 'Ticoporo' },
+      { ciudad: 'Ciudad Bolivia (Pedraza)', estado: 'Barinas', municipio: 'Pedraza', parroquia: 'Ciudad Bolivia' },
+      { ciudad: 'Barinitas', estado: 'Barinas', municipio: 'Bolívar', parroquia: 'Barinitas' },
+      { ciudad: 'Churuguara', estado: 'Falcón', municipio: 'Federación', parroquia: 'Churuguara' },
+      { ciudad: 'Dabajuro', estado: 'Falcón', municipio: 'Dabajuro', parroquia: 'Dabajuro' },
+      { ciudad: 'Chichiriviche', estado: 'Falcón', municipio: 'Monseñor Iturriza', parroquia: 'Chichiriviche' },
+      { ciudad: 'Tucacas', estado: 'Falcón', municipio: 'Silva', parroquia: 'Tucacas' },
+      { ciudad: 'Puerto Píritu', estado: 'Anzoátegui', municipio: 'Fernando de Peñalver', parroquia: 'Puerto Píritu' },
+      { ciudad: 'Pariaguán', estado: 'Anzoátegui', municipio: 'Francisco de Miranda', parroquia: 'Pariaguán' },
+      { ciudad: 'Cantaura', estado: 'Anzoátegui', municipio: 'Pedro María Freites', parroquia: 'Cantaura' },
+      { ciudad: 'Punta de Mata', estado: 'Monagas', municipio: 'Ezequiel Zamora', parroquia: 'Punta de Mata' },
+      { ciudad: 'Caripe', estado: 'Monagas', municipio: 'Caripe', parroquia: 'Caripe' },
+      { ciudad: 'Caripito', estado: 'Monagas', municipio: 'Bolívar', parroquia: 'Caripito' },
+      { ciudad: 'Güiria', estado: 'Sucre', municipio: 'Valdez', parroquia: 'Güiria' },
+      { ciudad: 'Cariaco', estado: 'Sucre', municipio: 'Ribero', parroquia: 'Cariaco' },
+      { ciudad: 'Porlamar', estado: 'Nueva Esparta', municipio: 'Mariño', parroquia: 'Porlamar' },
+      { ciudad: 'Pampatar', estado: 'Nueva Esparta', municipio: 'Maneiro', parroquia: 'Pampatar' },
+      { ciudad: 'La Asunción', estado: 'Nueva Esparta', municipio: 'Arismendi', parroquia: 'La Asunción' },
+      { ciudad: 'Juan Griego', estado: 'Nueva Esparta', municipio: 'Marcano', parroquia: 'Juan Griego' },
+      { ciudad: 'La Guaira', estado: 'La Guaira', municipio: 'Vargas', parroquia: 'La Guaira' },
+      { ciudad: 'Catia La Mar', estado: 'La Guaira', municipio: 'Vargas', parroquia: 'Catia La Mar' },
+      { ciudad: 'Maiquetía', estado: 'La Guaira', municipio: 'Vargas', parroquia: 'Maiquetía' },
+      { ciudad: 'Caraballeda', estado: 'La Guaira', municipio: 'Vargas', parroquia: 'Caraballeda' }
+    ];
 
     function inicializarGeografiaVenezuela() {
       const selCiudad = document.getElementById('cit-ciudad');
@@ -2261,23 +2571,41 @@
       if (!selCiudad || !selMun || !selParr) return;
 
       const geo = (window.venezuelaGeoData && Object.keys(window.venezuelaGeoData).length) ? window.venezuelaGeoData : (window.VENEZUELA_GEO || {});
-      const estados = Object.keys(geo).sort();
+      const listaCiudades = [...window.CIUDADES_VENEZUELA].sort((a, b) => a.ciudad.localeCompare(b.ciudad));
 
-      selCiudad.innerHTML = '<option value="">-- Seleccione Estado / Ciudad --</option>';
-      estados.forEach(est => {
+      selCiudad.innerHTML = '<option value="">-- Seleccione Ciudad --</option>';
+      listaCiudades.forEach(c => {
         const opt = document.createElement('option');
-        opt.value = est;
-        opt.textContent = est;
-        if (est === 'Portuguesa') opt.selected = true;
+        opt.value = c.ciudad;
+        opt.textContent = c.ciudad;
+        if (c.ciudad === 'Acarigua') opt.selected = true;
         selCiudad.appendChild(opt);
       });
+      // Opción Otra al final
+      const optOtraCiudad = document.createElement('option');
+      optOtraCiudad.value = 'Otra';
+      optOtraCiudad.textContent = 'Otra Ciudad';
+      selCiudad.appendChild(optOtraCiudad);
 
       function actualizarMunicipios(estadoSel, munPreseleccionar = null, parrPreseleccionar = null) {
         selMun.innerHTML = '<option value="">-- Seleccione Municipio --</option>';
         selParr.innerHTML = '<option value="">-- Seleccione Parroquia --</option>';
 
         const g = (window.venezuelaGeoData && Object.keys(window.venezuelaGeoData).length) ? window.venezuelaGeoData : (window.VENEZUELA_GEO || {});
-        if (!estadoSel || !g[estadoSel]) return;
+        if (!estadoSel || !g[estadoSel]) {
+          // Si el estado no existe en el catálogo, permitir Páez por defecto y opción Otro
+          const optDef = document.createElement('option');
+          optDef.value = 'Páez';
+          optDef.textContent = 'Páez';
+          optDef.selected = true;
+          selMun.appendChild(optDef);
+          const optOtroM = document.createElement('option');
+          optOtroM.value = 'Otro';
+          optOtroM.textContent = 'Otro Municipio';
+          selMun.appendChild(optOtroM);
+          actualizarParroquias('Portuguesa', 'Páez', parrPreseleccionar);
+          return;
+        }
 
         const municipios = Object.keys(g[estadoSel]).sort();
         municipios.forEach(m => {
@@ -2292,42 +2620,71 @@
           selMun.appendChild(opt);
         });
 
+        // Opción Otro Municipio
+        const optOtroMun = document.createElement('option');
+        optOtroMun.value = 'Otro';
+        optOtroMun.textContent = 'Otro Municipio';
+        selMun.appendChild(optOtroMun);
+
         actualizarParroquias(estadoSel, selMun.value, parrPreseleccionar);
       }
 
       function actualizarParroquias(estadoSel, munSel, parrPreseleccionar = null) {
         selParr.innerHTML = '<option value="">-- Seleccione Parroquia --</option>';
         const g = (window.venezuelaGeoData && Object.keys(window.venezuelaGeoData).length) ? window.venezuelaGeoData : (window.VENEZUELA_GEO || {});
-        if (!estadoSel || !munSel || !g[estadoSel] || !g[estadoSel][munSel]) {
-          return;
+        
+        if (munSel && munSel !== 'Otro' && g[estadoSel] && g[estadoSel][munSel]) {
+          const parroquias = g[estadoSel][munSel];
+          parroquias.forEach(p => {
+            const opt = document.createElement('option');
+            opt.value = p;
+            opt.textContent = p;
+            if (parrPreseleccionar && p === parrPreseleccionar) {
+              opt.selected = true;
+            } else if (!parrPreseleccionar && munSel === 'Páez' && p === 'Acarigua') {
+              opt.selected = true;
+            }
+            selParr.appendChild(opt);
+          });
+        } else {
+          // Si es Páez o desconocido
+          const optDefP = document.createElement('option');
+          optDefP.value = 'Acarigua';
+          optDefP.textContent = 'Acarigua';
+          optDefP.selected = true;
+          selParr.appendChild(optDefP);
         }
 
-        const parroquias = g[estadoSel][munSel];
-        parroquias.forEach(p => {
-          const opt = document.createElement('option');
-          opt.value = p;
-          opt.textContent = p;
-          if (parrPreseleccionar && p === parrPreseleccionar) {
-            opt.selected = true;
-          } else if (!parrPreseleccionar && munSel === 'Páez' && p === 'Acarigua') {
-            opt.selected = true;
-          }
-          selParr.appendChild(opt);
-        });
+        // Opción Otra Parroquia
+        const optOtraParr = document.createElement('option');
+        optOtraParr.value = 'Otra';
+        optOtraParr.textContent = 'Otra Parroquia';
+        selParr.appendChild(optOtraParr);
+      }
+
+      function actualizarPorCiudad(ciudadNombre, munDeseado = null, parrDeseado = null) {
+        const item = window.CIUDADES_VENEZUELA.find(c => c.ciudad.toLowerCase() === (ciudadNombre || '').toLowerCase());
+        const estadoDestino = item ? item.estado : 'Portuguesa';
+        const munDestino = munDeseado || (item ? item.municipio : 'Páez');
+        const parrDestino = parrDeseado || (item ? item.parroquia : 'Acarigua');
+        actualizarMunicipios(estadoDestino, munDestino, parrDestino);
       }
 
       window.actualizarMunicipiosCiudadano = actualizarMunicipios;
       window.actualizarParroquiasCiudadano = actualizarParroquias;
+      window.actualizarPorCiudadCiudadano = actualizarPorCiudad;
 
       selCiudad.addEventListener('change', function() {
-        actualizarMunicipios(this.value);
+        actualizarPorCiudad(this.value);
         this.classList.remove('invalid');
         const err = document.getElementById('cit-ciudad-err');
         if (err) err.classList.remove('visible');
       });
 
       selMun.addEventListener('change', function() {
-        actualizarParroquias(selCiudad.value, this.value);
+        const item = window.CIUDADES_VENEZUELA.find(c => c.ciudad.toLowerCase() === (selCiudad.value || '').toLowerCase());
+        const est = item ? item.estado : 'Portuguesa';
+        actualizarParroquias(est, this.value);
         this.classList.remove('invalid');
         const err = document.getElementById('cit-municipio-err');
         if (err) err.classList.remove('visible');
@@ -2339,9 +2696,35 @@
         if (err) err.classList.remove('visible');
       });
 
-      // Inicialización por defecto en Portuguesa -> Páez -> Acarigua
-      const estadoInicial = selCiudad.value || 'Portuguesa';
-      actualizarMunicipios(estadoInicial, 'Páez', 'Acarigua');
+      // Inicialización por defecto: Acarigua -> Páez -> Acarigua
+      actualizarPorCiudad('Acarigua', 'Páez', 'Acarigua');
+    }
+
+    /* ── Configuración de visibilidad para campos condicionales "Otra" / "Otro" ── */
+    function configurarOpcionesOtras() {
+      const mapeo = [
+        { selectId: 'cit-ecivil', inputId: 'cit-ecivil-otro', triggerVal: 'Otro' },
+        { selectId: 'cit-profesion', inputId: 'cit-profesion-otra', triggerVal: 'Otra' },
+        { selectId: 'cit-ciudad', inputId: 'cit-ciudad-otra', triggerVal: 'Otra' },
+        { selectId: 'cit-municipio', inputId: 'cit-municipio-otro', triggerVal: 'Otro' },
+        { selectId: 'cit-parroquia', inputId: 'cit-parroquia-otra', triggerVal: 'Otra' },
+      ];
+
+      mapeo.forEach(item => {
+        const sel = document.getElementById(item.selectId);
+        const inp = document.getElementById(item.inputId);
+        if (!sel || !inp) return;
+
+        sel.addEventListener('change', function() {
+          if (this.value === item.triggerVal) {
+            inp.style.display = 'block';
+            inp.focus();
+          } else {
+            inp.style.display = 'none';
+            inp.value = '';
+          }
+        });
+      });
     }
 
     /* ── Autocompletado de confirmación de correo electrónico ── */
@@ -2810,7 +3193,17 @@
         if (errMapa) errMapa.classList.remove('visible');
 
         if (consultarGeocodificacion) {
-          if (st) st.textContent = 'Detectando Estado, Municipio y Parroquia...';
+          if (st) st.textContent = 'Detectando Ciudad, Municipio y Parroquia...';
+
+          // Detección preliminar inmediata por proximidad de coordenadas en Portuguesa
+          if (lat >= 9.48 && lat <= 9.62 && lng >= -69.25 && lng <= -69.15) {
+            const sc = document.getElementById('cit-ciudad');
+            if (sc) {
+              sc.value = 'Acarigua';
+              sc.classList.remove('invalid');
+              document.getElementById('cit-ciudad-err')?.classList.remove('visible');
+            }
+          }
 
           fetch(`https://nominatim.openstreetmap.org/reverse?format=json&lat=${lat}&lon=${lng}&zoom=18&addressdetails=1`)
             .then(res => res.json())
@@ -2858,6 +3251,7 @@
       const addr = data.address || {};
       const geo = (window.venezuelaGeoData && Object.keys(window.venezuelaGeoData).length) ? window.venezuelaGeoData : (window.VENEZUELA_GEO || {});
       const estados = Object.keys(geo);
+      const ciudadesLista = window.CIUDADES_VENEZUELA || [];
 
       function normalizar(str) {
         if (!str) return '';
@@ -2865,73 +3259,130 @@
           .normalize('NFD')
           .replace(/[\u0300-\u036f]/g, '')
           .toLowerCase()
-          .replace(/\b(estado|municipio|parroquia|de|del|la|las|los|el)\b/gi, '')
+          .replace(/\b(ciudad|estado|municipio|parroquia|de|del|la|las|los|el)\b/gi, '')
           .replace(/[^a-z0-9]/g, '')
           .trim();
       }
 
-      const rawState = addr.state || '';
+      const rawCity = addr.city || addr.town || addr.village || addr.city_district || addr.suburb || addr.municipality || '';
       const rawMun = addr.county || addr.municipality || addr.city || addr.town || '';
       const rawParr = addr.suburb || addr.quarter || addr.neighbourhood || addr.village || addr.city_district || addr.town || addr.city || '';
+      const rawState = addr.state || '';
 
-      const normState = normalizar(rawState);
+      const normCity = normalizar(rawCity);
       const normMun = normalizar(rawMun);
       const normParr = normalizar(rawParr);
+      const normState = normalizar(rawState);
 
-      // 1. Detectar Estado
-      let estadoEncontrado = estados.find(e => {
-        const ne = normalizar(e);
-        return ne === normState || normState.includes(ne) || ne.includes(normState);
-      });
+      // 1. Detección de Ciudad
+      let ciudadEncontrada = null;
+      let municipioEncontrado = null;
+      let parroquiaEncontrada = null;
+      let estadoEncontrado = null;
 
-      if (!estadoEncontrado) {
-        if (lat >= 8.5 && lat <= 10.0 && lng >= -70.5 && lng <= -68.5) {
-          estadoEncontrado = 'Portuguesa';
-        } else {
-          estadoEncontrado = document.getElementById('cit-ciudad').value || 'Portuguesa';
+      // Zonas de alta exactitud geográfica en Portuguesa (Acarigua, Araure, Guanare)
+      if (lat >= 9.48 && lat <= 9.62 && lng >= -69.25 && lng <= -69.15) {
+        ciudadEncontrada = 'Acarigua';
+        municipioEncontrado = 'Páez';
+        estadoEncontrado = 'Portuguesa';
+      } else if (lat >= 9.53 && lat <= 9.65 && lng >= -69.32 && lng <= -69.21) {
+        ciudadEncontrada = 'Araure';
+        municipioEncontrado = 'Araure';
+        estadoEncontrado = 'Portuguesa';
+      } else if (lat >= 8.95 && lat <= 9.15 && lng >= -69.85 && lng <= -69.65) {
+        ciudadEncontrada = 'Guanare';
+        municipioEncontrado = 'Guanare';
+        estadoEncontrado = 'Portuguesa';
+      } else if (lat >= 10.45 && lat <= 10.55 && lng >= -67.00 && lng <= -66.80) {
+        ciudadEncontrada = 'Caracas';
+        municipioEncontrado = 'Libertador';
+        estadoEncontrado = 'Distrito Capital';
+      } else if (lat >= 10.00 && lat <= 10.15 && lng >= -69.45 && lng <= -69.25) {
+        ciudadEncontrada = 'Barquisimeto';
+        municipioEncontrado = 'Iribarren';
+        estadoEncontrado = 'Lara';
+      } else if (lat >= 10.12 && lat <= 10.28 && lng >= -68.08 && lng <= -67.92) {
+        ciudadEncontrada = 'Valencia';
+        municipioEncontrado = 'Valencia';
+        estadoEncontrado = 'Carabobo';
+      } else if (lat >= 10.20 && lat <= 10.30 && lng >= -67.65 && lng <= -67.55) {
+        ciudadEncontrada = 'Maracay';
+        municipioEncontrado = 'Girardot';
+        estadoEncontrado = 'Aragua';
+      } else if (lat >= 10.58 && lat <= 10.75 && lng >= -71.72 && lng <= -71.55) {
+        ciudadEncontrada = 'Maracaibo';
+        municipioEncontrado = 'Maracaibo';
+        estadoEncontrado = 'Zulia';
+      }
+
+      // Si no coincidió por límites exactos, buscar en el catálogo de ciudades por nombre devuelto
+      if (!ciudadEncontrada && normCity) {
+        const itemC = ciudadesLista.find(c => {
+          const nc = normalizar(c.ciudad);
+          return nc === normCity || normCity.includes(nc) || nc.includes(normCity);
+        });
+        if (itemC) {
+          ciudadEncontrada = itemC.ciudad;
+          municipioEncontrado = itemC.municipio;
+          estadoEncontrado = itemC.estado;
+          parroquiaEncontrada = itemC.parroquia;
         }
       }
 
-      // 2. Detectar Municipio
-      let municipioEncontrado = null;
-      let parroquiaEncontrada = null;
+      // Búsqueda por municipio devuelto
+      if (!ciudadEncontrada && normMun) {
+        const itemM = ciudadesLista.find(c => {
+          const nm = normalizar(c.municipio);
+          const nc = normalizar(c.ciudad);
+          return nm === normMun || normMun.includes(nm) || nc === normMun;
+        });
+        if (itemM) {
+          ciudadEncontrada = itemM.ciudad;
+          municipioEncontrado = itemM.municipio;
+          estadoEncontrado = itemM.estado;
+        }
+      }
 
-      if (estadoEncontrado && geo[estadoEncontrado]) {
+      // Si aún no se encontró, detectar estado y asignar ciudad principal
+      if (!estadoEncontrado) {
+        estadoEncontrado = estados.find(e => {
+          const ne = normalizar(e);
+          return ne === normState || normState.includes(ne) || ne.includes(normState);
+        });
+        if (!estadoEncontrado) {
+          estadoEncontrado = (lat >= 8.5 && lat <= 10.0 && lng >= -70.5 && lng <= -68.5) ? 'Portuguesa' : 'Portuguesa';
+        }
+      }
+
+      if (!ciudadEncontrada) {
+        const itemEst = ciudadesLista.find(c => c.estado === estadoEncontrado);
+        ciudadEncontrada = itemEst ? itemEst.ciudad : (rawCity || 'Acarigua');
+      }
+
+      // 2. Detectar Municipio si no se tiene
+      if (!municipioEncontrado && estadoEncontrado && geo[estadoEncontrado]) {
         const municipios = Object.keys(geo[estadoEncontrado]);
         municipioEncontrado = municipios.find(m => {
           const nm = normalizar(m);
           return nm === normMun || normMun.includes(nm) || nm.includes(normMun);
         });
 
-        if (!municipioEncontrado) {
-          municipioEncontrado = municipios.find(m => {
-            const nm = normalizar(m);
-            return nm === normParr || normParr.includes(nm);
-          });
-        }
-
         if (!municipioEncontrado && estadoEncontrado === 'Portuguesa') {
-          if (lat >= 9.45 && lat <= 9.65 && lng >= -69.30 && lng <= -69.10) {
-            municipioEncontrado = 'Páez';
-          } else if (lat >= 9.50 && lat <= 9.65 && lng >= -69.35 && lng <= -69.20) {
-            municipioEncontrado = 'Araure';
-          } else {
-            municipioEncontrado = 'Páez';
-          }
+          municipioEncontrado = (lat >= 9.50 && lat <= 9.65 && lng >= -69.35 && lng <= -69.20) ? 'Araure' : 'Páez';
         }
+      }
 
-        // 3. Detectar Parroquia
-        if (municipioEncontrado && geo[estadoEncontrado][municipioEncontrado]) {
-          const parroquias = geo[estadoEncontrado][municipioEncontrado];
-          parroquiaEncontrada = parroquias.find(p => {
-            const np = normalizar(p);
-            return np === normParr || normParr.includes(np) || np.includes(normParr);
-          });
+      // 3. Detectar Parroquia
+      if (!parroquiaEncontrada && estadoEncontrado && municipioEncontrado && geo[estadoEncontrado] && geo[estadoEncontrado][municipioEncontrado]) {
+        const parroquias = geo[estadoEncontrado][municipioEncontrado];
+        parroquiaEncontrada = parroquias.find(p => {
+          const np = normalizar(p);
+          return np === normParr || normParr.includes(np) || np.includes(normParr);
+        });
 
-          if (!parroquiaEncontrada) {
-            if (municipioEncontrado === 'Páez') parroquiaEncontrada = 'Acarigua';
-            else if (parroquias.length > 0) parroquiaEncontrada = parroquias[0];
-          }
+        if (!parroquiaEncontrada) {
+          if (municipioEncontrado === 'Páez') parroquiaEncontrada = 'Acarigua';
+          else if (parroquias.length > 0) parroquiaEncontrada = parroquias[0];
         }
       }
 
@@ -2940,14 +3391,34 @@
       const selMun = document.getElementById('cit-municipio');
       const selParr = document.getElementById('cit-parroquia');
 
-      if (selCiudad && estadoEncontrado) {
-        selCiudad.value = estadoEncontrado;
+      if (selCiudad && ciudadEncontrada) {
+        // Verificar si existe la opción en el select
+        let optExiste = Array.from(selCiudad.options).some(o => o.value === ciudadEncontrada);
+        if (!optExiste && ciudadEncontrada) {
+          const optNueva = document.createElement('option');
+          optNueva.value = ciudadEncontrada;
+          optNueva.textContent = ciudadEncontrada;
+          const optOtra = selCiudad.querySelector('option[value="Otra"]');
+          if (optOtra) selCiudad.insertBefore(optNueva, optOtra);
+          else selCiudad.appendChild(optNueva);
+        }
+
+        selCiudad.value = ciudadEncontrada;
         selCiudad.classList.remove('invalid');
         const errC = document.getElementById('cit-ciudad-err');
         if (errC) errC.classList.remove('visible');
 
-        if (typeof window.actualizarMunicipiosCiudadano === 'function') {
-          window.actualizarMunicipiosCiudadano(estadoEncontrado, municipioEncontrado, parroquiaEncontrada);
+        const inputOtra = document.getElementById('cit-ciudad-otra');
+        if (inputOtra) {
+          inputOtra.style.display = 'none';
+          inputOtra.value = '';
+        }
+
+        // Actualizar listas de municipios y parroquias en cascada
+        if (typeof window.actualizarPorCiudadCiudadano === 'function') {
+          window.actualizarPorCiudadCiudadano(ciudadEncontrada, municipioEncontrado, parroquiaEncontrada);
+        } else if (typeof window.actualizarMunicipiosCiudadano === 'function') {
+          window.actualizarMunicipiosCiudadano(estadoEncontrado || 'Portuguesa', municipioEncontrado, parroquiaEncontrada);
         }
 
         if (selMun && municipioEncontrado) {
@@ -2967,7 +3438,7 @@
 
       const st = document.getElementById('cit-geo-status');
       if (st) {
-        st.textContent = `✓ Ubicado: ${parroquiaEncontrada || 'Parroquia'}, ${municipioEncontrado || 'Municipio'}, ${estadoEncontrado}`;
+        st.textContent = `✓ Ubicado: ${ciudadEncontrada}, Municipio ${selMun ? selMun.value : (municipioEncontrado || 'Páez')}, Parroquia ${selParr ? selParr.value : (parroquiaEncontrada || 'Acarigua')}`;
       }
 
       // Sugerir dirección en campo si está vacío o autollenado
@@ -3004,9 +3475,9 @@
 
       const selCiudad = document.getElementById('cit-ciudad');
       const selMun = document.getElementById('cit-municipio');
-      const estado = selCiudad && selCiudad.value ? selCiudad.value : 'Portuguesa';
-      const mun = selMun && selMun.value ? selMun.value : '';
-      const searchQuery = `${query}, ${mun ? mun + ', ' : ''}${estado}, Venezuela`;
+      const ciudadVal = selCiudad && selCiudad.value ? (selCiudad.value === 'Otra' ? (document.getElementById('cit-ciudad-otra')?.value || 'Acarigua') : selCiudad.value) : 'Acarigua';
+      const munVal = selMun && selMun.value ? (selMun.value === 'Otro' ? (document.getElementById('cit-municipio-otro')?.value || '') : selMun.value) : '';
+      const searchQuery = `${query}, ${munVal ? munVal + ', ' : ''}${ciudadVal}, Venezuela`;
 
       fetch(`https://nominatim.openstreetmap.org/search?format=json&countrycodes=ve&q=${encodeURIComponent(searchQuery)}&limit=1&addressdetails=1`)
         .then(res => res.json())
@@ -3387,13 +3858,13 @@
       const numTel = document.getElementById('cit-telf-cel-num').value;
       document.getElementById('res-hechos').textContent = document.getElementById('narracion').value || 'Sin descripción';
 
-      const parr = document.getElementById('cit-parroquia').value || 'No especificó';
-      const mun = document.getElementById('cit-municipio').value || 'Páez';
-      const ciu = document.getElementById('cit-ciudad').value || 'Acarigua/Portuguesa';
+      const parr = (document.getElementById('cit-parroquia')?.value === 'Otra' ? document.getElementById('cit-parroquia-otra')?.value : document.getElementById('cit-parroquia')?.value) || 'No especificó';
+      const mun = (document.getElementById('cit-municipio')?.value === 'Otro' ? document.getElementById('cit-municipio-otro')?.value : document.getElementById('cit-municipio')?.value) || 'Páez';
+      const ciu = (document.getElementById('cit-ciudad')?.value === 'Otra' ? document.getElementById('cit-ciudad-otra')?.value : document.getElementById('cit-ciudad')?.value) || 'Acarigua';
       const dir = escaparHtml(document.getElementById('cit-direccion').value || '');
       const contenedorUbicacion = document.getElementById('res-ubicacion');
       if (contenedorUbicacion) {
-        contenedorUbicacion.innerHTML = `<strong>Dirección:</strong> ${dir} <br><strong>Ciudad/Estado:</strong> ${ciu} <br><strong>Municipio:</strong> ${mun} <br><strong>Parroquia:</strong> ${parr}`;
+        contenedorUbicacion.innerHTML = `<strong>Dirección:</strong> ${dir} <br><strong>Ciudad:</strong> ${ciu} <br><strong>Municipio:</strong> ${mun} <br><strong>Parroquia:</strong> ${parr}`;
       }
 
       // Evidencias cargadas (desde la secuencia por documentos)
@@ -3524,6 +3995,14 @@
         }
       }
 
+      const resolverCampoOtra = (idSelect, idOtra) => {
+        const selVal = val(idSelect);
+        if (selVal === 'Otra' || selVal === 'Otro') {
+          return val(idOtra) || selVal;
+        }
+        return selVal;
+      };
+
       const datos = {
         tipo_tramite: radio('tipo_tramite'),
         es_consulta: radio('tipo_tramite') === 'denuncia' && radio('es_consulta') === 'si',
@@ -3532,14 +4011,18 @@
           primer_nombre: val('cit-primer-nombre'), segundo_nombre: val('cit-segundo-nombre'),
           primer_apellido: val('cit-primer-apellido'), segundo_apellido: val('cit-segundo-apellido'),
           sexo: val('cit-sexo'), fecha_nac: val('cit-fecha-nac'), lugar_nac: val('cit-lugar-nac'),
-          estado_civil: val('cit-ecivil'), nivel_educativo: val('cit-edu'),
-          profesion: val('cit-profesion'), ocupacion: val('cit-ocupacion'),
+          estado_civil: resolverCampoOtra('cit-ecivil', 'cit-ecivil-otro'),
+          nivel_educativo: val('cit-edu'),
+          profesion: resolverCampoOtra('cit-profesion', 'cit-profesion-otra'),
+          ocupacion: val('cit-ocupacion'),
           correo: val('cit-correo'),
           telf_cel: val('cit-telf-cel-cod') && val('cit-telf-cel-num') ? val('cit-telf-cel-cod') + '-' + val('cit-telf-cel-num') : '',
           telf_hab: val('cit-telf-hab-cod') && val('cit-telf-hab-num') ? val('cit-telf-hab-cod') + '-' + val('cit-telf-hab-num') : '',
           telf_trab: val('cit-telf-trab-cod') && val('cit-telf-trab-num') ? val('cit-telf-trab-cod') + '-' + val('cit-telf-trab-num') : '',
-          direccion: val('cit-direccion'), parroquia: val('cit-parroquia'),
-          municipio: val('cit-municipio') || 'Páez', ciudad: val('cit-ciudad'),
+          direccion: val('cit-direccion'),
+          parroquia: resolverCampoOtra('cit-parroquia', 'cit-parroquia-otra'),
+          municipio: resolverCampoOtra('cit-municipio', 'cit-municipio-otro') || 'Páez',
+          ciudad: resolverCampoOtra('cit-ciudad', 'cit-ciudad-otra') || 'Acarigua',
         },
         senalados,
         ubicacion_senalado: val('sen-ubicacion'),
@@ -3643,10 +4126,20 @@
       const sexoSelect = document.getElementById('cit-sexo');
       document.getElementById('print-sexo').textContent = sexoSelect.options[sexoSelect.selectedIndex]?.text || 'No indicó';
       document.getElementById('print-fecha-nac').textContent = document.getElementById('cit-fecha-nac').value || 'No indicó';
+      const resolverCampoOtra = (idSelect, idOtra, def = '') => {
+        const selEl = document.getElementById(idSelect);
+        const v = selEl ? selEl.value.trim() : '';
+        if (v === 'Otra' || v === 'Otro') {
+          const otraEl = document.getElementById(idOtra);
+          return (otraEl && otraEl.value.trim()) ? otraEl.value.trim() : v;
+        }
+        return v || def;
+      };
+
       document.getElementById('print-edad').textContent = (document.getElementById('cit-edad').value || '--').replace(' años', '');
-      document.getElementById('print-ecivil').textContent = document.getElementById('cit-ecivil').value || 'No indicó';
-      document.getElementById('print-edu').textContent = document.getElementById('cit-edu').value || 'No especificó';
-      document.getElementById('print-profesion').textContent = document.getElementById('cit-profesion').value || 'No indicó';
+      document.getElementById('print-ecivil').textContent = resolverCampoOtra('cit-ecivil', 'cit-ecivil-otro', 'No indicó');
+      document.getElementById('print-edu').textContent = val('cit-edu') || 'No especificó';
+      document.getElementById('print-profesion').textContent = resolverCampoOtra('cit-profesion', 'cit-profesion-otra', 'No indicó');
       document.getElementById('print-ocupacion').textContent = document.getElementById('cit-ocupacion').value || 'No indicó';
       document.getElementById('print-correo').textContent = document.getElementById('cit-correo').value || '';
 
@@ -3657,11 +4150,11 @@
       const numHab = document.getElementById('cit-telf-hab-num').value || '';
       document.getElementById('print-telf-hab').textContent = codHab && numHab ? `${codHab}-${numHab}` : 'No posee';
 
-      const parr = document.getElementById('cit-parroquia').value || '';
+      const parr = resolverCampoOtra('cit-parroquia', 'cit-parroquia-otra', 'Acarigua');
       const dir = document.getElementById('cit-direccion').value || '';
-      const mun = document.getElementById('cit-municipio').value || 'Páez';
-      const ciu = document.getElementById('cit-ciudad').value || 'Acarigua/Portuguesa';
-      document.getElementById('print-direccion').textContent = `${dir}, Parroquia ${parr}. Municipio ${mun} (${ciu})`;
+      const mun = resolverCampoOtra('cit-municipio', 'cit-municipio-otro', 'Páez');
+      const ciu = resolverCampoOtra('cit-ciudad', 'cit-ciudad-otra', 'Acarigua');
+      document.getElementById('print-direccion').textContent = `${dir}, Parroquia ${parr}. Municipio ${mun} (Ciudad: ${ciu})`;
 
       // Señalados / Proyecto
       const seccionSenalado = document.getElementById('print-seccion-senalado');
