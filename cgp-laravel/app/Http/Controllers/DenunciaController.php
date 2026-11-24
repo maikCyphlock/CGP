@@ -304,6 +304,27 @@ class DenunciaController extends Controller
                     $validator->errors()->add("evidencias.$doc", $msg);
                 }
             }
+
+            // Validar que las coordenadas seleccionadas en el mapa se encuentren en Venezuela
+            $senLat = $datos['ubicacion_lat'] ?? $datos['sen_lat'] ?? null;
+            $senLng = $datos['ubicacion_lng'] ?? $datos['sen_lng'] ?? null;
+            if ($senLat !== null && $senLng !== null && is_numeric($senLat) && is_numeric($senLng)) {
+                $fLat = (float) $senLat;
+                $fLng = (float) $senLng;
+                if ($fLat < 0.5 || $fLat > 16.0 || $fLng < -73.6 || $fLng > -59.7) {
+                    $validator->errors()->add('ubicacion_senalado', 'La ubicación del señalado fijada en el mapa debe estar dentro del territorio de Venezuela.');
+                }
+            }
+
+            $citLat = $datos['cit_lat'] ?? null;
+            $citLng = $datos['cit_lng'] ?? null;
+            if ($citLat !== null && $citLng !== null && is_numeric($citLat) && is_numeric($citLng)) {
+                $fCitLat = (float) $citLat;
+                $fCitLng = (float) $citLng;
+                if ($fCitLat < 0.5 || $fCitLat > 16.0 || $fCitLng < -73.6 || $fCitLng > -59.7) {
+                    $validator->errors()->add('ciudadano.direccion', 'La ubicación del denunciante fijada en el mapa debe estar dentro del territorio de Venezuela.');
+                }
+            }
         });
 
         $request->validate([

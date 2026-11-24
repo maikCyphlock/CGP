@@ -893,6 +893,7 @@
                         <span id="cit-geo-status" style="font-size:0.78rem; color:#0284c7; font-weight:500;">Haga clic en el mapa para fijar su ubicación</span>
                       </div>
                     </div>
+                    <span class="error-msg" id="cit-mapa-err" style="margin-top:6px;">Debe seleccionar una ubicación válida dentro del territorio nacional de Venezuela.</span>
                     <input type="hidden" id="cit-lat" name="cit_lat" value="">
                     <input type="hidden" id="cit-lng" name="cit_lng" value="">
                   </div>
@@ -1139,6 +1140,7 @@
                       <span id="sen-geo-status" style="font-size:0.78rem; color:#0284c7;"></span>
                     </div>
                   </div>
+                  <span class="error-msg" id="sen-mapa-err" style="margin-top:6px;">Debe seleccionar una ubicación válida dentro del territorio nacional de Venezuela.</span>
                   <input type="hidden" id="sen-lat" name="sen_lat" value="">
                   <input type="hidden" id="sen-lng" name="sen_lng" value="">
                 </div>
@@ -2747,7 +2749,10 @@
       const defaultLat = 9.5558;
       const defaultLng = -69.1994;
 
-      mapaCiudadano = L.map('mapa-ciudadano').setView([defaultLat, defaultLng], 14);
+      mapaCiudadano = L.map('mapa-ciudadano', {
+        maxBounds: [[0.3, -74.0], [16.2, -58.0]],
+        maxBoundsViscosity: 0.8
+      }).setView([defaultLat, defaultLng], 14);
 
       L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
         maxZoom: 19,
@@ -2767,6 +2772,9 @@
         const inputLng = document.getElementById('cit-lng');
         const textoLat = document.getElementById('cit-lat-texto');
         const textoLng = document.getElementById('cit-lng-texto');
+        const contenedorMapa = document.getElementById('contenedor-mapa-ciudadano');
+        const errMapa = document.getElementById('cit-mapa-err');
+        const st = document.getElementById('cit-geo-status');
 
         if (inputLat) inputLat.value = lat.toFixed(7);
         if (inputLng) inputLng.value = lng.toFixed(7);
@@ -2779,13 +2787,51 @@
           btnGmaps.style.display = 'inline-block';
         }
 
+        // Validación inmediata de límites geográficos de Venezuela
+        const fnVal = typeof esCoordenadaEnVenezuela === 'function' ? esCoordenadaEnVenezuela : (typeof window.esCoordenadaEnVenezuela === 'function' ? window.esCoordenadaEnVenezuela : null);
+        const enVzla = fnVal ? fnVal(lat, lng) : (lat >= 0.5 && lat <= 16.0 && lng >= -73.6 && lng <= -58.0);
+
+        if (!enVzla) {
+          if (inputLat) inputLat.dataset.fueraDeVenezuela = '1';
+          if (contenedorMapa) contenedorMapa.style.border = '2px solid #ef4444';
+          if (errMapa) {
+            errMapa.textContent = 'La ubicación seleccionada está fuera de Venezuela. No se permite continuar hasta ubicar un punto dentro del país.';
+            errMapa.classList.add('visible');
+          }
+          if (st) {
+            st.innerHTML = '<span style="color:#dc2626; font-weight:bold;">Ubicación fuera de Venezuela. Seleccione un punto dentro del territorio nacional.</span>';
+          }
+          return;
+        }
+
+        // Ubicación válida preliminarmente
+        if (inputLat) inputLat.dataset.fueraDeVenezuela = '0';
+        if (contenedorMapa) contenedorMapa.style.border = '1px solid #dce3ec';
+        if (errMapa) errMapa.classList.remove('visible');
+
         if (consultarGeocodificacion) {
-          const st = document.getElementById('cit-geo-status');
           if (st) st.textContent = 'Detectando Estado, Municipio y Parroquia...';
 
           fetch(`https://nominatim.openstreetmap.org/reverse?format=json&lat=${lat}&lon=${lng}&zoom=18&addressdetails=1`)
             .then(res => res.json())
             .then(data => {
+              const addr = data.address || {};
+              const cCode = (addr.country_code || '').toLowerCase();
+              if (cCode && cCode !== 've') {
+                if (inputLat) inputLat.dataset.fueraDeVenezuela = '1';
+                if (contenedorMapa) contenedorMapa.style.border = '2px solid #ef4444';
+                if (errMapa) {
+                  errMapa.textContent = `La ubicación seleccionada pertenece a ${addr.country || 'otro país'}. Debe seleccionar un punto dentro de Venezuela.`;
+                  errMapa.classList.add('visible');
+                }
+                if (st) {
+                  st.innerHTML = `<span style="color:#dc2626; font-weight:bold;">⚠️ Ubicación fuera de Venezuela (${addr.country || 'otro país'}). Seleccione un punto nacional.</span>`;
+                }
+                return;
+              }
+              if (inputLat) inputLat.dataset.fueraDeVenezuela = '0';
+              if (contenedorMapa) contenedorMapa.style.border = '1px solid #dce3ec';
+              if (errMapa) errMapa.classList.remove('visible');
               autocompletarUbicacionCiudadanoDesdeGeo(data, lat, lng);
             })
             .catch(() => {
@@ -2954,7 +3000,7 @@
         return;
       }
 
-      if (st) st.textContent = 'Buscando ubicación...';
+      if (st) st.textContent = 'Buscando ubicación en Venezuela...';
 
       const selCiudad = document.getElementById('cit-ciudad');
       const selMun = document.getElementById('cit-municipio');
@@ -2962,7 +3008,7 @@
       const mun = selMun && selMun.value ? selMun.value : '';
       const searchQuery = `${query}, ${mun ? mun + ', ' : ''}${estado}, Venezuela`;
 
-      fetch(`https://nominatim.openstreetmap.org/search?format=json&q=${encodeURIComponent(searchQuery)}&limit=1&addressdetails=1`)
+      fetch(`https://nominatim.openstreetmap.org/search?format=json&countrycodes=ve&q=${encodeURIComponent(searchQuery)}&limit=1&addressdetails=1`)
         .then(res => res.json())
         .then(data => {
           if (data && data.length > 0) {
@@ -2975,11 +3021,11 @@
               marcadorCiudadano.setLatLng([lat, lng]);
               setTimeout(() => mapaCiudadano.invalidateSize(), 150);
             }
-            autocompletarUbicacionCiudadanoDesdeGeo(item, lat, lng);
+            actualizarCoordenadasCiudadano(lat, lng, true);
             if (st) st.textContent = '✓ Ubicación localizada en el mapa';
           } else {
-            // Reintentar con solo Portuguesa o Venezuela
-            fetch(`https://nominatim.openstreetmap.org/search?format=json&q=${encodeURIComponent(query + ', Venezuela')}&limit=1&addressdetails=1`)
+            // Reintentar con solo Venezuela
+            fetch(`https://nominatim.openstreetmap.org/search?format=json&countrycodes=ve&q=${encodeURIComponent(query + ', Venezuela')}&limit=1&addressdetails=1`)
               .then(r => r.json())
               .then(data2 => {
                 if (data2 && data2.length > 0) {
@@ -2991,10 +3037,10 @@
                     marcadorCiudadano.setLatLng([lat, lng]);
                     setTimeout(() => mapaCiudadano.invalidateSize(), 150);
                   }
-                  autocompletarUbicacionCiudadanoDesdeGeo(item, lat, lng);
+                  actualizarCoordenadasCiudadano(lat, lng, true);
                   if (st) st.textContent = '✓ Ubicación localizada en el mapa';
                 } else if (st) {
-                  st.textContent = 'No se encontró la dirección exacta. Haga clic directo en el mapa.';
+                  st.textContent = 'No se encontró la dirección en Venezuela. Haga clic directo en el mapa.';
                 }
               });
           }
@@ -3024,32 +3070,7 @@
             setTimeout(() => mapaCiudadano.invalidateSize(), 150);
           }
 
-          const inputLat = document.getElementById('cit-lat');
-          const inputLng = document.getElementById('cit-lng');
-          const textoLat = document.getElementById('cit-lat-texto');
-          const textoLng = document.getElementById('cit-lng-texto');
-
-          if (inputLat) inputLat.value = lat.toFixed(7);
-          if (inputLng) inputLng.value = lng.toFixed(7);
-          if (textoLat) textoLat.textContent = lat.toFixed(5);
-          if (textoLng) textoLng.textContent = lng.toFixed(5);
-
-          const btnGmaps = document.getElementById('btn-abrir-google-maps-ciudadano');
-          if (btnGmaps) {
-            btnGmaps.href = `https://www.google.com/maps?q=${lat},${lng}`;
-            btnGmaps.style.display = 'inline-block';
-          }
-
-          if (st) st.textContent = 'Detectando Estado, Municipio y Parroquia...';
-
-          fetch(`https://nominatim.openstreetmap.org/reverse?format=json&lat=${lat}&lon=${lng}&zoom=18&addressdetails=1`)
-            .then(res => res.json())
-            .then(data => {
-              autocompletarUbicacionCiudadanoDesdeGeo(data, lat, lng);
-            })
-            .catch(() => {
-              if (st) st.textContent = '✓ Coordenadas GPS fijadas';
-            });
+          actualizarCoordenadasCiudadano(lat, lng, true);
         },
         function(err) {
           if (st) {
@@ -3082,7 +3103,10 @@
       const defaultLat = 9.5558;
       const defaultLng = -69.1994;
 
-      mapaSenalado = L.map('mapa-senalado').setView([defaultLat, defaultLng], 14);
+      mapaSenalado = L.map('mapa-senalado', {
+        maxBounds: [[0.3, -74.0], [16.2, -58.0]],
+        maxBoundsViscosity: 0.8
+      }).setView([defaultLat, defaultLng], 14);
 
       L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
         maxZoom: 19,
@@ -3098,10 +3122,18 @@
       }).addTo(mapaSenalado);
 
       function actualizarCoordenadas(lat, lng, consultarDireccion = false) {
-        document.getElementById('sen-lat').value = lat.toFixed(7);
-        document.getElementById('sen-lng').value = lng.toFixed(7);
-        document.getElementById('sen-lat-texto').textContent = lat.toFixed(5);
-        document.getElementById('sen-lng-texto').textContent = lng.toFixed(5);
+        const inputLat = document.getElementById('sen-lat');
+        const inputLng = document.getElementById('sen-lng');
+        const textoLat = document.getElementById('sen-lat-texto');
+        const textoLng = document.getElementById('sen-lng-texto');
+        const contenedorMapa = document.getElementById('contenedor-mapa-senalado');
+        const errMapa = document.getElementById('sen-mapa-err');
+        const st = document.getElementById('sen-geo-status');
+
+        if (inputLat) inputLat.value = lat.toFixed(7);
+        if (inputLng) inputLng.value = lng.toFixed(7);
+        if (textoLat) textoLat.textContent = lat.toFixed(5);
+        if (textoLng) textoLng.textContent = lng.toFixed(5);
 
         const btnGmaps = document.getElementById('btn-abrir-google-maps');
         if (btnGmaps) {
@@ -3109,12 +3141,51 @@
           btnGmaps.style.display = 'inline-block';
         }
 
+        // Validación inmediata de límites geográficos de Venezuela
+        const fnVal = typeof esCoordenadaEnVenezuela === 'function' ? esCoordenadaEnVenezuela : (typeof window.esCoordenadaEnVenezuela === 'function' ? window.esCoordenadaEnVenezuela : null);
+        const enVzla = fnVal ? fnVal(lat, lng) : (lat >= 0.5 && lat <= 16.0 && lng >= -73.6 && lng <= -58.0);
+
+        if (!enVzla) {
+          if (inputLat) inputLat.dataset.fueraDeVenezuela = '1';
+          if (contenedorMapa) contenedorMapa.style.border = '2px solid #ef4444';
+          if (errMapa) {
+            errMapa.textContent = 'La ubicación seleccionada está fuera de Venezuela. No se permite continuar hasta ubicar un punto dentro del país.';
+            errMapa.classList.add('visible');
+          }
+          if (st) {
+            st.innerHTML = '<span style="color:#dc2626; font-weight:bold;">Ubicación fuera de Venezuela. Seleccione un punto dentro del territorio nacional.</span>';
+          }
+          return;
+        }
+
+        // Si las coordenadas son válidas preliminarmente
+        if (inputLat) inputLat.dataset.fueraDeVenezuela = '0';
+        if (contenedorMapa) contenedorMapa.style.border = '1px solid #dce3ec';
+        if (errMapa) errMapa.classList.remove('visible');
+
         if (consultarDireccion) {
-          const st = document.getElementById('sen-geo-status');
           if (st) st.textContent = 'Obteniendo dirección aproximada...';
           fetch(`https://nominatim.openstreetmap.org/reverse?format=json&lat=${lat}&lon=${lng}&zoom=18&addressdetails=1`)
             .then(res => res.json())
             .then(data => {
+              const addr = data.address || {};
+              const cCode = (addr.country_code || '').toLowerCase();
+              if (cCode && cCode !== 've') {
+                if (inputLat) inputLat.dataset.fueraDeVenezuela = '1';
+                if (contenedorMapa) contenedorMapa.style.border = '2px solid #ef4444';
+                if (errMapa) {
+                  errMapa.textContent = `La ubicación seleccionada pertenece a ${addr.country || 'otro país'}. Debe seleccionar un punto dentro de Venezuela.`;
+                  errMapa.classList.add('visible');
+                }
+                if (st) {
+                  st.innerHTML = `<span style="color:#dc2626; font-weight:bold;">⚠️ Ubicación fuera de Venezuela (${addr.country || 'otro país'}). Seleccione un punto nacional.</span>`;
+                }
+                return;
+              }
+              if (inputLat) inputLat.dataset.fueraDeVenezuela = '0';
+              if (contenedorMapa) contenedorMapa.style.border = '1px solid #dce3ec';
+              if (errMapa) errMapa.classList.remove('visible');
+
               if (data && data.display_name) {
                 const inputUbic = document.getElementById('sen-ubicacion');
                 if (inputUbic && (!inputUbic.value.trim() || inputUbic.dataset.autofill === '1')) {
@@ -3150,12 +3221,12 @@
         return;
       }
       const st = document.getElementById('sen-geo-status');
-      if (st) st.textContent = 'Buscando en mapa...';
-      fetch(`https://nominatim.openstreetmap.org/search?format=json&q=${encodeURIComponent(query + ', Portuguesa, Venezuela')}`)
+      if (st) st.textContent = 'Buscando en mapa de Venezuela...';
+      fetch(`https://nominatim.openstreetmap.org/search?format=json&countrycodes=ve&q=${encodeURIComponent(query + ', Portuguesa, Venezuela')}`)
         .then(r => r.json())
         .then(data => {
           if (!data || !data.length) {
-            return fetch(`https://nominatim.openstreetmap.org/search?format=json&q=${encodeURIComponent(query + ', Venezuela')}`).then(r => r.json());
+            return fetch(`https://nominatim.openstreetmap.org/search?format=json&countrycodes=ve&q=${encodeURIComponent(query + ', Venezuela')}`).then(r => r.json());
           }
           return data;
         })
@@ -3167,19 +3238,11 @@
             if (mapaSenalado && marcadorSenalado) {
               mapaSenalado.setView([lat, lng], 16);
               marcadorSenalado.setLatLng([lat, lng]);
-              document.getElementById('sen-lat').value = lat.toFixed(7);
-              document.getElementById('sen-lng').value = lng.toFixed(7);
-              document.getElementById('sen-lat-texto').textContent = lat.toFixed(5);
-              document.getElementById('sen-lng-texto').textContent = lng.toFixed(5);
-              const btnGmaps = document.getElementById('btn-abrir-google-maps');
-              if (btnGmaps) {
-                btnGmaps.href = `https://www.google.com/maps?q=${lat},${lng}`;
-                btnGmaps.style.display = 'inline-block';
-              }
-              if (st) st.textContent = 'Ubicación localizada en el mapa';
             }
+            actualizarCoordenadas(lat, lng, true);
+            if (st) st.textContent = 'Ubicación localizada en el mapa';
           } else {
-            if (st) st.textContent = 'No se encontró la dirección exacta. Puede arrastrar el marcador manualmente.';
+            if (st) st.textContent = 'No se encontró la dirección en Venezuela. Puede arrastrar el marcador manualmente.';
           }
         })
         .catch(() => {
@@ -3201,17 +3264,8 @@
           if (mapaSenalado && marcadorSenalado) {
             mapaSenalado.setView([lat, lng], 16);
             marcadorSenalado.setLatLng([lat, lng]);
-            document.getElementById('sen-lat').value = lat.toFixed(7);
-            document.getElementById('sen-lng').value = lng.toFixed(7);
-            document.getElementById('sen-lat-texto').textContent = lat.toFixed(5);
-            document.getElementById('sen-lng-texto').textContent = lng.toFixed(5);
-            const btnGmaps = document.getElementById('btn-abrir-google-maps');
-            if (btnGmaps) {
-              btnGmaps.href = `https://www.google.com/maps?q=${lat},${lng}`;
-              btnGmaps.style.display = 'inline-block';
-            }
-            if (st) st.textContent = 'Ubicación GPS fijada';
           }
+          actualizarCoordenadas(lat, lng, true);
         },
         () => {
           if (st) st.textContent = 'No se pudo acceder al GPS.';

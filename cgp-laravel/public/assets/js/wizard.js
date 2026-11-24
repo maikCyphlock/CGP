@@ -862,6 +862,50 @@ function volverSeleccion() {
    ═══════════════════════════════════════════════════════════ */
 
 /**
+ * Verifica si un par de coordenadas (lat, lng) se encuentra dentro de los
+ * límites geográficos de Venezuela (incluyendo territorio continental e insular).
+ * @param {number} lat - Latitud
+ * @param {number} lng - Longitud
+ * @returns {boolean}
+ */
+function esCoordenadaEnVenezuela(lat, lng) {
+    var nLat = parseFloat(lat);
+    var nLng = parseFloat(lng);
+    if (isNaN(nLat) || isNaN(nLng)) return false;
+
+    // Límites generales de Venezuela:
+    // Latitud: ~0.5° N (Serranía de la Neblina) hasta ~16.0° N (Isla de Aves)
+    // Longitud: ~ -73.6° O (Sierra de Perijá) hasta ~ -59.7° O (extremo este continental)
+    if (nLat < 0.5 || nLat > 16.0) return false;
+    if (nLng < -73.6 || nLng > -59.7) return false;
+
+    // Filtros de polígono limítrofe para excluir países vecinos:
+    // 1. Colombia suroeste profundo (lat < 6.0 y lng < -68.0)
+    if (nLat < 6.0 && nLng < -68.0) return false;
+
+    // 2. Frontera suroeste al sur del Táchira y oeste del Apure (lat < 7.2 y lng < -72.2)
+    if (nLat < 7.2 && nLng < -72.2) return false;
+
+    // 3. Región norte de Santander (Colombia) al oeste de San Antonio del Táchira (lat 7.5 - 8.2 y lng < -72.48)
+    if (nLat >= 7.5 && nLat <= 8.2 && nLng < -72.48) return false;
+
+    // 4. Brasil región Roraima/Boa Vista al sureste (lat < 4.2 y lng > -63.0)
+    if (nLat < 4.2 && nLng > -63.0) return false;
+
+    // 5. Aguas caribeñas internacionales abiertas al norte (lat > 12.6, salvo islas venezolanas)
+    if (nLat > 12.6) {
+        var esIslaDeAves = (nLat >= 15.0 && nLat <= 16.0 && nLng >= -64.2 && nLng <= -63.0);
+        var esLosMonjes = (nLat >= 12.3 && nLat <= 12.6 && nLng >= -71.2 && nLng <= -70.7);
+        if (!esIslaDeAves && !esLosMonjes) {
+            return false;
+        }
+    }
+
+    return true;
+}
+window.esCoordenadaEnVenezuela = esCoordenadaEnVenezuela;
+
+/**
  * Valida los campos del paso indicado.
  * Retorna true si todo es válido; false si hay errores.
  * @param {number} numeroPaso
@@ -1045,6 +1089,24 @@ function validarPaso(numeroPaso) {
             errores.push('Dirección de Habitación');
             marcarError('cit-direccion', 'cit-direccion-err');
         }
+
+        // Ubicación en el mapa del denunciante (debe estar dentro de Venezuela)
+        var citLatEl = document.getElementById('cit-lat');
+        var citLngEl = document.getElementById('cit-lng');
+        var citLatVal = citLatEl ? parseFloat(citLatEl.value) : NaN;
+        var citLngVal = citLngEl ? parseFloat(citLngEl.value) : NaN;
+        var citFuera = citLatEl ? citLatEl.dataset.fueraDeVenezuela : '0';
+
+        if (isNaN(citLatVal) || isNaN(citLngVal) || !esCoordenadaEnVenezuela(citLatVal, citLngVal) || citFuera === '1') {
+            errores.push('Ubicación en el mapa del denunciante (debe estar dentro del territorio de Venezuela)');
+            var errMC = document.getElementById('cit-mapa-err');
+            if (errMC) {
+                errMC.textContent = 'La ubicación fijada en el mapa está fuera del territorio de Venezuela. Por favor, seleccione un punto dentro del país.';
+                errMC.classList.add('visible');
+            }
+            var contMC = document.getElementById('contenedor-mapa-ciudadano');
+            if (contMC) contMC.style.border = '2px solid #ef4444';
+        }
     }
 
     if (numeroPaso === 3) {
@@ -1067,6 +1129,27 @@ function validarPaso(numeroPaso) {
         if (document.getElementById('sen-ubicacion').value.trim().length < 5) {
             errores.push('Ubicación del señalado');
             marcarError('sen-ubicacion', 'sen-ubicacion-err');
+        }
+
+        // Ubicación en el mapa del señalado (si aplica y el bloque no está oculto)
+        var wrapperSen = document.getElementById('contenido-senalado-wrapper');
+        if (!wrapperSen || wrapperSen.style.display !== 'none') {
+            var senLatEl = document.getElementById('sen-lat');
+            var senLngEl = document.getElementById('sen-lng');
+            var senLatVal = senLatEl ? parseFloat(senLatEl.value) : NaN;
+            var senLngVal = senLngEl ? parseFloat(senLngEl.value) : NaN;
+            var senFuera = senLatEl ? senLatEl.dataset.fueraDeVenezuela : '0';
+
+            if (isNaN(senLatVal) || isNaN(senLngVal) || !esCoordenadaEnVenezuela(senLatVal, senLngVal) || senFuera === '1') {
+                errores.push('Ubicación en el mapa del señalado (debe estar dentro del territorio de Venezuela)');
+                var errMS = document.getElementById('sen-mapa-err');
+                if (errMS) {
+                    errMS.textContent = 'La ubicación fijada en el mapa para el señalado está fuera del territorio de Venezuela. Por favor, seleccione un punto dentro del país.';
+                    errMS.classList.add('visible');
+                }
+                var contMS = document.getElementById('contenedor-mapa-senalado');
+                if (contMS) contMS.style.border = '2px solid #ef4444';
+            }
         }
 
         // Bloque de proyecto consulta popular (si aplica)
@@ -1219,6 +1302,31 @@ function limpiarErroresPaso(numeroPaso) {
     });
     var banner = document.getElementById('err-paso' + numeroPaso);
     if (banner) banner.style.display = 'none';
+
+    if (numeroPaso === 2) {
+        var contMC = document.getElementById('contenedor-mapa-ciudadano');
+        var elLatC = document.getElementById('cit-lat');
+        var elLngC = document.getElementById('cit-lng');
+        if (contMC && elLatC && elLngC) {
+            var lC = parseFloat(elLatC.value);
+            var gC = parseFloat(elLngC.value);
+            if (esCoordenadaEnVenezuela(lC, gC) && elLatC.dataset.fueraDeVenezuela !== '1') {
+                contMC.style.border = '1px solid #dce3ec';
+            }
+        }
+    }
+    if (numeroPaso === 3) {
+        var contMS = document.getElementById('contenedor-mapa-senalado');
+        var elLatS = document.getElementById('sen-lat');
+        var elLngS = document.getElementById('sen-lng');
+        if (contMS && elLatS && elLngS) {
+            var lS = parseFloat(elLatS.value);
+            var gS = parseFloat(elLngS.value);
+            if (esCoordenadaEnVenezuela(lS, gS) && elLatS.dataset.fueraDeVenezuela !== '1') {
+                contMS.style.border = '1px solid #dce3ec';
+            }
+        }
+    }
 }
 
 
