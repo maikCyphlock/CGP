@@ -20,7 +20,6 @@ class ExpedienteController extends Controller
         'PROCESSING'  => ['SUBSANATION', 'REFERRED', 'INVALIDATED', 'ARCHIVED'],
         'SUBSANATION' => ['PROCESSING', 'REFERRED', 'INVALIDATED', 'ARCHIVED'],
         'REFERRED'    => ['ARCHIVED'],
-        // Compatibilidad con expedientes creados antes de la migración
         'IN_REVIEW'   => ['PROCESSING', 'SUBSANATION', 'REFERRED', 'INVALIDATED', 'ARCHIVED'],
         'PROCESSED'   => ['PROCESSING', 'SUBSANATION', 'REFERRED', 'INVALIDATED', 'ARCHIVED'],
     ];
@@ -248,7 +247,9 @@ class ExpedienteController extends Controller
             'nota_edicion.max' => 'El motivo de la corrección no puede superar los 250 caracteres.',
         ]);
 
-        DB::transaction(function () use ($d, $expediente, $request) {
+        DB::beginTransaction();
+
+        try {
             $e = CaseFile::whereKey($expediente->id)->lockForUpdate()->firstOrFail();
             $c = $d['ciudadano'];
             $t = $d['tramite'];
@@ -358,9 +359,16 @@ class ExpedienteController extends Controller
                 'usuario' => $request->user()->nombre,
                 'fecha' => now()->toIso8601String(),
             ]);
-        });
 
-        return redirect()->route('oac.expedientes.show', $expediente)->with('ok', "Los datos del expediente «{$expediente->case_number}» fueron actualizados exitosamente.");
+            DB::commit();
+
+            return redirect()->route('oac.expedientes.show', $expediente)->with('ok', "Los datos del expediente «{$expediente->case_number}» fueron actualizados exitosamente.");
+        } catch (\Throwable $th) {
+            DB::rollBack();
+            report($th);
+
+            return back()->withInput()->withErrors(['error' => 'Ocurrió un error al actualizar los datos del expediente. Intente nuevamente.']);
+        }
     }
 
     /** Realiza el eliminado lógico de un expediente. */
@@ -425,30 +433,40 @@ class ExpedienteController extends Controller
             abort(403);
         }
 
-        $mensaje = DB::transaction(function () use ($d, $expediente, $user, $request) {
+        DB::beginTransaction();
+
+        try {
             // Bloquea la fila: dos personas no pueden mover el mismo expediente a la vez.
             $e = CaseFile::whereKey($expediente->id)->lockForUpdate()->firstOrFail();
             $estatus = $this->estatus();
             $actual = $estatus->firstWhere('id', $e->status_id);
 
             if ($actual->code !== $d['desde']) {
-                return ['error' => "Otro usuario actualizó este expediente mientras usted lo revisaba (ahora está «{$actual->name}»). Revise los cambios e intente de nuevo."];
+                DB::rollBack();
+
+                return back()->withErrors(['estatus' => "Otro usuario actualizó este expediente mientras usted lo revisaba (ahora está «{$actual->name}»). Revise los cambios e intente de nuevo."]);
             }
 
             $destino = $d['estatus'] ?? null;
             if (! $destino) {
                 $this->registrar($e, $user, 'NOTE', ['nota' => $d['nota']]);
 
-                return ['ok' => 'Observación registrada.'];
+                DB::commit();
+
+                return redirect()->route('oac.expedientes.show', $expediente)->with('ok', 'Observación registrada.');
             }
 
             if (! in_array($destino, self::TRANSICIONES[$actual->code] ?? [], true)) {
-                return ['error' => "Un expediente «{$actual->name}» no puede pasar a ese estatus."];
+                DB::rollBack();
+
+                return back()->withErrors(['estatus' => "Un expediente «{$actual->name}» no puede pasar a ese estatus."]);
             }
 
             $nuevo = $estatus->firstWhere('code', $destino);
             if (! $nuevo) {
-                return ['error' => "El estatus destino «{$destino}» no se encuentra disponible en el catálogo del sistema."];
+                DB::rollBack();
+
+                return back()->withErrors(['estatus' => "El estatus destino «{$destino}» no se encuentra disponible en el catálogo del sistema."]);
             }
 
             $cambios = ['status_id' => $nuevo->id];
@@ -471,12 +489,15 @@ class ExpedienteController extends Controller
                 'oficio' => $destino === 'REFERRED' ? ($d['referral_letter_url'] ?? null) : null,
             ]);
 
-            return ['ok' => "Expediente actualizado a «{$nuevo->name}»."];
-        });
+            DB::commit();
 
-        return isset($mensaje['error'])
-            ? back()->withErrors(['estatus' => $mensaje['error']])
-            : redirect()->route('oac.expedientes.show', $expediente)->with('ok', $mensaje['ok']);
+            return redirect()->route('oac.expedientes.show', $expediente)->with('ok', "Expediente actualizado a «{$nuevo->name}».");
+        } catch (\Throwable $th) {
+            DB::rollBack();
+            report($th);
+
+            return back()->withInput()->withErrors(['estatus' => 'Ocurrió un error al procesar la actuación del expediente. Intente nuevamente.']);
+        }
     }
 
     /** Tipifica la irregularidad y guarda las notas del analista (módulo CLASSIFY). */
