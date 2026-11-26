@@ -100,6 +100,9 @@ try {
             ActualizarPath
         }
         Write-Host 'Encendiendo Docker (1 o 2 minutos)...'
+        if (-not (Test-Path $DockerExe)) {
+            throw "No se encontro Docker Desktop en '$DockerExe'. Instalalo desde https://www.docker.com/products/docker-desktop , abrelo una vez y ejecuta este script otra vez."
+        }
         Start-Process $DockerExe
         if (-not (Esperar 'Esperando a Docker' 360 { (Silencioso docker info) -eq 0 })) {
             throw 'Docker no arranco. Revisa que la virtualizacion este activada en la BIOS. Si Docker si abrio, cierra sesion en Windows, vuelve a entrar y ejecuta este script otra vez.'
