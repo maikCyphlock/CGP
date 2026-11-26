@@ -60,12 +60,13 @@ class PanelAdminTest extends TestCase
             'tipo_tramite' => 'queja',
             'ciudadano' => [
                 'tipo_doc' => 'V', 'nro_doc' => '12345678', 'primer_nombre' => 'Ana', 'primer_apellido' => 'Díaz',
-                'sexo' => 'F', 'correo' => 'ana@example.com', 'telf_cel' => '04141234567',
+                'sexo' => 'F', 'correo' => 'ana@gmail.com', 'telf_cel' => '04141234567',
                 'direccion' => 'Calle 1, Acarigua, Portuguesa',
             ],
             'senalados' => [['tipo' => 'persona_natural', 'campos' => ['pn-nombres' => 'Luis Pérez']]],
             'ubicacion_senalado' => 'Plaza Bolívar, Acarigua',
             'narracion' => str_repeat('Hechos narrados por la ciudadana. ', 3),
+            'otra_instancia' => 'no',
             'acepta_declaracion' => true,
         ])], ['Accept' => 'application/json'])->assertCreated();
 
@@ -79,12 +80,13 @@ class PanelAdminTest extends TestCase
             'tipo_tramite' => 'denuncia',
             'ciudadano' => [
                 'tipo_doc' => 'V', 'nro_doc' => '12345678', 'primer_nombre' => 'Ana', 'primer_apellido' => 'Díaz',
-                'sexo' => 'F', 'correo' => 'ana@example.com', 'telf_cel' => '04141234567',
+                'sexo' => 'F', 'correo' => 'ana@gmail.com', 'telf_cel' => '04141234567',
                 'direccion' => 'Calle 1, Acarigua, Portuguesa',
             ],
             'senalados' => [['tipo' => 'persona_natural', 'campos' => ['pn-nombres' => 'Luis Pérez']]],
             'ubicacion_senalado' => 'Plaza Bolívar, Acarigua',
             'narracion' => str_repeat('Hechos narrados por la ciudadana. ', 3),
+            'otra_instancia' => 'no',
             'acepta_declaracion' => true,
         ];
         $enviar = fn ($d, $f = []) => $this->post('/denuncias', ['datos' => json_encode($d)] + $f, ['Accept' => 'application/json']);
@@ -127,11 +129,12 @@ class PanelAdminTest extends TestCase
             'tipo_tramite' => 'denuncia',
             'ciudadano' => [
                 'tipo_doc' => 'V', 'nro_doc' => '12345678', 'primer_nombre' => 'Ana', 'primer_apellido' => 'Díaz',
-                'sexo' => 'F', 'correo' => 'ana@example.com', 'telf_cel' => '04141234567',
+                'sexo' => 'F', 'correo' => 'ana@gmail.com', 'telf_cel' => '04141234567',
                 'direccion' => 'Calle 1, Acarigua, Portuguesa',
             ],
             'ubicacion_senalado' => 'Plaza Bolívar, Acarigua',
             'narracion' => str_repeat('Hechos narrados por la ciudadana. ', 3),
+            'otra_instancia' => 'no',
             'acepta_declaracion' => true,
         ];
         $enviar = fn ($d) => $this->post('/denuncias', ['datos' => json_encode($d)], ['Accept' => 'application/json']);
@@ -167,7 +170,7 @@ class PanelAdminTest extends TestCase
     private function actuar(CaseFile $e, array $datos)
     {
         return $this->from(route('oac.expedientes.show', $e))
-            ->post(route('oac.expedientes.actuar', $e), $datos + ['nota' => 'Revisado por la OAC.']);
+            ->post(route('oac.expedientes.actuar', $e), $datos + ['nota' => 'Revisado por la OAC.', 'ignorar_lapso_confirmacion' => 1]);
     }
 
     public function test_invitado_va_al_login(): void
@@ -234,6 +237,8 @@ class PanelAdminTest extends TestCase
 
         // Protocolizar (pasa a PROCESSING).
         $statusInit = DB::table('case_status')->where('code', 'PROCESSING')->exists() ? 'PROCESSING' : 'IN_REVIEW';
+        // Con el lapso de confirmación de datos vigente, no se formaliza sin marcar la excepción.
+        $this->actuar($e, ['desde' => 'RECEIVED', 'estatus' => $statusInit, 'ignorar_lapso_confirmacion' => 0])->assertSessionHasErrors('estatus');
         $this->actuar($e, ['desde' => 'RECEIVED', 'estatus' => $statusInit])->assertSessionHas('ok');
         $e->refresh();
         $this->assertSame($statusInit, DB::table('case_status')->where('id', $e->status_id)->value('code'));
