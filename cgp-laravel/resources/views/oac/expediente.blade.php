@@ -11,29 +11,7 @@
   $dato = fn ($label, $valor) => '<div class="col-12 col-sm-6 col-lg-4 min-w-0"><div class="text-muted small">'.e($label).'</div><div class="fw-semibold texto-ajustable">'.(filled($valor) ? e($valor) : '—').'</div></div>';
 
   // Fases / estados del trámite alineados con el procedimiento de la DAC
-  $etiquetasFaseEstado = [
-    'PROCESSING'  => 'En tramitación / valoración',
-    'SUBSANATION' => 'En subsanación',
-    'REFERRED'    => 'Remitido / derivado',
-    'INVALIDATED' => 'Improcedente / desestimado y archivado',
-    'ARCHIVED'    => 'Cerrado / archivado',
-    'IN_REVIEW'   => 'En Revisión',
-    'PROCESSED'   => 'Procesando',
-  ];
-
-  // Áreas internas de la DAC
-  $areasManualDAC = [
-    'Área de Atención de Denuncia, Quejas, Reclamos, Asesorías, Sugerencias y Peticiones (AAD)',
-    'Área de Información y Promoción a la Participación Ciudadana (AIP)',
-  ];
-
-  // Figuras / cargos de la DAC / Contraloría
-  $cargosManualDAC = [
-    'Director(a) de la Dirección de Atención al Ciudadano (DAC)',
-    'Funcionario(a) / Responsable de Mecanismo',
-    'Promotor(a) Adscrito a la DAC',
-    'Contralor(a) Municipal',
-  ];
+  $etiquetasFaseEstado = \App\Support\DacEstados::ETIQUETAS;
 
   // Opciones para Unidad interna de la Contraloría (UAI)
   $unidadesInternasContraloria = [
@@ -69,9 +47,9 @@
     || ($errors->has('nota') && old('_seccion_activa') === 'seccion-historial');
 
   $tieneErrorClasificacion = $errors->hasAny(['irregularity_type_id', 'analyst_notes']);
-  $tieneErrorAsignacion    = $errors->hasAny(['assigned_unit_id', 'assigned_position_id', 'assigned_user_id', 'assignment_notes']);
+  $tieneErrorAsignacion    = $errors->hasAny(['funcionario_id', 'assigned_unit_id', 'assigned_position_id', 'assigned_user_id', 'assignment_notes']);
   $tieneErrorDerivacion    = $errors->hasAny(['deriv_scope', 'deriv_dest_type', 'deriv_unit', 'deriv_external_entity', 'deriv_office_number', 'deriv_office_date', 'deriv_letter_url', 'deriv_fundamento', 'deriv_recaudos', 'deriv_citizen_notified']);
-  $tieneErrorRespuesta     = $errors->hasAny(['response_type', 'response_date', 'is_competencia', 'referred_entity', 'legal_basis', 'office_circular', 'subsanation_days', 'viabilidad_result', 'response_text', 'issued_by_name', 'issued_by_cargo']);
+  $tieneErrorRespuesta     = $errors->hasAny(['remision_id', 'response_type', 'response_date', 'is_competencia', 'referred_entity', 'legal_basis', 'office_circular', 'subsanation_days', 'viabilidad_result', 'response_text', 'issued_by_name', 'issued_by_cargo']);
 
   if (!$seccionActiva && $errors->any()) {
     if ($tieneErrorActuacion) {
@@ -267,6 +245,25 @@
   </div>
 @endif
 
+@if (!empty($subsanacionVigente))
+  <div class="alert alert-info py-2 px-3 small mb-3 border d-flex align-items-center justify-content-between flex-wrap gap-2">
+    <div>
+      <strong>Lapso de subsanación activo (Oficio Circular N° 01-00-499):</strong> Vence el {{ $fechaCorta($e->subsanation_deadline) }} ({{ $diasHabilesSubsanacion }} día(s) hábil(es) restante(s)).
+      @if ($e->subsanation_missing_docs)
+        <span class="d-block mt-1"><strong>Recaudos solicitados:</strong> {{ $e->subsanation_missing_docs }}</span>
+      @endif
+    </div>
+    <span class="badge bg-info text-dark">En subsanación ({{ $diasHabilesSubsanacion }} d. hábiles)</span>
+  </div>
+@elseif (!empty($subsanacionVencida))
+  <div class="alert alert-danger py-2 px-3 small mb-3 border d-flex align-items-center justify-content-between flex-wrap gap-2">
+    <div>
+      <strong>Lapso de subsanación vencido:</strong> El plazo de 5 días hábiles concluyó el {{ $fechaCorta($e->subsanation_deadline) }} sin registro de subsanación. Puede procederse a inadmisión/archivo (<em>Improcedente / desestimado y archivado</em>).
+    </div>
+    <span class="badge bg-danger">Subsanación vencida</span>
+  </div>
+@endif
+
 {{-- ══════════════════════════════════════════════════
      BARRA DE NAVEGACIÓN (HISTORIAL PRIMERO)
 ══════════════════════════════════════════════════ --}}
@@ -351,9 +348,69 @@
                   @error('referral_letter_url') <div class="invalid-feedback">{{ $message }}</div> @enderror
                 </div>
 
+                <div id="bloque-subsanacion" class="col-12 min-w-0" hidden>
+                  <div class="p-3 rounded border bg-light">
+                    <div class="fw-semibold small text-primary mb-2">Parámetros de Subsanación (Oficio Circular N° 01-00-499)</div>
+                    <div class="row g-2">
+                      <div class="col-12 col-md-4 min-w-0">
+                        <label class="form-label-sm" for="subsanation_days_act">Días hábiles otorgados</label>
+                        <input type="number" name="subsanation_days" id="subsanation_days_act" class="form-control form-control-sm" min="1" max="30" value="{{ old('subsanation_days', 5) }}">
+                      </div>
+                      <div class="col-12 col-md-8 min-w-0">
+                        <label class="form-label-sm" for="subsanation_missing_docs">Recaudos o requisitos faltantes <span class="text-muted">(opcional)</span></label>
+                        <input type="text" name="subsanation_missing_docs" id="subsanation_missing_docs" class="form-control form-control-sm" maxlength="1000" placeholder="Ej. Copia legible de C.I., carta firmada con huella…" value="{{ old('subsanation_missing_docs', $e->subsanation_missing_docs) }}">
+                      </div>
+                    </div>
+                  </div>
+                </div>
+
                 <div id="bloque-aviso-cierre" class="col-12 min-w-0" hidden>
-                  <div class="alert alert-warning py-2 px-3 mb-0 small texto-ajustable">
-                    <strong>Cierre / Archivo:</strong> debe quedar motivado por escrito, contar con la revisión/visto bueno de la DAC y aprobación del Contralor(a) Municipal.
+                  <div class="alert alert-warning py-2 px-3 mb-2 small texto-ajustable">
+                    <strong>Cierre / Archivo o Improcedencia:</strong> debe quedar motivado por escrito. Para <em>Cerrado / archivado</em> registre el Auto de Cierre, Visto Bueno de la DAC y aprobación del Contralor(a) Municipal.
+                  </div>
+                  <div class="p-3 rounded border bg-light">
+                    <div class="row g-2">
+                      <div class="col-12 col-md-4 min-w-0">
+                        <label class="form-label-sm" for="closure_auto_number">N° de Auto / Resolución</label>
+                        <input type="text" name="closure_auto_number" id="closure_auto_number" class="form-control form-control-sm" maxlength="100" placeholder="Ej. CMP-DAC-AC-001-2026" value="{{ old('closure_auto_number', $e->closure_auto_number) }}">
+                      </div>
+                      <div class="col-12 col-md-4 min-w-0">
+                        <label class="form-label-sm" for="closure_auto_date">Fecha del Auto</label>
+                        <input type="date" name="closure_auto_date" id="closure_auto_date" class="form-control form-control-sm" max="{{ now()->format('Y-m-d') }}" value="{{ old('closure_auto_date', now()->format('Y-m-d')) }}">
+                      </div>
+                      <div class="col-12 col-md-4 min-w-0">
+                        <label class="form-label-sm" for="closure_auto_url">Enlace al Auto PDF <span class="text-muted">(opc.)</span></label>
+                        <input type="url" name="closure_auto_url" id="closure_auto_url" class="form-control form-control-sm @error('closure_auto_url') is-invalid @enderror" maxlength="500" placeholder="https://…" value="{{ old('closure_auto_url', $e->closure_auto_url) }}">
+                        @error('closure_auto_url') <div class="invalid-feedback">{{ $message }}</div> @enderror
+                      </div>
+                      <div id="bloque-causal-improcedencia" class="col-12 min-w-0" hidden>
+                        <label class="form-label-sm" for="closure_reason">Causal de improcedencia / inadmisión</label>
+                        <select name="closure_reason" id="closure_reason" class="form-select form-select-sm">
+                          <option value="">Seleccione causal…</option>
+                          @foreach ($causalesImprocedencia ?? [] as $causal)
+                            <option value="{{ $causal }}" @selected(old('closure_reason', $e->closure_reason) === $causal)>{{ $causal }}</option>
+                          @endforeach
+                        </select>
+                      </div>
+                      <div id="bloque-aprobacion-cierre" class="col-12 min-w-0" hidden>
+                        <div class="row g-2 mt-1">
+                          <div class="col-12 col-md-6 min-w-0">
+                            <div class="form-check">
+                              <input class="form-check-input" type="checkbox" name="dac_approved" id="dac_approved" value="1" @checked(old('dac_approved', $e->dac_approved))>
+                              <label class="form-check-label small fw-semibold" for="dac_approved">Cuenta con Visto Bueno de la DAC</label>
+                            </div>
+                            <input type="text" name="dac_approved_by" class="form-control form-control-sm mt-1" maxlength="160" placeholder="Responsable DAC (ej. Director/a DAC)" value="{{ old('dac_approved_by', $e->dac_approved_by) }}">
+                          </div>
+                          <div class="col-12 col-md-6 min-w-0">
+                            <div class="form-check">
+                              <input class="form-check-input" type="checkbox" name="comptroller_approved" id="comptroller_approved" value="1" @checked(old('comptroller_approved', $e->comptroller_approved))>
+                              <label class="form-check-label small fw-semibold" for="comptroller_approved">Cuenta con Aprobación del Contralor(a) Municipal</label>
+                            </div>
+                            <input type="text" name="comptroller_approved_by" class="form-control form-control-sm mt-1" maxlength="160" placeholder="Nombre del Contralor(a) Municipal" value="{{ old('comptroller_approved_by', $e->comptroller_approved_by) }}">
+                          </div>
+                        </div>
+                      </div>
+                    </div>
                   </div>
                 </div>
 
@@ -431,8 +488,9 @@
 
                     @if ($isAssignment)
                       <div class="hist-nota mt-1">
-                        @isset($h->payload['oficina']) <span class="text-muted">Oficina:</span> {{ $h->payload['oficina'] }}<br>@endisset
+                        @isset($h->payload['oficina']) <span class="text-muted">Área / Dirección:</span> {{ $h->payload['oficina'] }}<br>@endisset
                         @isset($h->payload['cargo'])   <span class="text-muted">Cargo:</span> {{ $h->payload['cargo'] }}<br>@endisset
+                        @isset($h->payload['figura'])  <span class="text-muted">Figura:</span> {{ $h->payload['figura'] }}<br>@endisset
                         @isset($h->payload['funcionario']) <span class="text-muted">Funcionario:</span> {{ $h->payload['funcionario'] }}@endisset
                       </div>
                     @endif
@@ -593,10 +651,90 @@
           @endforeach
         @endif
 
+        @if ($actual->is_terminal && ($e->closure_auto_number || $e->closure_reason || $e->dac_approved || $e->comptroller_approved))
+          <div class="p-3 rounded border bg-light mb-3 small">
+            <div class="fw-bold text-uppercase text-muted mb-2">Auto de Cierre / Improcedencia</div>
+            <div class="row g-2">
+              @if ($e->closure_auto_number)
+                <div class="col-12 col-sm-4"><span class="text-muted">N° de Auto:</span> <strong>{{ $e->closure_auto_number }}</strong></div>
+              @endif
+              @if ($e->closure_auto_date)
+                <div class="col-12 col-sm-4"><span class="text-muted">Fecha:</span> <strong>{{ $fechaCorta($e->closure_auto_date) }}</strong></div>
+              @endif
+              @if ($e->closure_reason)
+                <div class="col-12 col-sm-4"><span class="text-muted">Causal:</span> <strong>{{ $e->closure_reason }}</strong></div>
+              @endif
+              <div class="col-12 col-sm-6">
+                <span class="text-muted">V°B° DAC:</span>
+                @if ($e->dac_approved)
+                  <span class="badge bg-success">Aprobado</span> {{ $e->dac_approved_by }}
+                @else
+                  <span class="badge bg-secondary">No registrado</span>
+                @endif
+              </div>
+              <div class="col-12 col-sm-6">
+                <span class="text-muted">Contralor(a) Municipal:</span>
+                @if ($e->comptroller_approved)
+                  <span class="badge bg-success">Aprobado</span> {{ $e->comptroller_approved_by }}
+                @else
+                  <span class="badge bg-secondary">No registrado</span>
+                @endif
+              </div>
+              @if ($e->closure_auto_url)
+                <div class="col-12"><a href="{{ $e->closure_auto_url }}" target="_blank" rel="noopener noreferrer" class="fw-semibold">Ver soporte PDF del Auto →</a></div>
+              @endif
+            </div>
+          </div>
+        @endif
+
         <hr class="my-4">
 
         {{-- Soportes consignados --}}
         <div class="fw-bold small text-uppercase text-muted mb-2">Soportes consignados</div>
+
+        {{-- Control de recaudos físicos en sede --}}
+        <div class="p-3 rounded border bg-light mb-3 small">
+          <div class="d-flex flex-wrap justify-content-between align-items-center gap-2 mb-2">
+            <div>
+              <span class="fw-bold text-dark">Consignación de recaudos físicos en sede:</span>
+              @if ($e->physical_docs_submitted)
+                <span class="badge bg-success ms-1">Consignados ({{ $fechaCorta($e->physical_docs_date) }})</span>
+              @else
+                <span class="badge bg-warning text-dark ms-1">Pendiente</span>
+              @endif
+              @if ($e->physical_docs_deadline)
+                <span class="text-muted ms-2">Límite: {{ $fechaCorta($e->physical_docs_deadline) }}</span>
+              @endif
+              @if ($e->physical_file_number)
+                <span class="text-muted ms-2">Exp. físico: <strong>{{ $e->physical_file_number }}</strong></span>
+              @endif
+            </div>
+          </div>
+          @if ($puedeEscribir)
+            <form method="POST" action="{{ route('oac.expedientes.recaudosFisicos', $e) }}" class="row g-2 align-items-end mt-1">
+              @csrf
+              <input type="hidden" name="_seccion_activa" value="seccion-expediente">
+              <div class="col-12 col-md-4">
+                <div class="form-check">
+                  <input type="hidden" name="physical_docs_submitted" value="0">
+                  <input class="form-check-input" type="checkbox" name="physical_docs_submitted" id="physical_docs_submitted" value="1" @checked(old('physical_docs_submitted', $e->physical_docs_submitted))>
+                  <label class="form-check-label fw-semibold" for="physical_docs_submitted">Recaudos físicos consignados</label>
+                </div>
+              </div>
+              <div class="col-12 col-md-3">
+                <label class="form-label-sm mb-0" for="physical_docs_date">Fecha consignación</label>
+                <input type="date" name="physical_docs_date" id="physical_docs_date" class="form-control form-control-sm" max="{{ now()->format('Y-m-d') }}" value="{{ old('physical_docs_date', $e->physical_docs_date ? \Illuminate\Support\Carbon::parse($e->physical_docs_date)->format('Y-m-d') : now()->format('Y-m-d')) }}">
+              </div>
+              <div class="col-12 col-md-3">
+                <label class="form-label-sm mb-0" for="physical_file_number">N° Exp. físico <span class="text-muted">(opc.)</span></label>
+                <input type="text" name="physical_file_number" id="physical_file_number" class="form-control form-control-sm" maxlength="50" placeholder="Ej. CMP-DAC-D-01-26" value="{{ old('physical_file_number', $e->physical_file_number) }}">
+              </div>
+              <div class="col-12 col-md-2 d-grid">
+                <button type="submit" class="btn btn-sm btn-outline-primary fw-semibold">Guardar</button>
+              </div>
+            </form>
+          @endif
+        </div>
         @if ($documentos->isNotEmpty())
           <div class="mb-3">
             <div class="text-muted small fw-semibold mb-2">Documentos físicos declarados:</div>
@@ -653,12 +791,16 @@
               <div class="text-muted small texto-ajustable">{{ $e->claimType->name }}</div>
             </div>
             <div class="col-12 col-sm-6 min-w-0">
-              <div class="dato-label">Área / Oficina / Departamento</div>
+              <div class="dato-label">Área / Dirección</div>
               <div class="dato-valor">{{ $asignacionOficina }}</div>
             </div>
             <div class="col-12 col-sm-6 min-w-0">
               <div class="dato-label">Cargo Asignado</div>
               <div class="dato-valor">{{ $asignacionCargo }}</div>
+            </div>
+            <div class="col-12 col-sm-6 min-w-0">
+              <div class="dato-label">Figura (Manual DAC)</div>
+              <div class="dato-valor">{{ $asignacionFigura }}</div>
             </div>
             <div class="col-12 col-sm-6 min-w-0">
               <div class="dato-label">Funcionario Responsable</div>
@@ -678,60 +820,78 @@
           @endif
         </div>
 
-        {{-- Formulario de Asignación / Reasignación --}}
+        {{-- Formulario de Asignación / Reasignación (Tabla de Funcionarios) --}}
         @if ($puedeEscribir)
+          @php
+            $areasFuncionarios = $funcionarios->pluck('area_direccion')->unique()->values();
+            $cargosFuncionarios = $funcionarios->pluck('cargo')->unique()->values();
+            $figurasFuncionarios = $funcionarios->pluck('figura')->unique()->values();
+          @endphp
           <div class="mb-4 pb-4 border-bottom">
-            <button class="btn btn-sm btn-outline-primary fw-semibold mb-3" type="button"
-              data-bs-toggle="collapse" data-bs-target="#collapseAsignar"
-              aria-expanded="{{ $tieneErrorAsignacion ? 'true' : 'false' }}"
-              aria-controls="collapseAsignar">
-              Asignar / Reasignar Responsable
-            </button>
+            <div class="d-flex flex-wrap justify-content-between align-items-center gap-2 mb-3">
+              <button class="btn btn-sm btn-outline-primary fw-semibold" type="button"
+                data-bs-toggle="collapse" data-bs-target="#collapseAsignar"
+                aria-expanded="{{ $tieneErrorAsignacion ? 'true' : 'false' }}"
+                aria-controls="collapseAsignar">
+                Asignar / Reasignar Responsable
+              </button>
+              @if ($puedeCatalogos)
+                <a href="{{ route('oac.funcionarios.index') }}" class="btn btn-sm btn-outline-secondary">
+                  Gestionar directorio de funcionarios
+                </a>
+              @endif
+            </div>
             <div class="collapse {{ $tieneErrorAsignacion ? 'show' : '' }}" id="collapseAsignar">
               <form method="POST" action="{{ route('oac.expedientes.asignar', $e) }}" class="p-3 bg-light rounded border">
                 @csrf
                 <input type="hidden" name="_seccion_activa" value="seccion-valoracion-asignacion">
                 <div class="row g-3">
-                  <div class="col-12 col-md-6 min-w-0">
+                  <div class="col-12 min-w-0">
                     <label class="form-label-sm">Expediente / Mecanismo</label>
                     <input type="text" class="form-control form-control-sm bg-white" value="{{ $e->case_number }} — {{ $e->claimType->name }}" readonly>
                   </div>
                   <div class="col-12 col-md-6 min-w-0">
-                    <label class="form-label-sm" for="assigned_unit_id">Área de la DAC / Dependencia <span class="req">*</span></label>
-                    <select name="assigned_unit_id" id="assigned_unit_id" class="form-select form-select-sm @error('assigned_unit_id') is-invalid @enderror" required>
-                      <option value="">Seleccione área o dependencia…</option>
-                      @foreach ($oficinas as $of)
-                        <option value="{{ $of->id }}" @selected(old('assigned_unit_id', $e->assigned_unit_id ?? $e->referral_unit_id) == $of->id)>{{ $of->name }}</option>
-                      @endforeach
-                      @foreach ($areasManualDAC as $areaManual)
-                        <option value="{{ $areaManual }}" @selected(old('assigned_unit_id', $e->assigned_unit_id ?? $e->referral_unit_id) === $areaManual)>{{ $areaManual }}</option>
+                    <label class="form-label-sm" for="filtro_func_area">1. Área / Dirección</label>
+                    <select id="filtro_func_area" class="form-select form-select-sm">
+                      <option value="">Todas las áreas / direcciones…</option>
+                      @foreach ($areasFuncionarios as $areaF)
+                        <option value="{{ $areaF }}">{{ $areaF }}</option>
                       @endforeach
                     </select>
-                    @error('assigned_unit_id') <div class="invalid-feedback">{{ $message }}</div> @enderror
                   </div>
                   <div class="col-12 col-md-6 min-w-0">
-                    <label class="form-label-sm" for="assigned_position_id">Cargo / Figura <span class="req">*</span></label>
-                    <select name="assigned_position_id" id="assigned_position_id" class="form-select form-select-sm @error('assigned_position_id') is-invalid @enderror" required>
-                      <option value="">Seleccione cargo…</option>
-                      @foreach ($cargos as $cg)
-                        <option value="{{ $cg->id }}" @selected(old('assigned_position_id', $e->assigned_position_id) == $cg->id)>{{ $cg->title }}</option>
-                      @endforeach
-                      @foreach ($cargosManualDAC as $cargoManual)
-                        <option value="{{ $cargoManual }}" @selected(old('assigned_position_id', $e->assigned_position_id) === $cargoManual)>{{ $cargoManual }}</option>
+                    <label class="form-label-sm" for="filtro_func_cargo">2. Cargo</label>
+                    <select id="filtro_func_cargo" class="form-select form-select-sm">
+                      <option value="">Todos los cargos…</option>
+                      @foreach ($cargosFuncionarios as $cargoF)
+                        <option value="{{ $cargoF }}">{{ $cargoF }}</option>
                       @endforeach
                     </select>
-                    @error('assigned_position_id') <div class="invalid-feedback">{{ $message }}</div> @enderror
                   </div>
                   <div class="col-12 col-md-6 min-w-0">
-                    <label class="form-label-sm" for="assigned_user_id">Funcionario Designado <span class="text-muted">(opcional)</span></label>
-                    <select name="assigned_user_id" id="assigned_user_id" class="form-select form-select-sm">
-                      <option value="">Sin funcionario específico</option>
-                      @foreach ($usuariosPersonal as $up)
-                        <option value="{{ $up->id }}" @selected(old('assigned_user_id', $e->assigned_user_id) == $up->id)>
-                          {{ $up->first_name }} {{ $up->last_name }} ({{ $up->cargo ?? 'Personal' }})
+                    <label class="form-label-sm" for="filtro_func_figura">3. Figura</label>
+                    <select id="filtro_func_figura" class="form-select form-select-sm">
+                      <option value="">Todas las figuras…</option>
+                      @foreach ($figurasFuncionarios as $figF)
+                        <option value="{{ $figF }}">{{ $figF }}</option>
+                      @endforeach
+                    </select>
+                  </div>
+                  <div class="col-12 col-md-6 min-w-0">
+                    <label class="form-label-sm" for="funcionario_id">4. Funcionario Responsable <span class="req">*</span></label>
+                    <select name="funcionario_id" id="funcionario_id" class="form-select form-select-sm @error('funcionario_id') is-invalid @enderror" required>
+                      <option value="">Seleccione funcionario…</option>
+                      @foreach ($funcionarios as $fn)
+                        <option value="{{ $fn->id }}"
+                                data-area="{{ $fn->area_direccion }}"
+                                data-cargo="{{ $fn->cargo }}"
+                                data-figura="{{ $fn->figura }}"
+                                @selected(old('funcionario_id', $e->assigned_funcionario_id) == $fn->id)>
+                          {{ $fn->nombre_completo }} — {{ $fn->figura }}
                         </option>
                       @endforeach
                     </select>
+                    @error('funcionario_id') <div class="invalid-feedback">{{ $message }}</div> @enderror
                   </div>
                   <div class="col-12 min-w-0">
                     <label class="form-label-sm" for="assignment_notes_inp">Instrucciones / Observación <span class="text-muted">(opcional)</span></label>
@@ -804,7 +964,64 @@
         {{-- Sub-bloque A: Remisión / Derivación --}}
         <div class="fw-bold small text-uppercase text-muted mb-2">Remisión / Derivación del trámite</div>
 
-        @if ($e->deriv_scope)
+        @if ($remisiones->isNotEmpty())
+          <div class="mb-3">
+            <div class="fw-bold small text-uppercase text-muted mb-2">Remisiones registradas ({{ $remisiones->count() }})</div>
+            @foreach ($remisiones as $rem)
+              <div class="ficha-asignacion mb-2">
+                <div class="d-flex flex-wrap justify-content-between align-items-center gap-2 mb-2">
+                  <span class="fw-bold text-primary texto-ajustable">{{ $rem->ente_destino }}</span>
+                  <span class="text-muted small">Registrada el {{ $fecha($rem->created_at) }}@if ($rem->usuario) · {{ $rem->usuario->nombre }}@endif</span>
+                </div>
+                <div class="row g-2 small">
+                  <div class="col-12 col-sm-6 min-w-0">
+                    <div class="dato-label">Ámbito de competencia</div>
+                    <div class="fw-semibold texto-ajustable">{{ $rem->ambito_competencia }}</div>
+                  </div>
+                  @if ($rem->unidad_interna)
+                    <div class="col-12 col-sm-6 min-w-0">
+                      <div class="dato-label">Dirección / Unidad interna</div>
+                      <div class="fw-semibold texto-ajustable">{{ $rem->unidad_interna }}</div>
+                    </div>
+                  @endif
+                  @if ($rem->ente_externo)
+                    <div class="col-12 col-sm-6 min-w-0">
+                      <div class="dato-label">Órgano o ente con competencia</div>
+                      <div class="fw-semibold texto-ajustable">{{ $rem->ente_externo }}</div>
+                    </div>
+                  @endif
+                  @if ($rem->numero_oficio)
+                    <div class="col-12 col-sm-6 min-w-0">
+                      <div class="dato-label">N° de oficio</div>
+                      <div class="fw-semibold texto-ajustable">{{ $rem->numero_oficio }}</div>
+                    </div>
+                  @endif
+                  @if ($rem->fecha_remision)
+                    <div class="col-12 col-sm-6 min-w-0">
+                      <div class="dato-label">Fecha de remisión</div>
+                      <div class="fw-semibold">{{ $fechaCorta($rem->fecha_remision) }}</div>
+                    </div>
+                  @endif
+                  @if ($rem->oficio_url)
+                    <div class="col-12 min-w-0">
+                      <a href="{{ $rem->oficio_url }}" target="_blank" rel="noopener noreferrer" class="fw-semibold texto-ajustable">Ver soporte del oficio →</a>
+                    </div>
+                  @endif
+                  @if ($rem->fundamento_juridico)
+                    <div class="col-12 min-w-0">
+                      <div class="dato-label">Fundamento jurídico</div>
+                      <div class="texto-ajustable" style="white-space:pre-wrap;">{{ $rem->fundamento_juridico }}</div>
+                    </div>
+                  @endif
+                  <div class="col-12 min-w-0">
+                    <div class="dato-label">Observación</div>
+                    <div class="texto-ajustable" style="white-space:pre-wrap;">{{ $rem->observacion }}</div>
+                  </div>
+                </div>
+              </div>
+            @endforeach
+          </div>
+        @elseif ($e->deriv_scope)
           <div class="ficha-asignacion mb-3">
             <div class="fw-bold small text-uppercase text-muted mb-2">Última derivación registrada</div>
             <div class="row g-2">
@@ -828,34 +1045,11 @@
                 <div class="dato-valor">{{ $e->deriv_external_entity }}</div>
               </div>
               @endif
-              @if ($e->deriv_office_number)
-              <div class="col-12 col-sm-6 min-w-0">
-                <div class="dato-label">N° de oficio</div>
-                <div class="dato-valor">{{ $e->deriv_office_number }}</div>
-              </div>
-              @endif
-              @if ($e->deriv_office_date)
-              <div class="col-12 col-sm-6 min-w-0">
-                <div class="dato-label">Fecha de remisión</div>
-                <div class="dato-valor">{{ $fechaCorta($e->deriv_office_date) }}</div>
-              </div>
-              @endif
-              @if ($e->deriv_letter_url)
-              <div class="col-12 min-w-0">
-                <div class="dato-label">Oficio de derivación</div>
-                <a href="{{ $e->deriv_letter_url }}" target="_blank" rel="noopener noreferrer" class="fw-semibold texto-ajustable">Ver oficio →</a>
-              </div>
-              @endif
-              @if ($e->deriv_fundamento)
-              <div class="col-12 min-w-0">
-                <div class="dato-label">Fundamento jurídico</div>
-                <div class="texto-ajustable" style="font-size:0.9rem; color:#374151; white-space:pre-wrap;">{{ $e->deriv_fundamento }}</div>
-              </div>
-              @endif
             </div>
           </div>
         @endif
 
+        @if ($puedeDerivar)
         <form method="POST" action="{{ route('oac.expedientes.derivar', $e) }}" id="form-derivacion" class="p-3 bg-light rounded border mb-5">
           @csrf
           <input type="hidden" name="_seccion_activa" value="seccion-remision-notificacion">
@@ -1009,6 +1203,11 @@
 
           <button type="submit" class="btn btn-cgp fw-bold w-100">Guardar Derivación</button>
         </form>
+        @else
+          <div class="alert alert-light border small text-muted mb-5">
+            Para registrar una remisión o derivación formal se requiere permiso de escritura en el módulo de <strong>Clasificación y Derivación (CLASSIFY)</strong>.
+          </div>
+        @endif
 
         <hr class="my-4">
 
@@ -1018,13 +1217,20 @@
 
         @if ($respuestasCiudadano->isNotEmpty())
           <div class="mb-4">
-            <div class="fw-bold small text-uppercase text-muted mb-2">Respuestas emitidas anteriormente</div>
+            <div class="fw-bold small text-uppercase text-muted mb-2">Notificaciones emitidas anteriormente</div>
             @foreach ($respuestasCiudadano as $rc)
               <div class="border rounded p-3 mb-2 bg-light">
                 <div class="d-flex flex-wrap justify-content-between align-items-center gap-1 mb-1">
                   <span class="fw-semibold texto-ajustable">{{ $rc->response_type }}</span>
                   <span class="text-muted small">{{ $fechaCorta($rc->response_date) }}</span>
                 </div>
+                @if ($rc->referred_entity || $rc->legal_basis || $rc->remision)
+                  <div class="small text-muted mb-2">
+                    @if ($rc->referred_entity) <div><strong>Ente al que se remite:</strong> {{ $rc->referred_entity }}</div> @endif
+                    @if ($rc->remision) <div><strong>Remisión vinculada:</strong> {{ $rc->remision->ente_destino }} @if($rc->remision->numero_oficio)({{ $rc->remision->numero_oficio }})@endif</div> @endif
+                    @if ($rc->legal_basis) <div><strong>Fundamento:</strong> {{ $rc->legal_basis }}</div> @endif
+                  </div>
+                @endif
                 <div class="texto-ajustable" style="white-space:pre-wrap; font-size:0.9rem;">{{ $rc->response_text }}</div>
                 <div class="text-muted small mt-2 border-top pt-2 texto-ajustable">{{ $rc->issued_by_name }} — {{ $rc->issued_by_cargo }}</div>
               </div>
@@ -1035,6 +1241,20 @@
         <form method="POST" action="{{ route('oac.expedientes.respuestaCiudadana', $e) }}" id="form-respuesta">
           @csrf
           <input type="hidden" name="_seccion_activa" value="seccion-remision-notificacion">
+
+          @if ($remisiones->isNotEmpty())
+            <div class="mb-3">
+              <label class="form-label-sm" for="remision_id">Vincular con remisión registrada <span class="text-muted">(opcional)</span></label>
+              <select name="remision_id" id="remision_id" class="form-select form-select-sm">
+                <option value="">Sin vínculo directo a una remisión</option>
+                @foreach ($remisiones as $rem)
+                  <option value="{{ $rem->id }}" @selected(old('remision_id') === $rem->id)>
+                    {{ $rem->ente_destino }}@if($rem->unidad_interna || $rem->ente_externo) — {{ $rem->unidad_interna ?: $rem->ente_externo }}@endif ({{ $fechaCorta($rem->created_at) }})
+                  </option>
+                @endforeach
+              </select>
+            </div>
+          @endif
 
           <div class="ficha-asignacion mb-3">
             <div class="fw-semibold small mb-1">Datos del expediente</div>
@@ -1049,7 +1269,7 @@
             <label class="form-label-sm" for="response_type">Tipo de respuesta / Estatus del trámite <span class="req">*</span></label>
             <select name="response_type" id="response_type" class="form-select form-select-sm @error('response_type') is-invalid @enderror" required onchange="actualizarCamposRespuesta(this.value)">
               <option value="">Seleccione el tipo de respuesta…</option>
-              <option value="Fase de análisis y valoración"            @selected(old('response_type') === 'Fase de análisis y valoración')>En tramitación / valoración</option>
+              <option value="En tramitación / valoración"               @selected(old('response_type') === 'En tramitación / valoración')>En tramitación / valoración</option>
               <option value="Fase de subsanación (requisitos pendientes)" @selected(old('response_type') === 'Fase de subsanación (requisitos pendientes)')>En subsanación (5 días hábiles)</option>
               <option value="Remisión a otro órgano o ente competente" @selected(old('response_type') === 'Remisión a otro órgano o ente competente')>Remitido / derivado</option>
               <option value="Notificación de improcedencia y archivo"  @selected(old('response_type') === 'Notificación de improcedencia y archivo')>Improcedente / desestimado y archivado</option>
@@ -1100,19 +1320,19 @@
               placeholder="Ej. omisión de requisitos mínimos del Oficio Circular N° 01-00-499, falta de competencia fiscal…">{{ old('legal_basis') }}</textarea>
           </div>
 
-          @if ($e->claimType->code === 'COMPLAINT')
+          @if (in_array($e->claimType->code, ['COMPLAINT', 'PETITION'], true))
           <div class="mb-3" id="bloque-resp-circular">
             <label class="form-label-sm" for="office_circular">Referencia de la Circular aplicable <span class="text-muted">(opcional)</span></label>
             <input type="text" name="office_circular" id="office_circular" class="form-control form-control-sm"
               maxlength="200" placeholder="Ej. Oficio Circular N° 01-00-499 del 31/07/2025"
-              value="{{ old('office_circular') }}">
+              value="{{ old('office_circular', 'Oficio Circular N° 01-00-499') }}">
           </div>
           <div class="mb-3" id="bloque-resp-subsanacion">
             <label class="form-label-sm" for="subsanation_days">Días hábiles para subsanación <span class="text-muted">(si aplica)</span></label>
             <input type="number" name="subsanation_days" id="subsanation_days" class="form-control form-control-sm"
               min="1" max="30" placeholder="5"
-              value="{{ old('subsanation_days') }}">
-            <div class="form-text texto-ajustable">El manual prevé 5 días hábiles para subsanar en denuncias/peticiones.</div>
+              value="{{ old('subsanation_days', 5) }}">
+            <div class="form-text texto-ajustable">El manual prevé 5 días hábiles para subsanar en denuncias y peticiones.</div>
           </div>
           @endif
 
@@ -1223,13 +1443,22 @@
 
     const mostrarUnidad = () => {
       const derivar = accion.value === 'REFERRED';
-      const esCierre = ['ARCHIVED', 'INVALIDATED'].includes(accion.value);
+      const esSubsanacion = accion.value === 'SUBSANATION';
+      const esImprocedente = accion.value === 'INVALIDATED';
+      const esArchivado = accion.value === 'ARCHIVED';
+      const esCierre = esArchivado || esImprocedente;
       const bloqueLapso = document.getElementById('bloque-aviso-lapso');
+      const bloqueSub = document.getElementById('bloque-subsanacion');
+      const bloqueCausal = document.getElementById('bloque-causal-improcedencia');
+      const bloqueAprob = document.getElementById('bloque-aprobacion-cierre');
 
       if (bloqueLapso) bloqueLapso.style.display = (['PROCESSING', 'IN_REVIEW'].includes(accion.value)) ? 'block' : 'none';
+      if (bloqueSub) bloqueSub.hidden = !esSubsanacion;
       document.getElementById('bloque-unidad').hidden = !derivar;
       document.getElementById('bloque-oficio').hidden = !derivar;
       if (bloqueAvisoCierre) bloqueAvisoCierre.hidden = !esCierre;
+      if (bloqueCausal) bloqueCausal.hidden = !esImprocedente;
+      if (bloqueAprob) bloqueAprob.hidden = !esArchivado;
       if (selectUnidad) selectUnidad.required = derivar;
       if (ayudaAccion) {
         ayudaAccion.textContent = ayudasPorValor[accion.value] ?? 'Asienta la actuación en el expediente.';
@@ -1276,6 +1505,7 @@
         selectUai.required = esUai;
       }
       if (inputExterno) {
+        inputExterno.disabled = !esExterno;
         inputExterno.required = esExterno;
       }
     };
@@ -1283,6 +1513,54 @@
     derivDestType.addEventListener('change', actualizarDestino);
     actualizarDestino();
   }
+
+  // Filtrado en cascada para la tabla de funcionarios en Valoración y Asignación
+  (function () {
+    const fArea = document.getElementById('filtro_func_area');
+    const fCargo = document.getElementById('filtro_func_cargo');
+    const fFigura = document.getElementById('filtro_func_figura');
+    const selFunc = document.getElementById('funcionario_id');
+    if (!selFunc) return;
+
+    const opcionesOriginales = Array.from(selFunc.options).slice(1);
+
+    function filtrarFuncionarios() {
+      const a = fArea ? fArea.value : '';
+      const c = fCargo ? fCargo.value : '';
+      const fig = fFigura ? fFigura.value : '';
+      const actual = selFunc.value;
+
+      while (selFunc.options.length > 1) selFunc.remove(1);
+
+      opcionesOriginales.forEach(opt => {
+        const matchArea = !a || opt.dataset.area === a;
+        const matchCargo = !c || opt.dataset.cargo === c;
+        const matchFigura = !fig || opt.dataset.figura === fig;
+        if (matchArea && matchCargo && matchFigura) {
+          selFunc.appendChild(opt);
+        }
+      });
+
+      if (Array.from(selFunc.options).some(o => o.value === actual)) {
+        selFunc.value = actual;
+      } else {
+        selFunc.value = '';
+      }
+    }
+
+    [fArea, fCargo, fFigura].forEach(el => {
+      if (el) el.addEventListener('change', filtrarFuncionarios);
+    });
+
+    selFunc.addEventListener('change', function () {
+      const opt = selFunc.options[selFunc.selectedIndex];
+      if (opt && opt.value) {
+        if (fArea && opt.dataset.area) fArea.value = opt.dataset.area;
+        if (fCargo && opt.dataset.cargo) fCargo.value = opt.dataset.cargo;
+        if (fFigura && opt.dataset.figura) fFigura.value = opt.dataset.figura;
+      }
+    });
+  })();
 
   function toggleDerivNotif(cb) {
     const bloque = document.getElementById('bloque-notif-fecha');

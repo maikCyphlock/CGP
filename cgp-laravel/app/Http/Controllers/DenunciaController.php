@@ -366,6 +366,9 @@ class DenunciaController extends Controller
                 }
             }
 
+            $citLatVal = isset($datos['cit_lat']) && is_numeric($datos['cit_lat']) ? (float) $datos['cit_lat'] : null;
+            $citLngVal = isset($datos['cit_lng']) && is_numeric($datos['cit_lng']) ? (float) $datos['cit_lng'] : null;
+
             // Si el ciudadano ya existe (misma cédula) se actualizan sus datos.
             $citizen = ($existingCitizen ?? new Citizen([
                 'id_doc_type_id' => $docTypeId,
@@ -389,7 +392,9 @@ class DenunciaController extends Controller
                     'education_level' => $c['nivel_educativo'] ?? null,
                     'profession' => $c['profesion'] ?? null,
                     'occupation' => $c['ocupacion'] ?? null,
-                ]),
+                    'lat' => $citLatVal,
+                    'lng' => $citLngVal,
+                ], fn ($v) => $v !== null && $v !== ''),
             ]);
             $citizen->id ??= (string) Str::uuid();
             $citizen->save();
@@ -553,6 +558,12 @@ class DenunciaController extends Controller
                 'c.data_confirmation_days',
                 'c.data_confirmation_deadline',
                 'c.data_confirmed_at',
+                'c.subsanation_deadline',
+                'c.subsanation_completed_at',
+                'c.subsanation_missing_docs',
+                'c.closure_auto_number',
+                'c.closure_auto_date',
+                'c.closure_reason',
             ]);
 
         abort_unless($case, 404, 'No existe un trámite con ese código.');
@@ -588,15 +599,54 @@ class DenunciaController extends Controller
         $diasRestantes = $deadline ? (int) ceil(now()->diffInDays($deadline, false)) : 0;
         $confirmacionVigente = ($deadline && now()->lte($deadline) && empty($case->data_confirmed_at) && $case->estatus_codigo === 'RECEIVED');
 
+        $subDeadline = $case->subsanation_deadline ? \Illuminate\Support\Carbon::parse($case->subsanation_deadline)->endOfDay() : null;
+        $diasSubsanacion = $subDeadline ? \App\Support\DacEstados::diasHabilesRestantes($subDeadline) : 0;
+        $subsanacionVigente = ($case->estatus_codigo === 'SUBSANATION' && $subDeadline && now()->lte($subDeadline));
+        $subsanacionVencida = ($case->estatus_codigo === 'SUBSANATION' && $subDeadline && now()->gt($subDeadline));
+
         $respuestasCiudadano = collect();
         try {
             $respuestasCiudadano = DB::table('case_citizen_response')
                 ->where('case_file_id', $case->id)
                 ->orderByDesc('response_date')
                 ->orderByDesc('created_at')
-                ->get(['response_type', 'response_date', 'response_text', 'issued_by_name', 'issued_by_cargo']);
+                ->get(['response_type', 'response_date', 'referred_entity', 'legal_basis', 'office_circular', 'subsanation_days', 'response_text', 'issued_by_name', 'issued_by_cargo']);
         } catch (\Throwable $th) {
             $respuestasCiudadano = collect();
+        }
+
+        $mensajeEstado = null;
+        try {
+            $msgRow = DB::table('mensajes_estado')
+                ->where('estado_codigo', $case->estatus_codigo)
+                ->where('activo', true)
+                ->first(['titulo', 'mensaje']);
+            if ($msgRow && trim((string) $msgRow->mensaje) !== '') {
+                $mensajeEstado = [
+                    'titulo' => $msgRow->titulo,
+                    'texto' => $msgRow->mensaje,
+                ];
+            }
+        } catch (\Throwable $th) {
+            $mensajeEstado = null;
+        }
+
+        $remisionActual = null;
+        try {
+            $remRow = DB::table('case_remisiones')
+                ->where('case_file_id', $case->id)
+                ->orderByDesc('created_at')
+                ->first(['ente_destino', 'unidad_interna', 'ente_externo', 'numero_oficio', 'fecha_remision']);
+            if ($remRow) {
+                $remisionActual = [
+                    'ente_destino' => $remRow->ente_destino,
+                    'destino_especifico' => $remRow->unidad_interna ?: $remRow->ente_externo,
+                    'numero_oficio' => $remRow->numero_oficio,
+                    'fecha_remision' => $remRow->fecha_remision ? date('d/m/Y', strtotime($remRow->fecha_remision)) : null,
+                ];
+            }
+        } catch (\Throwable $th) {
+            $remisionActual = null;
         }
 
         return response()->json([
@@ -608,6 +658,8 @@ class DenunciaController extends Controller
             'estatus' => $case->estatus,
             'estatus_codigo' => $case->estatus_codigo,
             'cerrado' => (bool) $case->is_terminal,
+            'mensaje_estado' => $mensajeEstado,
+            'remision_actual' => $remisionActual,
             'observacion' => $ultimaObservacion,
             'observaciones' => $observaciones,
             'incident_location' => $case->incident_location,
@@ -620,9 +672,21 @@ class DenunciaController extends Controller
             'dias_restantes_confirmacion' => max(0, $diasRestantes),
             'confirmacion_vigente' => $confirmacionVigente,
             'confirmacion_completada' => ! empty($case->data_confirmed_at),
+            'subsanation_deadline' => $case->subsanation_deadline ? date('d/m/Y', strtotime($case->subsanation_deadline)) : null,
+            'subsanation_missing_docs' => $case->subsanation_missing_docs,
+            'dias_restantes_subsanacion' => $diasSubsanacion,
+            'subsanacion_vigente' => $subsanacionVigente,
+            'subsanacion_vencida' => $subsanacionVencida,
+            'closure_auto_number' => $case->closure_auto_number,
+            'closure_auto_date' => $case->closure_auto_date ? date('d/m/Y', strtotime($case->closure_auto_date)) : null,
+            'closure_reason' => $case->closure_reason,
             'respuestas_ciudadano' => $respuestasCiudadano->map(fn ($r) => [
                 'tipo' => $r->response_type,
                 'fecha' => date('d/m/Y', strtotime($r->response_date)),
+                'ente_remitido' => $r->referred_entity,
+                'fundamento' => $r->legal_basis,
+                'circular' => $r->office_circular,
+                'dias_subsanacion' => $r->subsanation_days,
                 'firmante' => trim(($r->issued_by_name ?? '').' — '.($r->issued_by_cargo ?? '')),
                 'mensaje' => $r->response_text,
             ])->values()->all(),

@@ -48,6 +48,8 @@
         @endif
         @if ($u->puede('CATALOGS'))
           <a href="{{ route('oac.catalogos.index') }}" class="{{ request()->routeIs('oac.catalogos.*') ? 'active-link' : '' }}"><i class="fa-solid fa-layer-group"></i> Catálogos</a>
+          <a href="{{ route('oac.funcionarios.index') }}" class="{{ request()->routeIs('oac.funcionarios.*') ? 'active-link' : '' }}"><i class="fa-solid fa-users-gear"></i> Funcionarios</a>
+          <a href="{{ route('oac.mensajes_estado.index') }}" class="{{ request()->routeIs('oac.mensajes_estado.*') ? 'active-link' : '' }}"><i class="fa-solid fa-comment-dots"></i> Mensajes por Estado</a>
         @endif
       @endif
 

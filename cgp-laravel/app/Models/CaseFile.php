@@ -48,6 +48,11 @@ class CaseFile extends Model
         'assigned_unit_id',
         'assigned_position_id',
         'assigned_user_id',
+        'assigned_funcionario_id',
+        'assigned_area',
+        'assigned_cargo',
+        'assigned_figura',
+        'assigned_funcionario_nombre',
         'assigned_at',
         'assigned_by',
         'assignment_notes',
@@ -68,6 +73,20 @@ class CaseFile extends Model
         'data_confirmation_days',
         'data_confirmation_deadline',
         'data_confirmed_at',
+        'subsanation_started_at',
+        'subsanation_deadline',
+        'subsanation_completed_at',
+        'subsanation_missing_docs',
+        'closure_auto_number',
+        'closure_auto_date',
+        'closure_auto_url',
+        'closure_reason',
+        'dac_approved',
+        'dac_approved_by',
+        'dac_approved_at',
+        'comptroller_approved',
+        'comptroller_approved_by',
+        'comptroller_approved_at',
     ];
 
     protected $casts = [
@@ -77,6 +96,14 @@ class CaseFile extends Model
         'data_confirmation_days' => 'integer',
         'data_confirmation_deadline' => 'date',
         'data_confirmed_at' => 'datetime',
+        'subsanation_started_at' => 'datetime',
+        'subsanation_deadline' => 'date',
+        'subsanation_completed_at' => 'datetime',
+        'closure_auto_date' => 'date',
+        'dac_approved' => 'boolean',
+        'dac_approved_at' => 'datetime',
+        'comptroller_approved' => 'boolean',
+        'comptroller_approved_at' => 'datetime',
         'other_instance' => 'boolean',
         'is_popular_consultation' => 'boolean',
         'sworn_declaration' => 'boolean',
@@ -111,5 +138,22 @@ class CaseFile extends Model
     public function assignedUser()
     {
         return $this->belongsTo(StaffUser::class, 'assigned_user_id');
+    }
+
+    public function assignedFuncionario()
+    {
+        return $this->belongsTo(Funcionario::class, 'assigned_funcionario_id');
+    }
+
+    public function remisiones()
+    {
+        return $this->hasMany(CaseRemision::class, 'case_file_id')->orderByDesc('created_at');
+    }
+
+    public function notificacionesCiudadanas()
+    {
+        return $this->hasMany(CaseNotificacion::class, 'case_file_id')
+            ->orderByDesc('response_date')
+            ->orderByDesc('created_at');
     }
 }

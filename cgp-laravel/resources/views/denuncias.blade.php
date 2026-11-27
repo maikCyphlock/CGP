@@ -431,6 +431,25 @@
             <div class="print-row"><div class="print-label">Tipo de Trámite:</div><div class="print-val" id="res-est-tipo">-</div></div>
             <div class="print-row"><div class="print-label">Fecha de Registro:</div><div class="print-val" id="res-est-fecha">-</div></div>
             <div class="print-row"><div class="print-label">Estado Actual:</div><div class="print-val" id="res-est-estado" style="font-weight: bold; color: #2e7d32;">-</div></div>
+
+            <!-- Mensaje personalizado por estado (sin costo) -->
+            <div id="bloque-mensaje-estado" style="display:none; margin:12px 0; background:#e8f4fd; border-left:4px solid #1565c0; border-radius:6px; padding:12px 14px; text-align:justify;">
+              <div id="res-msg-estado-titulo" style="font-weight:700; color:#0d47a1; font-size:0.9rem; margin-bottom:4px;"></div>
+              <div id="res-msg-estado-texto" style="font-size:0.86rem; color:#1e3a5f; line-height:1.45; white-space:pre-wrap;"></div>
+            </div>
+
+            <!-- Bloque de Lapso de Subsanación (5 días hábiles) -->
+            <div id="bloque-subsanacion-ciudadano" style="display:none; margin:12px 0; background:#fffbeb; border:1px solid #fde68a; border-left:4px solid #d97706; border-radius:6px; padding:12px 14px; text-align:justify;">
+              <div id="res-subsanacion-titulo" style="font-weight:700; color:#92400e; font-size:0.9rem; margin-bottom:4px;"></div>
+              <div id="res-subsanacion-texto" style="font-size:0.86rem; color:#78350f; line-height:1.45;"></div>
+            </div>
+
+            <!-- Información de remisión (si aplica) -->
+            <div class="print-row" id="fila-est-remision" style="display:none;">
+              <div class="print-label">Remitido a:</div>
+              <div class="print-val" id="res-est-remision">-</div>
+            </div>
+
             <div class="print-row" id="fila-est-observacion"><div class="print-label">Observación:</div><div class="print-val" id="res-est-observacion" style="white-space: pre-wrap;">-</div></div>
 
             <!-- Fila Geolocalización Señalado -->
@@ -2979,12 +2998,68 @@
       const requiereEvidencias = (tipoCod !== 'SUGGESTION') && !tipoNorm.includes('sugerencia');
 
       const elEstado = document.getElementById('res-est-estado');
-      if (esEnRevision && requiereEvidencias) {
-        elEstado.innerHTML = `${r.estatus} <span style="font-size:0.82rem; font-weight:normal; color:#c62828; display:inline-block; margin-top:2px;">— Debe asistir a la sede de la Contraloría a consignar las evidencias</span>`;
-        elEstado.style.color = '#1565c0';
-      } else {
-        elEstado.textContent = r.estatus;
-        elEstado.style.color = r.cerrado ? '#2e7d32' : '#1565c0';
+      elEstado.textContent = r.estatus;
+      elEstado.style.color = r.estatus_codigo === 'INVALIDATED'
+        ? '#b91c1c'
+        : (r.cerrado ? '#2e7d32' : '#1565c0');
+
+      // Bloque de Subsanación (5 días hábiles)
+      const bloqueSubC = document.getElementById('bloque-subsanacion-ciudadano');
+      const titSubC = document.getElementById('res-subsanacion-titulo');
+      const txtSubC = document.getElementById('res-subsanacion-texto');
+      if (bloqueSubC && titSubC && txtSubC) {
+        if (r.estatus_codigo === 'SUBSANATION' && r.subsanation_deadline) {
+          const vencida = !!r.subsanacion_vencida;
+          bloqueSubC.style.borderLeftColor = vencida ? '#b91c1c' : '#d97706';
+          titSubC.textContent = vencida
+            ? 'Lapso de Subsanación Vencido'
+            : `Lapso de Subsanación Activo (${r.dias_restantes_subsanacion ?? 0} día(s) hábil(es) restante(s))`;
+          let det = vencida
+            ? `El plazo de 5 días hábiles para consignar los recaudos faltantes venció el ${r.subsanation_deadline}.`
+            : `Dispone hasta el ${r.subsanation_deadline} para consignar los recaudos faltantes ante la DAC (Oficio Circular N° 01-00-499).`;
+          if (r.subsanation_missing_docs) {
+            det += ' Recaudos solicitados: ' + r.subsanation_missing_docs;
+          }
+          txtSubC.textContent = det;
+          bloqueSubC.style.display = 'block';
+        } else {
+          bloqueSubC.style.display = 'none';
+        }
+      }
+
+      // Mensaje personalizado del estado (sin costo, administrado por OAC)
+      const bloqueMsgEst = document.getElementById('bloque-mensaje-estado');
+      const titMsgEst = document.getElementById('res-msg-estado-titulo');
+      const txtMsgEst = document.getElementById('res-msg-estado-texto');
+      if (bloqueMsgEst && txtMsgEst) {
+        if (r.mensaje_estado && r.mensaje_estado.texto) {
+          titMsgEst.textContent = r.mensaje_estado.titulo || ('Información del estado: ' + r.estatus);
+          titMsgEst.style.display = titMsgEst.textContent ? 'block' : 'none';
+          txtMsgEst.textContent = r.mensaje_estado.texto;
+          bloqueMsgEst.style.display = 'block';
+        } else if (esEnRevision && requiereEvidencias) {
+          titMsgEst.textContent = 'Información del estado';
+          txtMsgEst.textContent = 'Debe asistir a la sede de la Contraloría a consignar las evidencias.';
+          bloqueMsgEst.style.display = 'block';
+        } else {
+          bloqueMsgEst.style.display = 'none';
+        }
+      }
+
+      // Remisión formal (si existe)
+      const filaRem = document.getElementById('fila-est-remision');
+      const valRem = document.getElementById('res-est-remision');
+      if (filaRem && valRem) {
+        if (r.remision_actual && r.remision_actual.ente_destino) {
+          let txtRem = r.remision_actual.ente_destino;
+          if (r.remision_actual.destino_especifico) txtRem += ' — ' + r.remision_actual.destino_especifico;
+          if (r.remision_actual.numero_oficio) txtRem += ' (Oficio N° ' + r.remision_actual.numero_oficio + ')';
+          if (r.remision_actual.fecha_remision) txtRem += ' · Fecha: ' + r.remision_actual.fecha_remision;
+          valRem.textContent = txtRem;
+          filaRem.style.display = 'flex';
+        } else {
+          filaRem.style.display = 'none';
+        }
       }
 
       const elObs = document.getElementById('res-est-observacion');
@@ -3063,6 +3138,10 @@
         divResp.innerHTML = r.respuestas_ciudadano.map(rc => `
           <div style="background:#f8fafc; border:1px solid #dce3ec; border-radius:6px; padding:12px; margin-bottom:10px;">
             <div style="font-size:0.82rem; color:#64748b; margin-bottom:4px; font-weight:600;">${escaparHtml(rc.fecha)} · ${escaparHtml(rc.tipo)}</div>
+            ${rc.ente_remitido ? `<div style="font-size:0.82rem; color:#1e40af; margin-bottom:4px;"><strong>Ente remitido:</strong> ${escaparHtml(rc.ente_remitido)}</div>` : ''}
+            ${rc.circular ? `<div style="font-size:0.82rem; color:#475569; margin-bottom:4px;"><strong>Circular aplicable:</strong> ${escaparHtml(rc.circular)}</div>` : ''}
+            ${rc.dias_subsanacion ? `<div style="font-size:0.82rem; color:#92400e; margin-bottom:4px;"><strong>Plazo de subsanación:</strong> ${escaparHtml(rc.dias_subsanacion)} día(s) hábil(es)</div>` : ''}
+            ${rc.fundamento ? `<div style="font-size:0.82rem; color:#475569; margin-bottom:4px;"><strong>Fundamento:</strong> ${escaparHtml(rc.fundamento)}</div>` : ''}
             <div style="color:#0f172a; white-space:pre-wrap; font-size:0.92rem; line-height:1.4;">${escaparHtml(rc.mensaje)}</div>
             <div style="font-size:0.8rem; color:#64748b; margin-top:6px; border-top:1px solid #e8edf2; padding-top:4px;">${escaparHtml(rc.firmante)}</div>
           </div>
@@ -3496,7 +3575,7 @@
             if (st) st.textContent = '✓ Ubicación localizada en el mapa';
           } else {
             // Reintentar con solo Venezuela
-            fetch(`https://nominatim.openstreetmap.org/search?format=json&countrycodes=ve&q=${encodeURIComponent(query + ', Venezuela')}&limit=1&addressdetails=1`)
+            return fetch(`https://nominatim.openstreetmap.org/search?format=json&countrycodes=ve&q=${encodeURIComponent(query + ', Venezuela')}&limit=1&addressdetails=1`)
               .then(r => r.json())
               .then(data2 => {
                 if (data2 && data2.length > 0) {
@@ -4025,6 +4104,8 @@
           ciudad: resolverCampoOtra('cit-ciudad', 'cit-ciudad-otra') || 'Acarigua',
         },
         senalados,
+        cit_lat: val('cit-lat'),
+        cit_lng: val('cit-lng'),
         ubicacion_senalado: val('sen-ubicacion'),
         ubicacion_lat: val('sen-lat'),
         ubicacion_lng: val('sen-lng'),

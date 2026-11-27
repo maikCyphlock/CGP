@@ -7,6 +7,9 @@ use App\Http\Controllers\Admin\InformeController;
 use App\Http\Controllers\Admin\InicioController;
 use App\Http\Controllers\Admin\MonitoreoController;
 use App\Http\Controllers\Oac\ExpedienteController;
+use App\Http\Controllers\Oac\FuncionarioController;
+use App\Http\Controllers\Oac\MensajesEstadoController;
+use App\Http\Controllers\Oac\RemisionNotificacionController;
 use App\Http\Controllers\Oac\ReporteController;
 use App\Http\Controllers\Admin\UsuarioController;
 use App\Http\Controllers\DenunciaController;
@@ -77,10 +80,22 @@ Route::middleware(['auth', 'modulo:oac'])->prefix('oac')->name('oac.')->group(fu
     Route::post('/expedientes/{expediente}/actuar', [ExpedienteController::class, 'actuar'])->whereUuid('expediente')->middleware('permiso:CASES,write')->name('expedientes.actuar');
     Route::post('/expedientes/{expediente}/clasificar', [ExpedienteController::class, 'clasificar'])->whereUuid('expediente')->middleware('permiso:CLASSIFY,write')->name('expedientes.clasificar');
     Route::post('/expedientes/{expediente}/asignar', [ExpedienteController::class, 'asignar'])->whereUuid('expediente')->middleware('permiso:CASES,write')->name('expedientes.asignar');
-    Route::post('/expedientes/{expediente}/derivar', [ExpedienteController::class, 'derivar'])->whereUuid('expediente')->middleware('permiso:CASES,write')->name('expedientes.derivar');
-    Route::post('/expedientes/{expediente}/respuesta-ciudadana', [ExpedienteController::class, 'respuestaCiudadana'])->whereUuid('expediente')->middleware('permiso:CASES,write')->name('expedientes.respuestaCiudadana');
+    Route::post('/expedientes/{expediente}/recaudos-fisicos', [ExpedienteController::class, 'recaudosFisicos'])->whereUuid('expediente')->middleware('permiso:CASES,write')->name('expedientes.recaudosFisicos');
+    Route::post('/expedientes/{expediente}/derivar', [RemisionNotificacionController::class, 'storeRemision'])->whereUuid('expediente')->middleware('permiso:CLASSIFY,write')->name('expedientes.derivar');
+    Route::post('/expedientes/{expediente}/respuesta-ciudadana', [RemisionNotificacionController::class, 'storeNotificacion'])->whereUuid('expediente')->middleware('permiso:CASES,write')->name('expedientes.respuestaCiudadana');
 
     Route::get('/reportes', [ReporteController::class, 'index'])->middleware('permiso:REPORTS,read')->name('reportes');
+
+    // Mensajes al ciudadano por estado (sin costo) y directorio de funcionarios
+    Route::middleware('permiso:CATALOGS,read')->group(function () {
+        Route::get('/mensajes-estado', [MensajesEstadoController::class, 'index'])->name('mensajes_estado.index');
+        Route::get('/funcionarios', [FuncionarioController::class, 'index'])->name('funcionarios.index');
+    });
+    Route::middleware('permiso:CATALOGS,write')->group(function () {
+        Route::post('/mensajes-estado/{codigo}', [MensajesEstadoController::class, 'update'])->name('mensajes_estado.update');
+        Route::post('/funcionarios', [FuncionarioController::class, 'store'])->name('funcionarios.store');
+        Route::post('/funcionarios/{funcionario}', [FuncionarioController::class, 'update'])->whereNumber('funcionario')->name('funcionarios.update');
+    });
 
     // Catálogos de la OAC (tipos de trámite, irregularidades, unidades de derivación…)
     Route::middleware('permiso:CATALOGS,read')->group(function () {
