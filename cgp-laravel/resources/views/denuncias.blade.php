@@ -385,6 +385,20 @@
             confidencialidad y utilizados únicamente para los fines del proceso de investigación.
         </div>
         </div>
+
+        <div class="aviso-anonimato" style="background-color: #e3f2fd; border-left: 4px solid #1565c0; color: #0d47a1; max-width: 800px; margin: 0 auto 20px auto;">
+          <span class="av-icon" style="color: #1565c0;">
+            <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
+              <path d="M16 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"></path>
+              <circle cx="8.5" cy="7" r="4"></circle>
+              <polyline points="17 11 19 13 23 9"></polyline>
+            </svg>
+          </span>
+          <div>
+            <strong>Validación Presencial de Identidad:</strong>
+            Una vez registrado su trámite en el sistema, el ciudadano deberá <strong>asistir presencialmente a la sede de la Contraloría para validar su identidad dentro de un lapso de cinco (5) días hábiles</strong>, el cual coincide con el mismo plazo de cinco (5) días hábiles establecido para consignar físicamente el documento impreso y las evidencias probatorias correspondientes.
+          </div>
+        </div>
         <div style="text-align: center; margin-bottom: 20px; display: flex; justify-content: center; gap: 15px; flex-wrap: wrap;">
           <button class="btn-submit" style="font-size: 1.1rem; padding: 12px 32px; background: #022139; border: 1px solid #4d7f99;" onclick="mostrarConsultaTramite()">
             Estado de Trámite
@@ -692,8 +706,27 @@
                 </div>
                 <div class="col-md-3">
                   <div class="form-group">
-                    <label class="form-label">Número de Documento <span class="required" style="color:#1565c0;">*</span></label>
-                    <input type="text" id="cit-nro-doc" class="form-control" placeholder="Ej. 12345678" maxlength="10">
+                    <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:4px; flex-wrap:wrap; gap:4px;">
+                      <label class="form-label" style="margin-bottom:0;">Número de Documento <span class="required" style="color:#1565c0;">*</span></label>
+                      <button type="button" class="btn btn-link p-0 text-decoration-none" style="font-size:0.75rem; color:#1565c0; display:inline-flex; align-items:center; gap:3px; font-weight:500;" data-bs-toggle="modal" data-bs-target="#modalAvisoIdentidad" title="Ver aviso sobre validación presencial de identidad">
+                        <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
+                          <circle cx="12" cy="12" r="10"></circle>
+                          <line x1="12" y1="16" x2="12" y2="12"></line>
+                          <line x1="12" y1="8" x2="12.01" y2="8"></line>
+                        </svg>
+                        <span>Validación</span>
+                      </button>
+                    </div>
+                    <div class="input-group">
+                      <input type="text" id="cit-nro-doc" class="form-control" placeholder="Ej. 12345678" maxlength="10">
+                      <button type="button" class="btn btn-outline-primary" data-bs-toggle="modal" data-bs-target="#modalAvisoIdentidad" title="Abrir ventanita informativa: Validación presencial de identidad en 5 días hábiles" style="border-color:#1565c0; color:#1565c0; background:#f0f7ff; display:inline-flex; align-items:center; justify-content:center; padding: 0 12px;">
+                        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-label="Ventanita informativa">
+                          <rect x="3" y="3" width="18" height="18" rx="2" ry="2"></rect>
+                          <line x1="3" y1="9" x2="21" y2="9"></line>
+                          <line x1="9" y1="21" x2="9" y2="9"></line>
+                        </svg>
+                      </button>
+                    </div>
                     <span class="error-msg" id="cit-nro-doc-err">Ingrese un número de documento válido.</span>
                   </div>
                 </div>
@@ -1853,6 +1886,58 @@
             </svg>
             <div style="text-align: justify;">
               Si actualmente no cuenta con una dirección de Gmail, puede registrarla de forma gratuita en <strong>www.gmail.com</strong> para completar su trámite sin inconvenientes.
+            </div>
+          </div>
+        </div>
+        <div class="modal-footer" style="background: #f7f9fd; border-top: 1px solid #eef1f7; padding: 12px 20px; justify-content: flex-end;">
+          <button type="button" class="btn btn-primary" data-bs-dismiss="modal" style="background: #1565c0; border-color: #1565c0; font-size: 0.88rem; font-weight: 600; padding: 7px 22px; border-radius: 6px;">
+            Entendido
+          </button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- MODAL FLOTANTE: AVISO SOBRE VALIDACIÓN PRESENCIAL DE IDENTIDAD -->
+  <div class="modal fade" id="modalAvisoIdentidad" tabindex="-1" aria-labelledby="modalAvisoIdentidadLabel" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered">
+      <div class="modal-content" style="border: none; border-radius: 10px; box-shadow: 0 12px 30px rgba(0,0,0,0.2); overflow: hidden;">
+        <div class="modal-header" style="background: #0f2340; color: #fff; padding: 16px 20px; border-bottom: 3px solid #1565c0;">
+          <h5 class="modal-title" id="modalAvisoIdentidadLabel" style="font-size: 1.05rem; font-weight: bold; display: flex; align-items: center; gap: 9px; margin: 0;">
+            Validación Presencial de Identidad
+          </h5>
+          <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Cerrar"></button>
+        </div>
+        <div class="modal-body" style="padding: 22px 20px; background: #ffffff; color: #333;">
+          <div style="background: #e8f4fd; border-radius: 6px; padding: 12px 16px; margin-bottom: 16px;">
+            <strong style="color: #0d47a1; display: block; margin-bottom: 4px; font-size: 0.95rem;">
+              Notificación Oficial
+            </strong>
+            <p style="margin: 0; font-size: 0.9rem; line-height: 1.5; text-align: justify; color: #1e3a5f;">
+              Una vez registrado su trámite en el sistema, el ciudadano deberá <strong>asistir presencialmente a la sede de la Contraloría para validar su identidad dentro de un lapso de cinco (5) días hábiles</strong>.
+            </p>
+          </div>
+
+          <h6 style="font-size: 0.92rem; font-weight: 700; color: #0f2340; margin-bottom: 8px;">
+            Aspectos importantes del lapso:
+          </h6>
+          <ul style="font-size: 0.88rem; line-height: 1.6; color: #495057; padding-left: 20px; margin-bottom: 16px; text-align: justify;">
+            <li style="margin-bottom: 6px;">
+              <strong>Mismo plazo para evidencias y recaudos:</strong> Este lapso de cinco (5) días hábiles coincide con el mismo período establecido para consignar físicamente el documento final impreso y las evidencias probatorias correspondientes.
+            </li>
+            <li>
+              <strong>Presentación de documento original:</strong> Al acudir a la sede de la Contraloría, deberá presentar su cédula de identidad o pasaporte vigente para formalizar la verificación de su identidad.
+            </li>
+          </ul>
+
+          <div style="background: #fff8e1; border: 1px solid #ffe082; border-radius: 6px; padding: 10px 14px; font-size: 0.85rem; color: #795548; display: flex; align-items: center; gap: 10px;">
+            <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="#f57c00" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="flex-shrink:0;">
+              <path d="M10.29 3.86L1.82 18a2 2 0 0 0 1.71 3h16.94a2 2 0 0 0 1.71-3L13.71 3.86a2 2 0 0 0-3.42 0z"/>
+              <line x1="12" y1="9" x2="12" y2="13"/>
+              <line x1="12" y1="17" x2="12.01" y2="17"/>
+            </svg>
+            <div style="text-align: justify;">
+              Cumplir con la validación presencial de identidad y la consignación física de sus recaudos dentro del plazo de <strong>cinco (5) días hábiles</strong> es indispensable para dar continuidad a su trámite.
             </div>
           </div>
         </div>
