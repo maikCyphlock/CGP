@@ -54,22 +54,22 @@
 
 ## 🟠 Importante (lo nuevo que pidió Laura)
 
-- [ ] **Mensaje al ciudadano para cada estado** (notificación sin costo)
+- [x] **Mensaje al ciudadano para cada estado** (notificación sin costo)
   - Nada de SMS ni correo de pago: es un **mensaje dentro del sistema** que el ciudadano ve al consultar su trámite.
   - El responsable (posiblemente el Ing. Juan Romero) puede **personalizar** el texto de cada estado.
   - Propuesta: una tabla `mensajes_estado` (estado, texto) con una pantalla sencilla para editarla.
 
-- [ ] **Valoración y Asignación: tabla de funcionarios**
+- [x] **Valoración y Asignación: tabla de funcionarios**
   - Aquí se hace el análisis de admisibilidad y se asigna o reasigna el responsable (lo que pidió Franklin).
   - Datos: área o dirección, cargo, figura y funcionario. Laura sugiere una **tabla de funcionarios** en la base de datos en vez de texto libre.
   - Ver qué tan factible es y presentárselo a ellos.
 
-- [ ] **Remisión y Notificación: guardar en la base de datos**
+- [x] **Remisión y Notificación: guardar en la base de datos**
   - La remisión (idea de la profesora) registra a qué ente se envía: Contraloría del Municipio Páez, Unidad de Auditoría Interna, Contraloría General de la República u otro órgano competente.
   - Abajo va la **notificación formal al ciudadano**.
   - Hoy es solo interfaz; falta la tabla, la relación con el expediente y el controlador.
 
-- [ ] **Revisar lo que ya cambió Laura** y confirmar que sigue funcionando: Google Maps en el formulario y evidencias con formato digitalizado.
+- [x] **Revisar lo que ya cambió Laura** y confirmar que sigue funcionando: Google Maps en el formulario y evidencias con formato digitalizado.
 
 ---
 

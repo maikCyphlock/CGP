@@ -198,7 +198,7 @@ class OacPendientesTest extends TestCase
             'nota' => 'Se remite el expediente al ente competente mediante oficio formal.',
         ])->assertRedirect(route('oac.expedientes.show', $e));
 
-        $e->load('remisiones');
+        $e->refresh()->load('remisiones');
         $this->assertCount(1, $e->remisiones);
         $remision = $e->remisiones->first();
         $this->assertSame('Órgano o ente con competencia', $remision->ente_destino);

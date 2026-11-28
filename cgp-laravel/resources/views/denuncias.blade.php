@@ -2126,6 +2126,31 @@
     </div>
   </div>
 
+  <!-- MODAL FLOTANTE DE ALERTAS / ERRORES DEL SISTEMA -->
+  <div class="modal fade" id="modalAlertaSistema" tabindex="-1" aria-labelledby="modalAlertaSistemaLabel" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered">
+      <div class="modal-content" style="border: none; border-radius: 10px; box-shadow: 0 12px 30px rgba(0,0,0,0.18); overflow: hidden;">
+        <div class="modal-header" id="modal-alerta-header" style="background: #b91c1c; color: #fff; padding: 15px 20px; border-bottom: none;">
+          <h5 class="modal-title" id="modalAlertaSistemaLabel" style="font-size: 1.02rem; font-weight: 700; display: flex; align-items: center; gap: 10px; margin: 0;">
+            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+              <circle cx="12" cy="12" r="10" />
+              <line x1="12" y1="8" x2="12" y2="12" />
+              <line x1="12" y1="16" x2="12.01" y2="16" />
+            </svg>
+            <span id="modal-alerta-titulo">No se pudo registrar la solicitud</span>
+          </h5>
+          <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Cerrar"></button>
+        </div>
+        <div class="modal-body" style="padding: 22px 22px; background: #ffffff; color: #1f2937;">
+          <div id="modal-alerta-cuerpo" style="font-size: 0.94rem; line-height: 1.55;"></div>
+        </div>
+        <div class="modal-footer" style="justify-content: flex-end; background: #f8fafc; padding: 12px 20px; border-top: 1px solid #e5e7eb;">
+          <button type="button" class="btn btn-primary" id="modal-alerta-btn" data-bs-dismiss="modal" style="background: #0f2340; border-color: #0f2340; font-size: 0.88rem; padding: 7px 22px; font-weight: 600; border-radius: 6px;">Entendido</button>
+        </div>
+      </div>
+    </div>
+  </div>
+
   <footer>
     <div class="footer-inner">
       <div class="row g-4 pb-4" style="border-bottom: 1px solid rgba(255,255,255,0.1); margin-bottom: 24px;">
@@ -3269,13 +3294,61 @@
           feedback.textContent = j.mensaje || '¡Conformidad registrada con éxito!';
           feedback.style.display = 'block';
         } else {
-          alert(j.mensaje || 'No se pudo registrar la confirmación.');
           if (btn) btn.disabled = false;
+          mostrarAlertaSistema('No se pudo registrar la confirmación', j.mensaje || 'No se pudo registrar la confirmación.');
         }
       } catch (e) {
-        alert('Error al conectar con el servidor.');
         if (btn) btn.disabled = false;
+        mostrarAlertaSistema('Error de conexión', 'Error al conectar con el servidor. Intente de nuevo.');
       }
+    }
+
+    function mostrarAlertaSistema(titulo, mensajes, tipo = 'error') {
+      const modalEl = document.getElementById('modalAlertaSistema');
+      const headerEl = document.getElementById('modal-alerta-header');
+      const tituloEl = document.getElementById('modal-alerta-titulo');
+      const cuerpoEl = document.getElementById('modal-alerta-cuerpo');
+      const btnEl = document.getElementById('modal-alerta-btn');
+
+      if (!modalEl || !cuerpoEl) {
+        const texto = Array.isArray(mensajes) ? mensajes.join('\n• ') : String(mensajes || '');
+        alert(`${titulo}:\n\n${texto}`);
+        return;
+      }
+
+      const bgColor = tipo === 'warning' ? '#b45309' : '#b91c1c';
+      if (headerEl) headerEl.style.background = bgColor;
+      if (btnEl) {
+        btnEl.style.background = tipo === 'warning' ? '#b45309' : '#0f2340';
+        btnEl.style.borderColor = tipo === 'warning' ? '#b45309' : '#0f2340';
+      }
+      if (tituloEl) tituloEl.textContent = titulo || 'Aviso del sistema';
+
+      cuerpoEl.innerHTML = '';
+      const lista = (Array.isArray(mensajes) ? mensajes : [mensajes]).filter(Boolean);
+
+      if (lista.length <= 1) {
+        const p = document.createElement('p');
+        p.style.margin = '0';
+        p.textContent = lista[0] || 'Ocurrió un error inesperado.';
+        cuerpoEl.appendChild(p);
+      } else {
+        const ul = document.createElement('ul');
+        ul.style.margin = '0';
+        ul.style.paddingLeft = '1.2rem';
+        ul.style.display = 'flex';
+        ul.style.flexDirection = 'column';
+        ul.style.gap = '8px';
+        lista.forEach(msg => {
+          const li = document.createElement('li');
+          li.textContent = msg;
+          ul.appendChild(li);
+        });
+        cuerpoEl.appendChild(ul);
+      }
+
+      const modal = bootstrap.Modal.getOrCreateInstance(modalEl);
+      modal.show();
     }
 
     /* ── Componente de Geolocalización Interactiva para el Ciudadano (Paso 2) ── */
@@ -3630,7 +3703,7 @@
       const st = document.getElementById('cit-geo-status');
 
       if (!query) {
-        alert('Escriba una dirección o referencia para buscar en el mapa.');
+        mostrarAlertaSistema('Búsqueda en el mapa', 'Escriba una dirección o referencia para buscar en el mapa.', 'warning');
         if (inputDir) inputDir.focus();
         return;
       }
@@ -3852,7 +3925,7 @@
     function buscarDireccionEnMapa() {
       const query = document.getElementById('sen-ubicacion').value.trim();
       if (!query) {
-        alert('Escriba una dirección o referencia para buscar en el mapa.');
+        mostrarAlertaSistema('Búsqueda en el mapa', 'Escriba una dirección o referencia para buscar en el mapa.', 'warning');
         return;
       }
       const st = document.getElementById('sen-geo-status');
@@ -3887,7 +3960,7 @@
 
     function obtenerUbicacionActualGPS() {
       if (!navigator.geolocation) {
-        alert('La geolocalización no está disponible en su navegador.');
+        mostrarAlertaSistema('Geolocalización no disponible', 'La geolocalización no está disponible en su navegador.', 'warning');
         return;
       }
       const st = document.getElementById('sen-geo-status');
@@ -4105,7 +4178,7 @@
           (jpDoc && jpDoc === citDocVal && (!jpTipo || jpTipo === citTipoVal)) ||
           (otNum && otNum === citDocVal && !/^[JjGgCc]/.test(otDoc))
         )) {
-          alert('Error en el formulario:\n\n• La persona o funcionario señalado no puede tener la misma cédula que el denunciante.');
+          mostrarAlertaSistema('Error en el formulario', 'La persona o funcionario señalado no puede tener la misma cédula que el denunciante.');
           return;
         }
       }
@@ -4145,7 +4218,7 @@
           const nRifB = normRif(rifB);
 
           if (nRifA && nRifB && nRifA === nRifB) {
-            alert(`Error en el formulario:\n\n• No puede existir el mismo R.I.F. (${rifB}) entre señalados.`);
+            mostrarAlertaSistema('Error en el formulario', `No puede existir el mismo R.I.F. (${rifB}) entre señalados.`);
             return;
           }
 
@@ -4153,7 +4226,7 @@
           const nSiturB = normSitur(siturB);
 
           if (nSiturA && nSiturB && nSiturA === nSiturB) {
-            alert(`Error en el formulario:\n\n• No puede existir el mismo código SITUR (${siturB}) entre señalados.`);
+            mostrarAlertaSistema('Error en el formulario', `No puede existir el mismo código SITUR (${siturB}) entre señalados.`);
             return;
           }
 
@@ -4166,7 +4239,7 @@
           const nDocB = normDoc(docB);
 
           if (nDocA && nDocB && nDocA.length >= 5 && nDocA === nDocB && (!tipoA || !tipoB || tipoA === tipoB)) {
-            alert(`Error en el formulario:\n\n• No puede existir el mismo número de documento (${docB}) entre señalados.`);
+            mostrarAlertaSistema('Error en el formulario', `No puede existir el mismo número de documento (${docB}) entre señalados.`);
             return;
           }
         }
@@ -4254,12 +4327,12 @@
         });
         json = await resp.json();
       } catch (e) {
-        alert('No se pudo conectar con el servidor. Intente de nuevo.');
         if (boton) {
           boton.disabled = false;
           boton.innerHTML = textoOriginal;
         }
         enviandoSolicitud = false;
+        mostrarAlertaSistema('Error de conexión', 'No se pudo conectar con el servidor. Intente de nuevo.');
         return;
       }
 
@@ -4271,12 +4344,12 @@
           return;
         }
         const errores = json.errors ? Object.values(json.errors).flat() : [json.message || 'Error desconocido'];
-        alert('No se pudo registrar la solicitud:\n\n• ' + errores.join('\n• '));
         if (boton) {
           boton.disabled = false;
           boton.innerHTML = textoOriginal;
         }
         enviandoSolicitud = false;
+        mostrarAlertaSistema('No se pudo registrar la solicitud', errores);
         return;
       }
 

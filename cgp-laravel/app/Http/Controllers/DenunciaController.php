@@ -112,6 +112,12 @@ class DenunciaController extends Controller
             'senalados.*.campos.cm-situr' => ['nullable', 'regex:'.self::RE_SITUR],
             'senalados.*.campos.cc-situr' => ['nullable', 'regex:'.self::RE_SITUR],
             'ubicacion_senalado' => 'required_with:senalados.0|nullable|string|min:5|max:250',
+            'ubicacion_lat' => 'nullable|numeric',
+            'ubicacion_lng' => 'nullable|numeric',
+            'sen_lat' => 'nullable|numeric',
+            'sen_lng' => 'nullable|numeric',
+            'cit_lat' => 'nullable|numeric',
+            'cit_lng' => 'nullable|numeric',
             'proyecto.nombre' => 'exclude_unless:es_consulta,true|required|string|min:4|max:200',
             'proyecto.fecha' => [
                 'exclude_unless:es_consulta,true',

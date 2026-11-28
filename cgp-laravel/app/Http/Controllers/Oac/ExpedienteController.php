@@ -267,9 +267,9 @@ class ExpedienteController extends Controller
                 return ['error' => "Un expediente «{$actual->name}» no puede pasar a ese estatus."];
             }
 
-            // Regla de negocio: Lapso de anticipación para confirmar/rectificar datos
+            // Regla de negocio: Lapso de anticipación para confirmar/rectificar datos (solo al formalizar desde RECEIVED)
             $deadline = $e->data_confirmation_deadline ? \Illuminate\Support\Carbon::parse($e->data_confirmation_deadline)->endOfDay() : null;
-            if (in_array($destino, ['PROCESSING', 'IN_REVIEW'], true) && $deadline && now()->lte($deadline) && empty($e->data_confirmed_at) && ! $request->boolean('ignorar_lapso_confirmacion')) {
+            if ($actual->code === 'RECEIVED' && in_array($destino, ['PROCESSING', 'IN_REVIEW'], true) && $deadline && now()->lte($deadline) && empty($e->data_confirmed_at) && ! $request->boolean('ignorar_lapso_confirmacion')) {
                 return ['error' => 'El denunciante tiene un lapso activo de anticipación para confirmar o rectificar sus datos que vence el ' . $deadline->format('d/m/Y') . '. Para formalizar excepcionalmente antes de dicho vencimiento, marque la confirmación correspondiente en el formulario.'];
             }
 
