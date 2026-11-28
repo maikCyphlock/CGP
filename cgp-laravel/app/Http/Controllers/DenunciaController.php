@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use App\Models\CaseFile;
 use App\Models\Citizen;
 use Barryvdh\DomPDF\Facade\Pdf;
+use Illuminate\Database\QueryException;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Validator;
@@ -61,6 +62,24 @@ class DenunciaController extends Controller
     public function store(Request $request)
     {
         $datos = json_decode($request->input('datos', '{}'), true) ?: [];
+
+        // ── IDEMPOTENCIA ──────────────────────────────────────────────────────
+        // El cliente envía un UUID generado antes del primer intento y lo
+        // reutiliza en cada reintento tras un fallo de red.  Si ya existe un
+        // CaseFile con ese UUID significa que el primer envío llegó al servidor
+        // y se procesó correctamente, pero la respuesta se perdió en tránsito.
+        // En ese caso devolvemos los datos del expediente original con HTTP 200,
+        // sin crear ningún duplicado.
+        $solicitudId = trim((string) $request->input('solicitud_id', ''));
+        $reUUID = '/^[0-9a-f]{8}-[0-9a-f]{4}-4[0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$/i';
+        $tieneSolicitudIdValido = $solicitudId !== '' && preg_match($reUUID, $solicitudId) === 1;
+        if ($tieneSolicitudIdValido) {
+            $existente = CaseFile::find($solicitudId);
+            if ($existente) {
+                return $this->respuestaExpediente($existente, 200);
+            }
+        }
+        // ─────────────────────────────────────────────────────────────────────
 
         $v = Validator::make($datos, [
             'tipo_tramite' => ['required', Rule::in(array_keys(self::TIPOS_TRAMITE))],
@@ -342,7 +361,8 @@ class DenunciaController extends Controller
         $c = $d['ciudadano'];
         $esConsulta = $d['tipo_tramite'] === 'denuncia' && ($d['es_consulta'] ?? false);
 
-        $case = DB::transaction(function () use ($d, $c, $esConsulta, $request) {
+        try {
+            $case = DB::transaction(function () use ($d, $c, $esConsulta, $request, $solicitudId, $tieneSolicitudIdValido) {
             $docTypeId = $this->catalogId('id_document_type', self::TIPOS_DOC[$c['tipo_doc']]);
             $claimTypeId = $this->catalogId('claim_type', self::TIPOS_TRAMITE[$d['tipo_tramite']]);
 
@@ -361,6 +381,14 @@ class DenunciaController extends Controller
 
                 if ($duplicado) {
                     abort(response()->json([
+                        'duplicado'      => true,
+                        'case_number'    => $duplicado->case_number,
+                        'tracking_code'  => $duplicado->tracking_code,
+                        'planilla_url'   => route('denuncias.planilla', $duplicado->tracking_code),
+                        'dias_confirmacion'          => $duplicado->data_confirmation_days ?? 5,
+                        'fecha_limite_confirmacion'  => $duplicado->data_confirmation_deadline
+                            ? date('d/m/Y', strtotime($duplicado->data_confirmation_deadline))
+                            : null,
                         'message' => 'Ya existe un trámite idéntico registrado recientemente con el expediente N° ' . $duplicado->case_number . '. Si se trató de un error de envío involuntario, no se preocupe: su solicitud original ya fue recibida exitosamente.',
                     ], 422));
                 }
@@ -410,7 +438,13 @@ class DenunciaController extends Controller
             $lng = isset($d['ubicacion_lng']) && is_numeric($d['ubicacion_lng']) ? (float) $d['ubicacion_lng'] : (isset($d['sen_lng']) && is_numeric($d['sen_lng']) ? (float) $d['sen_lng'] : null);
 
             $case = CaseFile::create([
-                'id' => (string) Str::uuid(),
+                // Si el cliente envió una clave de idempotencia válida, usarla como ID
+                // del expediente: así si esta transacción ya se ejecutó antes (y la
+                // respuesta se perdió en la red), el lookup de idempotencia al inicio
+                // del método la encontrará en el próximo intento y devolverá éxito.
+                'id' => $tieneSolicitudIdValido
+                    ? $solicitudId
+                    : (string) Str::uuid(),
                 'claim_type_id' => $this->catalogId('claim_type', self::TIPOS_TRAMITE[$d['tipo_tramite']]),
                 'status_id' => $this->catalogId('case_status', 'RECEIVED'),
                 'citizen_id' => $citizen->id,
@@ -468,14 +502,29 @@ class DenunciaController extends Controller
 
             return $case->refresh(); // trae case_number y tracking_code generados por la BD
         });
+        } catch (QueryException $e) {
+            // Condición de carrera: otro request concurrente con el mismo solicitud_id
+            // (o mismo ciudadano nuevo) ganó la carrera y ya insertó el registro.
+            if ($tieneSolicitudIdValido && ($existente = CaseFile::find($solicitudId))) {
+                return $this->respuestaExpediente($existente, 200);
+            }
+            throw $e;
+        }
 
+        return $this->respuestaExpediente($case, 201);
+    }
+
+    private function respuestaExpediente(CaseFile $case, int $status = 201)
+    {
         return response()->json([
-            'case_number' => $case->case_number,
-            'tracking_code' => $case->tracking_code,
-            'dias_confirmacion' => $case->data_confirmation_days ?? 5,
-            'fecha_limite_confirmacion' => $case->data_confirmation_deadline ? date('d/m/Y', strtotime($case->data_confirmation_deadline)) : null,
+            'case_number'               => $case->case_number,
+            'tracking_code'             => $case->tracking_code,
+            'dias_confirmacion'         => $case->data_confirmation_days ?? 5,
+            'fecha_limite_confirmacion' => $case->data_confirmation_deadline
+                ? date('d/m/Y', strtotime($case->data_confirmation_deadline))
+                : null,
             'planilla_url' => route('denuncias.planilla', $case->tracking_code),
-        ], 201);
+        ], $status);
     }
 
     /** Permite al denunciante validar/confirmar la conformidad de sus datos durante el lapso de anticipación. */

@@ -1,4 +1,4 @@
-<!DOCTYPE html>
+﻿<!DOCTYPE html>
 <html lang="es">
 
 <head>
@@ -3961,6 +3961,19 @@
 
     let enviandoSolicitud = false;
 
+    // Clave de idempotencia: se genera una sola vez por intento de envío y se
+    // reutiliza en cada reintento. El servidor la usa como ID del expediente, de
+    // modo que si la respuesta se pierde en la red y el usuario reintenta, el
+    // servidor detecta que ya procesó esa clave y devuelve el expediente creado
+    // sin generar un duplicado.
+    let solicitudId = null;
+    function generarSolicitudId() {
+      return 'xxxxxxxx-xxxx-4xxx-yxxx-xxxxxxxxxxxx'.replace(/[xy]/g, function (c) {
+        var r = Math.random() * 16 | 0, v = c === 'x' ? r : (r & 0x3 | 0x8);
+        return v.toString(16);
+      });
+    }
+
     // Función que recoge ABSOLUTAMENTE TODOS los datos ingresados
     // Envía la solicitud al servidor; si se guarda, muestra la confirmación
     // con el número de expediente real y el enlace a la planilla en PDF.
@@ -4119,8 +4132,15 @@
         acepta_declaracion: true,
       };
 
+      // Generar (o reutilizar) la clave de idempotencia para este intento.
+      // Si el usuario reintenta tras un fallo de red se mantiene la misma clave,
+      // lo que permite al servidor reconocer la solicitud y devolver el expediente
+      // ya creado sin generar un duplicado.
+      if (!solicitudId) solicitudId = generarSolicitudId();
+
       const form = new FormData();
       form.append('datos', JSON.stringify(datos));
+      form.append('solicitud_id', solicitudId);
       Object.entries(window.archivosPorDocumento || {}).forEach(([tipo, archivos]) => {
         archivos.forEach(archivo => form.append(`evidencias[${tipo}][]`, archivo));
       });
@@ -4137,8 +4157,9 @@
         `;
       }
 
+      let resp, json;
       try {
-        const resp = await fetch(@json(route('denuncias.store')), {
+        resp = await fetch(@json(route('denuncias.store')), {
           method: 'POST',
           headers: {
             'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').content,
@@ -4146,31 +4167,7 @@
           },
           body: form,
         });
-        const json = await resp.json();
-        if (!resp.ok) {
-          const errores = json.errors ? Object.values(json.errors).flat() : [json.message || 'Error desconocido'];
-          alert('No se pudo registrar la solicitud:\n\n• ' + errores.join('\n• '));
-          if (boton) {
-            boton.disabled = false;
-            boton.innerHTML = textoOriginal;
-          }
-          enviandoSolicitud = false;
-          return;
-        }
-        document.getElementById('nro-expediente-display').textContent = json.case_number;
-        document.getElementById('btn-descargar-planilla').href = json.planilla_url;
-        if (document.getElementById('lapso-dias-display')) {
-          document.getElementById('lapso-dias-display').textContent = json.dias_confirmacion || 5;
-        }
-        if (document.getElementById('lapso-fecha-display')) {
-          document.getElementById('lapso-fecha-display').textContent = json.fecha_limite_confirmacion || '5 días hábiles';
-        }
-        if (document.getElementById('lapso-tracking-display')) {
-          document.getElementById('lapso-tracking-display').textContent = json.tracking_code || json.case_number;
-        }
-        if (typeof guardarSenaladosEnPadron === 'function') guardarSenaladosEnPadron();
-        localStorage.removeItem(BORRADOR_KEY);
-        mostrarConfirmacion();
+        json = await resp.json();
       } catch (e) {
         alert('No se pudo conectar con el servidor. Intente de nuevo.');
         if (boton) {
@@ -4178,8 +4175,46 @@
           boton.innerHTML = textoOriginal;
         }
         enviandoSolicitud = false;
+        return;
       }
+
+      if (!resp.ok) {
+        // Caso especial: el servidor detectó un duplicado reciente.
+        // El trámite ya existe; tratarlo como éxito y mostrar la planilla original.
+        if (json.duplicado) {
+          mostrarPlanillaConfirmacion(json);
+          return;
+        }
+        const errores = json.errors ? Object.values(json.errors).flat() : [json.message || 'Error desconocido'];
+        alert('No se pudo registrar la solicitud:\n\n• ' + errores.join('\n• '));
+        if (boton) {
+          boton.disabled = false;
+          boton.innerHTML = textoOriginal;
+        }
+        enviandoSolicitud = false;
+        return;
+      }
+
+      mostrarPlanillaConfirmacion(json);
     };
+
+    function mostrarPlanillaConfirmacion(json) {
+      document.getElementById('nro-expediente-display').textContent = json.case_number;
+      document.getElementById('btn-descargar-planilla').href = json.planilla_url;
+      if (document.getElementById('lapso-dias-display')) {
+        document.getElementById('lapso-dias-display').textContent = json.dias_confirmacion || 5;
+      }
+      if (document.getElementById('lapso-fecha-display')) {
+        document.getElementById('lapso-fecha-display').textContent = json.fecha_limite_confirmacion || '5 días hábiles';
+      }
+      if (document.getElementById('lapso-tracking-display')) {
+        document.getElementById('lapso-tracking-display').textContent = json.tracking_code || json.case_number;
+      }
+      if (typeof guardarSenaladosEnPadron === 'function') guardarSenaladosEnPadron();
+      localStorage.removeItem(BORRADOR_KEY);
+      solicitudId = null; // Éxito: invalidar la clave para que una nueva solicitud genere una diferente.
+      mostrarConfirmacion();
+    }
 
     function mostrarConfirmacion() {
       // 1. Datos del Trámite y Contexto
@@ -4217,9 +4252,9 @@
         return v || def;
       };
 
-      document.getElementById('print-edad').textContent = (document.getElementById('cit-edad').value || '--').replace(' años', '');
-      document.getElementById('print-ecivil').textContent = resolverCampoOtra('cit-ecivil', 'cit-ecivil-otro', 'No indicó');
-      document.getElementById('print-edu').textContent = val('cit-edu') || 'No especificó';
+        document.getElementById('print-edad').textContent = (document.getElementById('cit-edad').value || '--').replace(' años', '');
+        document.getElementById('print-ecivil').textContent = resolverCampoOtra('cit-ecivil', 'cit-ecivil-otro', 'No indicó');
+        document.getElementById('print-edu').textContent = (document.getElementById('cit-edu')?.value || '').trim() || 'No especificó';
       document.getElementById('print-profesion').textContent = resolverCampoOtra('cit-profesion', 'cit-profesion-otra', 'No indicó');
       document.getElementById('print-ocupacion').textContent = document.getElementById('cit-ocupacion').value || 'No indicó';
       document.getElementById('print-correo').textContent = document.getElementById('cit-correo').value || '';
