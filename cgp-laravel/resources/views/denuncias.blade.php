@@ -4208,7 +4208,7 @@
         document.getElementById('lapso-fecha-display').textContent = json.fecha_limite_confirmacion || '5 días hábiles';
       }
       if (document.getElementById('lapso-tracking-display')) {
-        document.getElementById('lapso-tracking-display').textContent = json.tracking_code || json.case_number;
+        document.getElementById('lapso-tracking-display').textContent = json.case_number;
       }
       if (typeof guardarSenaladosEnPadron === 'function') guardarSenaladosEnPadron();
       localStorage.removeItem(BORRADOR_KEY);
